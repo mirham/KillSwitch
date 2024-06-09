@@ -19,20 +19,26 @@ struct MainView: View {
                 CurrentIpView()
                     .environmentObject(monitoringService)
                 Spacer()
-                MonitoringStatusView().environmentObject(monitoringService)
+                MonitoringStatusView()
+                    .environmentObject(monitoringService)
                 Spacer()
-                NetworkStatusView().environmentObject(networkStatusService)
+                NetworkStatusView()
+                    .environmentObject(networkStatusService)
                 Spacer()
                     .frame(minHeight: 30)
-                NetworkInterfacesView().environmentObject(networkStatusService)
-                NetworkCapabilitesView().environmentObject(networkStatusService)
+                NetworkInterfacesView()
+                    .environmentObject(networkStatusService)
+                NetworkCapabilitesView()
+                    .environmentObject(networkStatusService)
             }
-            .navigationSplitViewColumnWidth(210)
+            .navigationSplitViewColumnWidth(220)
         } content: {
             VStack{
                 HStack{
-                    ToggleMonitoringView().environmentObject(monitoringService)
-                    ToggleNetworkView().environmentObject(networkStatusService)
+                    ToggleMonitoringView()
+                        .environmentObject(monitoringService)
+                    ToggleNetworkView()
+                        .environmentObject(networkStatusService)
                     ToggleKeepRunningView.init()
                 }
                 .padding()
@@ -40,7 +46,7 @@ struct MainView: View {
                     LogView.init()
                 }
             }
-            .navigationSplitViewColumnWidth(min: 400, ideal: 400)
+            .navigationSplitViewColumnWidth(min: 450, ideal: 450)
         } detail: {
             AllowedAddressesView
                 .init()

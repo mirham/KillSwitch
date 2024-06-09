@@ -10,24 +10,21 @@ import SwiftData
 
 
 class MonitoringService: ObservableObject {
-    @Published var currentIpAddress = String()
     @Published var isMonitoringEnabled = false
     
     static let shared = MonitoringService()
     
-    let networkStatusService = NetworkStatusService.shared
-    
-    private let ipAddressesService = IpAddressesService.shared
+    private let networkStatusService = NetworkStatusService.shared
     private let networkManagementService = NetworkManagementService.shared
     private let loggingService = LoggingService.shared
     
     var allowedIpAddresses = [String]()
     
-    private var previousIpAddress = String()
-    private var lastAttempt = Date()
+    private var currentIpAddress = String()
+    private var currentNetworkStatus = NetworkStatusType.unknown
     
     private init() {
-        setCurrentIpAddress()
+        currentIpAddress = networkStatusService.currentIpAddress
     }
     
     func startMonitoring() -> Bool {
@@ -40,50 +37,35 @@ class MonitoringService: ObservableObject {
             if self.isMonitoringEnabled {
                 Task {
                     do {
-                        guard self.networkStatusService.currentStatus == .on else {
-                            self.currentIpAddress = "None".uppercased()
+                        self.networkStatusService.$currentStatus.sink(receiveValue: {
+                            self.currentNetworkStatus = $0})
+                        
+                        guard self.currentNetworkStatus == .on else {
                             return
                         }
                         
-                        let ipAddress = await self.ipAddressesService.getCurrentIpAddress()
+                        let newIpAddress = await self.networkStatusService.getCurrentIpAddress() ?? String()
                         
-                        if (ipAddress == nil) {
-                            let calendar = Calendar.current
-                            let components = calendar.dateComponents([.year,.month,.day,.hour,.minute,.second], from:  self.lastAttempt, to: Date())
-                            let seconds = components.second
-                            
-                            if(seconds! > 60){
-                                self.lastAttempt = Date()
-                            }
-                            else{
-                                return
-                            }
-                        }
-                        
-                        self.currentIpAddress = ipAddress!
-                        
-                        if (self.currentIpAddress != self.previousIpAddress) {
-                            let logEntry = LogEntry(message: "Updated IP:" + self.currentIpAddress)
+                        if (newIpAddress != self.currentIpAddress) {
+                            let logEntry = LogEntry(message: "IP has been updated to \(newIpAddress)")
                             self.loggingService.log(logEntry: logEntry)
                             
                             var isMatchFound = false
                             
                             for allowedIpAddress in self.allowedIpAddresses {
-                                if self.currentIpAddress == allowedIpAddress {
+                                if newIpAddress == allowedIpAddress {
                                     isMatchFound = true
                                 }
                             }
                             
                             if isMatchFound {
-                                self.previousIpAddress = self.currentIpAddress
+                                self.currentIpAddress = newIpAddress
                             }
                             else {
                                 self.networkManagementService.disableNetworkInterface(interfaceName: "en0")
                                 
-                                if(self.networkStatusService.currentStatus == .off){
-                                    let logEntry = LogEntry(message: "IP address changed to \(self.currentIpAddress) which is not from allowd IPs, network disabled.")
-                                    self.loggingService.log(logEntry: logEntry)
-                                }
+                                let logEntry = LogEntry(message: "IP address has been changed to \(newIpAddress) which is not from allowd IPs, network disabled.")
+                                self.loggingService.log(logEntry: logEntry)
                             }
                         }
                     }
@@ -104,32 +86,5 @@ class MonitoringService: ObservableObject {
         loggingService.log(logEntry: logEntry)
         
         return true
-    }
-    
-    func resetMonitoring() {
-        if isMonitoringEnabled {
-            stopMonitoring()
-            setCurrentIpAddress()
-            startMonitoring()
-        }
-        else {
-            setCurrentIpAddress()
-        }
-    }
-    
-    func resetCurrentIpAddress() {
-        currentIpAddress = "None".uppercased()
-    }
-    
-    private func setCurrentIpAddress() {
-        Task {
-            do {
-                currentIpAddress = await ipAddressesService.getCurrentIpAddress() ?? String()
-                previousIpAddress = currentIpAddress
-                
-                let logEntry = LogEntry(message: "Initial IP:" + currentIpAddress)
-                loggingService.log(logEntry: logEntry)
-            }
-        }
     }
 }

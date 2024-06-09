@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 struct CurrentIpView: View {
-    @EnvironmentObject var monitoringService : MonitoringService
+    @EnvironmentObject var networkStatusService : NetworkStatusService
     
     var body: some View {
         Section() {
@@ -18,7 +18,7 @@ struct CurrentIpView: View {
                     .font(.title3)
                     .multilineTextAlignment(.center)
                     .padding(.top)
-                Text(monitoringService.currentIpAddress)
+                Text(networkStatusService.currentIpAddress)
                     .font(.largeTitle)
             }
             .padding()

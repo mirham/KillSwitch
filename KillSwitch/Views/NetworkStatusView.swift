@@ -10,6 +10,8 @@ import SwiftUI
 
 struct NetworkStatusView: View {    
     @EnvironmentObject var networkStatusService : NetworkStatusService
+    
+    private let monitorService = MonitoringService.shared
 
     var body: some View {
         Section {

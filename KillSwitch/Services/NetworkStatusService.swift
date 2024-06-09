@@ -18,14 +18,29 @@ class NetworkStatusService: ObservableObject {
     @Published var supportsIp4: Bool = false
     @Published var supportsIp6: Bool = false
     @Published var description: String = String()
+    @Published var currentIpAddress: String = String()
     
     static let shared = NetworkStatusService()
     
+    private let loggingService = LoggingService.shared
+    
     let monitor = NWPathMonitor()
     // TODO RUSS: Must be background, figue it out.
-    let queue = DispatchQueue.global(qos: .default)
+    let queue = DispatchQueue.main
     
-    init() {
+    private var apisList = [
+        "http://api.ipify.org",
+        "http://icanhazip.com",
+        "http://ipinfo.io/ip",
+        "http://ipecho.net/plain",
+        "http://ident.me",
+        "https://checkip.amazonaws.com",
+        "http://whatismyip.akamai.com",
+        "https://ip.istatmenus.app",
+        "https://api.seeip.org"
+    ]
+    
+    init() {        
         monitor.pathUpdateHandler = { path in
             switch path.status {
                 case .satisfied:
@@ -40,7 +55,7 @@ class NetworkStatusService: ObservableObject {
                     OperationQueue.main.addOperation {
                         self.currentStatus = NetworkStatusType.off
                     }
-                @unknown default:
+                 default:
                     OperationQueue.main.addOperation {
                         self.currentStatus = NetworkStatusType.unknown
                     }
@@ -53,10 +68,22 @@ class NetworkStatusService: ObservableObject {
             self.supportsIp6 = path.supportsIPv6
             self.description = path.debugDescription
             
-            self.currentNetworkInterfaces.removeAll()
+            Task {
+                do {
+                    let ip = await self.getCurrentIpAddress() ?? "None"
+                    self.currentIpAddress = ip
+                    
+                    let logEntry = LogEntry(message: "Current IP:" + ip)
+                    self.loggingService.log(logEntry: logEntry)
+                }
+            }
+            
+            self.currentNetworkInterfaces = [NetworkInterface]()
+            
+            // sleep(2)
             
             for networkInterface in path.availableInterfaces {
-                let networkInterfaceInfo = self.geActiveNetworkInterfaceInfo(interface: networkInterface)
+                let networkInterfaceInfo = self.getActiveNetworkInterfaceInfo(interface: networkInterface)
                 self.currentNetworkInterfaces.append(networkInterfaceInfo)
             }
         }
@@ -64,7 +91,24 @@ class NetworkStatusService: ObservableObject {
         monitor.start(queue: queue)
     }
     
-    private func geActiveNetworkInterfaceInfo(interface: NWInterface) -> NetworkInterface {
+    deinit {
+        monitor.cancel()
+    }
+    
+    func getCurrentIpAddress() async -> String?{
+        let ipAddressResponse = await callIpAddressApi(urlAddress: apisList.randomElement()!)
+        let ipAddressString = ipAddressResponse.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        if let _ = IPv4Address(ipAddressString) {
+            return ipAddressString
+        } else if let _ = IPv6Address(ipAddressString) {
+            return ipAddressString
+        } else {
+            return nil
+        }
+    }
+    
+    private func getActiveNetworkInterfaceInfo(interface: NWInterface) -> NetworkInterface {
         switch interface.type {
             case .cellular:
                 return NetworkInterface(name: interface.name, type: NetworkInterfaceType.cellular)
@@ -78,6 +122,28 @@ class NetworkStatusService: ObservableObject {
                 return NetworkInterface(name: interface.name, type: NetworkInterfaceType.other)
             @unknown default:
                 return NetworkInterface(name: interface.name, type: NetworkInterfaceType.unknown)
+        }
+    }
+    
+    private func callIpAddressApi(urlAddress : String) async -> String {
+        do {
+            let url = URL(string: urlAddress)!
+            
+            let request = URLRequest(url: url)
+            
+            let (data, _) = try await URLSession.shared.data(for: request)
+            let response  = String(data: data, encoding: String.Encoding.utf8) as String?
+            
+            let logEntry = LogEntry(message: "Called API:" + urlAddress)
+            loggingService.log(logEntry: logEntry)
+            
+            return response ?? String()
+        }
+        catch {
+            let logEntry = LogEntry(message: "Error when called API:\(error.localizedDescription)")
+            loggingService.log(logEntry: logEntry)
+            
+            return String()
         }
     }
 }

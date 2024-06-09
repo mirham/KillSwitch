@@ -15,7 +15,6 @@
 		351F0C4A2C0EFCF100644C66 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 351F0C492C0EFCF100644C66 /* MainView.swift */; };
 		351F0C4C2C0EFCF400644C66 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 351F0C4B2C0EFCF400644C66 /* Assets.xcassets */; };
 		351F0C4F2C0EFCF400644C66 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 351F0C4E2C0EFCF400644C66 /* Preview Assets.xcassets */; };
-		351F0C5D2C0F30DA00644C66 /* IpAddressesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 351F0C5C2C0F30DA00644C66 /* IpAddressesService.swift */; };
 		351F0C5F2C0F3B4500644C66 /* AsyncButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 351F0C5E2C0F3B4500644C66 /* AsyncButton.swift */; };
 		351F0C622C0F593A00644C66 /* LogEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 351F0C612C0F593A00644C66 /* LogEntry.swift */; };
 		351F0C642C0F599400644C66 /* LoggingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 351F0C632C0F599400644C66 /* LoggingService.swift */; };
@@ -50,7 +49,6 @@
 		351F0C4B2C0EFCF400644C66 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		351F0C4E2C0EFCF400644C66 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		351F0C502C0EFCF400644C66 /* KillSwitch.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = KillSwitch.entitlements; sourceTree = "<group>"; };
-		351F0C5C2C0F30DA00644C66 /* IpAddressesService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IpAddressesService.swift; sourceTree = "<group>"; };
 		351F0C5E2C0F3B4500644C66 /* AsyncButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncButton.swift; sourceTree = "<group>"; };
 		351F0C602C0F50BB00644C66 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		351F0C612C0F593A00644C66 /* LogEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogEntry.swift; sourceTree = "<group>"; };
@@ -92,7 +90,6 @@
 				351E9CE42C10A3BA00CEC15F /* MonitoringService.swift */,
 				35E7DD4E2C13420000CC68F7 /* NetworkStatusService.swift */,
 				351F0C652C0F6D2A00644C66 /* NetworkManagementService.swift */,
-				351F0C5C2C0F30DA00644C66 /* IpAddressesService.swift */,
 				351F0C632C0F599400644C66 /* LoggingService.swift */,
 				35DA6DE92C122EA500B54595 /* ShellService.swift */,
 				35DA7E242C11E91800BFC680 /* AppManagementService.swift */,
@@ -298,7 +295,6 @@
 				351E9CE52C10A3BA00CEC15F /* MonitoringService.swift in Sources */,
 				35DA7E252C11E91800BFC680 /* AppManagementService.swift in Sources */,
 				35DA6DEA2C122EA500B54595 /* ShellService.swift in Sources */,
-				351F0C5D2C0F30DA00644C66 /* IpAddressesService.swift in Sources */,
 				35F12F3B2C15B3BE00AFA738 /* NetworkInterfaceType.swift in Sources */,
 				35DD1C502C0FAB6A003AA3ED /* ToggleNetworkView.swift in Sources */,
 				351F0C622C0F593A00644C66 /* LogEntry.swift in Sources */,
