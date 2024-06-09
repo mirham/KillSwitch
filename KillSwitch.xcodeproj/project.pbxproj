@@ -1,0 +1,514 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		351E9CE52C10A3BA00CEC15F /* MonitoringService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 351E9CE42C10A3BA00CEC15F /* MonitoringService.swift */; };
+		351E9CE72C10A6C100CEC15F /* LogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 351E9CE62C10A6C100CEC15F /* LogView.swift */; };
+		351E9CE92C10ADB300CEC15F /* AllowedAddressesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 351E9CE82C10ADB300CEC15F /* AllowedAddressesView.swift */; };
+		351E9CF02C10C03700CEC15F /* MonitoringStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 351E9CEF2C10C03700CEC15F /* MonitoringStatusView.swift */; };
+		351F0C482C0EFCF100644C66 /* KillSwitchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 351F0C472C0EFCF100644C66 /* KillSwitchApp.swift */; };
+		351F0C4A2C0EFCF100644C66 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 351F0C492C0EFCF100644C66 /* MainView.swift */; };
+		351F0C4C2C0EFCF400644C66 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 351F0C4B2C0EFCF400644C66 /* Assets.xcassets */; };
+		351F0C4F2C0EFCF400644C66 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 351F0C4E2C0EFCF400644C66 /* Preview Assets.xcassets */; };
+		351F0C5D2C0F30DA00644C66 /* IpAddressesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 351F0C5C2C0F30DA00644C66 /* IpAddressesService.swift */; };
+		351F0C5F2C0F3B4500644C66 /* AsyncButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 351F0C5E2C0F3B4500644C66 /* AsyncButton.swift */; };
+		351F0C622C0F593A00644C66 /* LogEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 351F0C612C0F593A00644C66 /* LogEntry.swift */; };
+		351F0C642C0F599400644C66 /* LoggingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 351F0C632C0F599400644C66 /* LoggingService.swift */; };
+		351F0C662C0F6D2A00644C66 /* NetworkManagementService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 351F0C652C0F6D2A00644C66 /* NetworkManagementService.swift */; };
+		359E44ED2C11A6BD00BF6093 /* MenuBarStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 359E44EC2C11A6BD00BF6093 /* MenuBarStatusView.swift */; };
+		359E44EF2C11BFED00BF6093 /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 359E44EE2C11BFED00BF6093 /* MenuBarView.swift */; };
+		359E44F12C11C1F800BF6093 /* NetworkCapabilitesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 359E44F02C11C1F800BF6093 /* NetworkCapabilitesView.swift */; };
+		359E44F32C11C37E00BF6093 /* CurrentIpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 359E44F22C11C37D00BF6093 /* CurrentIpView.swift */; };
+		35B8C98C2C15E07E0003F396 /* IpAddressModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35B8C98B2C15E07E0003F396 /* IpAddressModel.swift */; };
+		35DA6DE82C12170800B54595 /* ToggleKeepRunningView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35DA6DE72C12170800B54595 /* ToggleKeepRunningView.swift */; };
+		35DA6DEA2C122EA500B54595 /* ShellService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35DA6DE92C122EA500B54595 /* ShellService.swift */; };
+		35DA7E252C11E91800BFC680 /* AppManagementService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35DA7E242C11E91800BFC680 /* AppManagementService.swift */; };
+		35DD1C4C2C0F96E1003AA3ED /* NetworkStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35DD1C4B2C0F96E1003AA3ED /* NetworkStatusView.swift */; };
+		35DD1C4E2C0FA9D2003AA3ED /* CheckToggleStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35DD1C4D2C0FA9D2003AA3ED /* CheckToggleStyle.swift */; };
+		35DD1C502C0FAB6A003AA3ED /* ToggleNetworkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35DD1C4F2C0FAB6A003AA3ED /* ToggleNetworkView.swift */; };
+		35DD1C522C0FAD1A003AA3ED /* ToggleMonitoringView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35DD1C512C0FAD1A003AA3ED /* ToggleMonitoringView.swift */; };
+		35E7DD4F2C13420000CC68F7 /* NetworkStatusService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35E7DD4E2C13420000CC68F7 /* NetworkStatusService.swift */; };
+		35F12F392C15ACB900AFA738 /* NetworkStatusType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35F12F382C15ACB900AFA738 /* NetworkStatusType.swift */; };
+		35F12F3B2C15B3BE00AFA738 /* NetworkInterfaceType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35F12F3A2C15B3BE00AFA738 /* NetworkInterfaceType.swift */; };
+		35F12F3E2C15B4E100AFA738 /* NetworkInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35F12F3D2C15B4E100AFA738 /* NetworkInterface.swift */; };
+		35F12F402C15B8C200AFA738 /* NetworkInferfacesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35F12F3F2C15B8C200AFA738 /* NetworkInferfacesView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		351E9CE42C10A3BA00CEC15F /* MonitoringService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonitoringService.swift; sourceTree = "<group>"; };
+		351E9CE62C10A6C100CEC15F /* LogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogView.swift; sourceTree = "<group>"; };
+		351E9CE82C10ADB300CEC15F /* AllowedAddressesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllowedAddressesView.swift; sourceTree = "<group>"; };
+		351E9CEF2C10C03700CEC15F /* MonitoringStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonitoringStatusView.swift; sourceTree = "<group>"; };
+		351F0C442C0EFCF100644C66 /* KillSwitch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KillSwitch.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		351F0C472C0EFCF100644C66 /* KillSwitchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KillSwitchApp.swift; sourceTree = "<group>"; };
+		351F0C492C0EFCF100644C66 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
+		351F0C4B2C0EFCF400644C66 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		351F0C4E2C0EFCF400644C66 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		351F0C502C0EFCF400644C66 /* KillSwitch.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = KillSwitch.entitlements; sourceTree = "<group>"; };
+		351F0C5C2C0F30DA00644C66 /* IpAddressesService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IpAddressesService.swift; sourceTree = "<group>"; };
+		351F0C5E2C0F3B4500644C66 /* AsyncButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncButton.swift; sourceTree = "<group>"; };
+		351F0C602C0F50BB00644C66 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		351F0C612C0F593A00644C66 /* LogEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogEntry.swift; sourceTree = "<group>"; };
+		351F0C632C0F599400644C66 /* LoggingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoggingService.swift; sourceTree = "<group>"; };
+		351F0C652C0F6D2A00644C66 /* NetworkManagementService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManagementService.swift; sourceTree = "<group>"; };
+		359E44EC2C11A6BD00BF6093 /* MenuBarStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarStatusView.swift; sourceTree = "<group>"; };
+		359E44EE2C11BFED00BF6093 /* MenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarView.swift; sourceTree = "<group>"; };
+		359E44F02C11C1F800BF6093 /* NetworkCapabilitesView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkCapabilitesView.swift; sourceTree = "<group>"; };
+		359E44F22C11C37D00BF6093 /* CurrentIpView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CurrentIpView.swift; sourceTree = "<group>"; };
+		35B8C98B2C15E07E0003F396 /* IpAddressModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IpAddressModel.swift; sourceTree = "<group>"; };
+		35DA6DE72C12170800B54595 /* ToggleKeepRunningView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToggleKeepRunningView.swift; sourceTree = "<group>"; };
+		35DA6DE92C122EA500B54595 /* ShellService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShellService.swift; sourceTree = "<group>"; };
+		35DA7E242C11E91800BFC680 /* AppManagementService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppManagementService.swift; sourceTree = "<group>"; };
+		35DD1C4B2C0F96E1003AA3ED /* NetworkStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkStatusView.swift; sourceTree = "<group>"; };
+		35DD1C4D2C0FA9D2003AA3ED /* CheckToggleStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckToggleStyle.swift; sourceTree = "<group>"; };
+		35DD1C4F2C0FAB6A003AA3ED /* ToggleNetworkView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToggleNetworkView.swift; sourceTree = "<group>"; };
+		35DD1C512C0FAD1A003AA3ED /* ToggleMonitoringView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToggleMonitoringView.swift; sourceTree = "<group>"; };
+		35E7DD4E2C13420000CC68F7 /* NetworkStatusService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkStatusService.swift; sourceTree = "<group>"; };
+		35F12F382C15ACB900AFA738 /* NetworkStatusType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkStatusType.swift; sourceTree = "<group>"; };
+		35F12F3A2C15B3BE00AFA738 /* NetworkInterfaceType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkInterfaceType.swift; sourceTree = "<group>"; };
+		35F12F3D2C15B4E100AFA738 /* NetworkInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkInterface.swift; sourceTree = "<group>"; };
+		35F12F3F2C15B8C200AFA738 /* NetworkInferfacesView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkInferfacesView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		351F0C412C0EFCF100644C66 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		351E9CEA2C10B19600CEC15F /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				351E9CE42C10A3BA00CEC15F /* MonitoringService.swift */,
+				35E7DD4E2C13420000CC68F7 /* NetworkStatusService.swift */,
+				351F0C652C0F6D2A00644C66 /* NetworkManagementService.swift */,
+				351F0C5C2C0F30DA00644C66 /* IpAddressesService.swift */,
+				351F0C632C0F599400644C66 /* LoggingService.swift */,
+				35DA6DE92C122EA500B54595 /* ShellService.swift */,
+				35DA7E242C11E91800BFC680 /* AppManagementService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		351E9CEC2C10B20900CEC15F /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				351F0C492C0EFCF100644C66 /* MainView.swift */,
+				359E44EE2C11BFED00BF6093 /* MenuBarView.swift */,
+				359E44EC2C11A6BD00BF6093 /* MenuBarStatusView.swift */,
+				35DD1C4B2C0F96E1003AA3ED /* NetworkStatusView.swift */,
+				351E9CEF2C10C03700CEC15F /* MonitoringStatusView.swift */,
+				359E44F02C11C1F800BF6093 /* NetworkCapabilitesView.swift */,
+				35F12F3F2C15B8C200AFA738 /* NetworkInferfacesView.swift */,
+				35DD1C4F2C0FAB6A003AA3ED /* ToggleNetworkView.swift */,
+				35DD1C512C0FAD1A003AA3ED /* ToggleMonitoringView.swift */,
+				35DA6DE72C12170800B54595 /* ToggleKeepRunningView.swift */,
+				351E9CE62C10A6C100CEC15F /* LogView.swift */,
+				351E9CE82C10ADB300CEC15F /* AllowedAddressesView.swift */,
+				359E44F22C11C37D00BF6093 /* CurrentIpView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		351E9CED2C10B28400CEC15F /* Infrastructure */ = {
+			isa = PBXGroup;
+			children = (
+				351F0C612C0F593A00644C66 /* LogEntry.swift */,
+				35DD1C4D2C0FA9D2003AA3ED /* CheckToggleStyle.swift */,
+			);
+			path = Infrastructure;
+			sourceTree = "<group>";
+		};
+		351E9CEE2C10B3A600CEC15F /* Controls */ = {
+			isa = PBXGroup;
+			children = (
+				351F0C5E2C0F3B4500644C66 /* AsyncButton.swift */,
+			);
+			path = Controls;
+			sourceTree = "<group>";
+		};
+		351F0C3B2C0EFCF100644C66 = {
+			isa = PBXGroup;
+			children = (
+				351F0C462C0EFCF100644C66 /* KillSwitch */,
+				351F0C452C0EFCF100644C66 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		351F0C452C0EFCF100644C66 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				351F0C442C0EFCF100644C66 /* KillSwitch.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		351F0C462C0EFCF100644C66 /* KillSwitch */ = {
+			isa = PBXGroup;
+			children = (
+				351F0C472C0EFCF100644C66 /* KillSwitchApp.swift */,
+				351F0C502C0EFCF400644C66 /* KillSwitch.entitlements */,
+				351F0C4B2C0EFCF400644C66 /* Assets.xcassets */,
+				351F0C602C0F50BB00644C66 /* Info.plist */,
+				35F12F372C15AC9900AFA738 /* Enums */,
+				35F12F3C2C15B4A300AFA738 /* Types */,
+				351E9CEE2C10B3A600CEC15F /* Controls */,
+				351E9CED2C10B28400CEC15F /* Infrastructure */,
+				351E9CEA2C10B19600CEC15F /* Services */,
+				35B8C98A2C15E0410003F396 /* Models */,
+				351E9CEC2C10B20900CEC15F /* Views */,
+				351F0C4D2C0EFCF400644C66 /* Preview Content */,
+			);
+			path = KillSwitch;
+			sourceTree = "<group>";
+		};
+		351F0C4D2C0EFCF400644C66 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				351F0C4E2C0EFCF400644C66 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		35B8C98A2C15E0410003F396 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				35B8C98B2C15E07E0003F396 /* IpAddressModel.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		35F12F372C15AC9900AFA738 /* Enums */ = {
+			isa = PBXGroup;
+			children = (
+				35F12F382C15ACB900AFA738 /* NetworkStatusType.swift */,
+				35F12F3A2C15B3BE00AFA738 /* NetworkInterfaceType.swift */,
+			);
+			path = Enums;
+			sourceTree = "<group>";
+		};
+		35F12F3C2C15B4A300AFA738 /* Types */ = {
+			isa = PBXGroup;
+			children = (
+				35F12F3D2C15B4E100AFA738 /* NetworkInterface.swift */,
+			);
+			path = Types;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		351F0C432C0EFCF100644C66 /* KillSwitch */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 351F0C532C0EFCF400644C66 /* Build configuration list for PBXNativeTarget "KillSwitch" */;
+			buildPhases = (
+				351F0C402C0EFCF100644C66 /* Sources */,
+				351F0C412C0EFCF100644C66 /* Frameworks */,
+				351F0C422C0EFCF100644C66 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = KillSwitch;
+			productName = KillSwitch;
+			productReference = 351F0C442C0EFCF100644C66 /* KillSwitch.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		351F0C3C2C0EFCF100644C66 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1540;
+				LastUpgradeCheck = 1540;
+				TargetAttributes = {
+					351F0C432C0EFCF100644C66 = {
+						CreatedOnToolsVersion = 15.4;
+					};
+				};
+			};
+			buildConfigurationList = 351F0C3F2C0EFCF100644C66 /* Build configuration list for PBXProject "KillSwitch" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 351F0C3B2C0EFCF100644C66;
+			productRefGroup = 351F0C452C0EFCF100644C66 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				351F0C432C0EFCF100644C66 /* KillSwitch */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		351F0C422C0EFCF100644C66 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				351F0C4F2C0EFCF400644C66 /* Preview Assets.xcassets in Resources */,
+				351F0C4C2C0EFCF400644C66 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		351F0C402C0EFCF100644C66 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				351E9CE92C10ADB300CEC15F /* AllowedAddressesView.swift in Sources */,
+				359E44ED2C11A6BD00BF6093 /* MenuBarStatusView.swift in Sources */,
+				351F0C642C0F599400644C66 /* LoggingService.swift in Sources */,
+				351F0C662C0F6D2A00644C66 /* NetworkManagementService.swift in Sources */,
+				35E7DD4F2C13420000CC68F7 /* NetworkStatusService.swift in Sources */,
+				35DD1C4E2C0FA9D2003AA3ED /* CheckToggleStyle.swift in Sources */,
+				359E44EF2C11BFED00BF6093 /* MenuBarView.swift in Sources */,
+				35B8C98C2C15E07E0003F396 /* IpAddressModel.swift in Sources */,
+				35F12F3E2C15B4E100AFA738 /* NetworkInterface.swift in Sources */,
+				351F0C4A2C0EFCF100644C66 /* MainView.swift in Sources */,
+				35F12F392C15ACB900AFA738 /* NetworkStatusType.swift in Sources */,
+				351F0C5F2C0F3B4500644C66 /* AsyncButton.swift in Sources */,
+				351E9CF02C10C03700CEC15F /* MonitoringStatusView.swift in Sources */,
+				35DA6DE82C12170800B54595 /* ToggleKeepRunningView.swift in Sources */,
+				359E44F32C11C37E00BF6093 /* CurrentIpView.swift in Sources */,
+				359E44F12C11C1F800BF6093 /* NetworkCapabilitesView.swift in Sources */,
+				35DD1C4C2C0F96E1003AA3ED /* NetworkStatusView.swift in Sources */,
+				35F12F402C15B8C200AFA738 /* NetworkInferfacesView.swift in Sources */,
+				351F0C482C0EFCF100644C66 /* KillSwitchApp.swift in Sources */,
+				35DD1C522C0FAD1A003AA3ED /* ToggleMonitoringView.swift in Sources */,
+				351E9CE52C10A3BA00CEC15F /* MonitoringService.swift in Sources */,
+				35DA7E252C11E91800BFC680 /* AppManagementService.swift in Sources */,
+				35DA6DEA2C122EA500B54595 /* ShellService.swift in Sources */,
+				351F0C5D2C0F30DA00644C66 /* IpAddressesService.swift in Sources */,
+				35F12F3B2C15B3BE00AFA738 /* NetworkInterfaceType.swift in Sources */,
+				35DD1C502C0FAB6A003AA3ED /* ToggleNetworkView.swift in Sources */,
+				351F0C622C0F593A00644C66 /* LogEntry.swift in Sources */,
+				351E9CE72C10A6C100CEC15F /* LogView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		351F0C512C0EFCF400644C66 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.5;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		351F0C522C0EFCF400644C66 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.5;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		351F0C542C0EFCF400644C66 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = KillSwitch/KillSwitch.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"KillSwitch/Preview Content\"";
+				DEVELOPMENT_TEAM = N6M7ZCZ5Z6;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = KillSwitch/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "MirHam KillSwitch";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = MirHam.KillSwitch;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		351F0C552C0EFCF400644C66 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = KillSwitch/KillSwitch.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"KillSwitch/Preview Content\"";
+				DEVELOPMENT_TEAM = N6M7ZCZ5Z6;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = KillSwitch/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "MirHam KillSwitch";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = MirHam.KillSwitch;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		351F0C3F2C0EFCF100644C66 /* Build configuration list for PBXProject "KillSwitch" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				351F0C512C0EFCF400644C66 /* Debug */,
+				351F0C522C0EFCF400644C66 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		351F0C532C0EFCF400644C66 /* Build configuration list for PBXNativeTarget "KillSwitch" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				351F0C542C0EFCF400644C66 /* Debug */,
+				351F0C552C0EFCF400644C66 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 351F0C3C2C0EFCF100644C66 /* Project object */;
+}
