@@ -9,7 +9,7 @@ import Foundation
 import Network
 import Combine
 
-class NetworkStatusService: ObservableObject {
+class NetworkStatusService: NetworkServiceBase, ObservableObject {
     @Published var currentStatus: NetworkStatusType = NetworkStatusType.unknown
     @Published var currentNetworkInterfaces: [NetworkInterface] = [NetworkInterface]()
     @Published var isSupportsDns: Bool = false
@@ -47,7 +47,7 @@ class NetworkStatusService: ObservableObject {
     
     init() {
         isGettingIpAddressInProcess = false
-        
+
         monitor.pathUpdateHandler = { path in
             var newStatus = NetworkStatusType.unknown
             var newIpAddress = "None"
@@ -171,11 +171,7 @@ class NetworkStatusService: ObservableObject {
     
     private func callIpAddressApi(urlAddress : String) async -> String {
         do {
-            let url = URL(string: urlAddress)!
-            let request = URLRequest(url: url)
-            
-            let (data, _) = try await URLSession.shared.data(for: request)
-            let response  = String(data: data, encoding: String.Encoding.utf8) as String?
+            let response = try await callGetApi(urlAddress: urlAddress)
             
             let logEntry = LogEntry(message: "Called API:" + urlAddress)
             loggingService.log(logEntry: logEntry)

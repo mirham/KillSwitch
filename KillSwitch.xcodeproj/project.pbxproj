@@ -19,6 +19,10 @@
 		351F0C622C0F593A00644C66 /* LogEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 351F0C612C0F593A00644C66 /* LogEntry.swift */; };
 		351F0C642C0F599400644C66 /* LoggingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 351F0C632C0F599400644C66 /* LoggingService.swift */; };
 		351F0C662C0F6D2A00644C66 /* NetworkManagementService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 351F0C652C0F6D2A00644C66 /* NetworkManagementService.swift */; };
+		357154F72C17339100A41AA4 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 357154F62C17339100A41AA4 /* SettingsView.swift */; };
+		357154F92C1739C300A41AA4 /* NetworkServiceBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 357154F82C1739C300A41AA4 /* NetworkServiceBase.swift */; };
+		357154FB2C173E4C00A41AA4 /* IpAddressesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 357154FA2C173E4C00A41AA4 /* IpAddressesService.swift */; };
+		357154FD2C17422600A41AA4 /* IpAddressInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 357154FC2C17422600A41AA4 /* IpAddressInfo.swift */; };
 		359E44ED2C11A6BD00BF6093 /* MenuBarStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 359E44EC2C11A6BD00BF6093 /* MenuBarStatusView.swift */; };
 		359E44EF2C11BFED00BF6093 /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 359E44EE2C11BFED00BF6093 /* MenuBarView.swift */; };
 		359E44F12C11C1F800BF6093 /* NetworkCapabilitesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 359E44F02C11C1F800BF6093 /* NetworkCapabilitesView.swift */; };
@@ -54,6 +58,10 @@
 		351F0C612C0F593A00644C66 /* LogEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogEntry.swift; sourceTree = "<group>"; };
 		351F0C632C0F599400644C66 /* LoggingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoggingService.swift; sourceTree = "<group>"; };
 		351F0C652C0F6D2A00644C66 /* NetworkManagementService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManagementService.swift; sourceTree = "<group>"; };
+		357154F62C17339100A41AA4 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		357154F82C1739C300A41AA4 /* NetworkServiceBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkServiceBase.swift; sourceTree = "<group>"; };
+		357154FA2C173E4C00A41AA4 /* IpAddressesService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IpAddressesService.swift; sourceTree = "<group>"; };
+		357154FC2C17422600A41AA4 /* IpAddressInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IpAddressInfo.swift; sourceTree = "<group>"; };
 		359E44EC2C11A6BD00BF6093 /* MenuBarStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarStatusView.swift; sourceTree = "<group>"; };
 		359E44EE2C11BFED00BF6093 /* MenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarView.swift; sourceTree = "<group>"; };
 		359E44F02C11C1F800BF6093 /* NetworkCapabilitesView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkCapabilitesView.swift; sourceTree = "<group>"; };
@@ -89,6 +97,8 @@
 			children = (
 				351E9CE42C10A3BA00CEC15F /* MonitoringService.swift */,
 				35E7DD4E2C13420000CC68F7 /* NetworkStatusService.swift */,
+				357154FA2C173E4C00A41AA4 /* IpAddressesService.swift */,
+				357154F82C1739C300A41AA4 /* NetworkServiceBase.swift */,
 				351F0C652C0F6D2A00644C66 /* NetworkManagementService.swift */,
 				351F0C632C0F599400644C66 /* LoggingService.swift */,
 				35DA6DE92C122EA500B54595 /* ShellService.swift */,
@@ -102,6 +112,8 @@
 			children = (
 				351F0C492C0EFCF100644C66 /* MainView.swift */,
 				359E44EE2C11BFED00BF6093 /* MenuBarView.swift */,
+				357154F62C17339100A41AA4 /* SettingsView.swift */,
+				351E9CE82C10ADB300CEC15F /* AllowedAddressesView.swift */,
 				359E44EC2C11A6BD00BF6093 /* MenuBarStatusView.swift */,
 				35DD1C4B2C0F96E1003AA3ED /* NetworkStatusView.swift */,
 				351E9CEF2C10C03700CEC15F /* MonitoringStatusView.swift */,
@@ -111,7 +123,6 @@
 				35DD1C512C0FAD1A003AA3ED /* ToggleMonitoringView.swift */,
 				35DA6DE72C12170800B54595 /* ToggleKeepRunningView.swift */,
 				351E9CE62C10A6C100CEC15F /* LogView.swift */,
-				351E9CE82C10ADB300CEC15F /* AllowedAddressesView.swift */,
 				359E44F22C11C37D00BF6093 /* CurrentIpView.swift */,
 			);
 			path = Views;
@@ -198,6 +209,7 @@
 			isa = PBXGroup;
 			children = (
 				35F12F3D2C15B4E100AFA738 /* NetworkInterface.swift */,
+				357154FC2C17422600A41AA4 /* IpAddressInfo.swift */,
 			);
 			path = Types;
 			sourceTree = "<group>";
@@ -289,16 +301,20 @@
 				359E44F32C11C37E00BF6093 /* CurrentIpView.swift in Sources */,
 				359E44F12C11C1F800BF6093 /* NetworkCapabilitesView.swift in Sources */,
 				35DD1C4C2C0F96E1003AA3ED /* NetworkStatusView.swift in Sources */,
+				357154FD2C17422600A41AA4 /* IpAddressInfo.swift in Sources */,
+				357154F92C1739C300A41AA4 /* NetworkServiceBase.swift in Sources */,
 				35F12F402C15B8C200AFA738 /* NetworkInferfacesView.swift in Sources */,
 				351F0C482C0EFCF100644C66 /* KillSwitchApp.swift in Sources */,
 				35DD1C522C0FAD1A003AA3ED /* ToggleMonitoringView.swift in Sources */,
 				351E9CE52C10A3BA00CEC15F /* MonitoringService.swift in Sources */,
+				357154F72C17339100A41AA4 /* SettingsView.swift in Sources */,
 				35DA7E252C11E91800BFC680 /* AppManagementService.swift in Sources */,
 				35DA6DEA2C122EA500B54595 /* ShellService.swift in Sources */,
 				35F12F3B2C15B3BE00AFA738 /* NetworkInterfaceType.swift in Sources */,
 				35DD1C502C0FAB6A003AA3ED /* ToggleNetworkView.swift in Sources */,
 				351F0C622C0F593A00644C66 /* LogEntry.swift in Sources */,
 				351E9CE72C10A6C100CEC15F /* LogView.swift in Sources */,
+				357154FB2C173E4C00A41AA4 /* IpAddressesService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

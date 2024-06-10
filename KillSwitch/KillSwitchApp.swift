@@ -35,5 +35,13 @@ struct KillSwitchApp: App {
                 .environmentObject(networkStatusService)
                 .modelContainer(for: IpAddressModelNew.self)
         })
+        
+        WindowGroup(id:"settings-view", content: {
+            SettingsView()
+                .environmentObject(monitoringService)
+                .environmentObject(networkStatusService)
+                .modelContainer(for: IpAddressModelNew.self)
+                .frame(maxWidth: 300, maxHeight: 450)
+        }).windowResizability(.contentSize)
     }
 }

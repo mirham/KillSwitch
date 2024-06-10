@@ -16,8 +16,10 @@ class AppManagementService{
     private let loggingServie = LoggingService.shared
     
     let mainWindowId = "main-view"
+    let settingsWindowId = "settings-view"
     
     var isMainViewShowed = false
+    var isSettingsViewShowed = false
     var isLaunchAgentInstalled = false
     
     static let shared = AppManagementService()
@@ -36,10 +38,17 @@ class AppManagementService{
         }
     }
     
-    func setToTopMainView(){
+    func showSettingsView(){
+        if(!isSettingsViewShowed){
+            openWindow(id: settingsWindowId)
+            isSettingsViewShowed = true
+        }
+    }
+    
+    func setViewToTop(viewName: String){
         for window in NSApplication.shared.windows {
             let windowId = String(window.identifier?.rawValue ?? String())
-            if(windowId.starts(with: "main-view"))
+            if(windowId.starts(with: viewName))
             {
                 window.level = .floating
                 window.standardWindowButton(.zoomButton)?.isHidden = true
@@ -103,6 +112,26 @@ class AppManagementService{
             return false
         }
     }
+    
+    /*func readSettingsArray() -> [IpAddressInfo]? {
+        if let objects = UserDefaults.standard.value(forKey: "user_objects") as? Data {
+            let decoder = JSONDecoder()
+            if let objectsDecoded = try? decoder.decode(Array.self, from: objects) as [IpAddressInfo] {
+                return objectsDecoded
+            } else {
+                return nil
+            }
+        } else {
+            return nil
+        }
+    }
+    
+    func writeSettingsArray(allObjects: [IpAddressInfo]) {
+        let encoder = JSONEncoder()
+        if let encoded = try? encoder.encode(allObjects){
+            UserDefaults.standard.set(encoded, forKey: "user_objects")
+        }
+    }*/
     
     func quitApp(){
         NSApplication.shared.terminate(nil)
