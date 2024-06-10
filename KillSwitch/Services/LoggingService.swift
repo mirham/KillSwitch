@@ -16,7 +16,9 @@ class LoggingService: ObservableObject {
     static let shared = LoggingService()
     
     func log(logEntry: LogEntry){
-        logs.insert(logEntry, at: 0)
-        scrollViewId = logEntry.id
+        DispatchQueue.main.async {
+            self.logs.insert(logEntry, at: 0)
+            self.scrollViewId = logEntry.id
+        }
     }
 }

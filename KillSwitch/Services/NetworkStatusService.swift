@@ -25,8 +25,13 @@ class NetworkStatusService: ObservableObject {
     private let loggingService = LoggingService.shared
     
     let monitor = NWPathMonitor()
-    // TODO RUSS: Must be background, figue it out.
-    let queue = DispatchQueue.main
+    let queue = DispatchQueue(label: "NetworkMonitor", qos: .background)
+    //let queue = DispatchQueue.main
+    
+    var status: NetworkStatusType = NetworkStatusType.unknown
+    var ip: String? = nil
+    
+    private var isGettingIpAddressInProcess = false
     
     private var apisList = [
         "http://api.ipify.org",
@@ -40,51 +45,65 @@ class NetworkStatusService: ObservableObject {
         "https://api.seeip.org"
     ]
     
-    init() {        
+    init() {
+        isGettingIpAddressInProcess = false
+        
         monitor.pathUpdateHandler = { path in
+            var newStatus = NetworkStatusType.unknown
+            var newIpAddress = "None"
+            var newIsSupportsDns = false
+            var newIsLowDataMode = false
+            var newIsHotspot = false
+            var newSupportsIp4 = false
+            var newSupportsIp6 = false
+            var newDescription = String()
+            var newNetworkInterfaces = [NetworkInterface]()
+                
             switch path.status {
                 case .satisfied:
-                    OperationQueue.main.addOperation {
-                        self.currentStatus = NetworkStatusType.on
-                    }
+                    newStatus = NetworkStatusType.on
                 case .requiresConnection:
-                    OperationQueue.main.addOperation {
-                        self.currentStatus = NetworkStatusType.wait
-                    }
+                    newStatus = NetworkStatusType.wait
                 case .unsatisfied:
-                    OperationQueue.main.addOperation {
-                        self.currentStatus = NetworkStatusType.off
-                    }
-                 default:
-                    OperationQueue.main.addOperation {
-                        self.currentStatus = NetworkStatusType.unknown
-                    }
+                    newStatus = NetworkStatusType.off
+                default:
+                    newStatus = NetworkStatusType.off
             }
-            
-            self.isSupportsDns = path.supportsDNS
-            self.isLowDataMode = path.isConstrained
-            self.isHotspot = path.isExpensive
-            self.supportsIp4 = path.supportsIPv4
-            self.supportsIp6 = path.supportsIPv6
-            self.description = path.debugDescription
-            
-            Task {
-                do {
-                    let ip = await self.getCurrentIpAddress() ?? "None"
-                    self.currentIpAddress = ip
-                    
-                    let logEntry = LogEntry(message: "Current IP:" + ip)
-                    self.loggingService.log(logEntry: logEntry)
-                }
-            }
-            
-            self.currentNetworkInterfaces = [NetworkInterface]()
-            
-            // sleep(2)
-            
+                
+            newIsSupportsDns = path.supportsDNS
+            newIsLowDataMode = path.isConstrained
+            newIsHotspot = path.isExpensive
+            newSupportsIp4 = path.supportsIPv4
+            newSupportsIp6 = path.supportsIPv6
+            newDescription = path.debugDescription
+                
             for networkInterface in path.availableInterfaces {
                 let networkInterfaceInfo = self.getActiveNetworkInterfaceInfo(interface: networkInterface)
-                self.currentNetworkInterfaces.append(networkInterfaceInfo)
+                newNetworkInterfaces.append(networkInterfaceInfo)
+            }
+            
+            if self.currentStatus != newStatus
+                || Set(self.currentNetworkInterfaces) != Set(newNetworkInterfaces)
+               || self.isSupportsDns != newIsSupportsDns
+               || self.isLowDataMode != newIsLowDataMode
+               || self.isHotspot != newIsHotspot
+               || self.supportsIp4 != newSupportsIp4
+               || self.supportsIp6 != newSupportsIp6
+               || self.description != newDescription
+            {
+                DispatchQueue.main.async(execute: {
+                    self.currentStatus = newStatus
+                    self.status = newStatus
+                    self.isSupportsDns = newIsSupportsDns
+                    self.isLowDataMode = newIsLowDataMode
+                    self.isHotspot = newIsHotspot
+                    self.supportsIp4 = newSupportsIp4
+                    self.supportsIp6 = newSupportsIp6
+                    self.description = newDescription
+                    self.currentNetworkInterfaces = newNetworkInterfaces
+                    
+                    self.setCurrentIpAddress()
+                })
             }
         }
         
@@ -108,6 +127,31 @@ class NetworkStatusService: ObservableObject {
         }
     }
     
+    private func setCurrentIpAddress(){
+        if(!isGettingIpAddressInProcess)
+        {
+            Task {
+                do {
+                    self.isGettingIpAddressInProcess = true
+                    
+                    let currentIp = await self.getCurrentIpAddress()
+                    
+                    if(currentIp != nil){
+                        let logEntry = LogEntry(message: "Current IP: \(currentIp!)")
+                        self.loggingService.log(logEntry: logEntry)
+                    }
+                    
+                    let valueToSet = currentIp ?? "None"
+                    
+                    self.currentIpAddress = valueToSet
+                    self.ip = valueToSet
+                    
+                    self.isGettingIpAddressInProcess = false
+                }
+            }
+        }
+    }
+    
     private func getActiveNetworkInterfaceInfo(interface: NWInterface) -> NetworkInterface {
         switch interface.type {
             case .cellular:
@@ -128,7 +172,6 @@ class NetworkStatusService: ObservableObject {
     private func callIpAddressApi(urlAddress : String) async -> String {
         do {
             let url = URL(string: urlAddress)!
-            
             let request = URLRequest(url: url)
             
             let (data, _) = try await URLSession.shared.data(for: request)

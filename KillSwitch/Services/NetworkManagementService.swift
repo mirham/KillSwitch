@@ -19,8 +19,6 @@ class NetworkManagementService{
         do {
             try shellService.safeShell("networksetup -setairportpower \(interfaceName) on")
             
-            // MonitoringService.shared.resetMonitoring()
-            
             let logEntry = LogEntry(message: "Network interface \(interfaceName) has been enabled.")
             loggingServie.log(logEntry: logEntry)
         }
@@ -33,8 +31,6 @@ class NetworkManagementService{
     func disableNetworkInterface(interfaceName: String) {
         do {
             try shellService.safeShell("networksetup -setairportpower \(interfaceName) off")
-            
-            // MonitoringService.shared.resetCurrentIpAddress()
             
             let logEntry = LogEntry(message: "Network interface \(interfaceName) has been disabled.")
             loggingServie.log(logEntry: logEntry)

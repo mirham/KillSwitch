@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftData
+import Combine
 
 
 class MonitoringService: ObservableObject {
@@ -20,14 +21,10 @@ class MonitoringService: ObservableObject {
     
     var allowedIpAddresses = [String]()
     
-    private var currentIpAddress = String()
-    private var currentNetworkStatus = NetworkStatusType.unknown
-    
     private init() {
-        currentIpAddress = networkStatusService.currentIpAddress
     }
     
-    func startMonitoring() -> Bool {
+    func startMonitoring() {
         isMonitoringEnabled = true
         
         let logEntry = LogEntry(message: "Monitoring has been enabled.")
@@ -37,36 +34,32 @@ class MonitoringService: ObservableObject {
             if self.isMonitoringEnabled {
                 Task {
                     do {
-                        self.networkStatusService.$currentStatus.sink(receiveValue: {
-                            self.currentNetworkStatus = $0})
-                        
-                        guard self.currentNetworkStatus == .on else {
+                        guard self.networkStatusService.status == .on else {
                             return
                         }
                         
-                        let newIpAddress = await self.networkStatusService.getCurrentIpAddress() ?? String()
+                        let updatedIpAddress = await self.networkStatusService.getCurrentIpAddress() ?? String()
                         
-                        if (newIpAddress != self.currentIpAddress) {
-                            let logEntry = LogEntry(message: "IP has been updated to \(newIpAddress)")
+                        if (updatedIpAddress != self.networkStatusService.ip) {
+                            let logEntry = LogEntry(message: "IP has been updated to \(updatedIpAddress)")
                             self.loggingService.log(logEntry: logEntry)
+                        }
                             
-                            var isMatchFound = false
+                        var isMatchFound = false
                             
-                            for allowedIpAddress in self.allowedIpAddresses {
-                                if newIpAddress == allowedIpAddress {
-                                    isMatchFound = true
-                                }
+                        for allowedIpAddress in self.allowedIpAddresses {
+                            if updatedIpAddress == allowedIpAddress {
+                                isMatchFound = true
                             }
+                        }
                             
-                            if isMatchFound {
-                                self.currentIpAddress = newIpAddress
-                            }
-                            else {
-                                self.networkManagementService.disableNetworkInterface(interfaceName: "en0")
+                        if !isMatchFound {
+                            self.networkManagementService.disableNetworkInterface(interfaceName: "en0")
+                            
+                            // self.networkStatusService.status = .off
                                 
-                                let logEntry = LogEntry(message: "IP address has been changed to \(newIpAddress) which is not from allowd IPs, network disabled.")
-                                self.loggingService.log(logEntry: logEntry)
-                            }
+                            let logEntry = LogEntry(message: "IP address has been changed to \(updatedIpAddress) which is not from allowd IPs, network disabled.")
+                            self.loggingService.log(logEntry: logEntry)
                         }
                     }
                 }
@@ -75,16 +68,12 @@ class MonitoringService: ObservableObject {
                 timer.invalidate()
             }
         }
-        
-        return true
     }
     
-    func stopMonitoring() -> Bool {
+    func stopMonitoring() {
         isMonitoringEnabled = false
         
         let logEntry = LogEntry(message: "Monitoring has been disabled.")
         loggingService.log(logEntry: logEntry)
-        
-        return true
     }
 }
