@@ -1,5 +1,5 @@
 //
-//  AllowedAddressesView.swift
+//  AllowedAddressesEditView.swift
 //  KillSwitch
 //
 //  Created by UglyGeorge on 05.06.2024.
@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 import SwiftData
 
-struct AllowedAddressesView: View {
+struct AllowedAddressesEditView: View {
     // @Query private var allowedIpAddresses: [IpAddressModelNew]
     // @Environment(\.modelContext) private var context
     
@@ -85,5 +85,5 @@ struct AllowedAddressesView: View {
 }
 
 #Preview {
-    AllowedAddressesView().modelContainer(for: IpAddressModelNew.self)
+    AllowedAddressesEditView().modelContainer(for: IpAddressModelNew.self)
 }

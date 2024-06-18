@@ -7,14 +7,15 @@
 
 import Foundation
 
-struct IpAddressInfo: Codable, Identifiable, Equatable {
+struct AddressInfo: Codable, Identifiable, Equatable {
     var id = UUID()
     var ipVersion: Int
     var ipAddress: String
     var countryName: String
-    var countryCode:String
+    var countryCode: String
+    var safetyType: AddressSafetyType
     
-    static func == (lhs: IpAddressInfo, rhs: IpAddressInfo) -> Bool {
+    static func == (lhs: AddressInfo, rhs: AddressInfo) -> Bool {
         return lhs.ipAddress == rhs.ipAddress
     }
     

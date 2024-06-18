@@ -7,8 +7,8 @@
 
 import Foundation
 
-class IpAddressesService : NetworkServiceBase {
-    static let shared = IpAddressesService()
+class AddressesService : NetworkServiceBase {
+    static let shared = AddressesService()
     
     private let loggingService = LoggingService.shared
     
