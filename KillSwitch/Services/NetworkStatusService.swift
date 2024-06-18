@@ -22,6 +22,7 @@ class NetworkStatusService: NetworkServiceBase, ObservableObject {
     
     static let shared = NetworkStatusService()
     
+    private let addressesService = AddressesService.shared
     private let loggingService = LoggingService.shared
     
     let monitor = NWPathMonitor()
@@ -32,18 +33,6 @@ class NetworkStatusService: NetworkServiceBase, ObservableObject {
     var ip: String? = nil
     
     private var isGettingIpAddressInProcess = false
-    
-    private var apisList = [
-        "http://api.ipify.org",
-        "http://icanhazip.com",
-        "http://ipinfo.io/ip",
-        "http://ipecho.net/plain",
-        "http://ident.me",
-        "https://checkip.amazonaws.com",
-        "http://whatismyip.akamai.com",
-        "https://ip.istatmenus.app",
-        "https://api.seeip.org"
-    ]
     
     init() {
         isGettingIpAddressInProcess = false
@@ -114,19 +103,6 @@ class NetworkStatusService: NetworkServiceBase, ObservableObject {
         monitor.cancel()
     }
     
-    func getCurrentIpAddress() async -> String?{
-        let ipAddressResponse = await callIpAddressApi(urlAddress: apisList.randomElement()!)
-        let ipAddressString = ipAddressResponse.trimmingCharacters(in: .whitespacesAndNewlines)
-        
-        if let _ = IPv4Address(ipAddressString) {
-            return ipAddressString
-        } else if let _ = IPv6Address(ipAddressString) {
-            return ipAddressString
-        } else {
-            return nil
-        }
-    }
-    
     private func setCurrentIpAddress(){
         if(!isGettingIpAddressInProcess)
         {
@@ -134,7 +110,7 @@ class NetworkStatusService: NetworkServiceBase, ObservableObject {
                 do {
                     self.isGettingIpAddressInProcess = true
                     
-                    let currentIp = await self.getCurrentIpAddress()
+                    let currentIp = await addressesService.getCurrentIpAddress()
                     
                     if(currentIp != nil){
                         let logEntry = LogEntry(message: "Current IP: \(currentIp!)")
@@ -166,23 +142,6 @@ class NetworkStatusService: NetworkServiceBase, ObservableObject {
                 return NetworkInterface(name: interface.name, type: NetworkInterfaceType.other)
             @unknown default:
                 return NetworkInterface(name: interface.name, type: NetworkInterfaceType.unknown)
-        }
-    }
-    
-    private func callIpAddressApi(urlAddress : String) async -> String {
-        do {
-            let response = try await callGetApi(urlAddress: urlAddress)
-            
-            let logEntry = LogEntry(message: "Called API:" + urlAddress)
-            loggingService.log(logEntry: logEntry)
-            
-            return response ?? String()
-        }
-        catch {
-            let logEntry = LogEntry(message: "Error when called API:\(error.localizedDescription)")
-            loggingService.log(logEntry: logEntry)
-            
-            return String()
         }
     }
 }

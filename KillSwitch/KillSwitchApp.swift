@@ -11,6 +11,7 @@ import SwiftUI
 struct KillSwitchApp: App {
     let monitoringService = MonitoringService.shared
     let networkStatusService = NetworkStatusService.shared
+    let addressesService = AddressesService.shared
     
     var body: some Scene {
         MenuBarExtra {
@@ -33,15 +34,14 @@ struct KillSwitchApp: App {
             MainView()
                 .environmentObject(monitoringService)
                 .environmentObject(networkStatusService)
-                .modelContainer(for: IpAddressModelNew.self)
         })
         
         WindowGroup(id:"settings-view", content: {
             SettingsView()
+                .navigationTitle("Settings")
                 .environmentObject(monitoringService)
-                .environmentObject(networkStatusService)
-                .modelContainer(for: IpAddressModelNew.self)
-                .frame(maxWidth: 300, maxHeight: 450)
+                .environmentObject(addressesService)
+                .frame(maxWidth: 500, maxHeight: 500)
         }).windowResizability(.contentSize)
     }
 }

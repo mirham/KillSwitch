@@ -18,6 +18,9 @@ class AppManagementService{
     let mainWindowId = "main-view"
     let settingsWindowId = "settings-view"
     
+    let addressessSettingsKey = "allowed-addresses"
+    let apisKey = "apis"
+    
     var isMainViewShowed = false
     var isSettingsViewShowed = false
     var isLaunchAgentInstalled = false
@@ -100,7 +103,7 @@ class AppManagementService{
             let plistFilePath = getPlistFilePath()
             try fileManager.removeItem(atPath: plistFilePath)
             
-            let logEntry = LogEntry(message: "Launch agent removed, the application won't be always running.")
+            let logEntry = LogEntry(message: "Launch agent removed, the application, and won't be always running. Restart your Mac for applying changes.")
             loggingServie.log(logEntry: logEntry)
             
             return true
@@ -113,10 +116,10 @@ class AppManagementService{
         }
     }
     
-    /*func readSettingsArray() -> [IpAddressInfo]? {
-        if let objects = UserDefaults.standard.value(forKey: "user_objects") as? Data {
+    func readSettingsArray<T: Codable>(key: String) -> [T]? {
+        if let objects = UserDefaults.standard.value(forKey: key) as? Data {
             let decoder = JSONDecoder()
-            if let objectsDecoded = try? decoder.decode(Array.self, from: objects) as [IpAddressInfo] {
+            if let objectsDecoded = try? decoder.decode(Array.self, from: objects) as [T] {
                 return objectsDecoded
             } else {
                 return nil
@@ -126,12 +129,12 @@ class AppManagementService{
         }
     }
     
-    func writeSettingsArray(allObjects: [IpAddressInfo]) {
+    func writeSettingsArray<T: Codable>(allObjects: [T], key: String) {
         let encoder = JSONEncoder()
         if let encoded = try? encoder.encode(allObjects){
-            UserDefaults.standard.set(encoded, forKey: "user_objects")
+            UserDefaults.standard.set(encoded, forKey: key)
         }
-    }*/
+    }
     
     func quitApp(){
         NSApplication.shared.terminate(nil)

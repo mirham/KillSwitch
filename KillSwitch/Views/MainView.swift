@@ -48,12 +48,12 @@ struct MainView: View {
             }
             .navigationSplitViewColumnWidth(min: 450, ideal: 450)
         } detail: {
-            AllowedAddressesView()
+            /*AllowedAddressesEditView()
                 .environmentObject(monitoringService)
-                .navigationSplitViewColumnWidth(250)
-            /*Button("Show settings", systemImage: "macwindow") {
+                .navigationSplitViewColumnWidth(250)*/
+            Button("Show settings", systemImage: "macwindow") {
                 appManagementService.showSettingsView()
-            }*/
+            }
         }.onAppear(perform: {
             appManagementService.setViewToTop(viewName: "main-view")
         }).onDisappear(perform: {

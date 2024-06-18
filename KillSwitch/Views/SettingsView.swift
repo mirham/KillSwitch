@@ -10,20 +10,32 @@ import SwiftUI
 
 struct SettingsView: View {
     let appManagementService = AppManagementService.shared
-    
+
     var body: some View {
-        VStack{
-            AllowedAddressesView
-                .init()
-                .navigationSplitViewColumnWidth(250)
-        }.onAppear(perform: {
+        TabView {
+                AllowedAddressesEditView()
+                    .navigationSplitViewColumnWidth(250)
+                    .tabItem {
+                        Text("Allowed IP addresses")
+                    }
+                AddressApisEditView()
+                    .tabItem {
+                        Text("IP address APIs")
+                    }
+        }
+        .onAppear(perform: {
             appManagementService.setViewToTop(viewName: "settings-view")
-        }).onDisappear(perform: {
+        })
+        .onDisappear(perform: {
             appManagementService.isSettingsViewShowed = false
-        }).frame(maxWidth: 300, maxHeight: 500)
+        })
+        .padding()
+        .frame(maxWidth: 500, maxHeight: 500)
     }
 }
 
 #Preview {
     SettingsView()
+        .environmentObject(MonitoringService())
+        .environmentObject(AddressesService())
 }

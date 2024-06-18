@@ -9,25 +9,24 @@ import Foundation
 import SwiftData
 import Combine
 
-
 class MonitoringService: ObservableObject {
     @Published var isMonitoringEnabled = false
-    @Published var allowedIpAddresses = [IpAddressInfo]()
+    @Published var allowedIpAddresses = [AddressInfo]()
     
     static let shared = MonitoringService()
     
     private let networkStatusService = NetworkStatusService.shared
+    private let addressesService = AddressesService.shared
     private let networkManagementService = NetworkManagementService.shared
     private let loggingService = LoggingService.shared
+    private let appManagementService = AppManagementService.shared
     
-    // var allowedIpAddresses = [IpAddressInfo]()
-    
-    private init() {
+    init() {
         let isMonitoringEnabled = UserDefaults.standard.bool(forKey: "isMonitoringEnabled")
-        let allowedIpAddresses = getAllObjects()
+        let savedAllowedIpAddresses: [AddressInfo]? = appManagementService.readSettingsArray(key: appManagementService.addressessSettingsKey)
         
-        if(allowedIpAddresses != nil){
-            self.allowedIpAddresses = allowedIpAddresses!
+        if(savedAllowedIpAddresses != nil){
+            self.allowedIpAddresses = savedAllowedIpAddresses!
         }
         
         if(isMonitoringEnabled){
@@ -51,7 +50,7 @@ class MonitoringService: ObservableObject {
                             return
                         }
                         
-                        let updatedIpAddress = await self.networkStatusService.getCurrentIpAddress() ?? String()
+                        let updatedIpAddress = await self.addressesService.getCurrentIpAddress() ?? String()
                         
                         if (updatedIpAddress != self.networkStatusService.ip) {
                             let logEntry = LogEntry(message: "IP has been updated to \(updatedIpAddress)")
@@ -67,9 +66,8 @@ class MonitoringService: ObservableObject {
                         }
                             
                         if !isMatchFound {
+                            // TODO RUSS: It should be all active interfaces
                             self.networkManagementService.disableNetworkInterface(interfaceName: "en0")
-                            
-                            // self.networkStatusService.status = .off
                                 
                             let logEntry = LogEntry(message: "IP address has been changed to \(updatedIpAddress) which is not from allowd IPs, network disabled.")
                             self.loggingService.log(logEntry: logEntry)
@@ -84,32 +82,11 @@ class MonitoringService: ObservableObject {
     }
     
     func stopMonitoring() {
-        saveAllObjects(allObjects: self.allowedIpAddresses)
         UserDefaults.standard.set(false, forKey: "isMonitoringEnabled")
         
         isMonitoringEnabled = false
         
         let logEntry = LogEntry(message: "Monitoring has been disabled.")
         loggingService.log(logEntry: logEntry)
-    }
-    
-    func getAllObjects() -> [IpAddressInfo]? {
-        if let objects = UserDefaults.standard.value(forKey: "user_objects") as? Data {
-            let decoder = JSONDecoder()
-            if let objectsDecoded = try? decoder.decode(Array.self, from: objects) as [IpAddressInfo] {
-                return objectsDecoded
-            } else {
-                return nil
-            }
-        } else {
-            return nil
-        }
-    }
-    
-    func saveAllObjects(allObjects: [IpAddressInfo]) {
-        let encoder = JSONEncoder()
-        if let encoded = try? encoder.encode(allObjects){
-            UserDefaults.standard.set(encoded, forKey: "user_objects")
-        }
     }
 }

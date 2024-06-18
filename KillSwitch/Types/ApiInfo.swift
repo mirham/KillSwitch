@@ -2,24 +2,21 @@
 //  IpAddressInfo.swift
 //  KillSwitch
 //
-//  Created by UglyGeorge on 10.06.2024.
+//  Created by UglyGeorge on 18.06.2024.
 //
 
 import Foundation
 
-struct AddressInfo: Codable, Identifiable, Equatable {
+struct ApiInfo: Codable, Identifiable, Equatable {
     var id = UUID()
-    var ipVersion: Int
-    var ipAddress: String
-    var countryName: String
-    var countryCode: String
-    var safetyType: AddressSafetyType
+    var url: String
+    var active: Bool
     
-    static func == (lhs: AddressInfo, rhs: AddressInfo) -> Bool {
-        return lhs.ipAddress == rhs.ipAddress
+    static func == (lhs: ApiInfo, rhs: ApiInfo) -> Bool {
+        return lhs.url.uppercased() == rhs.url.uppercased()
     }
     
     func hash(into hasher: inout Hasher) {
-        hasher.combine(ipAddress)
+        hasher.combine(url)
     }
 }
