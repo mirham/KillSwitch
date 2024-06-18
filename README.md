@@ -1,1 +1,5 @@
 #  MirHam KillSwitch
+
+## License
+
+MIT
