@@ -27,7 +27,6 @@ struct AllowedAddressesEditView: View {
                 .font(.title3)
                 .multilineTextAlignment(.center)
                 .padding(.top)
-                .help("Just do something")
             NavigationStack() {
                 List {
                     ForEach(monitoringService.allowedIpAddresses, id: \.ipAddress) { ipAddress in
@@ -35,7 +34,6 @@ struct AllowedAddressesEditView: View {
                             Text(ipAddress.ipAddress).frame(maxWidth: .infinity, alignment: .leading)
                             Spacer()
                             Image(nsImage: Flag(countryCode:ipAddress.countryCode)?.originalImage ?? NSImage())
-                            //Text(Constants.flags[ipAddress.countryCode] ?? String())
                             Text(ipAddress.countryName).frame(maxWidth: .infinity, alignment: .leading)
                             Spacer()
                             switch ipAddress.safetyType {
@@ -105,16 +103,11 @@ struct AllowedAddressesEditView: View {
                             
                             return
                         }
-                            
-                        let newIpAddress = AddressInfo(
-                            ipVersion: ipAddressInfo!.ipVersion,
+                        
+                        monitoringService.addAllowedIpAddress(
                             ipAddress: newIp,
-                            countryName: ipAddressInfo!.countryName,
-                            countryCode: ipAddressInfo!.countryCode,
-                            safetyType: newIpAddressSafetyType
-                        )
-                            
-                        monitoringService.allowedIpAddresses.append(newIpAddress)
+                            ipAddressInfo: ipAddressInfo,
+                            safetyType: newIpAddressSafetyType)
                         
                         newIp = String()
                         isNewIpValid = false
@@ -139,6 +132,15 @@ struct AllowedAddressesEditView: View {
                 .padding()
             }
         }
+        .onDisappear(){
+            writeSettings()
+        }
+    }
+    
+    private func writeSettings() {
+        appManagementService.writeSettingsArray(
+            allObjects: monitoringService.allowedIpAddresses,
+            key: Constants.settingsKeyAddresses)
     }
 }
 

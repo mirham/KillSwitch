@@ -30,12 +30,6 @@ class AddressesService : NetworkServiceBase, ObservableObject {
         }
     }
     
-    deinit{
-        appManagementService.writeSettingsArray(
-            allObjects: apis,
-            key: Constants.settingsKeyApis)
-    }
-    
     func getRandomActiveAddressApi() -> ApiInfo? {
         let result = self.apis.filter({$0.active}).randomElement()
         

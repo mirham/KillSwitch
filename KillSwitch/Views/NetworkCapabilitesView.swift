@@ -46,6 +46,8 @@ struct NetworkCapabilitesView: View {
                         Text("Description")
                         Spacer()
                         Text(String(networkStatusService.description))
+                            .multilineTextAlignment(.trailing)
+                            .frame(width: 110, height: 70)
                     }
                 }
                 .font(.system(size: 11))

@@ -18,9 +18,7 @@ class NetworkStatusService: NetworkServiceBase, ObservableObject {
     @Published var supportsIp4: Bool = false
     @Published var supportsIp6: Bool = false
     @Published var description: String = String()
-    @Published var currentIpAddress: String = String()
-    @Published var currentIpAddressCountryName: String = String()
-    @Published var currentIpAddressCountryCode: String = String()
+    @Published var currentIpAddressInfo: AddressInfoBase? = nil
     
     static let shared = NetworkStatusService()
     
@@ -29,10 +27,10 @@ class NetworkStatusService: NetworkServiceBase, ObservableObject {
     
     let monitor = NWPathMonitor()
     let queue = DispatchQueue(label: "NetworkMonitor", qos: .background)
-    //let queue = DispatchQueue.main
+    // let queue = DispatchQueue.main
     
-    var status: NetworkStatusType = NetworkStatusType.unknown
-    var ip: String? = nil
+    var currentStatusNonPublished: NetworkStatusType = NetworkStatusType.unknown
+    var currentIpAddressNonPublished: String? = nil
     
     private var isGettingIpAddressInProcess = false
     
@@ -54,8 +52,6 @@ class NetworkStatusService: NetworkServiceBase, ObservableObject {
                     newStatus = NetworkStatusType.on
                 case .requiresConnection:
                     newStatus = NetworkStatusType.wait
-                case .unsatisfied:
-                    newStatus = NetworkStatusType.off
                 default:
                     newStatus = NetworkStatusType.off
             }
@@ -73,7 +69,7 @@ class NetworkStatusService: NetworkServiceBase, ObservableObject {
             }
             
             if self.currentStatus != newStatus
-                || Set(self.currentNetworkInterfaces) != Set(newNetworkInterfaces)
+               || self.currentNetworkInterfaces != newNetworkInterfaces
                || self.isSupportsDns != newIsSupportsDns
                || self.isLowDataMode != newIsLowDataMode
                || self.isHotspot != newIsHotspot
@@ -81,9 +77,8 @@ class NetworkStatusService: NetworkServiceBase, ObservableObject {
                || self.supportsIp6 != newSupportsIp6
                || self.description != newDescription
             {
-                DispatchQueue.main.async(execute: {
+                DispatchQueue.main.async {
                     self.currentStatus = newStatus
-                    self.status = newStatus
                     self.isSupportsDns = newIsSupportsDns
                     self.isLowDataMode = newIsLowDataMode
                     self.isHotspot = newIsHotspot
@@ -92,8 +87,10 @@ class NetworkStatusService: NetworkServiceBase, ObservableObject {
                     self.description = newDescription
                     self.currentNetworkInterfaces = newNetworkInterfaces
                     
+                    self.currentStatusNonPublished = newStatus
+                    
                     self.setCurrentIpAddressInfo()
-                })
+                }
             }
         }
         
@@ -109,9 +106,8 @@ class NetworkStatusService: NetworkServiceBase, ObservableObject {
         {
             Task {
                 do {
-                    self.isGettingIpAddressInProcess = true
                     
-                    var currentIpInfo: AddressInfoBase? = nil
+                    self.isGettingIpAddressInProcess = true
                     
                     let api = addressesService.getRandomActiveAddressApi()
                     
@@ -119,21 +115,24 @@ class NetworkStatusService: NetworkServiceBase, ObservableObject {
                         let currentIp = await addressesService.getCurrentIpAddress(addressApiUrl: api!.url)
                         
                         if(currentIp != nil){
-                            currentIpInfo = await addressesService.getIpAddressInfo(ipAddress: currentIp!)
+                            self.currentIpAddressNonPublished = currentIp
+                            self.currentIpAddressInfo = await addressesService.getIpAddressInfo(ipAddress: currentIp!)
+                        }
+                        else{
+                            self.currentIpAddressInfo = nil
+                            self.currentIpAddressNonPublished = nil
                         }
                     }
-                    
-                    if(currentIpInfo == nil){
-                        self.currentIpAddress = Constants.none
-                        self.ip = Constants.none
-                    }
                     else{
-                        self.currentIpAddress = currentIpInfo!.ipAddress
-                        self.currentIpAddressCountryName = currentIpInfo!.countryName
-                        self.currentIpAddressCountryCode = currentIpInfo!.countryCode
+                        self.currentIpAddressInfo = nil
+                        self.currentIpAddressNonPublished = nil
                     }
                     
                     self.isGettingIpAddressInProcess = false
+                    
+                    DispatchQueue.main.async {
+                        self.objectWillChange.send()
+                    }
                 }
             }
         }

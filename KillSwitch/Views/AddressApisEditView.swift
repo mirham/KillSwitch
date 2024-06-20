@@ -32,18 +32,11 @@ struct AddressApisEditView: View {
                         HStack {
                             Text(api.url)
                             Spacer()
-                            switch api.active {
-                                case true:
-                                    Circle()
-                                        .fill(.green)
-                                        .frame(width: 10, height: 10)
-                                        .help(Constants.hintApiIsActive)
-                                case false:
-                                    Circle()
-                                        .fill(.red)
-                                        .frame(width: 10, height: 10)
-                                        .help(Constants.hintApiIsActive)
-                            }
+                            Circle()
+                                .fill(api.active ? .green : .red)
+                                .fill(api.active ? .green : .red)
+                                .frame(width: 10, height: 10)
+                                .help(Constants.hintApiIsActive)
                         }
                         .contextMenu {
                             Button(action: {
@@ -103,6 +96,15 @@ struct AddressApisEditView: View {
                 .padding()
             }
         }
+        .onDisappear() {
+            writeSettings()
+        }
+    }
+    
+    private func writeSettings() {
+        appManagementService.writeSettingsArray(
+            allObjects: addressesService.apis,
+            key: Constants.settingsKeyApis)
     }
 }
 

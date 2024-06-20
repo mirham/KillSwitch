@@ -13,6 +13,10 @@ struct SettingsView: View {
 
     var body: some View {
         TabView {
+                GeneralSettingsEditView()
+                    .tabItem {
+                        Text("General")
+                    }
                 AllowedAddressesEditView()
                     .navigationSplitViewColumnWidth(250)
                     .tabItem {

@@ -28,15 +28,18 @@ struct LogView: View {
                             .cornerRadius(1.5)
                         Text("\(dateFormatter.string(from: log.date))")
                             .foregroundStyle(Color.gray)
-                        Text("\(log.message)")
+                        Text(log.message)
                             .foregroundStyle(Color.gray)
+                            .multilineTextAlignment(.leading)
                             .fixedSize(horizontal: false, vertical: true)
                     }
                     .help(log.type.description)
                 }
-            }.environmentObject(loggingService).id(loggingService.scrollViewId)
+            }
+            .environmentObject(loggingService)
+            .id(loggingService.scrollViewId)
+            .scrollIndicators(.visible)
         }
-        .padding()
     }
 }
 

@@ -9,7 +9,9 @@ import Foundation
 import SwiftUI
 
 struct SettingsButtonView: View {
-    let appManagementService = AppManagementService.shared
+    @Environment(\.openWindow) private var openWindow
+    
+    @EnvironmentObject var appManagementService: AppManagementService
     
     @State private var showOverText = false
     @State private var quitOverText = false
@@ -17,16 +19,16 @@ struct SettingsButtonView: View {
     var body: some View {
         Section {
             Button(String(), systemImage: "gearshape.2") {
-                appManagementService.showSettingsView()
+                showSettingsWindow()
             }
             .buttonStyle(.plain)
             .foregroundColor(showOverText ? .blue : .primary)
             .bold(showOverText)
             .focusEffectDisabled()
+            .help(Constants.settings)
             .onHover(perform: { hovering in
                 showOverText = hovering
             })
-            .help(Constants.settings)
         }
         .font(.system(size: 21))
         .onHover(perform: { hovering in
@@ -36,6 +38,13 @@ struct SettingsButtonView: View {
                 NSCursor.arrow.set()
             }
         })
+    }
+    
+    private func showSettingsWindow() {
+        if(!appManagementService.isSettingsViewShowed){
+            openWindow(id: Constants.windowIdSettings)
+            appManagementService.showSettingsView()
+        }
     }
 }
 

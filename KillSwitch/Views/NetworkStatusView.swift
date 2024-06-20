@@ -8,10 +8,9 @@
 import Foundation
 import SwiftUI
 
-struct NetworkStatusView: View {    
+struct NetworkStatusView: View {
     @EnvironmentObject var networkStatusService : NetworkStatusService
     
-    private let monitorService = MonitoringService.shared
     private let networkManagementService = NetworkManagementService.shared
 
     var body: some View {

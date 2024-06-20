@@ -8,17 +8,16 @@
 import SwiftUI
 
 struct MainView: View {
-    let appManagementService = AppManagementService.shared
-    
     @EnvironmentObject var monitoringService: MonitoringService
     @EnvironmentObject var networkStatusService: NetworkStatusService
-
+    @EnvironmentObject var appManagementService: AppManagementService
     
     var body: some View {
         NavigationSplitView {
             VStack{
                 CurrentIpView()
                     .environmentObject(monitoringService)
+                    .environmentObject(networkStatusService)
                 Spacer()
                     .frame(minHeight: 20)
                 MonitoringStatusView()
@@ -43,11 +42,12 @@ struct MainView: View {
                         .environmentObject(monitoringService)
                     ToggleNetworkView()
                         .environmentObject(networkStatusService)
-                    ToggleKeepRunningView.init()
                     Spacer()
                     SettingsButtonView()
+                        .environmentObject(appManagementService)
+                        .padding(.trailing)
                 }
-                .padding()
+                .padding(.top)
                 VStack{
                     LogView.init()
                 }
@@ -59,7 +59,7 @@ struct MainView: View {
         .onDisappear(perform: {
             appManagementService.isMainViewShowed = false
         })
-        .frame(minHeight: 600)
+        .frame(minHeight: 650)
     }
 }
 

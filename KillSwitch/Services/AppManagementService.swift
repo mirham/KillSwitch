@@ -8,38 +8,30 @@
 import Foundation
 import SwiftUI
 
-class AppManagementService{
+class AppManagementService : ObservableObject {
+    @Published var isMainViewShowed = false
+    @Published var isSettingsViewShowed = false
     
-    @Environment(\.openWindow) private var openWindow
+    var isLaunchAgentInstalled = false
     
     private let shellService = ShellService.shared
     private let loggingServie = LoggingService.shared
     
-    var isMainViewShowed = false
-    var isSettingsViewShowed = false
-    var isLaunchAgentInstalled = false
-    
     static let shared = AppManagementService()
     
     func showMainView(){
-        if(!isMainViewShowed){
-            openWindow(id: Constants.windowIdMain)
-            isMainViewShowed = true
+        isMainViewShowed = true
         
-            let fileManager = FileManager.default
-            let plistFilePath = getPlistFilePath()
-            
-            if(fileManager.fileExists(atPath: plistFilePath)) {
-                isLaunchAgentInstalled = true
-            }
+        let fileManager = FileManager.default
+        let plistFilePath = getPlistFilePath()
+        
+        if(fileManager.fileExists(atPath: plistFilePath)) {
+            isLaunchAgentInstalled = true
         }
     }
     
     func showSettingsView(){
-        if(!isSettingsViewShowed){
-            openWindow(id: Constants.windowIdSettings)
-            isSettingsViewShowed = true
-        }
+        isSettingsViewShowed = true
     }
     
     func setViewToTop(viewName: String){
@@ -54,11 +46,21 @@ class AppManagementService{
         }
     }
     
+    func copyTextToClipboard(text : String) {
+        guard !text.isEmpty else { return }
+        
+        NSPasteboard.general.declareTypes([.string], owner: nil)
+        
+        let pasteboard = NSPasteboard.general 
+        pasteboard.clearContents()
+        pasteboard.setString(text, forType: .string)
+    }
+    
     func installLaunchAgent() -> Bool{
         let appPath = Bundle.main.executablePath
         let plistFilePath = getPlistFilePath()
         
-        var xmlContent = String(format: Constants.launchAgentXmlContent, plistFilePath)
+        let xmlContent = String(format: Constants.launchAgentXmlContent, appPath ?? String())
         
         do {
             try xmlContent.write(toFile: plistFilePath, atomically: true, encoding: String.Encoding.utf8)
@@ -91,6 +93,20 @@ class AppManagementService{
             
             return false
         }
+    }
+    
+    func readSetting<T: Codable>(key: String) -> T? {
+        guard let data = UserDefaults.standard.data(forKey: key) else {
+            return nil
+        }
+        
+        let result = try? JSONDecoder().decode(T.self, from: data)
+        return result
+    }
+    
+    func writeSetting<T: Codable>(newValue: T, key: String) {
+        let data = try? JSONEncoder().encode(newValue)
+        UserDefaults.standard.set(data, forKey: key)
     }
     
     func readSettingsArray<T: Codable>(key: String) -> [T]? {
