@@ -13,70 +13,115 @@ class AddressesService : NetworkServiceBase, ObservableObject {
     
     static let shared = AddressesService()
     
+    private let appManagementService = AppManagementService.shared
     private let loggingService = LoggingService.shared
     
-    private var apisList = [
-        "http://api.ipify.org",
-        "http://icanhazip.com",
-        "http://ipinfo.io/ip",
-        "http://ipecho.net/plain",
-        "http://ident.me",
-        "https://checkip.amazonaws.com",
-        "http://whatismyip.akamai.com",
-        "https://ip.istatmenus.app",
-        "https://api.seeip.org"
-    ]
+    init() {
+        let savedApis: [ApiInfo]? = appManagementService.readSettingsArray(key: Constants.settingsKeyApis)
+        
+        if(savedApis == nil){
+            for addressApiUrl in Constants.addressApiUrls {
+                let apiInfo = ApiInfo(url: addressApiUrl, active: true)
+                apis.append(apiInfo)
+            }
+        }
+        else{
+            self.apis = savedApis!
+        }
+    }
     
-    func getCurrentIpAddress() async -> String?{
-        let ipAddressResponse = await callIpAddressApi(urlAddress: apisList.randomElement()!)
+    func getRandomActiveAddressApi() -> ApiInfo? {
+        let result = self.apis.filter({$0.active}).randomElement()
+        
+        return result
+    }
+    
+    func getCurrentIpAddress(addressApiUrl: String) async -> String?{
+        let ipAddressResponse = await callIpAddressApi(urlAddress: addressApiUrl)
         let ipAddressString = ipAddressResponse.trimmingCharacters(in: .whitespacesAndNewlines)
         
-        if let _ = IPv4Address(ipAddressString) {
+        if((IPv4Address(ipAddressString) != nil) || (IPv6Address(ipAddressString) != nil)){
+            self.loggingService.log(message: String(format: Constants.logCurrentIp, ipAddressString))
+            
             return ipAddressString
-        } else if let _ = IPv6Address(ipAddressString) {
-            return ipAddressString
-        } else {
+        }
+        else{            
             return nil
         }
     }
     
-    func getCurrentIpAddressInfo(ipAddress : String) async -> AddressInfo? {
+    func getIpAddressInfo(ipAddress : String) async -> AddressInfoBase? {
         do {
             let response = try await callGetApi(urlAddress: "https://freeipapi.com/api/json/\(ipAddress)")
             
             guard response != nil else {
                 return nil
             }
-            
-            let jsonData = response!.data(using: .utf8)!
+                        
+            let jsonData = response?.data(using: .utf8)!
             let decoder = JSONDecoder()
-            let info = try decoder.decode(AddressInfo.self, from: jsonData)
+            decoder.keyDecodingStrategy = .useDefaultKeys
+            let info = try decoder.decode(AddressInfoBase.self, from: jsonData!)
             
-            // TODO RUSS: Continue from here
             return info
         }
         catch {
-            let logEntry = LogEntry(message: "Error when called IP info API:\(error.localizedDescription)")
-            loggingService.log(logEntry: logEntry)
-            
-            return nil
+            if let error = error as? URLError, case .notConnectedToInternet = error.code {
+                return nil
+            }
+            else{
+                loggingService.log(
+                    message: String(format: Constants.logErrorWhenCallingIpInfoApi, error.localizedDescription),
+                    type: .error)
+                
+                return nil
+            }
         }
+    }
+    
+    func validateIpAddress(ipToValidate: String) -> Bool {
+        
+        var sin = sockaddr_in()
+        var sin6 = sockaddr_in6()
+        
+        if ipToValidate.withCString({ cstring in inet_pton(AF_INET6, cstring, &sin6.sin6_addr) }) == 1 {
+            return true
+        }
+        else if ipToValidate.withCString({ cstring in inet_pton(AF_INET, cstring, &sin.sin_addr) }) == 1 {
+            return true
+        }
+        
+        return false
+    }
+    
+    func validateApiAddress(apiAddressToValidate: String) -> Bool {
+        let regEx = "((?:http|https)://)?(?:www\\.)?[\\w\\d\\-_]+\\.\\w{2,3}(\\.\\w{2})?(/(?<=/)(?:[\\w\\d\\-./_]+)?)?"
+        let predicate = NSPredicate(format: "SELF MATCHES %@", argumentArray: [regEx])
+        return predicate.evaluate(with: apiAddressToValidate)
     }
     
     private func callIpAddressApi(urlAddress : String) async -> String {
         do {
             let response = try await callGetApi(urlAddress: urlAddress)
             
-            let logEntry = LogEntry(message: "Called API:" + urlAddress)
-            loggingService.log(logEntry: logEntry)
-            
             return response ?? String()
         }
         catch {
-            let logEntry = LogEntry(message: "Error when called API:\(error.localizedDescription)")
-            loggingService.log(logEntry: logEntry)
-            
-            return String()
+            if let error = error as? URLError, case .notConnectedToInternet = error.code {
+                return String()
+            }
+            else{
+                if let inactiveApi = self.apis.firstIndex(where: {$0.url == urlAddress}) {
+                    self.apis[inactiveApi].active = false
+                }
+                
+                loggingService.log(
+                    message: String(format: Constants.logErrorWhenCallingIpAddressApi, urlAddress, error.localizedDescription),
+                    type: .error
+                )
+                
+                return String()
+            }
         }
     }
 }

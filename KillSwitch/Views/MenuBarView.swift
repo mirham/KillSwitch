@@ -10,44 +10,59 @@ import SwiftUI
 struct MenuBarView: View {   
     @Environment(\.openWindow) private var openWindow
     
+    @EnvironmentObject var appManagementService: AppManagementService
     @EnvironmentObject var monitoringService: MonitoringService
     @EnvironmentObject var networkStatusService: NetworkStatusService
     
     @State private var showOverText = false
     @State private var quitOverText = false
     
-    let appManagementService = AppManagementService.shared
-    
     var body: some View {
         VStack{
-            CurrentIpView.init()
+            CurrentIpView()
+                .environmentObject(monitoringService)
+                .environmentObject(networkStatusService)
             HStack{
-                MonitoringStatusView().environmentObject(monitoringService).padding()
-                NetworkStatusView().environmentObject(networkStatusService).padding()
+                MonitoringStatusView()
+                    .environmentObject(monitoringService)
+                    .padding()
+                NetworkStatusView()
+                    .environmentObject(networkStatusService)
+                    .padding()
             }
-            HStack{
+            Spacer()
+                .frame(height: 5)
+            HStack {
                 Button("Show", systemImage: "macwindow") {
-                    appManagementService.showMainView()
+                    showMainWindow()
                 }
                 .buttonStyle(.plain)
-                .foregroundColor(showOverText ? .blue : .primary)
+                .foregroundColor(showOverText ? .blue : .gray)
                 .bold(showOverText)
                 .focusEffectDisabled()
                 .onHover(perform: { hovering in
                     showOverText = hovering
                 })
-                Spacer().frame(width: 20)
+                Spacer()
+                    .frame(width: 20)
                 Button("Quit", systemImage: "xmark.circle") {
                     appManagementService.quitApp()
                 }
                 .buttonStyle(.plain)
                 .focusEffectDisabled()
                 .bold(quitOverText)
-                .foregroundColor(quitOverText ? .red : .primary)
+                .foregroundColor(quitOverText ? .red : .gray)
                 .onHover(perform: { hovering in
                     quitOverText = hovering
                 })
             }
+        }
+    }
+    
+    private func showMainWindow(){
+        if(!appManagementService.isMainViewShowed){
+            openWindow(id: Constants.windowIdMain)
+            appManagementService.showMainView()
         }
     }
 }

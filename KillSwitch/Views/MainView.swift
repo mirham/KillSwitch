@@ -8,20 +8,22 @@
 import SwiftUI
 
 struct MainView: View {
-    let appManagementService = AppManagementService.shared
-    
     @EnvironmentObject var monitoringService: MonitoringService
     @EnvironmentObject var networkStatusService: NetworkStatusService
+    @EnvironmentObject var appManagementService: AppManagementService
     
     var body: some View {
         NavigationSplitView {
             VStack{
                 CurrentIpView()
                     .environmentObject(monitoringService)
+                    .environmentObject(networkStatusService)
                 Spacer()
+                    .frame(minHeight: 20)
                 MonitoringStatusView()
                     .environmentObject(monitoringService)
                 Spacer()
+                    .frame(minHeight: 20)
                 NetworkStatusView()
                     .environmentObject(networkStatusService)
                 Spacer()
@@ -32,33 +34,32 @@ struct MainView: View {
                     .environmentObject(networkStatusService)
             }
             .navigationSplitViewColumnWidth(220)
-        } content: {
+        } detail: {
             VStack{
                 HStack{
+                    Spacer()
                     ToggleMonitoringView()
                         .environmentObject(monitoringService)
                     ToggleNetworkView()
                         .environmentObject(networkStatusService)
-                    ToggleKeepRunningView.init()
+                    Spacer()
+                    SettingsButtonView()
+                        .environmentObject(appManagementService)
+                        .padding(.trailing)
                 }
-                .padding()
+                .padding(.top)
                 VStack{
                     LogView.init()
                 }
             }
-            .navigationSplitViewColumnWidth(min: 450, ideal: 450)
-        } detail: {
-            /*AllowedAddressesEditView()
-                .environmentObject(monitoringService)
-                .navigationSplitViewColumnWidth(250)*/
-            Button("Show settings", systemImage: "macwindow") {
-                appManagementService.showSettingsView()
-            }
+            .navigationSplitViewColumnWidth(min: 600, ideal: 600)
         }.onAppear(perform: {
             appManagementService.setViewToTop(viewName: "main-view")
-        }).onDisappear(perform: {
+        })
+        .onDisappear(perform: {
             appManagementService.isMainViewShowed = false
-        }).frame(minHeight: 600)
+        })
+        .frame(minHeight: 650)
     }
 }
 

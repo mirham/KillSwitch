@@ -13,34 +13,30 @@ struct MenuBarStatusView: View {
     
     var body: some View {
         HStack{
-            switch monitoringService.isMonitoringEnabled {
-                case true:
-                    let title =  
-                    Text(Image(systemName: "shield.lefthalf.filled.badge.checkmark"))
-                        .foregroundColor(.green)
-                        .font(.system(size: 16.0))
-                    + Text(" On".uppercased())
-                        .font(.system(size: 16.0))
-                        .bold()
-                        .foregroundColor(Color.green)
-                    let renderer = ImageRenderer(content: title)
-                    let cgImage = renderer.cgImage
-                    Image(cgImage!, scale: 1, label: Text(""))
-                case false:
-                    let title =  
-                    Text(Image(systemName: "shield.lefthalf.filled.slash"))
-                        .foregroundColor(.red)
-                        .font(.system(size: 16.0))
-                    + Text(" Off".uppercased())
-                        .font(.system(size: 16.0))
-                        .bold()
-                        .foregroundColor(Color.red)
-                    let renderer = ImageRenderer(content: title)
-                    let cgImage = renderer.cgImage
-                    Image(cgImage!, scale: 1, label: Text(""))
-            }
+            Image(renderMenuBarStatusImage(), scale: 1, label: Text(String()))
         }
     }
+    
+    @MainActor
+    private func renderMenuBarStatusImage() -> CGImage{
+        let isMonitoringEnabled = monitoringService.isMonitoringEnabled
+        
+        let title =
+        Text(Image(systemName: isMonitoringEnabled
+                   ? "shield.lefthalf.filled.badge.checkmark"
+                   : "shield.lefthalf.filled.slash"))
+        .foregroundColor(isMonitoringEnabled ? .green : .red)
+            .font(.system(size: 16.0))
+        + Text((isMonitoringEnabled ? " On" : "Off").uppercased())
+            .font(.system(size: 16.0))
+            .bold()
+            .foregroundColor(isMonitoringEnabled ? .green : .red)
+        let renderer = ImageRenderer(content: title)
+        let result = renderer.cgImage
+        
+        return result!
+    }
+    
 }
 
 #Preview {

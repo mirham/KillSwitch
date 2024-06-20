@@ -8,44 +8,30 @@
 import Foundation
 import SwiftUI
 
-class AppManagementService{
+class AppManagementService : ObservableObject {
+    @Published var isMainViewShowed = false
+    @Published var isSettingsViewShowed = false
     
-    @Environment(\.openWindow) private var openWindow
+    var isLaunchAgentInstalled = false
     
     private let shellService = ShellService.shared
     private let loggingServie = LoggingService.shared
     
-    let mainWindowId = "main-view"
-    let settingsWindowId = "settings-view"
-    
-    let addressessSettingsKey = "allowed-addresses"
-    let apisKey = "apis"
-    
-    var isMainViewShowed = false
-    var isSettingsViewShowed = false
-    var isLaunchAgentInstalled = false
-    
     static let shared = AppManagementService()
     
     func showMainView(){
-        if(!isMainViewShowed){
-            openWindow(id: mainWindowId)
-            isMainViewShowed = true
+        isMainViewShowed = true
         
-            let fileManager = FileManager.default
-            let plistFilePath = getPlistFilePath()
-            
-            if(fileManager.fileExists(atPath: plistFilePath)) {
-                isLaunchAgentInstalled = true
-            }
+        let fileManager = FileManager.default
+        let plistFilePath = getPlistFilePath()
+        
+        if(fileManager.fileExists(atPath: plistFilePath)) {
+            isLaunchAgentInstalled = true
         }
     }
     
     func showSettingsView(){
-        if(!isSettingsViewShowed){
-            openWindow(id: settingsWindowId)
-            isSettingsViewShowed = true
-        }
+        isSettingsViewShowed = true
     }
     
     func setViewToTop(viewName: String){
@@ -60,36 +46,31 @@ class AppManagementService{
         }
     }
     
+    func copyTextToClipboard(text : String) {
+        guard !text.isEmpty else { return }
+        
+        NSPasteboard.general.declareTypes([.string], owner: nil)
+        
+        let pasteboard = NSPasteboard.general 
+        pasteboard.clearContents()
+        pasteboard.setString(text, forType: .string)
+    }
+    
     func installLaunchAgent() -> Bool{
         let appPath = Bundle.main.executablePath
         let plistFilePath = getPlistFilePath()
         
-        let xmlContent =
-        """
-        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-        <plist version="1.0">
-            <dict>
-                <key>Label</key>
-                <string>user.launchkeep.KillSwitch</string>
-                <key>KeepAlive</key>
-                <true/>
-                <key>Program</key>
-                <string>\(appPath ?? String())</string>
-            </dict>
-        </plist>
-        """;
+        let xmlContent = String(format: Constants.launchAgentXmlContent, appPath ?? String())
         
         do {
             try xmlContent.write(toFile: plistFilePath, atomically: true, encoding: String.Encoding.utf8)
             try shellService.safeShell("launchctl load ~/Library/LaunchAgents/user.launchkeep.KillSwitch.plist")
             
-            let logEntry = LogEntry(message: "Launch agent added, the application will be always running.")
-            loggingServie.log(logEntry: logEntry)
+            loggingServie.log(message: String(format: Constants.logLaunchAgentAdded))
             
             return true
         } catch {
-            let logEntry = LogEntry(message: "Cannot add Launch agent: \(error.localizedDescription)")
-            loggingServie.log(logEntry: logEntry)
+            loggingServie.log(message: String(format: Constants.logCannotAddLaunchAgent, error.localizedDescription))
             
             return false
         }
@@ -103,17 +84,29 @@ class AppManagementService{
             let plistFilePath = getPlistFilePath()
             try fileManager.removeItem(atPath: plistFilePath)
             
-            let logEntry = LogEntry(message: "Launch agent removed, the application, and won't be always running. Restart your Mac for applying changes.")
-            loggingServie.log(logEntry: logEntry)
+            loggingServie.log(message: String(format: Constants.logLaunchAgentRemoved))
             
             return true
         }
         catch {
-            let logEntry = LogEntry(message: "Cannot remove Launch agent: \(error.localizedDescription)")
-            loggingServie.log(logEntry: logEntry)
+            loggingServie.log(message: String(format: Constants.logCannotRemoveLaunchAgent, error.localizedDescription))
             
             return false
         }
+    }
+    
+    func readSetting<T: Codable>(key: String) -> T? {
+        guard let data = UserDefaults.standard.data(forKey: key) else {
+            return nil
+        }
+        
+        let result = try? JSONDecoder().decode(T.self, from: data)
+        return result
+    }
+    
+    func writeSetting<T: Codable>(newValue: T, key: String) {
+        let data = try? JSONEncoder().encode(newValue)
+        UserDefaults.standard.set(data, forKey: key)
     }
     
     func readSettingsArray<T: Codable>(key: String) -> [T]? {

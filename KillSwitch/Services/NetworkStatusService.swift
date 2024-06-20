@@ -18,7 +18,7 @@ class NetworkStatusService: NetworkServiceBase, ObservableObject {
     @Published var supportsIp4: Bool = false
     @Published var supportsIp6: Bool = false
     @Published var description: String = String()
-    @Published var currentIpAddress: String = String()
+    @Published var currentIpAddressInfo: AddressInfoBase? = nil
     
     static let shared = NetworkStatusService()
     
@@ -27,10 +27,10 @@ class NetworkStatusService: NetworkServiceBase, ObservableObject {
     
     let monitor = NWPathMonitor()
     let queue = DispatchQueue(label: "NetworkMonitor", qos: .background)
-    //let queue = DispatchQueue.main
+    // let queue = DispatchQueue.main
     
-    var status: NetworkStatusType = NetworkStatusType.unknown
-    var ip: String? = nil
+    var currentStatusNonPublished: NetworkStatusType = NetworkStatusType.unknown
+    var currentIpAddressNonPublished: String? = nil
     
     private var isGettingIpAddressInProcess = false
     
@@ -39,7 +39,6 @@ class NetworkStatusService: NetworkServiceBase, ObservableObject {
 
         monitor.pathUpdateHandler = { path in
             var newStatus = NetworkStatusType.unknown
-            var newIpAddress = "None"
             var newIsSupportsDns = false
             var newIsLowDataMode = false
             var newIsHotspot = false
@@ -53,8 +52,6 @@ class NetworkStatusService: NetworkServiceBase, ObservableObject {
                     newStatus = NetworkStatusType.on
                 case .requiresConnection:
                     newStatus = NetworkStatusType.wait
-                case .unsatisfied:
-                    newStatus = NetworkStatusType.off
                 default:
                     newStatus = NetworkStatusType.off
             }
@@ -72,7 +69,7 @@ class NetworkStatusService: NetworkServiceBase, ObservableObject {
             }
             
             if self.currentStatus != newStatus
-                || Set(self.currentNetworkInterfaces) != Set(newNetworkInterfaces)
+               || self.currentNetworkInterfaces != newNetworkInterfaces
                || self.isSupportsDns != newIsSupportsDns
                || self.isLowDataMode != newIsLowDataMode
                || self.isHotspot != newIsHotspot
@@ -80,9 +77,8 @@ class NetworkStatusService: NetworkServiceBase, ObservableObject {
                || self.supportsIp6 != newSupportsIp6
                || self.description != newDescription
             {
-                DispatchQueue.main.async(execute: {
+                DispatchQueue.main.async {
                     self.currentStatus = newStatus
-                    self.status = newStatus
                     self.isSupportsDns = newIsSupportsDns
                     self.isLowDataMode = newIsLowDataMode
                     self.isHotspot = newIsHotspot
@@ -91,8 +87,10 @@ class NetworkStatusService: NetworkServiceBase, ObservableObject {
                     self.description = newDescription
                     self.currentNetworkInterfaces = newNetworkInterfaces
                     
-                    self.setCurrentIpAddress()
-                })
+                    self.currentStatusNonPublished = newStatus
+                    
+                    self.setCurrentIpAddressInfo()
+                }
             }
         }
         
@@ -103,26 +101,38 @@ class NetworkStatusService: NetworkServiceBase, ObservableObject {
         monitor.cancel()
     }
     
-    private func setCurrentIpAddress(){
+    private func setCurrentIpAddressInfo(){
         if(!isGettingIpAddressInProcess)
         {
             Task {
                 do {
+                    
                     self.isGettingIpAddressInProcess = true
                     
-                    let currentIp = await addressesService.getCurrentIpAddress()
+                    let api = addressesService.getRandomActiveAddressApi()
                     
-                    if(currentIp != nil){
-                        let logEntry = LogEntry(message: "Current IP: \(currentIp!)")
-                        self.loggingService.log(logEntry: logEntry)
+                    if(api != nil){
+                        let currentIp = await addressesService.getCurrentIpAddress(addressApiUrl: api!.url)
+                        
+                        if(currentIp != nil){
+                            self.currentIpAddressNonPublished = currentIp
+                            self.currentIpAddressInfo = await addressesService.getIpAddressInfo(ipAddress: currentIp!)
+                        }
+                        else{
+                            self.currentIpAddressInfo = nil
+                            self.currentIpAddressNonPublished = nil
+                        }
+                    }
+                    else{
+                        self.currentIpAddressInfo = nil
+                        self.currentIpAddressNonPublished = nil
                     }
                     
-                    let valueToSet = currentIp ?? "None"
-                    
-                    self.currentIpAddress = valueToSet
-                    self.ip = valueToSet
-                    
                     self.isGettingIpAddressInProcess = false
+                    
+                    DispatchQueue.main.async {
+                        self.objectWillChange.send()
+                    }
                 }
             }
         }

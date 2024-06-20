@@ -19,12 +19,10 @@ class NetworkManagementService{
         do {
             try shellService.safeShell("networksetup -setairportpower \(interfaceName) on")
             
-            let logEntry = LogEntry(message: "Network interface \(interfaceName) has been enabled.")
-            loggingServie.log(logEntry: logEntry)
+            loggingServie.log(message: String(format: Constants.logNetworkInterfaceHasBeenEnabled, interfaceName))
         }
         catch {
-            let logEntry = LogEntry(message: "Cannot enable network interface \(interfaceName).")
-            loggingServie.log(logEntry: logEntry)
+            loggingServie.log(message: String(format: Constants.logCannotEnableNetworkInterface, interfaceName), type: .error)
         }
     }
     
@@ -32,12 +30,10 @@ class NetworkManagementService{
         do {
             try shellService.safeShell("networksetup -setairportpower \(interfaceName) off")
             
-            let logEntry = LogEntry(message: "Network interface \(interfaceName) has been disabled.")
-            loggingServie.log(logEntry: logEntry)
+            loggingServie.log(message: String(format: Constants.logNetworkInterfaceHasBeenDisabled, interfaceName))
         }
         catch {
-            let logEntry = LogEntry(message: "Cannot disable network interface \(interfaceName).")
-            loggingServie.log(logEntry: logEntry)
+            loggingServie.log(message: String(format: Constants.logCannotDisableNetworkInterface, interfaceName), type: .error)
         }
     }
 }
