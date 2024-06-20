@@ -20,7 +20,7 @@ struct KillSwitchApp: App {
                     .environmentObject(monitoringService)
                     .environmentObject(networkStatusService)
             }
-            .frame(width: 300, height: 310)
+            .frame(width: 260, height: 280)
             .background(.windowBackground)
         } label: {
             HStack {

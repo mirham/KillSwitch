@@ -23,6 +23,12 @@
 		3570E46B2C21CF7C00CB5D42 /* RadioButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3570E46A2C21CF7C00CB5D42 /* RadioButton.swift */; };
 		3570E46D2C21CFEA00CB5D42 /* AddressSafetyType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3570E46C2C21CFEA00CB5D42 /* AddressSafetyType.swift */; };
 		3570E46F2C21E70D00CB5D42 /* ApiInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3570E46E2C21E70D00CB5D42 /* ApiInfo.swift */; };
+		3570E4712C22E04600CB5D42 /* CodableIgnored.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3570E4702C22E04600CB5D42 /* CodableIgnored.swift */; };
+		3570E4732C22F95B00CB5D42 /* AddressInfoBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3570E4722C22F95B00CB5D42 /* AddressInfoBase.swift */; };
+		3570E4752C23058200CB5D42 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3570E4742C23058200CB5D42 /* Constants.swift */; };
+		3570E4772C2317E800CB5D42 /* LogEntryType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3570E4762C2317E800CB5D42 /* LogEntryType.swift */; };
+		3570E4792C23396E00CB5D42 /* SettingsButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3570E4782C23396E00CB5D42 /* SettingsButtonView.swift */; };
+		3570E47C2C23730E00CB5D42 /* FlagKit in Frameworks */ = {isa = PBXBuildFile; productRef = 3570E47B2C23730E00CB5D42 /* FlagKit */; };
 		357154F72C17339100A41AA4 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 357154F62C17339100A41AA4 /* SettingsView.swift */; };
 		357154F92C1739C300A41AA4 /* NetworkServiceBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 357154F82C1739C300A41AA4 /* NetworkServiceBase.swift */; };
 		357154FB2C173E4C00A41AA4 /* AddressesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 357154FA2C173E4C00A41AA4 /* AddressesService.swift */; };
@@ -65,6 +71,11 @@
 		3570E46A2C21CF7C00CB5D42 /* RadioButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadioButton.swift; sourceTree = "<group>"; };
 		3570E46C2C21CFEA00CB5D42 /* AddressSafetyType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressSafetyType.swift; sourceTree = "<group>"; };
 		3570E46E2C21E70D00CB5D42 /* ApiInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApiInfo.swift; sourceTree = "<group>"; };
+		3570E4702C22E04600CB5D42 /* CodableIgnored.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodableIgnored.swift; sourceTree = "<group>"; };
+		3570E4722C22F95B00CB5D42 /* AddressInfoBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddressInfoBase.swift; sourceTree = "<group>"; };
+		3570E4742C23058200CB5D42 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		3570E4762C2317E800CB5D42 /* LogEntryType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogEntryType.swift; sourceTree = "<group>"; };
+		3570E4782C23396E00CB5D42 /* SettingsButtonView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsButtonView.swift; sourceTree = "<group>"; };
 		357154F62C17339100A41AA4 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		357154F82C1739C300A41AA4 /* NetworkServiceBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkServiceBase.swift; sourceTree = "<group>"; };
 		357154FA2C173E4C00A41AA4 /* AddressesService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressesService.swift; sourceTree = "<group>"; };
@@ -92,6 +103,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3570E47C2C23730E00CB5D42 /* FlagKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -127,6 +139,7 @@
 				359E44F02C11C1F800BF6093 /* NetworkCapabilitesView.swift */,
 				35F12F3F2C15B8C200AFA738 /* NetworkInferfacesView.swift */,
 				35DD1C4F2C0FAB6A003AA3ED /* ToggleNetworkView.swift */,
+				3570E4782C23396E00CB5D42 /* SettingsButtonView.swift */,
 				35DD1C512C0FAD1A003AA3ED /* ToggleMonitoringView.swift */,
 				35DA6DE72C12170800B54595 /* ToggleKeepRunningView.swift */,
 				351E9CE62C10A6C100CEC15F /* LogView.swift */,
@@ -138,8 +151,10 @@
 		351E9CED2C10B28400CEC15F /* Infrastructure */ = {
 			isa = PBXGroup;
 			children = (
+				3570E4742C23058200CB5D42 /* Constants.swift */,
 				351F0C612C0F593A00644C66 /* LogEntry.swift */,
 				35DD1C4D2C0FA9D2003AA3ED /* CheckToggleStyle.swift */,
+				3570E4702C22E04600CB5D42 /* CodableIgnored.swift */,
 			);
 			path = Infrastructure;
 			sourceTree = "<group>";
@@ -207,6 +222,7 @@
 			isa = PBXGroup;
 			children = (
 				35F12F382C15ACB900AFA738 /* NetworkStatusType.swift */,
+				3570E4762C2317E800CB5D42 /* LogEntryType.swift */,
 				35F12F3A2C15B3BE00AFA738 /* NetworkInterfaceType.swift */,
 				3570E46C2C21CFEA00CB5D42 /* AddressSafetyType.swift */,
 			);
@@ -218,6 +234,7 @@
 			children = (
 				35F12F3D2C15B4E100AFA738 /* NetworkInterface.swift */,
 				357154FC2C17422600A41AA4 /* AddressInfo.swift */,
+				3570E4722C22F95B00CB5D42 /* AddressInfoBase.swift */,
 				3570E46E2C21E70D00CB5D42 /* ApiInfo.swift */,
 			);
 			path = Types;
@@ -239,6 +256,9 @@
 			dependencies = (
 			);
 			name = KillSwitch;
+			packageProductDependencies = (
+				3570E47B2C23730E00CB5D42 /* FlagKit */,
+			);
 			productName = KillSwitch;
 			productReference = 351F0C442C0EFCF100644C66 /* KillSwitch.app */;
 			productType = "com.apple.product-type.application";
@@ -267,6 +287,9 @@
 				Base,
 			);
 			mainGroup = 351F0C3B2C0EFCF100644C66;
+			packageReferences = (
+				3570E47A2C23730E00CB5D42 /* XCRemoteSwiftPackageReference "FlagKit" */,
+			);
 			productRefGroup = 351F0C452C0EFCF100644C66 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -297,11 +320,13 @@
 				351E9CE92C10ADB300CEC15F /* AllowedAddressesEditView.swift in Sources */,
 				359E44ED2C11A6BD00BF6093 /* MenuBarStatusView.swift in Sources */,
 				351F0C642C0F599400644C66 /* LoggingService.swift in Sources */,
+				3570E4792C23396E00CB5D42 /* SettingsButtonView.swift in Sources */,
 				351F0C662C0F6D2A00644C66 /* NetworkManagementService.swift in Sources */,
 				35E7DD4F2C13420000CC68F7 /* NetworkStatusService.swift in Sources */,
 				35DD1C4E2C0FA9D2003AA3ED /* CheckToggleStyle.swift in Sources */,
 				3570E46D2C21CFEA00CB5D42 /* AddressSafetyType.swift in Sources */,
 				359E44EF2C11BFED00BF6093 /* MenuBarView.swift in Sources */,
+				3570E4772C2317E800CB5D42 /* LogEntryType.swift in Sources */,
 				35F12F3E2C15B4E100AFA738 /* NetworkInterface.swift in Sources */,
 				351F0C4A2C0EFCF100644C66 /* MainView.swift in Sources */,
 				35F12F392C15ACB900AFA738 /* NetworkStatusType.swift in Sources */,
@@ -322,10 +347,13 @@
 				35DA7E252C11E91800BFC680 /* AppManagementService.swift in Sources */,
 				35DA6DEA2C122EA500B54595 /* ShellService.swift in Sources */,
 				35F12F3B2C15B3BE00AFA738 /* NetworkInterfaceType.swift in Sources */,
+				3570E4732C22F95B00CB5D42 /* AddressInfoBase.swift in Sources */,
 				35DD1C502C0FAB6A003AA3ED /* ToggleNetworkView.swift in Sources */,
 				351F0C622C0F593A00644C66 /* LogEntry.swift in Sources */,
+				3570E4712C22E04600CB5D42 /* CodableIgnored.swift in Sources */,
 				3570E46F2C21E70D00CB5D42 /* ApiInfo.swift in Sources */,
 				351E9CE72C10A6C100CEC15F /* LogView.swift in Sources */,
+				3570E4752C23058200CB5D42 /* Constants.swift in Sources */,
 				357154FB2C173E4C00A41AA4 /* AddressesService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -535,6 +563,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		3570E47A2C23730E00CB5D42 /* XCRemoteSwiftPackageReference "FlagKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/madebybowtie/FlagKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.4.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		3570E47B2C23730E00CB5D42 /* FlagKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3570E47A2C23730E00CB5D42 /* XCRemoteSwiftPackageReference "FlagKit" */;
+			productName = FlagKit;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 351F0C3C2C0EFCF100644C66 /* Project object */;
 }

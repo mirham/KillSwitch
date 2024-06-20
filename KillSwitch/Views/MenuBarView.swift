@@ -25,25 +25,28 @@ struct MenuBarView: View {
                 MonitoringStatusView().environmentObject(monitoringService).padding()
                 NetworkStatusView().environmentObject(networkStatusService).padding()
             }
+            Spacer()
+                .frame(height: 5)
             HStack{
                 Button("Show", systemImage: "macwindow") {
                     appManagementService.showMainView()
                 }
                 .buttonStyle(.plain)
-                .foregroundColor(showOverText ? .blue : .primary)
+                .foregroundColor(showOverText ? .blue : .gray)
                 .bold(showOverText)
                 .focusEffectDisabled()
                 .onHover(perform: { hovering in
                     showOverText = hovering
                 })
-                Spacer().frame(width: 20)
+                Spacer()
+                    .frame(width: 20)
                 Button("Quit", systemImage: "xmark.circle") {
                     appManagementService.quitApp()
                 }
                 .buttonStyle(.plain)
                 .focusEffectDisabled()
                 .bold(quitOverText)
-                .foregroundColor(quitOverText ? .red : .primary)
+                .foregroundColor(quitOverText ? .red : .gray)
                 .onHover(perform: { hovering in
                     quitOverText = hovering
                 })

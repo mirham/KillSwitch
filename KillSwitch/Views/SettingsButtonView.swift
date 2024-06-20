@@ -8,27 +8,34 @@
 import Foundation
 import SwiftUI
 
-struct ToggleNetworkView: View {
-    @EnvironmentObject var networkStatusService : NetworkStatusService
+struct SettingsButtonView: View {
+    let appManagementService = AppManagementService.shared
     
-    let networkManagementService = NetworkManagementService.shared
+    @State private var showOverText = false
+    @State private var quitOverText = false
 
     var body: some View {
         Section {
-            Toggle("Network", isOn: Binding(
-                get: { networkStatusService.currentStatus == .on },
-                set: {
-                    if($0){
-                        networkManagementService.enableNetworkInterface(interfaceName: "en0")
-                    }
-                    else{
-                        networkManagementService.disableNetworkInterface(interfaceName: "en0")
-                    }
-                }
-            ))
-            .toggleStyle(CheckToggleStyle())
+            Button(String(), systemImage: "gearshape.2") {
+                appManagementService.showSettingsView()
+            }
+            .buttonStyle(.plain)
+            .foregroundColor(showOverText ? .blue : .primary)
+            .bold(showOverText)
+            .focusEffectDisabled()
+            .onHover(perform: { hovering in
+                showOverText = hovering
+            })
+            .help(Constants.settings)
         }
-        .font(.system(size: 18))
+        .font(.system(size: 21))
+        .onHover(perform: { hovering in
+            if hovering {
+                NSCursor.pointingHand.set()
+            } else {
+                NSCursor.arrow.set()
+            }
+        })
     }
 }
 

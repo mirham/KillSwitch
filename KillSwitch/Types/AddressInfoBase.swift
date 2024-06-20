@@ -7,18 +7,13 @@
 
 import Foundation
 
-struct AddressInfo: Codable, Identifiable, Equatable {
+struct AddressInfoBase: Codable, Equatable {
     var ipVersion: Int
     var ipAddress: String
     var countryName: String
     var countryCode: String
     
-    // @CodableIgnored
-    var id = UUID()
-    // @CodableIgnored
-    var safetyType: AddressSafetyType?
-    
-    static func == (lhs: AddressInfo, rhs: AddressInfo) -> Bool {
+    static func == (lhs: AddressInfoBase, rhs: AddressInfoBase) -> Bool {
         return lhs.ipAddress == rhs.ipAddress
     }
     

@@ -15,6 +15,11 @@ class LoggingService: ObservableObject {
     
     static let shared = LoggingService()
     
+    func log(message: String, type: LogEntryType = .info){
+        let logEntry = LogEntry(message: message, type: type)
+        log(logEntry: logEntry)
+    }
+    
     func log(logEntry: LogEntry){
         DispatchQueue.main.async {
             self.logs.insert(logEntry, at: 0)

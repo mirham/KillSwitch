@@ -7,9 +7,18 @@
 
 import Foundation
 
-enum NetworkStatusType : Int, CaseIterable {
+enum LogEntryType : Int, CaseIterable {
     case unknown = 0
-    case on = 1
-    case off = 2
-    case wait = 3
+    case info = 1
+    case warning = 2
+    case error = 3
+    
+    var description : String {
+        switch self {
+            case .unknown: return "Unknown"
+            case .info: return "Info"
+            case .warning: return "Warning"
+            case .error: return "Error"
+        }
+    }
 }

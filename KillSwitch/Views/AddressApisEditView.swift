@@ -14,8 +14,11 @@ struct AddressApisEditView: View {
     @EnvironmentObject var addressesService: AddressesService
     
     private let appManagementService = AppManagementService.shared
+    private let addressService = AddressesService.shared
     
     @State private var newUrl = String()
+    @State private var isNewUrlValid = false
+    @State private var isNewUrlInvalid: Bool = false
     
     var body: some View {
         VStack{
@@ -34,10 +37,12 @@ struct AddressApisEditView: View {
                                     Circle()
                                         .fill(.green)
                                         .frame(width: 10, height: 10)
+                                        .help(Constants.hintApiIsActive)
                                 case false:
                                     Circle()
-                                        .fill(.yellow)
+                                        .fill(.red)
                                         .frame(width: 10, height: 10)
+                                        .help(Constants.hintApiIsActive)
                             }
                         }
                         .contextMenu {
@@ -58,29 +63,45 @@ struct AddressApisEditView: View {
                         }
                         VStack(alignment: .leading, spacing: 12) {
                             TextField("New API URL", text: $newUrl)
+                                .onChange(of: newUrl) {
+                                    isNewUrlValid = !newUrl.isEmpty && addressesService.validateApiAddress(apiAddressToValidate:newUrl)
+                                }
                         }
                     }
-                    Button("Add") {
+                    AsyncButton("Add", action: {
+                        let ipAddress = await addressesService.getCurrentIpAddress(addressApiUrl: newUrl)
+                        
+                        guard ipAddress != nil else {
+                            isNewUrlInvalid = true
+                            
+                            return
+                        }
+                        
                         let newApi = ApiInfo(url: newUrl, active: true)
                         
                         addressesService.apis.append(newApi)
                         
                         newUrl = String()
-                        
-                    }.bold()
+                        isNewUrlValid = false
+                        isNewUrlInvalid = false
+                    })
+                    .disabled(!isNewUrlValid)
+                    .alert(isPresented: $isNewUrlInvalid) {
+                        Alert(title: Text(Constants.dialogHeaderApiIsNotValid),
+                              message: Text(Constants.dialogBodyApiIsNotValid),
+                              dismissButton: .default(Text(Constants.dialogButtonOk)))
+                    }
+                    .onHover(perform: { hovering in
+                        if hovering {
+                            NSCursor.pointingHand.set()
+                        } else {
+                            NSCursor.arrow.set()
+                        }
+                    })
+                    .bold()
                 }
                 .padding()
             }
-        }
-        .onAppear(){
-            /*for allowedIpAddress in allowedIpAddresses {
-             monitoringService.allowedIpAddresses.append(allowedIpAddress.ip)
-             }*/
-        }
-        .onDisappear(){
-            appManagementService.writeSettingsArray(
-                allObjects: addressesService.apis,
-                key: appManagementService.apisKey)
         }
     }
 }

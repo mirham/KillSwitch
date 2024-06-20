@@ -23,7 +23,7 @@ class MonitoringService: ObservableObject {
     
     init() {
         let isMonitoringEnabled = UserDefaults.standard.bool(forKey: "isMonitoringEnabled")
-        let savedAllowedIpAddresses: [AddressInfo]? = appManagementService.readSettingsArray(key: appManagementService.addressessSettingsKey)
+        let savedAllowedIpAddresses: [AddressInfo]? = appManagementService.readSettingsArray(key: Constants.settingsKeyAddresses)
         
         if(savedAllowedIpAddresses != nil){
             self.allowedIpAddresses = savedAllowedIpAddresses!
@@ -34,13 +34,18 @@ class MonitoringService: ObservableObject {
         }
     }
     
+    deinit{
+        appManagementService.writeSettingsArray(
+         allObjects: allowedIpAddresses,
+         key: Constants.settingsKeyAddresses)
+    }
+    
     func startMonitoring() {
         UserDefaults.standard.set(true, forKey: "isMonitoringEnabled")
         
         isMonitoringEnabled = true
         
-        let logEntry = LogEntry(message: "Monitoring has been enabled.")
-        loggingService.log(logEntry: logEntry)
+        loggingService.log(message: Constants.logMonitoringHasBeenEnabled)
         
         Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { timer in
             if self.isMonitoringEnabled {
@@ -50,11 +55,20 @@ class MonitoringService: ObservableObject {
                             return
                         }
                         
-                        let updatedIpAddress = await self.addressesService.getCurrentIpAddress() ?? String()
+                        let api = self.addressesService.getRandomActiveAddressApi()
+                        
+                        if(api == nil){
+                            self.loggingService.log(message: Constants.logNoActiveAddressApiFound)
+                            
+                            if(self.isMonitoringEnabled){
+                                self.isMonitoringEnabled = false
+                            }
+                        }
+                        
+                        let updatedIpAddress = await self.addressesService.getCurrentIpAddress(addressApiUrl: api!.url) ?? String()
                         
                         if (updatedIpAddress != self.networkStatusService.ip) {
-                            let logEntry = LogEntry(message: "IP has been updated to \(updatedIpAddress)")
-                            self.loggingService.log(logEntry: logEntry)
+                            self.loggingService.log(message: String(format: Constants.logCurrentIpHasBeenUpdated, updatedIpAddress))
                         }
                             
                         var isMatchFound = false
@@ -68,9 +82,10 @@ class MonitoringService: ObservableObject {
                         if !isMatchFound {
                             // TODO RUSS: It should be all active interfaces
                             self.networkManagementService.disableNetworkInterface(interfaceName: "en0")
-                                
-                            let logEntry = LogEntry(message: "IP address has been changed to \(updatedIpAddress) which is not from allowd IPs, network disabled.")
-                            self.loggingService.log(logEntry: logEntry)
+                            
+                            self.loggingService.log(
+                                message: String(format: Constants.logCurrentIpHasBeenUpdatedWithNotFromWhitelist, updatedIpAddress),
+                                type: LogEntryType.warning)
                         }
                     }
                 }
@@ -85,8 +100,7 @@ class MonitoringService: ObservableObject {
         UserDefaults.standard.set(false, forKey: "isMonitoringEnabled")
         
         isMonitoringEnabled = false
-        
-        let logEntry = LogEntry(message: "Monitoring has been disabled.")
-        loggingService.log(logEntry: logEntry)
+
+        loggingService.log(message: Constants.logMonitoringHasBeenDisabled, type: LogEntryType.warning)
     }
 }

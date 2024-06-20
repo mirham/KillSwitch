@@ -19,6 +19,8 @@ class NetworkStatusService: NetworkServiceBase, ObservableObject {
     @Published var supportsIp6: Bool = false
     @Published var description: String = String()
     @Published var currentIpAddress: String = String()
+    @Published var currentIpAddressCountryName: String = String()
+    @Published var currentIpAddressCountryCode: String = String()
     
     static let shared = NetworkStatusService()
     
@@ -39,7 +41,6 @@ class NetworkStatusService: NetworkServiceBase, ObservableObject {
 
         monitor.pathUpdateHandler = { path in
             var newStatus = NetworkStatusType.unknown
-            var newIpAddress = "None"
             var newIsSupportsDns = false
             var newIsLowDataMode = false
             var newIsHotspot = false
@@ -91,7 +92,7 @@ class NetworkStatusService: NetworkServiceBase, ObservableObject {
                     self.description = newDescription
                     self.currentNetworkInterfaces = newNetworkInterfaces
                     
-                    self.setCurrentIpAddress()
+                    self.setCurrentIpAddressInfo()
                 })
             }
         }
@@ -103,24 +104,34 @@ class NetworkStatusService: NetworkServiceBase, ObservableObject {
         monitor.cancel()
     }
     
-    private func setCurrentIpAddress(){
+    private func setCurrentIpAddressInfo(){
         if(!isGettingIpAddressInProcess)
         {
             Task {
                 do {
                     self.isGettingIpAddressInProcess = true
                     
-                    let currentIp = await addressesService.getCurrentIpAddress()
+                    var currentIpInfo: AddressInfoBase? = nil
                     
-                    if(currentIp != nil){
-                        let logEntry = LogEntry(message: "Current IP: \(currentIp!)")
-                        self.loggingService.log(logEntry: logEntry)
+                    let api = addressesService.getRandomActiveAddressApi()
+                    
+                    if(api != nil){
+                        let currentIp = await addressesService.getCurrentIpAddress(addressApiUrl: api!.url)
+                        
+                        if(currentIp != nil){
+                            currentIpInfo = await addressesService.getIpAddressInfo(ipAddress: currentIp!)
+                        }
                     }
                     
-                    let valueToSet = currentIp ?? "None"
-                    
-                    self.currentIpAddress = valueToSet
-                    self.ip = valueToSet
+                    if(currentIpInfo == nil){
+                        self.currentIpAddress = Constants.none
+                        self.ip = Constants.none
+                    }
+                    else{
+                        self.currentIpAddress = currentIpInfo!.ipAddress
+                        self.currentIpAddressCountryName = currentIpInfo!.countryName
+                        self.currentIpAddressCountryCode = currentIpInfo!.countryCode
+                    }
                     
                     self.isGettingIpAddressInProcess = false
                 }

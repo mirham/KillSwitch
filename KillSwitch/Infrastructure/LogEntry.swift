@@ -11,4 +11,5 @@ struct LogEntry: Equatable, Hashable {
     let id = UUID()
     let date = Date()
     let message: String
+    let type: LogEntryType
 }

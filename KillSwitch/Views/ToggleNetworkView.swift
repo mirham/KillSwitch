@@ -27,6 +27,13 @@ struct ToggleNetworkView: View {
                 }
             ))
             .toggleStyle(CheckToggleStyle())
+            .onHover(perform: { hovering in
+                if hovering {
+                    NSCursor.pointingHand.set()
+                } else {
+                    NSCursor.arrow.set()
+                }
+            })
         }
         .font(.system(size: 18))
     }

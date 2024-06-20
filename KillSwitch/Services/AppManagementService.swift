@@ -15,12 +15,6 @@ class AppManagementService{
     private let shellService = ShellService.shared
     private let loggingServie = LoggingService.shared
     
-    let mainWindowId = "main-view"
-    let settingsWindowId = "settings-view"
-    
-    let addressessSettingsKey = "allowed-addresses"
-    let apisKey = "apis"
-    
     var isMainViewShowed = false
     var isSettingsViewShowed = false
     var isLaunchAgentInstalled = false
@@ -29,7 +23,7 @@ class AppManagementService{
     
     func showMainView(){
         if(!isMainViewShowed){
-            openWindow(id: mainWindowId)
+            openWindow(id: Constants.windowIdMain)
             isMainViewShowed = true
         
             let fileManager = FileManager.default
@@ -43,7 +37,7 @@ class AppManagementService{
     
     func showSettingsView(){
         if(!isSettingsViewShowed){
-            openWindow(id: settingsWindowId)
+            openWindow(id: Constants.windowIdSettings)
             isSettingsViewShowed = true
         }
     }
@@ -64,32 +58,17 @@ class AppManagementService{
         let appPath = Bundle.main.executablePath
         let plistFilePath = getPlistFilePath()
         
-        let xmlContent =
-        """
-        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-        <plist version="1.0">
-            <dict>
-                <key>Label</key>
-                <string>user.launchkeep.KillSwitch</string>
-                <key>KeepAlive</key>
-                <true/>
-                <key>Program</key>
-                <string>\(appPath ?? String())</string>
-            </dict>
-        </plist>
-        """;
+        var xmlContent = String(format: Constants.launchAgentXmlContent, plistFilePath)
         
         do {
             try xmlContent.write(toFile: plistFilePath, atomically: true, encoding: String.Encoding.utf8)
             try shellService.safeShell("launchctl load ~/Library/LaunchAgents/user.launchkeep.KillSwitch.plist")
             
-            let logEntry = LogEntry(message: "Launch agent added, the application will be always running.")
-            loggingServie.log(logEntry: logEntry)
+            loggingServie.log(message: String(format: Constants.logLaunchAgentAdded))
             
             return true
         } catch {
-            let logEntry = LogEntry(message: "Cannot add Launch agent: \(error.localizedDescription)")
-            loggingServie.log(logEntry: logEntry)
+            loggingServie.log(message: String(format: Constants.logCannotAddLaunchAgent, error.localizedDescription))
             
             return false
         }
@@ -103,14 +82,12 @@ class AppManagementService{
             let plistFilePath = getPlistFilePath()
             try fileManager.removeItem(atPath: plistFilePath)
             
-            let logEntry = LogEntry(message: "Launch agent removed, the application, and won't be always running. Restart your Mac for applying changes.")
-            loggingServie.log(logEntry: logEntry)
+            loggingServie.log(message: String(format: Constants.logLaunchAgentRemoved))
             
             return true
         }
         catch {
-            let logEntry = LogEntry(message: "Cannot remove Launch agent: \(error.localizedDescription)")
-            loggingServie.log(logEntry: logEntry)
+            loggingServie.log(message: String(format: Constants.logCannotRemoveLaunchAgent, error.localizedDescription))
             
             return false
         }

@@ -8,15 +8,17 @@
 import Foundation
 import SwiftUI
 import SwiftData
+import FlagKit
 
 struct AllowedAddressesEditView: View {
     @EnvironmentObject var monitoringService: MonitoringService
     
     @State private var newIp = String()
-    @State private var newDescription = String()
+    @State private var isNewIpValid = false
     @State private var newIpAddressSafetyType: AddressSafetyType = AddressSafetyType.compete
+    @State private var isNewIpInvalid: Bool = false
 
-    private let ipAddressesService = AddressesService.shared
+    private let addressesService = AddressesService.shared
     private let appManagementService = AppManagementService.shared
     
     var body: some View {
@@ -26,13 +28,15 @@ struct AllowedAddressesEditView: View {
                 .multilineTextAlignment(.center)
                 .padding(.top)
                 .help("Just do something")
-            NavigationStack {
+            NavigationStack() {
                 List {
                     ForEach(monitoringService.allowedIpAddresses, id: \.ipAddress) { ipAddress in
                         HStack {
-                            Text(ipAddress.ipAddress)
+                            Text(ipAddress.ipAddress).frame(maxWidth: .infinity, alignment: .leading)
                             Spacer()
-                            Text(ipAddress.countryName)
+                            Image(nsImage: Flag(countryCode:ipAddress.countryCode)?.originalImage ?? NSImage())
+                            //Text(Constants.flags[ipAddress.countryCode] ?? String())
+                            Text(ipAddress.countryName).frame(maxWidth: .infinity, alignment: .leading)
                             Spacer()
                             switch ipAddress.safetyType {
                                 case AddressSafetyType.compete:
@@ -64,12 +68,13 @@ struct AllowedAddressesEditView: View {
                     HStack {
                         VStack(alignment: .leading, spacing: 12) {
                             Text("IP:")
-                            Text("Description:")
                             Text("Safety:")
                         }
                         VStack(alignment: .leading, spacing: 12) {
-                            TextField("A new IP address", text: $newIp)
-                            TextField("Description", text: $newDescription)
+                            TextField("A new valid IP address", text: $newIp)
+                                .onChange(of: newIp) {
+                                    isNewIpValid = !newIp.isEmpty && addressesService.validateIpAddress(ipToValidate: newIp)
+                                }
                             HStack {
                                 RadioButton(
                                     id: String(AddressSafetyType.compete.rawValue),
@@ -92,29 +97,47 @@ struct AllowedAddressesEditView: View {
                             }
                         }
                     }
-                    Button("Add") {
-                        let newIpAddress = AddressInfo(ipVersion: 4, ipAddress: newIp, countryName: newDescription, countryCode: String(), safetyType: newIpAddressSafetyType)
+                    AsyncButton("Add", action: {
+                        let ipAddressInfo = await addressesService.getIpAddressInfo(ipAddress: newIp)
                         
+                        guard ipAddressInfo != nil else {
+                            isNewIpInvalid = true
+                            
+                            return
+                        }
+                            
+                        let newIpAddress = AddressInfo(
+                            ipVersion: ipAddressInfo!.ipVersion,
+                            ipAddress: newIp,
+                            countryName: ipAddressInfo!.countryName,
+                            countryCode: ipAddressInfo!.countryCode,
+                            safetyType: newIpAddressSafetyType
+                        )
+                            
                         monitoringService.allowedIpAddresses.append(newIpAddress)
                         
                         newIp = String()
-                        newDescription = String()
+                        isNewIpValid = false
                         newIpAddressSafetyType = AddressSafetyType.compete
-                        
-                    }.bold()
+                        isNewIpInvalid = false
+                    })
+                    .disabled(!isNewIpValid)
+                    .alert(isPresented: $isNewIpInvalid) {
+                        Alert(title: Text(Constants.dialogHeaderIpAddressIsNotValid),
+                              message: Text(Constants.dialogBodyIpAddressIsNotValid),
+                              dismissButton: .default(Text(Constants.dialogButtonOk)))
+                    }
+                    .bold()
+                    .onHover(perform: { hovering in
+                        if hovering {
+                            NSCursor.pointingHand.set()
+                        } else {
+                            NSCursor.arrow.set()
+                        }
+                    })
                 }
                 .padding()
             }
-        }
-        .onAppear(){
-            /*for allowedIpAddress in allowedIpAddresses {
-             monitoringService.allowedIpAddresses.append(allowedIpAddress.ip)
-             }*/
-        }
-        .onDisappear(){
-            appManagementService.writeSettingsArray(
-                allObjects: monitoringService.allowedIpAddresses,
-                key: appManagementService.addressessSettingsKey)
         }
     }
 }
