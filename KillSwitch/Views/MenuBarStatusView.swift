@@ -17,6 +17,8 @@ struct MenuBarStatusView: View {
         }
     }
     
+    // MARK: Private functions
+    
     @MainActor
     private func renderMenuBarStatusImage() -> CGImage{
         let isMonitoringEnabled = monitoringService.isMonitoringEnabled

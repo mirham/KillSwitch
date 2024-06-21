@@ -91,6 +91,8 @@ struct CurrentIpView: View {
         return result
     }
     
+    // MARK: Private functions
+    
     private func getIpCountryFlag() -> NSImage{
         var result = NSImage()
         

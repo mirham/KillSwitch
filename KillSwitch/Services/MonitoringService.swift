@@ -6,8 +6,6 @@
 //
 
 import Foundation
-import SwiftData
-import Combine
 
 class MonitoringService: ObservableObject {
     @Published var isMonitoringEnabled = false
@@ -49,53 +47,17 @@ class MonitoringService: ObservableObject {
             if self.isMonitoringEnabled {
                 Task {
                     do {                        
-                        guard self.networkStatusService.currentStatusNonPublished == .on else {
-                            return
-                        }
+                        guard self.networkStatusService.currentStatusNonPublished == .on else { return }
                         
-                        let api = self.addressesService.getRandomActiveAddressApi()
+                        let updatedIpAddress = await self.getCurrentIpAddressAsync()
                         
-                        if(api == nil){
-                            self.loggingService.log(message: Constants.logNoActiveAddressApiFound)
-                            
-                            if(self.isMonitoringEnabled){
-                                DispatchQueue.main.async {
-                                    self.isMonitoringEnabled = false
-                                    self.currentSafetyType = AddressSafetyType.unknown
-                                }
-                            }
-                        }
+                        guard updatedIpAddress != nil else { return }
                         
-                        let updatedIpAddress = await self.addressesService.getCurrentIpAddress(addressApiUrl: api!.url) ?? String()
-                        
-                        if (updatedIpAddress != self.networkStatusService.currentIpAddressNonPublished) {
-                            self.loggingService.log(message: String(format: Constants.logCurrentIpHasBeenUpdated, updatedIpAddress))
+                        if (updatedIpAddress! != self.networkStatusService.currentIpAddressNonPublished) {
+                            self.loggingService.log(message: String(format: Constants.logCurrentIpHasBeenUpdated, updatedIpAddress!))
                         }
                             
-                        var isMatchFound = false
-                            
-                        for allowedIpAddress in self.allowedIpAddresses {
-                            if updatedIpAddress == allowedIpAddress.ipAddress {
-                                isMatchFound = true
-                                
-                                DispatchQueue.main.async {
-                                    self.currentSafetyType = allowedIpAddress.safetyType
-                                }
-                            }
-                        }
-                            
-                        if !isMatchFound {
-                            // TODO RUSS: It should be all active interfaces
-                            DispatchQueue.main.async {
-                                self.currentSafetyType = AddressSafetyType.unknown
-                            }
-                            
-                            self.networkManagementService.disableNetworkInterface(interfaceName: "en0")
-                            
-                            self.loggingService.log(
-                                message: String(format: Constants.logCurrentIpHasBeenUpdatedWithNotFromWhitelist, updatedIpAddress),
-                                type: LogEntryType.warning)
-                        }
+                        self.performActionForUpdatedIpAddress(updatedIpAddress: updatedIpAddress!)
                     }
                 }
             }
@@ -144,6 +106,72 @@ class MonitoringService: ObservableObject {
                 where: {$0.ipAddress == ipAddress && $0.safetyType != safetyType}) {
                 allowedIpAddresses[currentAllowedIpAddressIndex] = newIpAddress
             }
+        }
+    }
+    
+    // MARK: Private functions
+    
+    private func getRandomActiveIpAddressApi() -> ApiInfo? {
+        let result = self.addressesService.getRandomActiveAddressApi()
+        
+        if(result == nil){
+            self.loggingService.log(message: Constants.logNoActiveAddressApiFound)
+            
+            if(self.isMonitoringEnabled){
+                DispatchQueue.main.async {
+                    self.isMonitoringEnabled = false
+                    self.currentSafetyType = AddressSafetyType.unknown
+                }
+            }
+        }
+        
+        return result
+    }
+    
+    private func getCurrentIpAddressAsync() async -> String? {
+        var result: String? = nil
+        
+        let api = getRandomActiveIpAddressApi()
+        
+        guard api != nil else { return result }
+        
+        result = await self.addressesService.getCurrentIpAddress(addressApiUrl: api!.url)
+        
+        return result
+    }
+    
+    private func checkIfUpdatedIpAddressAllowed(updatedIpAddress: String) -> Bool {
+        var result = false
+        
+        for allowedIpAddress in self.allowedIpAddresses {
+            if updatedIpAddress == allowedIpAddress.ipAddress {
+                result = true
+                
+                DispatchQueue.main.async {
+                    self.currentSafetyType = allowedIpAddress.safetyType
+                }
+            }
+        }
+        
+        return result
+    }
+    
+    private func performActionForUpdatedIpAddress(updatedIpAddress: String) {
+        
+        let isAllowed = checkIfUpdatedIpAddressAllowed(updatedIpAddress: updatedIpAddress)
+        
+        if(!isAllowed){
+            DispatchQueue.main.async {
+                self.currentSafetyType = AddressSafetyType.unknown
+            }
+            
+            // TODO RUSS: It should be all active interfaces
+            self.networkManagementService.disableNetworkInterface(
+                interfaceName: Constants.primaryNetworkInterfaceName)
+            
+            self.loggingService.log(
+                message: String(format: Constants.logCurrentIpHasBeenUpdatedWithNotFromWhitelist, updatedIpAddress),
+                type: LogEntryType.warning)
         }
     }
 }

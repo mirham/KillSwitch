@@ -40,6 +40,8 @@ struct SettingsButtonView: View {
         })
     }
     
+    // MARK: Private functions
+    
     private func showSettingsWindow() {
         if(!appManagementService.isSettingsViewShowed){
             openWindow(id: Constants.windowIdSettings)

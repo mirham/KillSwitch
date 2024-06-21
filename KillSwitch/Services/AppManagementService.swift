@@ -19,7 +19,7 @@ class AppManagementService : ObservableObject {
     
     static let shared = AppManagementService()
     
-    func showMainView(){
+    func showMainView() {
         isMainViewShowed = true
         
         let fileManager = FileManager.default
@@ -30,11 +30,11 @@ class AppManagementService : ObservableObject {
         }
     }
     
-    func showSettingsView(){
+    func showSettingsView() {
         isSettingsViewShowed = true
     }
     
-    func setViewToTop(viewName: String){
+    func setViewToTop(viewName: String) {
         for window in NSApplication.shared.windows {
             let windowId = String(window.identifier?.rawValue ?? String())
             if(windowId.starts(with: viewName))
@@ -56,7 +56,7 @@ class AppManagementService : ObservableObject {
         pasteboard.setString(text, forType: .string)
     }
     
-    func installLaunchAgent() -> Bool{
+    func installLaunchAgent() -> Bool {
         let appPath = Bundle.main.executablePath
         let plistFilePath = getPlistFilePath()
         
@@ -64,7 +64,7 @@ class AppManagementService : ObservableObject {
         
         do {
             try xmlContent.write(toFile: plistFilePath, atomically: true, encoding: String.Encoding.utf8)
-            try shellService.safeShell("launchctl load ~/Library/LaunchAgents/user.launchkeep.KillSwitch.plist")
+            try shellService.safeShell(String(format: Constants.shellCommandLoadLaunchAgent, Constants.launchAgentsFolderPath, Constants.launchAgentPlistName))
             
             loggingServie.log(message: String(format: Constants.logLaunchAgentAdded))
             
@@ -76,9 +76,9 @@ class AppManagementService : ObservableObject {
         }
     }
     
-    func uninstallLaunchAgent() -> Bool{
+    func uninstallLaunchAgent() -> Bool {
         do {
-            try shellService.safeShell("launchctl remove user.launchkeep.KillSwitch.plist")
+            try shellService.safeShell(String(format: Constants.shellCommandRemoveLaunchAgent, Constants.launchAgentPlistName))
             
             let fileManager = FileManager.default
             let plistFilePath = getPlistFilePath()
@@ -129,14 +129,18 @@ class AppManagementService : ObservableObject {
         }
     }
     
-    func quitApp(){
+    func quitApp() {
         NSApplication.shared.terminate(nil)
     }
     
+    // MARK: Private functions
+    
     private func getPlistFilePath() -> String {
         let userDirectory = try! FileManager.default.url(for: .libraryDirectory, in: .userDomainMask, appropriateFor:.libraryDirectory, create: false)
-        let launchDaemonsFolder = userDirectory.appendingPathComponent("LaunchAgents").appendingPathComponent("user.launchkeep.KillSwitch.plist")
-        let filename = URL(fileURLWithPath: launchDaemonsFolder.path(), isDirectory: false)
+        let launchAgentsFolder = userDirectory
+            .appendingPathComponent("LaunchAgents")
+            .appendingPathComponent(Constants.launchAgentPlistName)
+        let filename = URL(fileURLWithPath: launchAgentsFolder.path(), isDirectory: false)
         let result = filename.path()
         
         return result

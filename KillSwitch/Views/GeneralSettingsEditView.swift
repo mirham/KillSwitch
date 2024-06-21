@@ -5,10 +5,7 @@
 //  Created by UglyGeorge on 18.06.2024.
 //
 
-import Foundation
-import SwiftData
 import SwiftUI
-
 
 struct GeneralSettingsEditView: View {
     private let appManagementService = AppManagementService.shared
@@ -71,9 +68,9 @@ struct GeneralSettingsEditView: View {
             }
             HStack {
                 TextField("1..3600", value: $interval, formatter: NumberFormatter())
-                    .foregroundColor((interval >= 1 && interval <= 3600) ? .primary : .red)
+                    .foregroundColor(checkIfTimeIntervalValid(interval: interval) ? .primary : .red)
                     .onChange(of: interval) {
-                        if (interval >= 1 && interval <= 3600){
+                        if (checkIfTimeIntervalValid(interval: interval)){
                             appManagementService.writeSetting(newValue: interval, key: Constants.settingsIntervalBetweenChecks)
                         }
                     }
@@ -94,9 +91,17 @@ struct GeneralSettingsEditView: View {
             if(initInterval != interval){
                 monitoringService.restartMonitoring()
             }
-            // writeSettings()
         }
     }
+    
+    // MARK: Private functions
+    
+    private func checkIfTimeIntervalValid(interval: Double) -> Bool {
+        let result = interval >= Constants.minTimeIntervalToCheck && interval <= Constants.maxTimeIntervalToCheck
+        
+        return result
+    }
+    
 }
 
 #Preview {

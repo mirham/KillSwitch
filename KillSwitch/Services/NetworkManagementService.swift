@@ -6,8 +6,6 @@
 //
 
 import Foundation
-import Network
-import Combine
 
 class NetworkManagementService{
     static let shared = NetworkManagementService()
@@ -17,7 +15,7 @@ class NetworkManagementService{
     
     func enableNetworkInterface(interfaceName: String){
         do {
-            try shellService.safeShell("networksetup -setairportpower \(interfaceName) on")
+            try shellService.safeShell(String(format: Constants.shellCommandEnableNetworkIterface, interfaceName))
             
             loggingServie.log(message: String(format: Constants.logNetworkInterfaceHasBeenEnabled, interfaceName))
         }
@@ -28,7 +26,7 @@ class NetworkManagementService{
     
     func disableNetworkInterface(interfaceName: String) {
         do {
-            try shellService.safeShell("networksetup -setairportpower \(interfaceName) off")
+            try shellService.safeShell(String(format: Constants.shellCommandDisableNetworkIterface, interfaceName))
             
             loggingServie.log(message: String(format: Constants.logNetworkInterfaceHasBeenDisabled, interfaceName))
         }

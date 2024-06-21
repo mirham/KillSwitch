@@ -7,7 +7,6 @@
 
 import Foundation
 import Network
-import Combine
 
 class NetworkStatusService: NetworkServiceBase, ObservableObject {
     @Published var currentStatus: NetworkStatusType = NetworkStatusType.unknown
@@ -101,31 +100,30 @@ class NetworkStatusService: NetworkServiceBase, ObservableObject {
         monitor.cancel()
     }
     
-    private func setCurrentIpAddressInfo(){
+    // MARK: Private functions
+    
+    private func setCurrentIpAddressInfo() {
         if(!isGettingIpAddressInProcess)
         {
             Task {
                 do {
-                    
                     self.isGettingIpAddressInProcess = true
                     
                     let api = addressesService.getRandomActiveAddressApi()
                     
-                    if(api != nil){
+                    if(api == nil) {
+                        resetCurrentIpAddressData()
+                    }
+                    else{
                         let currentIp = await addressesService.getCurrentIpAddress(addressApiUrl: api!.url)
                         
-                        if(currentIp != nil){
+                        if(currentIp == nil) {
+                            resetCurrentIpAddressData()
+                        }
+                        else {
                             self.currentIpAddressNonPublished = currentIp
                             self.currentIpAddressInfo = await addressesService.getIpAddressInfo(ipAddress: currentIp!)
                         }
-                        else{
-                            self.currentIpAddressInfo = nil
-                            self.currentIpAddressNonPublished = nil
-                        }
-                    }
-                    else{
-                        self.currentIpAddressInfo = nil
-                        self.currentIpAddressNonPublished = nil
                     }
                     
                     self.isGettingIpAddressInProcess = false
@@ -153,5 +151,10 @@ class NetworkStatusService: NetworkServiceBase, ObservableObject {
             @unknown default:
                 return NetworkInterface(name: interface.name, type: NetworkInterfaceType.unknown)
         }
+    }
+    
+    private func resetCurrentIpAddressData() {
+        self.currentIpAddressInfo = nil
+        self.currentIpAddressNonPublished = nil
     }
 }

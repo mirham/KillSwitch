@@ -11,10 +11,10 @@ import SwiftUI
 struct LogView: View {
     @StateObject var loggingService = LoggingService.shared
     
-    let dateFormatter = DateFormatter()
+    private let dateFormatter = DateFormatter()
     
     init(){
-        dateFormatter.dateFormat = "dd.MM.yy HH:mm:ss"
+        dateFormatter.dateFormat = Constants.logDateFormat
     }
     
     var body: some View {
@@ -42,8 +42,6 @@ struct LogView: View {
         }
     }
 }
-
-extension LogEntry: Identifiable { }
 
 #Preview {
     LogView()

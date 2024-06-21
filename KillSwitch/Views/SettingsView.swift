@@ -5,7 +5,6 @@
 //  Created by UglyGeorge on 10.06.2024.
 //
 
-import Foundation
 import SwiftUI
 
 struct SettingsView: View {

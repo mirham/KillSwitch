@@ -5,10 +5,7 @@
 //  Created by UglyGeorge on 18.06.2024.
 //
 
-import Foundation
-import SwiftData
 import SwiftUI
-
 
 struct AddressApisEditView: View {
     @EnvironmentObject var addressesService: AddressesService
@@ -61,23 +58,7 @@ struct AddressApisEditView: View {
                                 }
                         }
                     }
-                    AsyncButton("Add", action: {
-                        let ipAddress = await addressesService.getCurrentIpAddress(addressApiUrl: newUrl)
-                        
-                        guard ipAddress != nil else {
-                            isNewUrlInvalid = true
-                            
-                            return
-                        }
-                        
-                        let newApi = ApiInfo(url: newUrl, active: true)
-                        
-                        addressesService.apis.append(newApi)
-                        
-                        newUrl = String()
-                        isNewUrlValid = false
-                        isNewUrlInvalid = false
-                    })
+                    AsyncButton("Add", action: addAddressApiAsync)
                     .disabled(!isNewUrlValid)
                     .alert(isPresented: $isNewUrlInvalid) {
                         Alert(title: Text(Constants.dialogHeaderApiIsNotValid),
@@ -99,6 +80,26 @@ struct AddressApisEditView: View {
         .onDisappear() {
             writeSettings()
         }
+    }
+    
+    // MARK: Private functions
+    
+    private func addAddressApiAsync() async {
+        let ipAddress = await addressesService.getCurrentIpAddress(addressApiUrl: newUrl)
+        
+        guard ipAddress != nil else {
+            isNewUrlInvalid = true
+            
+            return
+        }
+        
+        let newApi = ApiInfo(url: newUrl, active: true)
+        
+        addressesService.apis.append(newApi)
+        
+        newUrl = String()
+        isNewUrlValid = false
+        isNewUrlInvalid = false
     }
     
     private func writeSettings() {

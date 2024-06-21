@@ -5,9 +5,7 @@
 //  Created by UglyGeorge on 05.06.2024.
 //
 
-import Foundation
 import SwiftUI
-import SwiftData
 import FlagKit
 
 struct AllowedAddressesEditView: View {
@@ -95,25 +93,7 @@ struct AllowedAddressesEditView: View {
                             }
                         }
                     }
-                    AsyncButton("Add", action: {
-                        let ipAddressInfo = await addressesService.getIpAddressInfo(ipAddress: newIp)
-                        
-                        guard ipAddressInfo != nil else {
-                            isNewIpInvalid = true
-                            
-                            return
-                        }
-                        
-                        monitoringService.addAllowedIpAddress(
-                            ipAddress: newIp,
-                            ipAddressInfo: ipAddressInfo,
-                            safetyType: newIpAddressSafetyType)
-                        
-                        newIp = String()
-                        isNewIpValid = false
-                        newIpAddressSafetyType = AddressSafetyType.compete
-                        isNewIpInvalid = false
-                    })
+                    AsyncButton("Add", action: addAllowedIpAddressAsync)
                     .disabled(!isNewIpValid)
                     .alert(isPresented: $isNewIpInvalid) {
                         Alert(title: Text(Constants.dialogHeaderIpAddressIsNotValid),
@@ -135,6 +115,28 @@ struct AllowedAddressesEditView: View {
         .onDisappear(){
             writeSettings()
         }
+    }
+    
+    // MARK: Private functions
+    
+    private func addAllowedIpAddressAsync() async {
+        let ipAddressInfo = await addressesService.getIpAddressInfo(ipAddress: newIp)
+        
+        guard ipAddressInfo != nil else {
+            isNewIpInvalid = true
+            
+            return
+        }
+        
+        monitoringService.addAllowedIpAddress(
+            ipAddress: newIp,
+            ipAddressInfo: ipAddressInfo,
+            safetyType: newIpAddressSafetyType)
+        
+        newIp = String()
+        isNewIpValid = false
+        newIpAddressSafetyType = AddressSafetyType.compete
+        isNewIpInvalid = false
     }
     
     private func writeSettings() {
