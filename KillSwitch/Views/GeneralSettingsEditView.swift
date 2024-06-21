@@ -23,10 +23,12 @@ struct GeneralSettingsEditView: View {
                 Toggle("Keep application running", isOn: .init(
                     get: { isKeepRunningOn },
                     set: { _, _ in if isKeepRunningOn {
-                            isKeepRunningOn = !appManagementService.uninstallLaunchAgent()
+                             isKeepRunningOn = !appManagementService.uninstallLaunchAgent()
+                             appManagementService.isLaunchAgentInstalled = false
                          }
                          else {
-                            isKeepRunningOn = appManagementService.installLaunchAgent()
+                             isKeepRunningOn = appManagementService.installLaunchAgent()
+                             appManagementService.isLaunchAgentInstalled = true
                         }
                     }))
                 .toggleStyle(CheckToggleStyle())

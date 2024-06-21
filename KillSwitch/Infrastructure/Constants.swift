@@ -15,6 +15,7 @@ struct Constants{
     static let minTimeIntervalToCheck: Double = 1
     static let maxTimeIntervalToCheck: Double = 3600
     static let zshPath = "/bin/zsh"
+    static let launchAgentName = "user.launchkeep.KillSwitch"
     static let launchAgentPlistName = "user.launchkeep.KillSwitch.plist"
     static let launchAgentsFolderPath = "~/Library/LaunchAgents/"
     static let logDateFormat = "dd.MM.yyyy HH:mm:ss"
@@ -41,6 +42,7 @@ struct Constants{
     static let shellCommandEnableNetworkIterface = "networksetup -setairportpower %1$@ on"
     static let shellCommandDisableNetworkIterface = "networksetup -setairportpower %1$@ off"
     static let shellCommandLoadLaunchAgent = "launchctl load %1$@%2$@"
+    static let shellCommandEnableLaunchAgent = "launchctl enable %1$@"
     static let shellCommandRemoveLaunchAgent = "launchctl remove %1$@"
     
     // MARK: Dialog messages
@@ -64,7 +66,7 @@ struct Constants{
     static let logCannotEnableNetworkInterface = "Cannot enable network interface '%1$@'."
     static let logCannotDisableNetworkInterface = "Cannot disable network interface '%1$@'."
     static let logLaunchAgentAdded = "Launch agent added, the application will be always running."
-    static let logLaunchAgentRemoved = "Launch agent removed, the application, and won't be always running. Restart your Mac for applying changes."
+    static let logLaunchAgentRemoved = "Launch agent removed, the application won't be always running."
     static let logCannotAddLaunchAgent = "Cannot add Launch agent: %1$@."
     static let logCannotRemoveLaunchAgent = "Cannot remove Launch agent: %1$@."
     

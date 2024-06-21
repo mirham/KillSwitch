@@ -19,15 +19,17 @@ class AppManagementService : ObservableObject {
     
     static let shared = AppManagementService()
     
-    func showMainView() {
-        isMainViewShowed = true
-        
+    init() {
         let fileManager = FileManager.default
         let plistFilePath = getPlistFilePath()
         
         if(fileManager.fileExists(atPath: plistFilePath)) {
             isLaunchAgentInstalled = true
         }
+    }
+    
+    func showMainView() {
+        isMainViewShowed = true
     }
     
     func showSettingsView() {
@@ -64,7 +66,6 @@ class AppManagementService : ObservableObject {
         
         do {
             try xmlContent.write(toFile: plistFilePath, atomically: true, encoding: String.Encoding.utf8)
-            try shellService.safeShell(String(format: Constants.shellCommandLoadLaunchAgent, Constants.launchAgentsFolderPath, Constants.launchAgentPlistName))
             
             loggingServie.log(message: String(format: Constants.logLaunchAgentAdded))
             
@@ -78,8 +79,6 @@ class AppManagementService : ObservableObject {
     
     func uninstallLaunchAgent() -> Bool {
         do {
-            try shellService.safeShell(String(format: Constants.shellCommandRemoveLaunchAgent, Constants.launchAgentPlistName))
-            
             let fileManager = FileManager.default
             let plistFilePath = getPlistFilePath()
             try fileManager.removeItem(atPath: plistFilePath)
@@ -130,6 +129,16 @@ class AppManagementService : ObservableObject {
     }
     
     func quitApp() {
+        do {
+            if(isLaunchAgentInstalled){
+                try shellService.safeShell(String(format: Constants.shellCommandLoadLaunchAgent, Constants.launchAgentsFolderPath, Constants.launchAgentPlistName))
+            }
+            else{
+                try shellService.safeShell(String(format: Constants.shellCommandRemoveLaunchAgent, Constants.launchAgentName))
+            }
+        }
+        catch {}
+        
         NSApplication.shared.terminate(nil)
     }
     
