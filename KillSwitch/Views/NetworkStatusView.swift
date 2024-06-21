@@ -29,13 +29,7 @@ struct NetworkStatusView: View {
                             .onTapGesture(perform: {
                                 networkManagementService.disableNetworkInterface(interfaceName: Constants.primaryNetworkInterfaceName)
                             })
-                            .onHover(perform: { hovering in
-                                if hovering {
-                                    NSCursor.pointingHand.set()
-                                } else {
-                                    NSCursor.arrow.set()
-                                }
-                            })
+                            .pointerOnHover()
                     case .off:
                         Text("Off".uppercased())
                             .frame(width: 60, height: 60)
@@ -45,13 +39,7 @@ struct NetworkStatusView: View {
                             .onTapGesture(perform: {
                                 networkManagementService.enableNetworkInterface(interfaceName: Constants.primaryNetworkInterfaceName)
                             })
-                            .onHover(perform: { hovering in
-                                if hovering {
-                                    NSCursor.pointingHand.set()
-                                } else {
-                                    NSCursor.arrow.set()
-                                }
-                            })
+                            .pointerOnHover()
                     case .wait:
                         Text("Wait".uppercased())
                             .frame(width: 60, height: 60)

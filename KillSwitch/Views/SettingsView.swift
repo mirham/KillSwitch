@@ -16,6 +16,10 @@ struct SettingsView: View {
                     .tabItem {
                         Text("General")
                     }
+                /*MenuBarStatusEditView()
+                    .tabItem {
+                        Text("Menubar")
+                }*/
                 AllowedAddressesEditView()
                     .navigationSplitViewColumnWidth(250)
                     .tabItem {

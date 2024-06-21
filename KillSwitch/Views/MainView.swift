@@ -36,30 +36,21 @@ struct MainView: View {
             .navigationSplitViewColumnWidth(220)
         } detail: {
             VStack{
-                HStack{
-                    Spacer()
-                    ToggleMonitoringView()
-                        .environmentObject(monitoringService)
-                    ToggleNetworkView()
-                        .environmentObject(networkStatusService)
-                    Spacer()
-                    SettingsButtonView()
-                        .environmentObject(appManagementService)
-                        .padding(.trailing)
-                }
-                .padding(.top)
-                VStack{
-                    LogView.init()
-                }
+                LogView.init()
             }
             .navigationSplitViewColumnWidth(min: 600, ideal: 600)
         }.onAppear(perform: {
-            appManagementService.setViewToTop(viewName: "main-view")
+            appManagementService.setViewToTop(viewName: Constants.windowIdMain)
         })
         .onDisappear(perform: {
             appManagementService.isMainViewShowed = false
         })
         .frame(minHeight: 650)
+        .toolbar(content: {
+            SettingsButtonView()
+                .environmentObject(appManagementService)
+                .padding(.trailing)
+        })
     }
 }
 

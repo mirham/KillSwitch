@@ -9,7 +9,10 @@ import Foundation
 import SwiftUI
 
 struct MenuBarStatusView: View {
+    @Environment(\.colorScheme) var colorScheme
+    
     @EnvironmentObject var monitoringService: MonitoringService
+    @EnvironmentObject var networkStatusService : NetworkStatusService
     
     var body: some View {
         HStack{
@@ -33,6 +36,8 @@ struct MenuBarStatusView: View {
             .font(.system(size: 16.0))
             .bold()
             .foregroundColor(isMonitoringEnabled ? .green : .red)
+        // Text(networkStatusService.currentIpAddressInfo?.countryName.uppercased() ?? String())
+        //    .foregroundColor(colorScheme == .dark ? Color.white : Color.black)
         let renderer = ImageRenderer(content: title)
         let result = renderer.cgImage
         

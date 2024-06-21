@@ -28,6 +28,7 @@ struct KillSwitchApp: App {
             HStack {
                 MenuBarStatusView()
                     .environmentObject(monitoringService)
+                    .environmentObject(networkStatusService)
             }
         }
         .menuBarExtraStyle(.window)
@@ -38,6 +39,7 @@ struct KillSwitchApp: App {
                 .environmentObject(networkStatusService)
                 .environmentObject(appManagementService)
         })
+        .windowToolbarStyle(UnifiedCompactWindowToolbarStyle())
         
         WindowGroup(id:"settings-view", content: {
             SettingsView()

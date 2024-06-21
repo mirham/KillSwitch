@@ -5,11 +5,12 @@
 //  Created by UglyGeorge on 05.06.2024.
 //
 
-import Foundation
 import SwiftUI
 
 struct LogView: View {
     @StateObject var loggingService = LoggingService.shared
+    
+    private let appManagementService = AppManagementService.shared
     
     private let dateFormatter = DateFormatter()
     
@@ -35,6 +36,7 @@ struct LogView: View {
                     }
                     .help(log.type.description)
                 }
+                .textSelection(.enabled)
             }
             .environmentObject(loggingService)
             .id(loggingService.scrollViewId)

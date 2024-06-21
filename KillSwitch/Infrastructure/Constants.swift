@@ -18,6 +18,9 @@ struct Constants{
     static let launchAgentPlistName = "user.launchkeep.KillSwitch.plist"
     static let launchAgentsFolderPath = "~/Library/LaunchAgents/"
     static let logDateFormat = "dd.MM.yyyy HH:mm:ss"
+    static let networkMonitorQueryLabel = "KSNetworkMonitor"
+    static let ipV4: Int = 4
+    static let ipV6: Int = 6
     
     // MARK: Regexes
     static let regexUrl = "((?:http|https)://)?(?:www\\.)?[\\w\\d\\-_]+\\.\\w{2,3}(\\.\\w{2})?(/(?<=/)(?:[\\w\\d\\-./_]+)?)?"
@@ -30,6 +33,7 @@ struct Constants{
     static let settingsKeyAddresses = "allowed-addresses"
     static let settingsKeyApis = "apis"
     static let settingsKeyIsMonitoringEnabled = "is-monitoring-enabled"
+    static let settingsKeyHigherProtection = "higher-protection"
     static let settingsKeyUsePickyMode = "use-picky-mode"
     static let settingsIntervalBetweenChecks = "interval-between-checks"
     

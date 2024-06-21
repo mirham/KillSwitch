@@ -52,6 +52,7 @@ class AddressesService : NetworkServiceBase, ObservableObject {
     
     func getIpAddressInfo(ipAddress : String) async -> AddressInfoBase? {
         do {
+            // TODO RUSS: Add to Settings, add JSON mapping
             let response = try await callGetApi(urlAddress: "https://freeipapi.com/api/json/\(ipAddress)")
             
             guard response != nil else {

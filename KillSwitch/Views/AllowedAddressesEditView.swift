@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Network
 import FlagKit
 
 struct AllowedAddressesEditView: View {
@@ -31,7 +32,9 @@ struct AllowedAddressesEditView: View {
                         HStack {
                             Text(ipAddress.ipAddress).frame(maxWidth: .infinity, alignment: .leading)
                             Spacer()
-                            Image(nsImage: Flag(countryCode:ipAddress.countryCode)?.originalImage ?? NSImage())
+                            Image(nsImage: ipAddress.countryCode.isEmpty
+                                  ? NSImage()
+                                  : Flag(countryCode:ipAddress.countryCode)?.originalImage ?? NSImage())
                             Text(ipAddress.countryName).frame(maxWidth: .infinity, alignment: .leading)
                             Spacer()
                             switch ipAddress.safetyType {
@@ -101,13 +104,7 @@ struct AllowedAddressesEditView: View {
                               dismissButton: .default(Text(Constants.dialogButtonOk)))
                     }
                     .bold()
-                    .onHover(perform: { hovering in
-                        if hovering {
-                            NSCursor.pointingHand.set()
-                        } else {
-                            NSCursor.arrow.set()
-                        }
-                    })
+                    .pointerOnHover()
                 }
                 .padding()
             }
@@ -120,12 +117,18 @@ struct AllowedAddressesEditView: View {
     // MARK: Private functions
     
     private func addAllowedIpAddressAsync() async {
-        let ipAddressInfo = await addressesService.getIpAddressInfo(ipAddress: newIp)
+        let pickyMode = appManagementService.readSetting(key: Constants.settingsKeyUsePickyMode) ?? false
+        var ipAddressInfo = await addressesService.getIpAddressInfo(ipAddress: newIp)
         
-        guard ipAddressInfo != nil else {
-            isNewIpInvalid = true
-            
-            return
+        if(ipAddressInfo == nil){
+            if(pickyMode) {
+                isNewIpInvalid = true
+                
+                return
+            }
+            else{
+                ipAddressInfo = AddressInfoBase(ipAddress: newIp)
+            }
         }
         
         monitoringService.addAllowedIpAddress(

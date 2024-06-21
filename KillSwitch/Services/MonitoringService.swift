@@ -37,6 +37,7 @@ class MonitoringService: ObservableObject {
     
     func startMonitoring() {
         appManagementService.writeSetting(newValue: true, key: Constants.settingsKeyIsMonitoringEnabled)
+        
         let interval: Double = appManagementService.readSetting(key: Constants.settingsIntervalBetweenChecks) ?? 10
         
         isMonitoringEnabled = true
@@ -49,9 +50,17 @@ class MonitoringService: ObservableObject {
                     do {                        
                         guard self.networkStatusService.currentStatusNonPublished == .on else { return }
                         
-                        let updatedIpAddress = await self.getCurrentIpAddressAsync()
+                        let useHigherProtection = self.appManagementService.readSetting(key: Constants.settingsKeyHigherProtection) ?? false
+                        let updatedIpAddress =  await self.getCurrentIpAddressAsync()
                         
-                        guard updatedIpAddress != nil else { return }
+                        if (updatedIpAddress == nil) {
+                            if (useHigherProtection) {
+                                self.networkManagementService.disableNetworkInterface(
+                                    interfaceName: Constants.primaryNetworkInterfaceName)
+                            }
+                            
+                            return
+                        }
                         
                         if (updatedIpAddress! != self.networkStatusService.currentIpAddressNonPublished) {
                             self.loggingService.log(message: String(format: Constants.logCurrentIpHasBeenUpdated, updatedIpAddress!))
@@ -91,12 +100,7 @@ class MonitoringService: ObservableObject {
         ipAddress : String,
         ipAddressInfo: AddressInfoBase?,
         safetyType: AddressSafetyType) {
-        let newIpAddress = AddressInfo(
-            ipVersion: ipAddressInfo!.ipVersion,
-            ipAddress: ipAddress,
-            countryName: ipAddressInfo!.countryName,
-            countryCode: ipAddressInfo!.countryCode,
-            safetyType: safetyType)
+        let newIpAddress = AddressInfo(ipAddress: ipAddress, ipAddressInfo: ipAddressInfo, safetyType: safetyType)
             
         if !allowedIpAddresses.contains(newIpAddress) {
             allowedIpAddresses.append(newIpAddress)

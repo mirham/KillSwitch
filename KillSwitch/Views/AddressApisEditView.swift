@@ -65,13 +65,7 @@ struct AddressApisEditView: View {
                               message: Text(Constants.dialogBodyApiIsNotValid),
                               dismissButton: .default(Text(Constants.dialogButtonOk)))
                     }
-                    .onHover(perform: { hovering in
-                        if hovering {
-                            NSCursor.pointingHand.set()
-                        } else {
-                            NSCursor.arrow.set()
-                        }
-                    })
+                    .pointerOnHover()
                     .bold()
                 }
                 .padding()

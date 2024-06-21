@@ -12,6 +12,7 @@ struct GeneralSettingsEditView: View {
     private let monitoringService = MonitoringService.shared
     
     @State private var isKeepRunningOn = false
+    @State private var useHigherProtection = false
     @State private var usePickyMode = false
     @State private var initInterval: Double = 0
     @State private var interval: Double = 0
@@ -29,13 +30,24 @@ struct GeneralSettingsEditView: View {
                         }
                     }))
                 .toggleStyle(CheckToggleStyle())
-                .onHover(perform: { hovering in
-                    if hovering {
-                        NSCursor.pointingHand.set()
-                    } else {
-                        NSCursor.arrow.set()
+                .pointerOnHover()
+                .onAppear {
+                    let initState  = appManagementService.isLaunchAgentInstalled
+                    isKeepRunningOn = initState
+                }
+                .padding(.leading)
+                .padding(.top)
+            }
+            HStack {
+                Toggle("Higher protection", isOn: Binding(
+                    get: { useHigherProtection },
+                    set: {
+                        useHigherProtection = $0
+                        appManagementService.writeSetting(newValue: $0, key: Constants.settingsKeyHigherProtection)
                     }
-                })
+                ))
+                .toggleStyle(CheckToggleStyle())
+                .pointerOnHover()
                 .onAppear {
                     let initState  = appManagementService.isLaunchAgentInstalled
                     isKeepRunningOn = initState
@@ -52,13 +64,7 @@ struct GeneralSettingsEditView: View {
                     }
                 ))
                 .toggleStyle(CheckToggleStyle())
-                .onHover(perform: { hovering in
-                    if hovering {
-                        NSCursor.pointingHand.set()
-                    } else {
-                        NSCursor.arrow.set()
-                    }
-                })
+                .pointerOnHover()
                 .onAppear {
                     let initState  = appManagementService.isLaunchAgentInstalled
                     isKeepRunningOn = initState
@@ -83,7 +89,8 @@ struct GeneralSettingsEditView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
         .onAppear(){
-            usePickyMode = appManagementService.readSetting(key: Constants.settingsKeyUsePickyMode) ?? false
+            useHigherProtection = appManagementService.readSetting(key: Constants.settingsKeyHigherProtection) ?? false
+            usePickyMode = appManagementService.readSetting(key: Constants.settingsKeyUsePickyMode) ?? true
             initInterval = appManagementService.readSetting(key: Constants.settingsIntervalBetweenChecks) ?? 10
             interval = initInterval
         }

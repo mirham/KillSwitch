@@ -5,7 +5,6 @@
 //  Created by UglyGeorge on 04.06.2024.
 //
 
-import Foundation
 import SwiftUI
 
 struct SettingsButtonView: View {
@@ -18,7 +17,7 @@ struct SettingsButtonView: View {
 
     var body: some View {
         Section {
-            Button(String(), systemImage: "gearshape.2") {
+            Button("Settings", systemImage: "gearshape.2") {
                 showSettingsWindow()
             }
             .buttonStyle(.plain)
@@ -30,14 +29,8 @@ struct SettingsButtonView: View {
                 showOverText = hovering
             })
         }
-        .font(.system(size: 21))
-        .onHover(perform: { hovering in
-            if hovering {
-                NSCursor.pointingHand.set()
-            } else {
-                NSCursor.arrow.set()
-            }
-        })
+        .font(.system(size: 18))
+        .pointerOnHover()
     }
     
     // MARK: Private functions
@@ -51,5 +44,5 @@ struct SettingsButtonView: View {
 }
 
 #Preview {
-    ToggleNetworkView()
+    SettingsButtonView()
 }

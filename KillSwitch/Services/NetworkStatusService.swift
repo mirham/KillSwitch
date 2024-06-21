@@ -24,12 +24,11 @@ class NetworkStatusService: NetworkServiceBase, ObservableObject {
     private let addressesService = AddressesService.shared
     private let loggingService = LoggingService.shared
     
-    let monitor = NWPathMonitor()
-    let queue = DispatchQueue(label: "NetworkMonitor", qos: .background)
-    // let queue = DispatchQueue.main
-    
     var currentStatusNonPublished: NetworkStatusType = NetworkStatusType.unknown
     var currentIpAddressNonPublished: String? = nil
+    
+    private let monitor = NWPathMonitor()
+    private let queue = DispatchQueue(label: Constants.networkMonitorQueryLabel, qos: .background)
     
     private var isGettingIpAddressInProcess = false
     
@@ -122,7 +121,7 @@ class NetworkStatusService: NetworkServiceBase, ObservableObject {
                         }
                         else {
                             self.currentIpAddressNonPublished = currentIp
-                            self.currentIpAddressInfo = await addressesService.getIpAddressInfo(ipAddress: currentIp!)
+                            self.currentIpAddressInfo = await addressesService.getIpAddressInfo(ipAddress: currentIp!) ?? AddressInfoBase(ipAddress: currentIp!)
                         }
                     }
                     

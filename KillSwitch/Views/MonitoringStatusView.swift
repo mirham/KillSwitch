@@ -5,7 +5,6 @@
 //  Created by UglyGeorge on 05.06.2024.
 //
 
-import Foundation
 import SwiftUI
 
 struct MonitoringStatusView: View {
@@ -31,13 +30,7 @@ struct MonitoringStatusView: View {
                         }
                         
                     })
-                    .onHover(perform: { hovering in
-                        if hovering {
-                            NSCursor.pointingHand.set()
-                        } else {
-                            NSCursor.arrow.set()
-                        }
-                    })
+                    .pointerOnHover()
             }
         }
     }
