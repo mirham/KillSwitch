@@ -15,6 +15,18 @@ struct AddressInfo: Codable, Identifiable, Equatable {
     var countryCode: String
     var safetyType: AddressSafetyType
     
+    init(ipAddress: String,
+         ipAddressInfo: AddressInfoBase?,
+         safetyType: AddressSafetyType = .unknown){
+        let info = ipAddressInfo ?? AddressInfoBase(ipAddress: ipAddress)
+        
+        self.ipVersion = info.ipVersion
+        self.ipAddress = info.ipAddress
+        self.countryName = info.countryName
+        self.countryCode = info.countryCode
+        self.safetyType = safetyType
+    }
+    
     static func == (lhs: AddressInfo, rhs: AddressInfo) -> Bool {
         return lhs.ipAddress == rhs.ipAddress
     }

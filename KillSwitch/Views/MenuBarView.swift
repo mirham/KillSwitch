@@ -59,6 +59,8 @@ struct MenuBarView: View {
         }
     }
     
+    // MARK: Private functions
+    
     private func showMainWindow(){
         if(!appManagementService.isMainViewShowed){
             openWindow(id: Constants.windowIdMain)

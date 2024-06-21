@@ -7,7 +7,6 @@
 
 import Foundation
 import Network
-import Combine
 
 class NetworkStatusService: NetworkServiceBase, ObservableObject {
     @Published var currentStatus: NetworkStatusType = NetworkStatusType.unknown
@@ -25,12 +24,11 @@ class NetworkStatusService: NetworkServiceBase, ObservableObject {
     private let addressesService = AddressesService.shared
     private let loggingService = LoggingService.shared
     
-    let monitor = NWPathMonitor()
-    let queue = DispatchQueue(label: "NetworkMonitor", qos: .background)
-    // let queue = DispatchQueue.main
-    
     var currentStatusNonPublished: NetworkStatusType = NetworkStatusType.unknown
     var currentIpAddressNonPublished: String? = nil
+    
+    private let monitor = NWPathMonitor()
+    private let queue = DispatchQueue(label: Constants.networkMonitorQueryLabel, qos: .background)
     
     private var isGettingIpAddressInProcess = false
     
@@ -101,31 +99,30 @@ class NetworkStatusService: NetworkServiceBase, ObservableObject {
         monitor.cancel()
     }
     
-    private func setCurrentIpAddressInfo(){
+    // MARK: Private functions
+    
+    private func setCurrentIpAddressInfo() {
         if(!isGettingIpAddressInProcess)
         {
             Task {
                 do {
-                    
                     self.isGettingIpAddressInProcess = true
                     
                     let api = addressesService.getRandomActiveAddressApi()
                     
-                    if(api != nil){
-                        let currentIp = await addressesService.getCurrentIpAddress(addressApiUrl: api!.url)
-                        
-                        if(currentIp != nil){
-                            self.currentIpAddressNonPublished = currentIp
-                            self.currentIpAddressInfo = await addressesService.getIpAddressInfo(ipAddress: currentIp!)
-                        }
-                        else{
-                            self.currentIpAddressInfo = nil
-                            self.currentIpAddressNonPublished = nil
-                        }
+                    if(api == nil) {
+                        resetCurrentIpAddressData()
                     }
                     else{
-                        self.currentIpAddressInfo = nil
-                        self.currentIpAddressNonPublished = nil
+                        let currentIp = await addressesService.getCurrentIpAddress(addressApiUrl: api!.url)
+                        
+                        if(currentIp == nil) {
+                            resetCurrentIpAddressData()
+                        }
+                        else {
+                            self.currentIpAddressNonPublished = currentIp
+                            self.currentIpAddressInfo = await addressesService.getIpAddressInfo(ipAddress: currentIp!) ?? AddressInfoBase(ipAddress: currentIp!)
+                        }
                     }
                     
                     self.isGettingIpAddressInProcess = false
@@ -153,5 +150,10 @@ class NetworkStatusService: NetworkServiceBase, ObservableObject {
             @unknown default:
                 return NetworkInterface(name: interface.name, type: NetworkInterfaceType.unknown)
         }
+    }
+    
+    private func resetCurrentIpAddressData() {
+        self.currentIpAddressInfo = nil
+        self.currentIpAddressNonPublished = nil
     }
 }

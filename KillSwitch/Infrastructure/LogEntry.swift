@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct LogEntry: Equatable, Hashable {
+struct LogEntry: Equatable, Hashable, Identifiable {
     let id = UUID()
     let date = Date()
     let message: String

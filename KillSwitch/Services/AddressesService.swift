@@ -36,7 +36,7 @@ class AddressesService : NetworkServiceBase, ObservableObject {
         return result
     }
     
-    func getCurrentIpAddress(addressApiUrl: String) async -> String?{
+    func getCurrentIpAddress(addressApiUrl: String) async -> String? {
         let ipAddressResponse = await callIpAddressApi(urlAddress: addressApiUrl)
         let ipAddressString = ipAddressResponse.trimmingCharacters(in: .whitespacesAndNewlines)
         
@@ -52,6 +52,7 @@ class AddressesService : NetworkServiceBase, ObservableObject {
     
     func getIpAddressInfo(ipAddress : String) async -> AddressInfoBase? {
         do {
+            // TODO RUSS: Add to Settings, add JSON mapping
             let response = try await callGetApi(urlAddress: "https://freeipapi.com/api/json/\(ipAddress)")
             
             guard response != nil else {
@@ -80,25 +81,28 @@ class AddressesService : NetworkServiceBase, ObservableObject {
     }
     
     func validateIpAddress(ipToValidate: String) -> Bool {
+        var result = false
         
         var sin = sockaddr_in()
         var sin6 = sockaddr_in6()
         
         if ipToValidate.withCString({ cstring in inet_pton(AF_INET6, cstring, &sin6.sin6_addr) }) == 1 {
-            return true
+            result = true
         }
         else if ipToValidate.withCString({ cstring in inet_pton(AF_INET, cstring, &sin.sin_addr) }) == 1 {
-            return true
+            result = true
         }
         
-        return false
+        return result
     }
     
     func validateApiAddress(apiAddressToValidate: String) -> Bool {
-        let regEx = "((?:http|https)://)?(?:www\\.)?[\\w\\d\\-_]+\\.\\w{2,3}(\\.\\w{2})?(/(?<=/)(?:[\\w\\d\\-./_]+)?)?"
-        let predicate = NSPredicate(format: "SELF MATCHES %@", argumentArray: [regEx])
+        let predicate = NSPredicate(format: "SELF MATCHES %@", argumentArray: [Constants.regexUrl])
+        
         return predicate.evaluate(with: apiAddressToValidate)
     }
+    
+    // MARK: Private functions
     
     private func callIpAddressApi(urlAddress : String) async -> String {
         do {

@@ -19,7 +19,7 @@ class ShellService{
         task.standardOutput = pipe
         task.standardError = pipe
         task.arguments = ["-c", command]
-        task.executableURL = URL(fileURLWithPath: "/bin/zsh")
+        task.executableURL = URL(fileURLWithPath: Constants.zshPath)
         task.standardInput = nil
 
         try task.run()

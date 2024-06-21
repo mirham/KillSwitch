@@ -5,7 +5,6 @@
 //  Created by UglyGeorge on 05.06.2024.
 //
 
-import Foundation
 import SwiftUI
 import FlagKit
 
@@ -47,26 +46,31 @@ struct CurrentIpView: View {
                             }
                         }
                     }
-                Spacer()
-                    .frame(height: 5)
-                HStack{
-                    Image(nsImage: getIpCountryFlag())
-                    Text(networkStatusService.currentIpAddressInfo?.countryName.uppercased() ?? String())
-                        .foregroundStyle(.gray)
-                        .font(.system(size: 12))
-                        .bold()
-                }
+                Spacer().frame(height: 1)
                 Text(getCurrentSafetyTypeText())
                     .textCase(.uppercase)
                     .font(.system(size: 10))
                     .bold()
                     .foregroundStyle(getCurrentSafetyColor())
+                    .isHidden(hidden: getCurrentSafetyTypeText().isEmpty, remove: true)
+                HStack {
+                    Image(nsImage: getIpCountryFlag())
+                        .resizable()
+                        .frame(width: 20, height: 12)
+                    Text(networkStatusService.currentIpAddressInfo?.countryName.uppercased() ?? String())
+                        .font(.system(size: 12))
+                        .bold()
+                }
+                .opacity(0.7)
+                .isHidden(hidden: !isCountryDetected(), remove: true)
             }
             .onDisappear(){
                 writeSettings()
             }
         }
     }
+    
+    // MARK: Private functions
     
     private func getCurrentSafetyTypeText() -> String {
         let mask = "%1$@ safety"
@@ -94,7 +98,8 @@ struct CurrentIpView: View {
     private func getIpCountryFlag() -> NSImage{
         var result = NSImage()
         
-        if(networkStatusService.currentIpAddressInfo?.countryCode != nil){
+        if(networkStatusService.currentIpAddressInfo?.countryCode != nil
+           && !networkStatusService.currentIpAddressInfo!.countryCode.isEmpty){
             result = Flag(countryCode: networkStatusService.currentIpAddressInfo!.countryCode)?.originalImage ?? NSImage()
         }
         
@@ -106,6 +111,13 @@ struct CurrentIpView: View {
             ipAddress: networkStatusService.currentIpAddressInfo!.ipAddress,
             ipAddressInfo: networkStatusService.currentIpAddressInfo,
             safetyType: safetyType)
+    }
+    
+    private func isCountryDetected() -> Bool {
+        let result = networkStatusService.currentIpAddressInfo != nil
+         && !networkStatusService.currentIpAddressInfo!.countryName.isEmpty
+        
+        return result
     }
     
     private func writeSettings() {

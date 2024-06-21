@@ -5,7 +5,6 @@
 //  Created by UglyGeorge on 04.06.2024.
 //
 
-import Foundation
 import SwiftUI
 
 struct NetworkInterfacesView: View {

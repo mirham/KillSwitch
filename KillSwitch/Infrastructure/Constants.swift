@@ -8,29 +8,51 @@
 import Foundation
 
 struct Constants{
-    // Default values
+    // MARK: Default values
     static let settings = "Settings"
     static let none = "None"
+    static let primaryNetworkInterfaceName = "en0"
+    static let minTimeIntervalToCheck: Double = 1
+    static let maxTimeIntervalToCheck: Double = 3600
+    static let zshPath = "/bin/zsh"
+    static let launchAgentName = "user.launchkeep.KillSwitch"
+    static let launchAgentPlistName = "user.launchkeep.KillSwitch.plist"
+    static let launchAgentsFolderPath = "~/Library/LaunchAgents/"
+    static let logDateFormat = "dd.MM.yyyy HH:mm:ss"
+    static let networkMonitorQueryLabel = "KSNetworkMonitor"
+    static let ipV4: Int = 4
+    static let ipV6: Int = 6
     
-    // Window IDs
+    // MARK: Regexes
+    static let regexUrl = "((?:http|https)://)?(?:www\\.)?[\\w\\d\\-_]+\\.\\w{2,3}(\\.\\w{2})?(/(?<=/)(?:[\\w\\d\\-./_]+)?)?"
+    
+    // MARK: Window IDs
     static let windowIdMain = "main-view"
     static let windowIdSettings = "settings-view"
     
-    // Settings key names
+    // MARK:  Settings key names
     static let settingsKeyAddresses = "allowed-addresses"
     static let settingsKeyApis = "apis"
     static let settingsKeyIsMonitoringEnabled = "is-monitoring-enabled"
+    static let settingsKeyHigherProtection = "higher-protection"
     static let settingsKeyUsePickyMode = "use-picky-mode"
     static let settingsIntervalBetweenChecks = "interval-between-checks"
     
-    // Dialog messages
+    // MARK: Shell commands
+    static let shellCommandEnableNetworkIterface = "networksetup -setairportpower %1$@ on"
+    static let shellCommandDisableNetworkIterface = "networksetup -setairportpower %1$@ off"
+    static let shellCommandLoadLaunchAgent = "launchctl load %1$@%2$@"
+    static let shellCommandEnableLaunchAgent = "launchctl enable %1$@"
+    static let shellCommandRemoveLaunchAgent = "launchctl remove %1$@"
+    
+    // MARK: Dialog messages
     static let dialogHeaderIpAddressIsNotValid = "IP Address is not valid"
     static let dialogBodyIpAddressIsNotValid = "IP Address seems to not be valid and cannot be added."
     static let dialogHeaderApiIsNotValid = "API for getting IP Address is not valid"
     static let dialogBodyApiIsNotValid = "API doesn't return a valid IP address as a plain text and cannot be added."
     static let dialogButtonOk = "OK"
     
-    // Log messages
+    // MARK: Log messages
     static let logMonitoringHasBeenEnabled = "Monitoring has been enabled."
     static let logMonitoringHasBeenDisabled = "Monitoring has been disabled."
     static let logCurrentIp = "Current IP is %1$@."
@@ -44,15 +66,15 @@ struct Constants{
     static let logCannotEnableNetworkInterface = "Cannot enable network interface '%1$@'."
     static let logCannotDisableNetworkInterface = "Cannot disable network interface '%1$@'."
     static let logLaunchAgentAdded = "Launch agent added, the application will be always running."
-    static let logLaunchAgentRemoved = "Launch agent removed, the application, and won't be always running. Restart your Mac for applying changes."
+    static let logLaunchAgentRemoved = "Launch agent removed, the application won't be always running."
     static let logCannotAddLaunchAgent = "Cannot add Launch agent: %1$@."
     static let logCannotRemoveLaunchAgent = "Cannot remove Launch agent: %1$@."
     
-    // Hints
+    // MARK: Hints
     static let hintApiIsActive = "API is active and in use"
     static let hintApiIsInactive = "API is not active and not in use"
     
-    // Static data
+    // MARK: Static data
     static let addressApiUrls = [
         "http://api.ipify.org",
         "http://icanhazip.com",

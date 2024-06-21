@@ -15,6 +15,7 @@ class LoggingService: ObservableObject {
     
     static let shared = LoggingService()
     
+    // TODO RUSS: Add truncate log setting, copy to clipboard.
     func log(message: String, type: LogEntryType = .info){
         let logEntry = LogEntry(message: message, type: type)
         log(logEntry: logEntry)
