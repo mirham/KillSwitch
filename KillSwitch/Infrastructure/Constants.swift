@@ -20,11 +20,18 @@ struct Constants{
     static let launchAgentsFolderPath = "~/Library/LaunchAgents/"
     static let logDateFormat = "dd.MM.yyyy HH:mm:ss"
     static let networkMonitorQueryLabel = "KSNetworkMonitor"
+    static let enabled = "enabled"
+    static let disabled = "disabled"
     static let ipV4: Int = 4
     static let ipV6: Int = 6
     
     // MARK: Regexes
     static let regexUrl = "((?:http|https)://)?(?:www\\.)?[\\w\\d\\-_]+\\.\\w{2,3}(\\.\\w{2})?(/(?<=/)(?:[\\w\\d\\-./_]+)?)?"
+    
+    // MARK: Icons
+    static let iconCompleteSafety = "checkmark.shield.fill"
+    static let iconSomeSafety = "exclamationmark.shield.fill"
+    static let iconUnsafe = "xmark.shield.fill"
     
     // MARK: Window IDs
     static let windowIdMain = "main-view"
@@ -39,11 +46,12 @@ struct Constants{
     static let settingsIntervalBetweenChecks = "interval-between-checks"
     
     // MARK: Shell commands
-    static let shellCommandEnableNetworkIterface = "networksetup -setairportpower %1$@ on"
-    static let shellCommandDisableNetworkIterface = "networksetup -setairportpower %1$@ off"
-    static let shellCommandLoadLaunchAgent = "launchctl load %1$@%2$@"
-    static let shellCommandEnableLaunchAgent = "launchctl enable %1$@"
-    static let shellCommandRemoveLaunchAgent = "launchctl remove %1$@"
+    static let shCommandEnableNetworkIterface = "networksetup -setairportpower %1$@ on"
+    static let shCommandDisableNetworkIterface = "networksetup -setairportpower %1$@ off"
+    static let shCommandLoadLaunchAgent = "launchctl load %1$@%2$@"
+    static let shCommandEnableLaunchAgent = "launchctl enable %1$@"
+    static let shCommandRemoveLaunchAgent = "launchctl remove %1$@"
+    static let shCommandToggleLocationServices = "defaults -currentHost write '/var/db/locationd/Library/Preferences/ByHost/com.apple.locationd' LocationServicesEnabled -bool %1$@"
     
     // MARK: Dialog messages
     static let dialogHeaderIpAddressIsNotValid = "IP Address is not valid"
@@ -51,6 +59,10 @@ struct Constants{
     static let dialogHeaderApiIsNotValid = "API for getting IP Address is not valid"
     static let dialogBodyApiIsNotValid = "API doesn't return a valid IP address as a plain text and cannot be added."
     static let dialogButtonOk = "OK"
+    static let dialogHeaderLocationServicesToggled = "Location services"
+    static let dialogBodyLocationServicesToggled = "It's needed to reboot the computer to apply Location services changes."
+    static let dialogButtonRebootNow = "Reboot now"
+    static let dialogButtonLater = "Later"
     
     // MARK: Log messages
     static let logMonitoringHasBeenEnabled = "Monitoring has been enabled."
@@ -69,6 +81,10 @@ struct Constants{
     static let logLaunchAgentRemoved = "Launch agent removed, the application won't be always running."
     static let logCannotAddLaunchAgent = "Cannot add Launch agent: %1$@."
     static let logCannotRemoveLaunchAgent = "Cannot remove Launch agent: %1$@."
+    static let logLocationServicesHaveBeenToggled = "Location services have been %1$@, needs to restart to take effect."
+    static let logCannotToggleLocationServices = "Cannot toggle location services: %1$@"
+    static let logRebooting = "Rebooting..."
+    static let logCannotReboot = "Cannot reboot the computer: %1$@"
     
     // MARK: Hints
     static let hintApiIsActive = "API is active and in use"

@@ -9,12 +9,14 @@ import Foundation
 
 class MonitoringService: ObservableObject {
     @Published var isMonitoringEnabled = false
+    @Published var locationServicesEnabled = true
     @Published var currentSafetyType = AddressSafetyType.unknown
     @Published var allowedIpAddresses = [AddressInfo]()
     
     static let shared = MonitoringService()
     
     private let networkStatusService = NetworkStatusService.shared
+    private let locationService = LocationService.shared
     private let addressesService = AddressesService.shared
     private let networkManagementService = NetworkManagementService.shared
     private let loggingService = LoggingService.shared
@@ -40,7 +42,7 @@ class MonitoringService: ObservableObject {
         
         let interval: Double = appManagementService.readSetting(key: Constants.settingsIntervalBetweenChecks) ?? 10
         
-        isMonitoringEnabled = true
+        updateStatus(isMonitoringEnabled: true)
         
         loggingService.log(message: Constants.logMonitoringHasBeenEnabled)
         
@@ -52,6 +54,12 @@ class MonitoringService: ObservableObject {
                         
                         let useHigherProtection = self.appManagementService.readSetting(key: Constants.settingsKeyHigherProtection) ?? false
                         let updatedIpAddress =  await self.getCurrentIpAddressAsync()
+                        let locationServicesEnabled = self.locationService.isLocationServicesEnabled()
+                        
+                        if (locationServicesEnabled && useHigherProtection) {
+                            self.networkManagementService.disableNetworkInterface(
+                                interfaceName: Constants.primaryNetworkInterfaceName)
+                        }
                         
                         if (updatedIpAddress == nil) {
                             if (useHigherProtection) {
@@ -80,9 +88,8 @@ class MonitoringService: ObservableObject {
         appManagementService.writeSetting(newValue: false, key: Constants.settingsKeyIsMonitoringEnabled)
         
         currentTimer?.invalidate()
-        currentSafetyType = AddressSafetyType.unknown
         
-        isMonitoringEnabled = false
+        updateStatus(isMonitoringEnabled: false, currentSafetyType: AddressSafetyType.unknown)
 
         loggingService.log(message: Constants.logMonitoringHasBeenDisabled, type: LogEntryType.warning)
     }
@@ -122,10 +129,7 @@ class MonitoringService: ObservableObject {
             self.loggingService.log(message: Constants.logNoActiveAddressApiFound)
             
             if(self.isMonitoringEnabled){
-                DispatchQueue.main.async {
-                    self.isMonitoringEnabled = false
-                    self.currentSafetyType = AddressSafetyType.unknown
-                }
+                updateStatus(isMonitoringEnabled: false, currentSafetyType: AddressSafetyType.unknown)
             }
         }
         
@@ -148,12 +152,9 @@ class MonitoringService: ObservableObject {
         var result = false
         
         for allowedIpAddress in self.allowedIpAddresses {
-            if updatedIpAddress == allowedIpAddress.ipAddress {
+            if (updatedIpAddress == allowedIpAddress.ipAddress) {
+                updateStatus(currentSafetyType: allowedIpAddress.safetyType)
                 result = true
-                
-                DispatchQueue.main.async {
-                    self.currentSafetyType = allowedIpAddress.safetyType
-                }
             }
         }
         
@@ -161,13 +162,10 @@ class MonitoringService: ObservableObject {
     }
     
     private func performActionForUpdatedIpAddress(updatedIpAddress: String) {
-        
         let isAllowed = checkIfUpdatedIpAddressAllowed(updatedIpAddress: updatedIpAddress)
         
         if(!isAllowed){
-            DispatchQueue.main.async {
-                self.currentSafetyType = AddressSafetyType.unknown
-            }
+            updateStatus(currentSafetyType: AddressSafetyType.unknown)
             
             // TODO RUSS: It should be all active interfaces
             self.networkManagementService.disableNetworkInterface(
@@ -176,6 +174,24 @@ class MonitoringService: ObservableObject {
             self.loggingService.log(
                 message: String(format: Constants.logCurrentIpHasBeenUpdatedWithNotFromWhitelist, updatedIpAddress),
                 type: LogEntryType.warning)
+        }
+    }
+    
+    private func updateStatus(
+        isMonitoringEnabled: Bool? = nil,
+        currentSafetyType: AddressSafetyType? = nil) {
+        DispatchQueue.main.async {
+            self.locationServicesEnabled = self.locationService.isLocationServicesEnabled()
+            
+            if(isMonitoringEnabled != nil) {
+                self.isMonitoringEnabled = isMonitoringEnabled!
+            }
+            
+            if(currentSafetyType != nil) {
+                self.currentSafetyType = currentSafetyType!
+            }
+            
+            self.objectWillChange.send()
         }
     }
 }

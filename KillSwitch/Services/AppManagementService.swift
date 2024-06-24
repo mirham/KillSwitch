@@ -131,10 +131,10 @@ class AppManagementService : ObservableObject {
     func quitApp() {
         do {
             if(isLaunchAgentInstalled){
-                try shellService.safeShell(String(format: Constants.shellCommandLoadLaunchAgent, Constants.launchAgentsFolderPath, Constants.launchAgentPlistName))
+                try shellService.safeShell(String(format: Constants.shCommandLoadLaunchAgent, Constants.launchAgentsFolderPath, Constants.launchAgentPlistName))
             }
             else{
-                try shellService.safeShell(String(format: Constants.shellCommandRemoveLaunchAgent, Constants.launchAgentName))
+                try shellService.safeShell(String(format: Constants.shCommandRemoveLaunchAgent, Constants.launchAgentName))
             }
         }
         catch {}

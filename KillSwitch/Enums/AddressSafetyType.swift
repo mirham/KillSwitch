@@ -11,12 +11,14 @@ enum AddressSafetyType : Int, CaseIterable, Codable {
     case unknown = 0
     case compete = 1
     case some = 2
+    case unsafe = 3
     
     var description : String {
         switch self {
             case .unknown: return "Unknown"
             case .compete: return "Compete"
             case .some: return "Some"
+            case .unsafe: return "Unsafe"
         }
     }
 }

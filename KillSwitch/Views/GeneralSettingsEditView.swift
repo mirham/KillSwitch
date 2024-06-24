@@ -10,16 +10,21 @@ import SwiftUI
 struct GeneralSettingsEditView: View {
     private let appManagementService = AppManagementService.shared
     private let monitoringService = MonitoringService.shared
+    private let locationService = LocationService.shared
+    private let computerManagementService = ComputerManagementService.shared
     
     @State private var isKeepRunningOn = false
     @State private var useHigherProtection = false
     @State private var usePickyMode = false
+    @State private var isLocationServicesEnabled = false
     @State private var initInterval: Double = 0
     @State private var interval: Double = 0
     
+    @State private var isLocationServicesToggled: Bool = false
+    
     var body: some View {
         VStack(alignment: .leading) {
-            HStack (alignment: .top) {
+            HStack (alignment: .center) {
                 Toggle("Keep application running", isOn: .init(
                     get: { isKeepRunningOn },
                     set: { _, _ in if isKeepRunningOn {
@@ -37,6 +42,26 @@ struct GeneralSettingsEditView: View {
                     let initState  = appManagementService.isLaunchAgentInstalled
                     isKeepRunningOn = initState
                 }
+                .padding(.leading)
+                .padding(.top)
+            }
+            HStack (alignment: .top) {
+                Toggle("Disable location services", isOn: Binding(
+                    get: { !isLocationServicesEnabled },
+                    set: {
+                        isLocationServicesToggled = true
+                        if (isLocationServicesEnabled) {
+                            locationService.toggleLocationServices(isEnabled: !$0)
+                        }
+                    }))
+                .toggleStyle(CheckToggleStyle())
+                .alert(isPresented: $isLocationServicesToggled) {
+                    Alert(title: Text(Constants.dialogHeaderLocationServicesToggled),
+                          message: Text(Constants.dialogBodyLocationServicesToggled),
+                          primaryButton: Alert.Button.default(Text(Constants.dialogButtonRebootNow), action: { computerManagementService.reboot() }),
+                          secondaryButton: .default(Text(Constants.dialogButtonLater)))
+                }
+                .pointerOnHover()
                 .padding(.leading)
                 .padding(.top)
             }
@@ -91,6 +116,7 @@ struct GeneralSettingsEditView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
         .onAppear(){
+            isLocationServicesEnabled = locationService.isLocationServicesEnabled()
             useHigherProtection = appManagementService.readSetting(key: Constants.settingsKeyHigherProtection) ?? false
             usePickyMode = appManagementService.readSetting(key: Constants.settingsKeyUsePickyMode) ?? true
             initInterval = appManagementService.readSetting(key: Constants.settingsIntervalBetweenChecks) ?? 10
