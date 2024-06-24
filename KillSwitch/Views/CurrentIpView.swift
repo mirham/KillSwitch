@@ -20,7 +20,6 @@ struct CurrentIpView: View {
                 Text("Current IP".uppercased())
                     .font(.title3)
                     .multilineTextAlignment(.center)
-                    .padding(.top)
                 Text(networkStatusService.currentIpAddressInfo?.ipAddress.uppercased() ?? Constants.none.uppercased())
                     .font(.largeTitle)
                     .bold()
@@ -53,6 +52,12 @@ struct CurrentIpView: View {
                     .bold()
                     .foregroundStyle(getCurrentSafetyColor())
                     .isHidden(hidden: getCurrentSafetyTypeText().isEmpty, remove: true)
+                Text("(disable location services)")
+                    .textCase(.lowercase)
+                    .font(.system(size: 9))
+                    .bold()
+                    .foregroundStyle(getCurrentSafetyColor())
+                    .isHidden(hidden: !isHighRisk(), remove: true)
                 HStack {
                     Image(nsImage: getIpCountryFlag())
                         .resizable()
@@ -77,20 +82,30 @@ struct CurrentIpView: View {
         
         let result = networkStatusService.currentIpAddressInfo?.ipAddress != nil
                         && monitoringService.currentSafetyType != .unknown
-                        ? String(format: mask, monitoringService.currentSafetyType.description)
-                        : String()
+            ? monitoringService.locationServicesEnabled
+                ? String(AddressSafetyType.unsafe.description)
+                : String(format: mask, monitoringService.currentSafetyType.description)
+            : String()
         
         return result
     }
     
     private func getCurrentSafetyColor() -> Color {
-        let result = networkStatusService.currentIpAddressInfo?.ipAddress != nil
-                && monitoringService.currentSafetyType == AddressSafetyType.compete
-                    ? Color.green
-                    : networkStatusService.currentIpAddressInfo?.ipAddress != nil
-                        && monitoringService.currentSafetyType == AddressSafetyType.some
-                        ? Color.yellow
-                        : Color.primary
+        var result = Color.primary
+        
+        guard networkStatusService.currentIpAddressInfo?.ipAddress != nil else { return result }
+        
+        if (isHighRisk()) {
+            result = Color.red
+            
+            return result
+        }
+        
+        result = monitoringService.currentSafetyType == AddressSafetyType.compete
+            ? .green
+            : monitoringService.currentSafetyType == AddressSafetyType.some
+                ? .yellow
+                : .primary
         
         return result
     }
@@ -116,6 +131,12 @@ struct CurrentIpView: View {
     private func isCountryDetected() -> Bool {
         let result = networkStatusService.currentIpAddressInfo != nil
          && !networkStatusService.currentIpAddressInfo!.countryName.isEmpty
+        
+        return result
+    }
+    
+    private func isHighRisk() -> Bool {
+        let result = monitoringService.isMonitoringEnabled && monitoringService.locationServicesEnabled
         
         return result
     }

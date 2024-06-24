@@ -29,4 +29,15 @@ class ShellService{
         
         return output
     }
+    
+    @discardableResult
+    func rootShell(command: String) throws -> String {
+        var error: NSDictionary?
+        
+        if let output =  NSAppleScript(source: "do shell script \"\(command)\" with administrator privileges")?.executeAndReturnError(&error) {
+            return output.description
+        }
+        
+        throw error?.description.errorDescription ?? String()
+    }
 }

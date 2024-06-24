@@ -15,7 +15,7 @@ class NetworkManagementService{
     
     func enableNetworkInterface(interfaceName: String){
         do {
-            try shellService.safeShell(String(format: Constants.shellCommandEnableNetworkIterface, interfaceName))
+            try shellService.safeShell(String(format: Constants.shCommandEnableNetworkIterface, interfaceName))
             
             loggingServie.log(message: String(format: Constants.logNetworkInterfaceHasBeenEnabled, interfaceName))
         }
@@ -26,7 +26,7 @@ class NetworkManagementService{
     
     func disableNetworkInterface(interfaceName: String) {
         do {
-            try shellService.safeShell(String(format: Constants.shellCommandDisableNetworkIterface, interfaceName))
+            try shellService.safeShell(String(format: Constants.shCommandDisableNetworkIterface, interfaceName))
             
             loggingServie.log(message: String(format: Constants.logNetworkInterfaceHasBeenDisabled, interfaceName))
         }

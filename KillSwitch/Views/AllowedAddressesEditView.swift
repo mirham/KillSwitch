@@ -46,7 +46,7 @@ struct AllowedAddressesEditView: View {
                                     Circle()
                                         .fill(.yellow)
                                         .frame(width: 10, height: 10)
-                                case .unknown:
+                                default:
                                     Circle()
                                         .fill(.gray)
                                         .frame(width: 5, height: 5)

@@ -18,34 +18,35 @@ struct MainView: View {
                 CurrentIpView()
                     .environmentObject(monitoringService)
                     .environmentObject(networkStatusService)
+                    .padding(.top)
                 Spacer()
-                    .frame(minHeight: 20)
+                    .frame(height: 30)
                 MonitoringStatusView()
                     .environmentObject(monitoringService)
-                Spacer()
-                    .frame(minHeight: 20)
+                    .padding(.top)
                 NetworkStatusView()
                     .environmentObject(networkStatusService)
+                    .padding(.top)
                 Spacer()
                     .frame(minHeight: 30)
                 NetworkInterfacesView()
                     .environmentObject(networkStatusService)
-                NetworkCapabilitesView()
-                    .environmentObject(networkStatusService)
+                // NetworkCapabilitesView()
+                //    .environmentObject(networkStatusService)
             }
             .navigationSplitViewColumnWidth(220)
         } detail: {
             VStack{
                 LogView.init()
             }
-            .navigationSplitViewColumnWidth(min: 600, ideal: 600)
+            .navigationSplitViewColumnWidth(min: 550, ideal: 550)
         }.onAppear(perform: {
             appManagementService.setViewToTop(viewName: Constants.windowIdMain)
         })
         .onDisappear(perform: {
             appManagementService.isMainViewShowed = false
         })
-        .frame(minHeight: 650)
+        .frame(minHeight: 500)
         .toolbar(content: {
             SettingsButtonView()
                 .environmentObject(appManagementService)

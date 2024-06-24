@@ -13,7 +13,7 @@ struct NetworkInterfacesView: View {
     var body: some View {
         Section() {
             VStack(spacing: 10){
-                Text("Active network intefaces".uppercased())
+                Text("Active connections".uppercased())
                     .font(.caption2)
                 ForEach(networkStatusService.currentNetworkInterfaces, id: \.id) { activeNetworkInterface in
                     HStack {
@@ -28,5 +28,5 @@ struct NetworkInterfacesView: View {
 }
 
 #Preview {
-    NetworkCapabilitesView()
+    NetworkInterfacesView()
 }
