@@ -104,7 +104,7 @@ struct GeneralSettingsEditView: View {
                     .foregroundColor(checkIfTimeIntervalValid(interval: interval) ? .primary : .red)
                     .onChange(of: interval) {
                         if (checkIfTimeIntervalValid(interval: interval)){
-                            appManagementService.writeSetting(newValue: interval, key: Constants.settingsIntervalBetweenChecks)
+                            appManagementService.writeSetting(newValue: interval, key: Constants.settingsKeyIntervalBetweenChecks)
                         }
                     }
                     .textFieldStyle(.roundedBorder)
@@ -119,7 +119,7 @@ struct GeneralSettingsEditView: View {
             isLocationServicesEnabled = locationService.isLocationServicesEnabled()
             useHigherProtection = appManagementService.readSetting(key: Constants.settingsKeyHigherProtection) ?? false
             usePickyMode = appManagementService.readSetting(key: Constants.settingsKeyUsePickyMode) ?? true
-            initInterval = appManagementService.readSetting(key: Constants.settingsIntervalBetweenChecks) ?? 10
+            initInterval = appManagementService.readSetting(key: Constants.settingsKeyIntervalBetweenChecks) ?? 10
             interval = initInterval
         }
         .onDisappear() {

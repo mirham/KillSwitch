@@ -24,7 +24,9 @@ struct NetworkStatusView: View {
                         Text("On".uppercased())
                             .frame(width: 60, height: 60)
                             .background(.green)
-                            .foregroundColor(.white)
+                            .foregroundColor(.black.opacity(0.5))
+                            .font(.system(size: 18))
+                            .bold()
                             .clipShape(Circle())
                             .onTapGesture(perform: {
                                 networkManagementService.disableNetworkInterface(interfaceName: Constants.primaryNetworkInterfaceName)
@@ -34,7 +36,9 @@ struct NetworkStatusView: View {
                         Text("Off".uppercased())
                             .frame(width: 60, height: 60)
                             .background(.red)
-                            .foregroundColor(.white)
+                            .foregroundColor(.black.opacity(0.5))
+                            .font(.system(size: 18))
+                            .bold()
                             .clipShape(/*@START_MENU_TOKEN@*/Circle()/*@END_MENU_TOKEN@*/)
                             .onTapGesture(perform: {
                                 networkManagementService.enableNetworkInterface(interfaceName: Constants.primaryNetworkInterfaceName)
@@ -44,13 +48,17 @@ struct NetworkStatusView: View {
                         Text("Wait".uppercased())
                             .frame(width: 60, height: 60)
                             .background(.yellow)
-                            .foregroundColor(.white)
+                            .foregroundColor(.black.opacity(0.5))
+                            .font(.system(size: 18))
+                            .bold()
                             .clipShape(/*@START_MENU_TOKEN@*/Circle()/*@END_MENU_TOKEN@*/)
                     case .unknown:
                         Text("N/A".uppercased())
                             .frame(width: 60, height: 60)
                             .background(.gray)
-                            .foregroundColor(.white)
+                            .foregroundColor(.black.opacity(0.5))
+                            .font(.system(size: 18))
+                            .bold()
                             .clipShape(/*@START_MENU_TOKEN@*/Circle()/*@END_MENU_TOKEN@*/)
                 }
             }

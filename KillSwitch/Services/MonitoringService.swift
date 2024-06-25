@@ -40,7 +40,7 @@ class MonitoringService: ObservableObject {
     func startMonitoring() {
         appManagementService.writeSetting(newValue: true, key: Constants.settingsKeyIsMonitoringEnabled)
         
-        let interval: Double = appManagementService.readSetting(key: Constants.settingsIntervalBetweenChecks) ?? 10
+        let interval: Double = appManagementService.readSetting(key: Constants.settingsKeyIntervalBetweenChecks) ?? 10
         
         updateStatus(isMonitoringEnabled: true)
         

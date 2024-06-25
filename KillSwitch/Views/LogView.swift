@@ -37,6 +37,7 @@ struct LogView: View {
                     .help(log.type.description)
                 }
                 .textSelection(.enabled)
+                .focusable(false)
             }
             .environmentObject(loggingService)
             .id(loggingService.scrollViewId)
