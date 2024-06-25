@@ -43,7 +43,8 @@ struct Constants{
     static let settingsKeyIsMonitoringEnabled = "is-monitoring-enabled"
     static let settingsKeyHigherProtection = "higher-protection"
     static let settingsKeyUsePickyMode = "use-picky-mode"
-    static let settingsIntervalBetweenChecks = "interval-between-checks"
+    static let settingsKeyIntervalBetweenChecks = "interval-between-checks"
+    static let settingsKeyAppsToClose = "apps-to-close"
     
     // MARK: Shell commands
     static let shCommandEnableNetworkIterface = "networksetup -setairportpower %1$@ on"
@@ -85,6 +86,7 @@ struct Constants{
     static let logCannotToggleLocationServices = "Cannot toggle location services: %1$@"
     static let logRebooting = "Rebooting..."
     static let logCannotReboot = "Cannot reboot the computer: %1$@"
+    static let logCannotAddAppToClose = "Cannot add application to close: %1$@"
     
     // MARK: Hints
     static let hintApiIsActive = "API is active and in use"

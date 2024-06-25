@@ -7,34 +7,28 @@
 
 import SwiftUI
 
-struct MonitoringStatusView: View {
-    @EnvironmentObject var monitoringService : MonitoringService
+struct AppsMonitoringStatusView: View {
+    @EnvironmentObject var computerManagementService : ComputerManagementService
     
     var body: some View {
         Section() {
             VStack{
-                Text("Monitoring".uppercased())
+                Text("Apps".uppercased())
                     .font(.title3)
                     .multilineTextAlignment(.center)
-                Text((monitoringService.isMonitoringEnabled ? "On": "Off").uppercased())
+                Text(computerManagementService.activeProcessesToClose.count.description)
                     .frame(width: 60, height: 60)
-                    .background(monitoringService.isMonitoringEnabled ? .green : .red)
+                    .background(.yellow)
                     .foregroundColor(.black.opacity(0.5))
                     .font(.system(size: 18))
                     .bold()
                     .clipShape(Circle())
                     .onTapGesture(perform: {
-                        if (monitoringService.isMonitoringEnabled) {
-                            monitoringService.stopMonitoring()
-                        }
-                        else {
-                            monitoringService.startMonitoring()
-                        }
-                        
+                        computerManagementService.killActiveProcesses()
                     })
                     .pointerOnHover()
             }
-        }
+        }.isHidden(hidden:computerManagementService.activeProcessesToClose.isEmpty, remove: true)
     }
 }
 

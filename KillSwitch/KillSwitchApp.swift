@@ -13,6 +13,7 @@ struct KillSwitchApp: App {
     let networkStatusService = NetworkStatusService.shared
     let addressesService = AddressesService.shared
     let appManagementService = AppManagementService.shared
+    let computerManagementService = ComputerManagementService.shared
     
     var body: some Scene {
         MenuBarExtra {
@@ -21,8 +22,9 @@ struct KillSwitchApp: App {
                     .environmentObject(monitoringService)
                     .environmentObject(networkStatusService)
                     .environmentObject(appManagementService)
+                    .environmentObject(computerManagementService)
             }
-            .frame(width: 260, height: 280)
+            .frame(width:390, height:280)
             .background(.windowBackground)
         } label: {
             HStack {
@@ -38,6 +40,7 @@ struct KillSwitchApp: App {
                 .environmentObject(monitoringService)
                 .environmentObject(networkStatusService)
                 .environmentObject(appManagementService)
+                .environmentObject(computerManagementService)
         })
         .windowToolbarStyle(UnifiedCompactWindowToolbarStyle())
         
@@ -46,6 +49,7 @@ struct KillSwitchApp: App {
                 .navigationTitle("Settings")
                 .environmentObject(monitoringService)
                 .environmentObject(addressesService)
+                .environmentObject(computerManagementService)
                 .frame(maxWidth: 500, maxHeight: 500)
         }).windowResizability(.contentSize)
     }

@@ -11,6 +11,7 @@ struct MainView: View {
     @EnvironmentObject var monitoringService: MonitoringService
     @EnvironmentObject var networkStatusService: NetworkStatusService
     @EnvironmentObject var appManagementService: AppManagementService
+    @EnvironmentObject var computerManagementService: ComputerManagementService
     
     var body: some View {
         NavigationSplitView {
@@ -20,15 +21,18 @@ struct MainView: View {
                     .environmentObject(networkStatusService)
                     .padding(.top)
                 Spacer()
-                    .frame(height: 30)
+                    .frame(height: 25)
                 MonitoringStatusView()
                     .environmentObject(monitoringService)
                     .padding(.top)
                 NetworkStatusView()
                     .environmentObject(networkStatusService)
                     .padding(.top)
+                AppsMonitoringStatusView()
+                    .environmentObject(computerManagementService)
+                    .padding(.top)
                 Spacer()
-                    .frame(minHeight: 30)
+                    .frame(minHeight: 20)
                 NetworkInterfacesView()
                     .environmentObject(networkStatusService)
                 // NetworkCapabilitesView()
@@ -39,14 +43,14 @@ struct MainView: View {
             VStack{
                 LogView.init()
             }
-            .navigationSplitViewColumnWidth(min: 550, ideal: 550)
+            .navigationSplitViewColumnWidth(min: 600, ideal: 600)
         }.onAppear(perform: {
             appManagementService.setViewToTop(viewName: Constants.windowIdMain)
         })
         .onDisappear(perform: {
             appManagementService.isMainViewShowed = false
         })
-        .frame(minHeight: 500)
+        .frame(minHeight: 600)
         .toolbar(content: {
             SettingsButtonView()
                 .environmentObject(appManagementService)

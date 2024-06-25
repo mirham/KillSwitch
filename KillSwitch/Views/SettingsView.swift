@@ -12,23 +12,27 @@ struct SettingsView: View {
 
     var body: some View {
         TabView {
-                GeneralSettingsEditView()
-                    .tabItem {
-                        Text("General")
-                    }
-                /*MenuBarStatusEditView()
-                    .tabItem {
-                        Text("Menubar")
-                }*/
-                AllowedAddressesEditView()
-                    .navigationSplitViewColumnWidth(250)
-                    .tabItem {
-                        Text("Allowed IP addresses")
-                    }
-                AddressApisEditView()
-                    .tabItem {
-                        Text("IP address APIs")
-                    }
+            GeneralSettingsEditView()
+                .tabItem {
+                    Text("General")
+                }
+            /* MenuBarStatusEditView()
+                 .tabItem {
+                     Text("Menubar")
+             } */
+            AllowedAddressesEditView()
+                .navigationSplitViewColumnWidth(250)
+                .tabItem {
+                    Text("Allowed IP addresses")
+                }
+            AddressApisEditView()
+                .tabItem {
+                    Text("IP address APIs")
+                }
+            AppsToCloseEditView()
+                .tabItem {
+                    Text("Apps to close")
+                }
         }
         .onAppear(perform: {
             appManagementService.setViewToTop(viewName: "settings-view")

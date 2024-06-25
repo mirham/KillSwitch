@@ -13,6 +13,7 @@ struct MenuBarView: View {
     @EnvironmentObject var appManagementService: AppManagementService
     @EnvironmentObject var monitoringService: MonitoringService
     @EnvironmentObject var networkStatusService: NetworkStatusService
+    @EnvironmentObject var computerManagementService: ComputerManagementService
     
     @State private var showOverText = false
     @State private var quitOverText = false
@@ -28,6 +29,9 @@ struct MenuBarView: View {
                     .padding()
                 NetworkStatusView()
                     .environmentObject(networkStatusService)
+                    .padding()
+                AppsMonitoringStatusView()
+                    .environmentObject(computerManagementService)
                     .padding()
             }
             Spacer()
