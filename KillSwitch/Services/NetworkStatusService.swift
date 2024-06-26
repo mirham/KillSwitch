@@ -8,7 +8,7 @@
 import Foundation
 import Network
 
-class NetworkStatusService: NetworkServiceBase, ObservableObject {
+class NetworkStatusService: ServiceBase, ApiCallable, ObservableObject {
     @Published var currentStatus: NetworkStatusType = NetworkStatusType.unknown
     @Published var currentNetworkInterfaces: [NetworkInterface] = [NetworkInterface]()
     @Published var currentIpAddressInfo: AddressInfoBase? = nil
@@ -16,7 +16,6 @@ class NetworkStatusService: NetworkServiceBase, ObservableObject {
     static let shared = NetworkStatusService()
     
     private let addressesService = AddressesService.shared
-    private let loggingService = LoggingService.shared
     
     var currentStatusNonPublished: NetworkStatusType = NetworkStatusType.unknown
     var currentIpAddressNonPublished: String? = nil
@@ -26,7 +25,9 @@ class NetworkStatusService: NetworkServiceBase, ObservableObject {
     
     private var isGettingIpAddressInProcess = false
     
-    init() {
+    override init() {
+        super.init()
+        
         isGettingIpAddressInProcess = false
 
         monitor.pathUpdateHandler = { path in

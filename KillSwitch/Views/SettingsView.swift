@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct SettingsView: View {
+struct SettingsView : View {
     let appManagementService = AppManagementService.shared
 
     var body: some View {
@@ -29,7 +29,7 @@ struct SettingsView: View {
                 .tabItem {
                     Text("IP address APIs")
                 }
-            AppsToCloseEditView()
+            ApplicationsToCloseEditView()
                 .tabItem {
                     Text("Apps to close")
                 }

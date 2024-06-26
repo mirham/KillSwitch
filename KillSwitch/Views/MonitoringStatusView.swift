@@ -7,8 +7,10 @@
 
 import SwiftUI
 
-struct MonitoringStatusView: View {
+struct MonitoringStatusView : View {
     @EnvironmentObject var monitoringService : MonitoringService
+    
+    @State private var showOverText = false
     
     var body: some View {
         Section() {
@@ -23,17 +25,30 @@ struct MonitoringStatusView: View {
                     .font(.system(size: 18))
                     .bold()
                     .clipShape(Circle())
-                    .onTapGesture(perform: {
-                        if (monitoringService.isMonitoringEnabled) {
-                            monitoringService.stopMonitoring()
-                        }
-                        else {
-                            monitoringService.startMonitoring()
-                        }
-                        
-                    })
+                    .onTapGesture(perform: toggleMotinoring)
                     .pointerOnHover()
+                    .onHover(perform: { hovering in
+                        showOverText = hovering
+                    })
+                    .popover(isPresented: $showOverText, content: {
+                        Text("Click to \(monitoringService.isMonitoringEnabled ? "disable" : "enable" ) monitoring")
+                            .padding()
+                            .interactiveDismissDisabled()
+                    })
             }
+        }
+    }
+    
+    // MARK: Private functions
+    
+    private func toggleMotinoring() {
+        showOverText = false
+        
+        if (monitoringService.isMonitoringEnabled) {
+            monitoringService.stopMonitoring()
+        }
+        else {
+            monitoringService.startMonitoring()
         }
     }
 }

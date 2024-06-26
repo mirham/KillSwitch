@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-struct MenuBarStatusView: View {
+struct MenuBarStatusView : View {
     @Environment(\.colorScheme) var colorScheme
     
     @EnvironmentObject var monitoringService: MonitoringService

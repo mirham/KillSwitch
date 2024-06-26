@@ -8,7 +8,7 @@
 import SwiftUI
 import FlagKit
 
-struct CurrentIpView: View {
+struct CurrentIpView: View, Settable {
     @EnvironmentObject var networkStatusService : NetworkStatusService
     @EnvironmentObject var monitoringService : MonitoringService
     
@@ -142,7 +142,7 @@ struct CurrentIpView: View {
     }
     
     private func writeSettings() {
-        appManagementService.writeSettingsArray(
+        writeSettingsArray(
             allObjects: monitoringService.allowedIpAddresses,
             key: Constants.settingsKeyAddresses)
     }
