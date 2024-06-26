@@ -66,8 +66,8 @@ struct ApplicationsToCloseEditView : View, Settable {
             case .success(let url):
                 let appName = url.deletingPathExtension().lastPathComponent
                 let bundle = Bundle(url: url)
-                let executableName = URL(string: bundle?.executablePath ?? String())?.lastPathComponent  ?? appName
-                let appInfo = AppInfo(url: url.path().removingPercentEncoding ?? String(), name:  appName, executableName: executableName)
+                let bundleId = bundle?.bundleIdentifier ?? appName
+                let appInfo = AppInfo(url: url.path().removingPercentEncoding ?? String(), name:  appName, bundleId: bundleId)
                 
                 processesService.applicationsToClose.append(appInfo)
                 

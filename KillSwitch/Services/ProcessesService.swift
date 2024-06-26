@@ -59,7 +59,10 @@ class ProcessesService : ServiceBase, Settable, ObservableObject {
                         var activeProcessesToClose = [ProcessInfo]()
                         
                         for appToClose in self.applicationsToClose {
-                            let search = #".\#(appToClose.executableName) - "#
+                            var escapedBundleId = appToClose.bundleId.replacingOccurrences(of: ".", with: "\\.")
+                            escapedBundleId = escapedBundleId.replacingOccurrences(of: "(", with: "\\(")
+                            escapedBundleId = escapedBundleId.replacingOccurrences(of: ")", with: "\\)")
+                            let search = #".\#(escapedBundleId) - "#
                             let regex = try Regex(search).ignoresCase()
                             
                             let foundActiveProcess = activeProcesses.first{$0.description.contains(regex)}

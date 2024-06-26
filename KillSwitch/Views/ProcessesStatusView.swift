@@ -55,5 +55,5 @@ struct ProcessesStatusView : View {
 }
 
 #Preview {
-    MonitoringStatusView()
+    ProcessesStatusView()
 }

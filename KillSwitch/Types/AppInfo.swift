@@ -11,17 +11,17 @@ struct AppInfo: Codable, Identifiable, Equatable {
     var id = UUID()
     var url: String
     var name: String
-    var executableName: String
+    var bundleId: String
     
     static func == (lhs: AppInfo, rhs: AppInfo) -> Bool {
         return lhs.name.uppercased() == rhs.name.uppercased()
             && lhs.url.uppercased() == rhs.url.uppercased()
-            && lhs.executableName.uppercased() == rhs.executableName.uppercased()
+            && lhs.bundleId.uppercased() == rhs.bundleId.uppercased()
     }
     
     func hash(into hasher: inout Hasher) {
         hasher.combine(name)
         hasher.combine(url)
-        hasher.combine(executableName)
+        hasher.combine(bundleId)
     }
 }
