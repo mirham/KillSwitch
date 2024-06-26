@@ -13,6 +13,8 @@ struct MainView : View {
     @EnvironmentObject var appManagementService: AppManagementService
     @EnvironmentObject var processesService: ProcessesService
     
+    @Environment(\.controlActiveState) var controlActiveState
+    
     var body: some View {
         NavigationSplitView {
             VStack{
@@ -38,6 +40,7 @@ struct MainView : View {
                 // NetworkCapabilitesView()
                 //    .environmentObject(networkStatusService)
             }
+            .opacity(controlActiveState == .key ? 1 : 0.6)
             .navigationSplitViewColumnWidth(220)
         } detail: {
             VStack{

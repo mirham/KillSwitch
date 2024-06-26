@@ -13,6 +13,8 @@ struct GeneralSettingsEditView : View, Settable {
     private let locationService = LocationService.shared
     private let computerManagementService = ComputerManagementService.shared
     
+    @Environment(\.controlActiveState) var controlActiveState
+    
     @State private var isKeepRunningOn = false
     @State private var useHigherProtection = false
     @State private var usePickyMode = false
@@ -57,7 +59,7 @@ struct GeneralSettingsEditView : View, Settable {
                     .padding(.top)
                     .padding(.trailing)
                     .onHover(perform: { hovering in
-                        showOverKeepApplicationRunning = hovering
+                        showOverKeepApplicationRunning = hovering && controlActiveState == .key
                     })
                     .popover(isPresented: $showOverKeepApplicationRunning, 
                              arrowEdge: .trailing,
@@ -94,7 +96,7 @@ struct GeneralSettingsEditView : View, Settable {
                     .padding(.top)
                     .padding(.trailing)
                     .onHover(perform: { hovering in
-                        showOverDisableLocationServices = hovering
+                        showOverDisableLocationServices = hovering && controlActiveState == .key
                     })
                     .popover(isPresented: $showOverDisableLocationServices, 
                              arrowEdge: .trailing,
@@ -128,7 +130,7 @@ struct GeneralSettingsEditView : View, Settable {
                     .padding(.top)
                     .padding(.trailing)
                     .onHover(perform: { hovering in
-                        showOverHigherProtection = hovering
+                        showOverHigherProtection = hovering && controlActiveState == .key
                     })
                     .popover(isPresented: $showOverHigherProtection, 
                              arrowEdge: .trailing,
@@ -162,7 +164,7 @@ struct GeneralSettingsEditView : View, Settable {
                     .padding(.top)
                     .padding(.trailing)
                     .onHover(perform: { hovering in
-                        showOverPickyMode = hovering
+                        showOverPickyMode = hovering && controlActiveState == .key
                     })
                     .popover(isPresented: $showOverPickyMode, 
                              arrowEdge: .trailing,

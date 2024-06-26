@@ -10,6 +10,8 @@ import SwiftUI
 struct MonitoringStatusView : View {
     @EnvironmentObject var monitoringService : MonitoringService
     
+    @Environment(\.controlActiveState) var controlActiveState
+    
     @State private var showOverText = false
     
     var body: some View {
@@ -28,9 +30,9 @@ struct MonitoringStatusView : View {
                     .onTapGesture(perform: toggleMotinoring)
                     .pointerOnHover()
                     .onHover(perform: { hovering in
-                        showOverText = hovering
+                        showOverText = hovering && controlActiveState == .key
                     })
-                    .popover(isPresented: $showOverText, content: {
+                    .popover(isPresented: $showOverText, arrowEdge: .trailing, content: {
                         Text("Click to \(monitoringService.isMonitoringEnabled ? "disable" : "enable" ) monitoring")
                             .padding()
                             .interactiveDismissDisabled()

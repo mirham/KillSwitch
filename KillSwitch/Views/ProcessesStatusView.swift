@@ -10,6 +10,8 @@ import SwiftUI
 struct ProcessesStatusView : View {
     @EnvironmentObject var processesService : ProcessesService
     
+    @Environment(\.controlActiveState) var controlActiveState
+    
     @State private var showOverText = false
     
     var body: some View {
@@ -33,15 +35,17 @@ struct ProcessesStatusView : View {
                         .pointerOnHover()
                 }
                 .onHover(perform: { hovering in
-                    showOverText = hovering
+                    showOverText = hovering && controlActiveState == .key
                 })
-                .popover(isPresented: $showOverText, content: {
-                    VStack {
-                        Text("Click to close:")
-                        ForEach(processesService.activeProcessesToClose, id: \.pid) { processInfo in
-                            HStack {
-                                Image(nsImage: NSWorkspace.shared.icon(forFile: processInfo.url))
-                                Text(processInfo.name)
+                .popover(isPresented: ($showOverText), arrowEdge: .trailing, content: {
+                    VStack{
+                        Text("Click to close")
+                        VStack(alignment: .leading) {
+                            ForEach(processesService.activeProcessesToClose, id: \.pid) { processInfo in
+                                HStack {
+                                    Image(nsImage: NSWorkspace.shared.icon(forFile: processInfo.url))
+                                    Text(processInfo.name)
+                                }
                             }
                         }
                     }

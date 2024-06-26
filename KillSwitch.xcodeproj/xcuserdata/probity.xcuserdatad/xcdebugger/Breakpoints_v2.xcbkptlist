@@ -615,8 +615,8 @@
             filePath = "KillSwitch/Views/GeneralSettingsEditView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "76"
-            endingLineNumber = "76"
+            startingLineNumber = "78"
+            endingLineNumber = "78"
             landmarkName = "body"
             landmarkType = "24">
          </BreakpointContent>
@@ -849,7 +849,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "1C7A4E7F-C181-4B0E-8814-264079E8006C"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "KillSwitch/Views/ApplicationsToCloseEditView.swift"
@@ -858,6 +858,38 @@
             startingLineNumber = "72"
             endingLineNumber = "72"
             landmarkName = "addAppToClose(dialogResult:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "CA611FC8-5B56-4D98-9F50-453B2EDD7456"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "KillSwitch/Infrastructure/Modifiers/PointerOnHoverModifier.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "16"
+            endingLineNumber = "16"
+            landmarkName = "body(content:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "2D54781F-62BC-461C-B744-B22FAD353B1C"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "KillSwitch/Infrastructure/Modifiers/PointerOnHoverModifier.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "14"
+            endingLineNumber = "14"
+            landmarkName = "body(content:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
