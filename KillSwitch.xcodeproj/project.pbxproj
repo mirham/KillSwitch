@@ -33,7 +33,6 @@
 		3570E4752C23058200CB5D42 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3570E4742C23058200CB5D42 /* Constants.swift */; };
 		3570E4772C2317E800CB5D42 /* LogEntryType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3570E4762C2317E800CB5D42 /* LogEntryType.swift */; };
 		3570E4792C23396E00CB5D42 /* SettingsButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3570E4782C23396E00CB5D42 /* SettingsButtonView.swift */; };
-		3570E47C2C23730E00CB5D42 /* FlagKit in Frameworks */ = {isa = PBXBuildFile; productRef = 3570E47B2C23730E00CB5D42 /* FlagKit */; };
 		3570E4822C249FC300CB5D42 /* GeneralSettingsEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3570E4812C249FC300CB5D42 /* GeneralSettingsEditView.swift */; };
 		3570E4852C258A0000CB5D42 /* IsHiddenModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3570E4842C258A0000CB5D42 /* IsHiddenModifier.swift */; };
 		3570E4872C258A5400CB5D42 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3570E4862C258A5400CB5D42 /* Extensions.swift */; };
@@ -47,6 +46,7 @@
 		357183362C2C0199008B2D83 /* ProcessesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 357183352C2C0199008B2D83 /* ProcessesService.swift */; };
 		3571833A2C2C05CC008B2D83 /* ServiceBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 357183392C2C05CC008B2D83 /* ServiceBase.swift */; };
 		3571833C2C2C0A79008B2D83 /* Settable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3571833B2C2C0A79008B2D83 /* Settable.swift */; };
+		357183482C2C7A9C008B2D83 /* FlagKit in Frameworks */ = {isa = PBXBuildFile; productRef = 357183472C2C7A9C008B2D83 /* FlagKit */; };
 		359C7C6D2C29605D00CA3CE1 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 359C7C6C2C29605D00CA3CE1 /* LocationService.swift */; };
 		359E44ED2C11A6BD00BF6093 /* MenuBarStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 359E44EC2C11A6BD00BF6093 /* MenuBarStatusView.swift */; };
 		359E44EF2C11BFED00BF6093 /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 359E44EE2C11BFED00BF6093 /* MenuBarView.swift */; };
@@ -125,7 +125,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3570E47C2C23730E00CB5D42 /* FlagKit in Frameworks */,
+				357183482C2C7A9C008B2D83 /* FlagKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -298,7 +298,7 @@
 			);
 			name = KillSwitch;
 			packageProductDependencies = (
-				3570E47B2C23730E00CB5D42 /* FlagKit */,
+				357183472C2C7A9C008B2D83 /* FlagKit */,
 			);
 			productName = KillSwitch;
 			productReference = 351F0C442C0EFCF100644C66 /* KillSwitch.app */;
@@ -628,7 +628,7 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		3570E47B2C23730E00CB5D42 /* FlagKit */ = {
+		357183472C2C7A9C008B2D83 /* FlagKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 3570E47A2C23730E00CB5D42 /* XCRemoteSwiftPackageReference "FlagKit" */;
 			productName = FlagKit;
