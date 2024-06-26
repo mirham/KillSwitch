@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct GeneralSettingsEditView: View {
+struct GeneralSettingsEditView : View, Settable {
     private let appManagementService = AppManagementService.shared
     private let monitoringService = MonitoringService.shared
     private let locationService = LocationService.shared
@@ -21,6 +21,11 @@ struct GeneralSettingsEditView: View {
     @State private var interval: Double = 0
     
     @State private var isLocationServicesToggled: Bool = false
+    
+    @State private var showOverKeepApplicationRunning = false
+    @State private var showOverDisableLocationServices = false
+    @State private var showOverHigherProtection = false
+    @State private var showOverPickyMode = false
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -44,6 +49,23 @@ struct GeneralSettingsEditView: View {
                 }
                 .padding(.leading)
                 .padding(.top)
+                Spacer()
+                Image(systemName: "questionmark.circle.fill")
+                    .resizable()
+                    .frame(width: 20, height: 20)
+                    .foregroundColor(/*@START_MENU_TOKEN@*/.blue/*@END_MENU_TOKEN@*/)
+                    .padding(.top)
+                    .padding(.trailing)
+                    .onHover(perform: { hovering in
+                        showOverKeepApplicationRunning = hovering
+                    })
+                    .popover(isPresented: $showOverKeepApplicationRunning, 
+                             arrowEdge: .trailing,
+                             content: {
+                        Text("The application will be opened after the system starts or if it was closed.")
+                            .frame(width: 200)
+                            .padding()
+                    })
             }
             HStack (alignment: .top) {
                 Toggle("Disable location services", isOn: Binding(
@@ -64,13 +86,30 @@ struct GeneralSettingsEditView: View {
                 .pointerOnHover()
                 .padding(.leading)
                 .padding(.top)
+                Spacer()
+                Image(systemName: "questionmark.circle.fill")
+                    .resizable()
+                    .frame(width: 20, height: 20)
+                    .foregroundColor(/*@START_MENU_TOKEN@*/.blue/*@END_MENU_TOKEN@*/)
+                    .padding(.top)
+                    .padding(.trailing)
+                    .onHover(perform: { hovering in
+                        showOverDisableLocationServices = hovering
+                    })
+                    .popover(isPresented: $showOverDisableLocationServices, 
+                             arrowEdge: .trailing,
+                             content: {
+                        Text("Toggles location services after restart. If the required state is critical, this can be done manually in Settings → Privacy & Security → Location Services without restarting.")
+                            .frame(width: 200)
+                            .padding()
+                    })
             }
             HStack {
                 Toggle("Higher protection", isOn: Binding(
                     get: { useHigherProtection },
                     set: {
                         useHigherProtection = $0
-                        appManagementService.writeSetting(newValue: $0, key: Constants.settingsKeyHigherProtection)
+                        writeSetting(newValue: $0, key: Constants.settingsKeyHigherProtection)
                     }
                 ))
                 .toggleStyle(CheckToggleStyle())
@@ -81,13 +120,30 @@ struct GeneralSettingsEditView: View {
                 }
                 .padding(.leading)
                 .padding(.top)
+                Spacer()
+                Image(systemName: "questionmark.circle.fill")
+                    .resizable()
+                    .frame(width: 20, height: 20)
+                    .foregroundColor(/*@START_MENU_TOKEN@*/.blue/*@END_MENU_TOKEN@*/)
+                    .padding(.top)
+                    .padding(.trailing)
+                    .onHover(perform: { hovering in
+                        showOverHigherProtection = hovering
+                    })
+                    .popover(isPresented: $showOverHigherProtection, 
+                             arrowEdge: .trailing,
+                             content: {
+                        Text("Disables the network when monitoring is enabled, if there is no reliable information about the current IP address. Also closes all running monitored applications, if any.")
+                            .frame(width: 200)
+                            .padding()
+                    })
             }
             HStack {
                 Toggle("Picky mode", isOn: Binding(
                     get: { usePickyMode },
                     set: {
                         usePickyMode = $0
-                        appManagementService.writeSetting(newValue: $0, key: Constants.settingsKeyUsePickyMode)
+                        writeSetting(newValue: $0, key: Constants.settingsKeyUsePickyMode)
                     }
                 ))
                 .toggleStyle(CheckToggleStyle())
@@ -98,13 +154,30 @@ struct GeneralSettingsEditView: View {
                 }
                 .padding(.leading)
                 .padding(.top)
+                Spacer()
+                Image(systemName: "questionmark.circle.fill")
+                    .resizable()
+                    .frame(width: 20, height: 20)
+                    .foregroundColor(/*@START_MENU_TOKEN@*/.blue/*@END_MENU_TOKEN@*/)
+                    .padding(.top)
+                    .padding(.trailing)
+                    .onHover(perform: { hovering in
+                        showOverPickyMode = hovering
+                    })
+                    .popover(isPresented: $showOverPickyMode, 
+                             arrowEdge: .trailing,
+                             content: {
+                        Text("Uses extended information about current IP address, such as country. Does not allow the use of an IP address as an allowed one if there is no reliable information about it.")
+                            .frame(width: 200)
+                            .padding()
+                    })
             }
             HStack {
                 TextField("1..3600", value: $interval, formatter: NumberFormatter())
                     .foregroundColor(checkIfTimeIntervalValid(interval: interval) ? .primary : .red)
                     .onChange(of: interval) {
                         if (checkIfTimeIntervalValid(interval: interval)){
-                            appManagementService.writeSetting(newValue: interval, key: Constants.settingsKeyIntervalBetweenChecks)
+                            writeSetting(newValue: interval, key: Constants.settingsKeyIntervalBetweenChecks)
                         }
                     }
                     .textFieldStyle(.roundedBorder)
@@ -117,9 +190,9 @@ struct GeneralSettingsEditView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
         .onAppear(){
             isLocationServicesEnabled = locationService.isLocationServicesEnabled()
-            useHigherProtection = appManagementService.readSetting(key: Constants.settingsKeyHigherProtection) ?? false
-            usePickyMode = appManagementService.readSetting(key: Constants.settingsKeyUsePickyMode) ?? true
-            initInterval = appManagementService.readSetting(key: Constants.settingsKeyIntervalBetweenChecks) ?? 10
+            useHigherProtection = readSetting(key: Constants.settingsKeyHigherProtection) ?? false
+            usePickyMode = readSetting(key: Constants.settingsKeyUsePickyMode) ?? true
+            initInterval = readSetting(key: Constants.settingsKeyIntervalBetweenChecks) ?? 10
             interval = initInterval
         }
         .onDisappear() {

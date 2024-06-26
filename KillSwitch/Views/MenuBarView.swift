@@ -7,13 +7,13 @@
 
 import SwiftUI
 
-struct MenuBarView: View {   
+struct MenuBarView : View {   
     @Environment(\.openWindow) private var openWindow
     
     @EnvironmentObject var appManagementService: AppManagementService
     @EnvironmentObject var monitoringService: MonitoringService
     @EnvironmentObject var networkStatusService: NetworkStatusService
-    @EnvironmentObject var computerManagementService: ComputerManagementService
+    @EnvironmentObject var processesService: ProcessesService
     
     @State private var showOverText = false
     @State private var quitOverText = false
@@ -30,8 +30,8 @@ struct MenuBarView: View {
                 NetworkStatusView()
                     .environmentObject(networkStatusService)
                     .padding()
-                AppsMonitoringStatusView()
-                    .environmentObject(computerManagementService)
+                ProcessesStatusView()
+                    .environmentObject(processesService)
                     .padding()
             }
             Spacer()

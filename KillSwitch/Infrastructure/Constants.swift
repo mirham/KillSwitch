@@ -53,6 +53,7 @@ struct Constants{
     static let shCommandEnableLaunchAgent = "launchctl enable %1$@"
     static let shCommandRemoveLaunchAgent = "launchctl remove %1$@"
     static let shCommandToggleLocationServices = "defaults -currentHost write '/var/db/locationd/Library/Preferences/ByHost/com.apple.locationd' LocationServicesEnabled -bool %1$@"
+    static let shCommandReboot = "reboot"
     
     // MARK: Dialog messages
     static let dialogHeaderIpAddressIsNotValid = "IP Address is not valid"
@@ -64,29 +65,31 @@ struct Constants{
     static let dialogBodyLocationServicesToggled = "It's needed to reboot the computer to apply Location services changes."
     static let dialogButtonRebootNow = "Reboot now"
     static let dialogButtonLater = "Later"
+    static let dialogHeaderCannotAddAppToClose = "Cannot add application to close."
+    static let dialogBodyCannotAddAppToClose = "Cannot add application to close: %1$@"
     
     // MARK: Log messages
-    static let logMonitoringHasBeenEnabled = "Monitoring has been enabled."
-    static let logMonitoringHasBeenDisabled = "Monitoring has been disabled."
-    static let logCurrentIp = "Current IP is %1$@."
-    static let logNoActiveAddressApiFound = "No any active address API found, add a new one in the Settings."
-    static let logCurrentIpHasBeenUpdated = "Current IP has been updated to %1$@."
-    static let logCurrentIpHasBeenUpdatedWithNotFromWhitelist = "Current IP address has been changed to %1$@ which is not from allowed IPs, network disabled."
+    static let logMonitoringHasBeenEnabled = "Monitoring has been enabled"
+    static let logMonitoringHasBeenDisabled = "Monitoring has been disabled"
+    static let logCurrentIp = "Current IP is %1$@"
+    static let logNoActiveAddressApiFound = "No any active address API found, add a new one in the Settings"
+    static let logCurrentIpHasBeenUpdated = "Current IP has been updated to %1$@"
+    static let logCurrentIpHasBeenUpdatedWithNotFromWhitelist = "Current IP address has been changed to %1$@ which is not from allowed IPs, network disabled"
     static let logErrorWhenCallingIpInfoApi = "Error when called IP info API: %1$@"
-    static let logErrorWhenCallingIpAddressApi = "Error when called IP address API '%1$@': '%2$@', API marked as inactive and will be skipped until next application run."
-    static let logNetworkInterfaceHasBeenEnabled = "Network interface '%1$@' has been enabled."
-    static let logNetworkInterfaceHasBeenDisabled = "Network interface '%1$@' has been disabled."
-    static let logCannotEnableNetworkInterface = "Cannot enable network interface '%1$@'."
-    static let logCannotDisableNetworkInterface = "Cannot disable network interface '%1$@'."
-    static let logLaunchAgentAdded = "Launch agent added, the application will be always running."
-    static let logLaunchAgentRemoved = "Launch agent removed, the application won't be always running."
-    static let logCannotAddLaunchAgent = "Cannot add Launch agent: %1$@."
-    static let logCannotRemoveLaunchAgent = "Cannot remove Launch agent: %1$@."
-    static let logLocationServicesHaveBeenToggled = "Location services have been %1$@, needs to restart to take effect."
+    static let logErrorWhenCallingIpAddressApi = "Error when called IP address API '%1$@': '%2$@', API marked as inactive and will be skipped until next application run"
+    static let logNetworkInterfaceHasBeenEnabled = "Network interface '%1$@' has been enabled"
+    static let logNetworkInterfaceHasBeenDisabled = "Network interface '%1$@' has been disabled"
+    static let logCannotEnableNetworkInterface = "Cannot enable network interface '%1$@'"
+    static let logCannotDisableNetworkInterface = "Cannot disable network interface '%1$@'"
+    static let logLaunchAgentAdded = "Launch agent added, the application will be always running"
+    static let logLaunchAgentRemoved = "Launch agent removed, the application won't be always running"
+    static let logCannotAddLaunchAgent = "Cannot add Launch agent: %1$@"
+    static let logCannotRemoveLaunchAgent = "Cannot remove Launch agent: %1$@"
+    static let logLocationServicesHaveBeenToggled = "Location services have been %1$@, needs to restart to take effect"
     static let logCannotToggleLocationServices = "Cannot toggle location services: %1$@"
     static let logRebooting = "Rebooting..."
     static let logCannotReboot = "Cannot reboot the computer: %1$@"
-    static let logCannotAddAppToClose = "Cannot add application to close: %1$@"
+    static let logProcessTerminated = "%1$@ has been closed"
     
     // MARK: Hints
     static let hintApiIsActive = "API is active and in use"
@@ -98,11 +101,11 @@ struct Constants{
         "http://icanhazip.com",
         "http://ipinfo.io/ip",
         "http://ipecho.net/plain",
-        "http://ident.me",
         "https://checkip.amazonaws.com",
         "http://whatismyip.akamai.com",
         "https://ip.istatmenus.app",
-        "https://api.seeip.org"
+        "https://api.seeip.org",
+        "https://ipapi.co/ip"
     ]
     
     static let launchAgentXmlContent =

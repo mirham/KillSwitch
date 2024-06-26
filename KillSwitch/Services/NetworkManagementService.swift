@@ -7,20 +7,19 @@
 
 import Foundation
 
-class NetworkManagementService{
+class NetworkManagementService : ServiceBase {
     static let shared = NetworkManagementService()
     
     private let shellService = ShellService.shared
-    private let loggingServie = LoggingService.shared
     
     func enableNetworkInterface(interfaceName: String){
         do {
             try shellService.safeShell(String(format: Constants.shCommandEnableNetworkIterface, interfaceName))
             
-            loggingServie.log(message: String(format: Constants.logNetworkInterfaceHasBeenEnabled, interfaceName))
+            loggingService.log(message: String(format: Constants.logNetworkInterfaceHasBeenEnabled, interfaceName))
         }
         catch {
-            loggingServie.log(message: String(format: Constants.logCannotEnableNetworkInterface, interfaceName), type: .error)
+            loggingService.log(message: String(format: Constants.logCannotEnableNetworkInterface, interfaceName), type: .error)
         }
     }
     
@@ -28,10 +27,10 @@ class NetworkManagementService{
         do {
             try shellService.safeShell(String(format: Constants.shCommandDisableNetworkIterface, interfaceName))
             
-            loggingServie.log(message: String(format: Constants.logNetworkInterfaceHasBeenDisabled, interfaceName))
+            loggingService.log(message: String(format: Constants.logNetworkInterfaceHasBeenDisabled, interfaceName))
         }
         catch {
-            loggingServie.log(message: String(format: Constants.logCannotDisableNetworkInterface, interfaceName), type: .error)
+            loggingService.log(message: String(format: Constants.logCannotDisableNetworkInterface, interfaceName), type: .error)
         }
     }
 }

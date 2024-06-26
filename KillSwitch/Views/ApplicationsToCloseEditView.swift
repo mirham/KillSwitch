@@ -8,13 +8,12 @@
 import Foundation
 import SwiftUI
 
-struct AppsToCloseEditView: View {
-    @EnvironmentObject var computerManagementService: ComputerManagementService
-    
-    private let appManagementService = AppManagementService.shared
-    private let loggingService = LoggingService.shared
+struct ApplicationsToCloseEditView : View, Settable {
+    @EnvironmentObject var processesService: ProcessesService
     
     @State private var showFileImporter = false
+    @State private var isAppToCloseInvalid = false
+    @State private var errorMessage = String()
     
     var body: some View {
         VStack{
@@ -24,14 +23,15 @@ struct AppsToCloseEditView: View {
                 .padding(.top)
             NavigationStack {
                 List {
-                    ForEach(computerManagementService.applicationsToClose, id: \.id) { appInfo in
+                    ForEach(processesService.applicationsToClose, id: \.id) { appInfo in
                         HStack {
                             Image(nsImage: NSWorkspace.shared.icon(forFile: appInfo.url))
                             Text(appInfo.name)
                         }
                         .contextMenu {
                             Button(action: {
-                                computerManagementService.applicationsToClose.removeAll(where: {$0.id == appInfo.id})
+                                processesService.applicationsToClose.removeAll(where: {$0.id == appInfo.id})
+                                writeSettings()
                             }){
                                 Text("Delete")
                             }
@@ -49,6 +49,14 @@ struct AppsToCloseEditView: View {
         .fileImporter(isPresented: $showFileImporter, allowedContentTypes: [.application]) { result in
             addAppToClose(dialogResult: result)
         }
+        .alert(isPresented: $isAppToCloseInvalid) {
+            Alert(title: Text(Constants.dialogHeaderCannotAddAppToClose),
+                  message: Text(String(format: Constants.dialogBodyCannotAddAppToClose, errorMessage)),
+                  dismissButton: .default(Text(Constants.dialogButtonOk), action: {
+                    errorMessage = String()
+                    isAppToCloseInvalid = false
+            }))
+        }
     }
     
     // MARK: Private functions
@@ -61,24 +69,26 @@ struct AppsToCloseEditView: View {
                 let executableName = URL(string: bundle?.executablePath ?? String())?.lastPathComponent  ?? appName
                 let appInfo = AppInfo(url: url.path().removingPercentEncoding ?? String(), name:  appName, executableName: executableName)
                 
-                computerManagementService.applicationsToClose.append(appInfo)
+                processesService.applicationsToClose.append(appInfo)
                 
                 writeSettings()
                 
                 showFileImporter = false
             case .failure(let error):
-                loggingService.log(message: String(format: Constants.logCannotAddAppToClose, error.localizedDescription), type: .error)
+                errorMessage = error.localizedDescription
+                isAppToCloseInvalid = true
                 showFileImporter = false
+                
         }
     }
     
     private func writeSettings() {
-        appManagementService.writeSettingsArray(
-            allObjects: computerManagementService.applicationsToClose,
+        writeSettingsArray(
+            allObjects: processesService.applicationsToClose,
             key: Constants.settingsKeyAppsToClose)
     }
 }
 
 #Preview {
-    AppsToCloseEditView()
+    ApplicationsToCloseEditView()
 }

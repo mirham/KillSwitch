@@ -7,11 +7,11 @@
 
 import Foundation
 
-protocol NetworkServiceBase{
+protocol ApiCallable{
     func callGetApi(urlAddress : String) async throws -> String?
 }
 
-extension NetworkServiceBase {
+extension ApiCallable {
     func callGetApi(urlAddress : String) async throws -> String? {
         do {
             let url = URL(string: urlAddress)!

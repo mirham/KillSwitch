@@ -7,11 +7,11 @@
 
 import SwiftUI
 
-struct MainView: View {
+struct MainView : View {
     @EnvironmentObject var monitoringService: MonitoringService
     @EnvironmentObject var networkStatusService: NetworkStatusService
     @EnvironmentObject var appManagementService: AppManagementService
-    @EnvironmentObject var computerManagementService: ComputerManagementService
+    @EnvironmentObject var processesService: ProcessesService
     
     var body: some View {
         NavigationSplitView {
@@ -28,8 +28,8 @@ struct MainView: View {
                 NetworkStatusView()
                     .environmentObject(networkStatusService)
                     .padding(.top)
-                AppsMonitoringStatusView()
-                    .environmentObject(computerManagementService)
+                ProcessesStatusView()
+                    .environmentObject(processesService)
                     .padding(.top)
                 Spacer()
                     .frame(minHeight: 20)

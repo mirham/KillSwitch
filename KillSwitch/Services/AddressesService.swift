@@ -8,16 +8,15 @@
 import Foundation
 import Network
 
-class AddressesService : NetworkServiceBase, ObservableObject {
+class AddressesService : ServiceBase, ApiCallable, Settable, ObservableObject {
     @Published var apis = [ApiInfo]()
     
     static let shared = AddressesService()
     
-    private let appManagementService = AppManagementService.shared
-    private let loggingService = LoggingService.shared
-    
-    init() {
-        let savedApis: [ApiInfo]? = appManagementService.readSettingsArray(key: Constants.settingsKeyApis)
+    override init() {
+        super.init()
+        
+        let savedApis: [ApiInfo]? = readSettingsArray(key: Constants.settingsKeyApis)
         
         if(savedApis == nil){
             for addressApiUrl in Constants.addressApiUrls {

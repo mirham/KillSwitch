@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct SettingsButtonView: View {
+struct SettingsButtonView : View {
     @Environment(\.openWindow) private var openWindow
     
     @EnvironmentObject var appManagementService: AppManagementService
@@ -24,7 +24,11 @@ struct SettingsButtonView: View {
             .foregroundColor(showOverText ? .blue : .primary)
             .bold(showOverText)
             .focusEffectDisabled()
-            .help(Constants.settings)
+            .popover(isPresented: $showOverText, content: {
+                Text(Constants.settings)
+                    .padding()
+                    .interactiveDismissDisabled()
+            })
             .onHover(perform: { hovering in
                 showOverText = hovering
             })

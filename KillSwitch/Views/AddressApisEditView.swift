@@ -7,10 +7,9 @@
 
 import SwiftUI
 
-struct AddressApisEditView: View {
+struct AddressApisEditView : View, Settable {
     @EnvironmentObject var addressesService: AddressesService
     
-    private let appManagementService = AppManagementService.shared
     private let addressService = AddressesService.shared
     
     @State private var newUrl = String()
@@ -97,7 +96,7 @@ struct AddressApisEditView: View {
     }
     
     private func writeSettings() {
-        appManagementService.writeSettingsArray(
+        writeSettingsArray(
             allObjects: addressesService.apis,
             key: Constants.settingsKeyApis)
     }

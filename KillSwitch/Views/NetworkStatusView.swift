@@ -8,10 +8,12 @@
 import Foundation
 import SwiftUI
 
-struct NetworkStatusView: View {
+struct NetworkStatusView : View {
     @EnvironmentObject var networkStatusService : NetworkStatusService
     
     private let networkManagementService = NetworkManagementService.shared
+    
+    @State private var showOverText = false
 
     var body: some View {
         Section {
@@ -28,10 +30,16 @@ struct NetworkStatusView: View {
                             .font(.system(size: 18))
                             .bold()
                             .clipShape(Circle())
-                            .onTapGesture(perform: {
-                                networkManagementService.disableNetworkInterface(interfaceName: Constants.primaryNetworkInterfaceName)
-                            })
+                            .onTapGesture(perform: { toggleNetwork(enable: false) })
                             .pointerOnHover()
+                            .onHover(perform: { hovering in
+                                showOverText = hovering
+                            })
+                            .popover(isPresented: $showOverText, content: {
+                                Text("Click to disable network")
+                                    .padding()
+                                    .interactiveDismissDisabled()
+                            })
                     case .off:
                         Text("Off".uppercased())
                             .frame(width: 60, height: 60)
@@ -40,10 +48,16 @@ struct NetworkStatusView: View {
                             .font(.system(size: 18))
                             .bold()
                             .clipShape(/*@START_MENU_TOKEN@*/Circle()/*@END_MENU_TOKEN@*/)
-                            .onTapGesture(perform: {
-                                networkManagementService.enableNetworkInterface(interfaceName: Constants.primaryNetworkInterfaceName)
-                            })
+                            .onTapGesture(perform: { toggleNetwork(enable: true) })
                             .pointerOnHover()
+                            .onHover(perform: { hovering in
+                                showOverText = hovering
+                            })
+                            .popover(isPresented: $showOverText, content: {
+                                Text("Click to enable network")
+                                    .padding()
+                                    .interactiveDismissDisabled()
+                            })
                     case .wait:
                         Text("Wait".uppercased())
                             .frame(width: 60, height: 60)
@@ -64,6 +78,20 @@ struct NetworkStatusView: View {
             }
         }
     }
+    
+    // MARK: Private functions
+    
+    private func toggleNetwork(enable : Bool) {
+        showOverText = false
+        
+        if (enable) {
+            networkManagementService.enableNetworkInterface(interfaceName: Constants.primaryNetworkInterfaceName)
+        }
+        else {
+            networkManagementService.disableNetworkInterface(interfaceName: Constants.primaryNetworkInterfaceName)
+        }
+    }
+    
 }
 
 #Preview {

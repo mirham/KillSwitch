@@ -8,18 +8,19 @@
 import Foundation
 import SwiftUI
 
-class AppManagementService : ObservableObject {
+class AppManagementService : ServiceBase, ObservableObject {
     @Published var isMainViewShowed = false
     @Published var isSettingsViewShowed = false
     
     var isLaunchAgentInstalled = false
     
     private let shellService = ShellService.shared
-    private let loggingServie = LoggingService.shared
     
     static let shared = AppManagementService()
     
-    init() {
+    override init() {
+        super.init()
+        
         let fileManager = FileManager.default
         let plistFilePath = getPlistFilePath()
         
@@ -67,11 +68,11 @@ class AppManagementService : ObservableObject {
         do {
             try xmlContent.write(toFile: plistFilePath, atomically: true, encoding: String.Encoding.utf8)
             
-            loggingServie.log(message: String(format: Constants.logLaunchAgentAdded))
+            loggingService.log(message: String(format: Constants.logLaunchAgentAdded))
             
             return true
         } catch {
-            loggingServie.log(message: String(format: Constants.logCannotAddLaunchAgent, error.localizedDescription))
+            loggingService.log(message: String(format: Constants.logCannotAddLaunchAgent, error.localizedDescription))
             
             return false
         }
@@ -83,48 +84,14 @@ class AppManagementService : ObservableObject {
             let plistFilePath = getPlistFilePath()
             try fileManager.removeItem(atPath: plistFilePath)
             
-            loggingServie.log(message: String(format: Constants.logLaunchAgentRemoved))
+            loggingService.log(message: String(format: Constants.logLaunchAgentRemoved))
             
             return true
         }
         catch {
-            loggingServie.log(message: String(format: Constants.logCannotRemoveLaunchAgent, error.localizedDescription))
+            loggingService.log(message: String(format: Constants.logCannotRemoveLaunchAgent, error.localizedDescription))
             
             return false
-        }
-    }
-    
-    func readSetting<T: Codable>(key: String) -> T? {
-        guard let data = UserDefaults.standard.data(forKey: key) else {
-            return nil
-        }
-        
-        let result = try? JSONDecoder().decode(T.self, from: data)
-        return result
-    }
-    
-    func writeSetting<T: Codable>(newValue: T, key: String) {
-        let data = try? JSONEncoder().encode(newValue)
-        UserDefaults.standard.set(data, forKey: key)
-    }
-    
-    func readSettingsArray<T: Codable>(key: String) -> [T]? {
-        if let objects = UserDefaults.standard.value(forKey: key) as? Data {
-            let decoder = JSONDecoder()
-            if let objectsDecoded = try? decoder.decode(Array.self, from: objects) as [T] {
-                return objectsDecoded
-            } else {
-                return nil
-            }
-        } else {
-            return nil
-        }
-    }
-    
-    func writeSettingsArray<T: Codable>(allObjects: [T], key: String) {
-        let encoder = JSONEncoder()
-        if let encoded = try? encoder.encode(allObjects){
-            UserDefaults.standard.set(encoded, forKey: key)
         }
     }
     

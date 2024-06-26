@@ -7,7 +7,7 @@
 
 import Foundation
 
-class MonitoringService: ObservableObject {
+class MonitoringService: ServiceBase, Settable, ObservableObject {
     @Published var isMonitoringEnabled = false
     @Published var locationServicesEnabled = true
     @Published var currentSafetyType = AddressSafetyType.unknown
@@ -19,14 +19,14 @@ class MonitoringService: ObservableObject {
     private let locationService = LocationService.shared
     private let addressesService = AddressesService.shared
     private let networkManagementService = NetworkManagementService.shared
-    private let loggingService = LoggingService.shared
-    private let appManagementService = AppManagementService.shared
     
     private var currentTimer: Timer? = nil
     
-    init() {
-        let isMonitoringEnabled: Bool = appManagementService.readSetting(key: Constants.settingsKeyIsMonitoringEnabled) ?? false
-        let savedAllowedIpAddresses: [AddressInfo]? = appManagementService.readSettingsArray(key: Constants.settingsKeyAddresses)
+    override init() {
+        super.init()
+        
+        let isMonitoringEnabled: Bool = readSetting(key: Constants.settingsKeyIsMonitoringEnabled) ?? false
+        let savedAllowedIpAddresses: [AddressInfo]? = readSettingsArray(key: Constants.settingsKeyAddresses)
         
         if(savedAllowedIpAddresses != nil){
             self.allowedIpAddresses = savedAllowedIpAddresses!
@@ -38,9 +38,9 @@ class MonitoringService: ObservableObject {
     }
     
     func startMonitoring() {
-        appManagementService.writeSetting(newValue: true, key: Constants.settingsKeyIsMonitoringEnabled)
+        writeSetting(newValue: true, key: Constants.settingsKeyIsMonitoringEnabled)
         
-        let interval: Double = appManagementService.readSetting(key: Constants.settingsKeyIntervalBetweenChecks) ?? 10
+        let interval: Double = readSetting(key: Constants.settingsKeyIntervalBetweenChecks) ?? 10
         
         updateStatus(isMonitoringEnabled: true)
         
@@ -52,7 +52,7 @@ class MonitoringService: ObservableObject {
                     do {                        
                         guard self.networkStatusService.currentStatusNonPublished == .on else { return }
                         
-                        let useHigherProtection = self.appManagementService.readSetting(key: Constants.settingsKeyHigherProtection) ?? false
+                        let useHigherProtection = self.readSetting(key: Constants.settingsKeyHigherProtection) ?? false
                         let updatedIpAddress =  await self.getCurrentIpAddressAsync()
                         let locationServicesEnabled = self.locationService.isLocationServicesEnabled()
                         
@@ -85,7 +85,7 @@ class MonitoringService: ObservableObject {
     }
     
     func stopMonitoring() {
-        appManagementService.writeSetting(newValue: false, key: Constants.settingsKeyIsMonitoringEnabled)
+        writeSetting(newValue: false, key: Constants.settingsKeyIsMonitoringEnabled)
         
         currentTimer?.invalidate()
         
@@ -95,7 +95,7 @@ class MonitoringService: ObservableObject {
     }
     
     func restartMonitoring(){
-        let isMonitoringEnabled: Bool = appManagementService.readSetting(key: Constants.settingsKeyIsMonitoringEnabled) ?? false
+        let isMonitoringEnabled: Bool = readSetting(key: Constants.settingsKeyIsMonitoringEnabled) ?? false
         
         if(isMonitoringEnabled){
             stopMonitoring()
@@ -126,7 +126,7 @@ class MonitoringService: ObservableObject {
         let result = self.addressesService.getRandomActiveAddressApi()
         
         if(result == nil){
-            self.loggingService.log(message: Constants.logNoActiveAddressApiFound)
+            loggingService.log(message: Constants.logNoActiveAddressApiFound)
             
             if(self.isMonitoringEnabled){
                 updateStatus(isMonitoringEnabled: false, currentSafetyType: AddressSafetyType.unknown)
@@ -171,7 +171,7 @@ class MonitoringService: ObservableObject {
             self.networkManagementService.disableNetworkInterface(
                 interfaceName: Constants.primaryNetworkInterfaceName)
             
-            self.loggingService.log(
+            loggingService.log(
                 message: String(format: Constants.logCurrentIpHasBeenUpdatedWithNotFromWhitelist, updatedIpAddress),
                 type: LogEntryType.warning)
         }

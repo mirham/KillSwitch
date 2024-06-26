@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct NetworkInterfacesView: View {
+struct NetworkInterfacesView : View {
     @EnvironmentObject var networkStatusService : NetworkStatusService
     
     var body: some View {

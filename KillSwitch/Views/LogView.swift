@@ -7,10 +7,10 @@
 
 import SwiftUI
 
-struct LogView: View {
+struct LogView : View {
     @StateObject var loggingService = LoggingService.shared
     
-    private let appManagementService = AppManagementService.shared
+    @State private var showOverText = false
     
     private let dateFormatter = DateFormatter()
     

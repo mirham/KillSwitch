@@ -9,7 +9,7 @@ import SwiftUI
 import Network
 import FlagKit
 
-struct AllowedAddressesEditView: View {
+struct AllowedAddressesEditView : View, Settable {
     @EnvironmentObject var monitoringService: MonitoringService
     
     @State private var newIp = String()
@@ -18,7 +18,6 @@ struct AllowedAddressesEditView: View {
     @State private var isNewIpInvalid: Bool = false
 
     private let addressesService = AddressesService.shared
-    private let appManagementService = AppManagementService.shared
     
     var body: some View {
         VStack{
@@ -117,7 +116,7 @@ struct AllowedAddressesEditView: View {
     // MARK: Private functions
     
     private func addAllowedIpAddressAsync() async {
-        let pickyMode = appManagementService.readSetting(key: Constants.settingsKeyUsePickyMode) ?? false
+        let pickyMode = readSetting(key: Constants.settingsKeyUsePickyMode) ?? false
         var ipAddressInfo = await addressesService.getIpAddressInfo(ipAddress: newIp)
         
         if(ipAddressInfo == nil){
@@ -143,7 +142,7 @@ struct AllowedAddressesEditView: View {
     }
     
     private func writeSettings() {
-        appManagementService.writeSettingsArray(
+        writeSettingsArray(
             allObjects: monitoringService.allowedIpAddresses,
             key: Constants.settingsKeyAddresses)
     }

@@ -10,4 +10,6 @@ import Foundation
 struct ProcessInfo {
     var pid: pid_t
     var description: String
+    var url: String
+    var name: String
 }
