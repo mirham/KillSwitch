@@ -11,6 +11,8 @@ import SwiftUI
 struct NetworkStatusView : View {
     @EnvironmentObject var networkStatusService : NetworkStatusService
     
+    @Environment(\.controlActiveState) var controlActiveState
+    
     private let networkManagementService = NetworkManagementService.shared
     
     @State private var showOverText = false
@@ -33,9 +35,9 @@ struct NetworkStatusView : View {
                             .onTapGesture(perform: { toggleNetwork(enable: false) })
                             .pointerOnHover()
                             .onHover(perform: { hovering in
-                                showOverText = hovering
+                                showOverText = hovering && controlActiveState == .key
                             })
-                            .popover(isPresented: $showOverText, content: {
+                            .popover(isPresented: $showOverText, arrowEdge: .trailing, content: {
                                 Text("Click to disable network")
                                     .padding()
                                     .interactiveDismissDisabled()
@@ -53,7 +55,7 @@ struct NetworkStatusView : View {
                             .onHover(perform: { hovering in
                                 showOverText = hovering
                             })
-                            .popover(isPresented: $showOverText, content: {
+                            .popover(isPresented: $showOverText, arrowEdge: .trailing, content: {
                                 Text("Click to enable network")
                                     .padding()
                                     .interactiveDismissDisabled()
@@ -77,6 +79,7 @@ struct NetworkStatusView : View {
                 }
             }
         }
+        .frame(width: 110, height: 90)
     }
     
     // MARK: Private functions

@@ -36,6 +36,7 @@ struct Constants{
     // MARK: Window IDs
     static let windowIdMain = "main-view"
     static let windowIdSettings = "settings-view"
+    static let windowIdKillProcessesConfirmationDialog = "kill-processess-confirmation-dialog-view"
     
     // MARK:  Settings key names
     static let settingsKeyAddresses = "allowed-addresses"
@@ -45,6 +46,7 @@ struct Constants{
     static let settingsKeyUsePickyMode = "use-picky-mode"
     static let settingsKeyIntervalBetweenChecks = "interval-between-checks"
     static let settingsKeyAppsToClose = "apps-to-close"
+    static let settingsKeyConfirmationApplicationsClose = "confirmation-apps-close"
     
     // MARK: Shell commands
     static let shCommandEnableNetworkIterface = "networksetup -setairportpower %1$@ on"
@@ -67,6 +69,10 @@ struct Constants{
     static let dialogButtonLater = "Later"
     static let dialogHeaderCannotAddAppToClose = "Cannot add application to close."
     static let dialogBodyCannotAddAppToClose = "Cannot add application to close: %1$@"
+    static let dialogHeaderCloseApps = "Close applications"
+    static let dialogBodyCloseApps = "Are you sure you want to close these applications?\nThis operation cannot be undone."
+    static let dialogButtonYes = "Yes"
+    static let dialogButtonNo = "No"
     
     // MARK: Log messages
     static let logMonitoringHasBeenEnabled = "Monitoring has been enabled"

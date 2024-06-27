@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct SettingsView : View {
+    @Environment(\.controlActiveState) var controlActiveState
+    
     let appManagementService = AppManagementService.shared
 
     var body: some View {
@@ -34,6 +36,7 @@ struct SettingsView : View {
                     Text("Apps to close")
                 }
         }
+        .opacity(controlActiveState == .key ? 1 : 0.6)
         .onAppear(perform: {
             appManagementService.setViewToTop(viewName: "settings-view")
         })

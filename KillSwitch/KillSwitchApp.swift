@@ -24,7 +24,8 @@ struct KillSwitchApp: App {
                     .environmentObject(appManagementService)
                     .environmentObject(processsesService)
             }
-            .frame(width:390, height:280)
+            .padding(.top, 10)
+            .padding(.bottom, 10)
             .background(.windowBackground)
         } label: {
             HStack {
@@ -35,7 +36,7 @@ struct KillSwitchApp: App {
         }
         .menuBarExtraStyle(.window)
         
-        WindowGroup(id:"main-view", content: {
+        WindowGroup(id:Constants.windowIdMain, content: {
             MainView()
                 .environmentObject(monitoringService)
                 .environmentObject(networkStatusService)
@@ -44,13 +45,19 @@ struct KillSwitchApp: App {
         })
         .windowToolbarStyle(UnifiedCompactWindowToolbarStyle())
         
-        WindowGroup(id:"settings-view", content: {
+        WindowGroup(id:Constants.windowIdSettings, content: {
             SettingsView()
-                .navigationTitle("Settings")
+                .navigationTitle(Constants.settings)
                 .environmentObject(monitoringService)
                 .environmentObject(addressesService)
                 .environmentObject(processsesService)
                 .frame(maxWidth: 500, maxHeight: 500)
         }).windowResizability(.contentSize)
+        
+        WindowGroup(id: Constants.windowIdKillProcessesConfirmationDialog, content: {
+            KillProcessesConfirmationDialogView()
+                .hidden()
+        })
+        .windowResizability(.contentSize)
     }
 }

@@ -10,6 +10,8 @@ import SwiftUI
 struct SettingsButtonView : View {
     @Environment(\.openWindow) private var openWindow
     
+    @Environment(\.controlActiveState) var controlActiveState
+    
     @EnvironmentObject var appManagementService: AppManagementService
     
     @State private var showOverText = false
@@ -21,7 +23,7 @@ struct SettingsButtonView : View {
                 showSettingsWindow()
             }
             .buttonStyle(.plain)
-            .foregroundColor(showOverText ? .blue : .primary)
+            .foregroundColor(showOverText && controlActiveState == .key ? .blue : .primary)
             .bold(showOverText)
             .focusEffectDisabled()
             .popover(isPresented: $showOverText, content: {
@@ -30,10 +32,11 @@ struct SettingsButtonView : View {
                     .interactiveDismissDisabled()
             })
             .onHover(perform: { hovering in
-                showOverText = hovering
+                showOverText = hovering && controlActiveState == .key
             })
         }
         .font(.system(size: 18))
+        .opacity(controlActiveState == .key ? 1 : 0.6)
         .pointerOnHover()
     }
     
