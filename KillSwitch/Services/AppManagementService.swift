@@ -10,7 +10,9 @@ import SwiftUI
 
 class AppManagementService : ServiceBase, ObservableObject {
     @Published var isMainViewShowed = false
+    @Published var isStatusBarViewShowed = false
     @Published var isSettingsViewShowed = false
+    @Published var isKillProcessesConfirmationDialogShowed = false
     
     var isLaunchAgentInstalled = false
     
@@ -35,6 +37,10 @@ class AppManagementService : ServiceBase, ObservableObject {
     
     func showSettingsView() {
         isSettingsViewShowed = true
+    }
+    
+    func showKillProcessesConfirmationDialog() {
+        isKillProcessesConfirmationDialogShowed = true
     }
     
     func setViewToTop(viewName: String) {

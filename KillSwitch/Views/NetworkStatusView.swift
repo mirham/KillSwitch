@@ -79,6 +79,7 @@ struct NetworkStatusView : View {
                 }
             }
         }
+        .frame(width: 110, height: 90)
     }
     
     // MARK: Private functions

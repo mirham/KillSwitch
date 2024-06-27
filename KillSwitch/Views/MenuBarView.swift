@@ -61,6 +61,13 @@ struct MenuBarView : View {
                 })
             }
         }
+        .onAppear(perform: {
+            appManagementService.isStatusBarViewShowed = true
+        })
+        .onDisappear(perform: {
+            print("hidden")
+            appManagementService.isStatusBarViewShowed = false
+        })
     }
     
     // MARK: Private functions

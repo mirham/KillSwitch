@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3505D94E2C2D5DD300E8FF61 /* KillProcessesConfirmationDialogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3505D94D2C2D5DD300E8FF61 /* KillProcessesConfirmationDialogView.swift */; };
 		351E9CE52C10A3BA00CEC15F /* MonitoringService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 351E9CE42C10A3BA00CEC15F /* MonitoringService.swift */; };
 		351E9CE72C10A6C100CEC15F /* LogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 351E9CE62C10A6C100CEC15F /* LogView.swift */; };
 		351E9CE92C10ADB300CEC15F /* AllowedAddressesEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 351E9CE82C10ADB300CEC15F /* AllowedAddressesEditView.swift */; };
@@ -63,6 +64,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3505D94D2C2D5DD300E8FF61 /* KillProcessesConfirmationDialogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KillProcessesConfirmationDialogView.swift; sourceTree = "<group>"; };
 		351E9CE42C10A3BA00CEC15F /* MonitoringService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonitoringService.swift; sourceTree = "<group>"; };
 		351E9CE62C10A6C100CEC15F /* LogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogView.swift; sourceTree = "<group>"; };
 		351E9CE82C10ADB300CEC15F /* AllowedAddressesEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllowedAddressesEditView.swift; sourceTree = "<group>"; };
@@ -158,6 +160,7 @@
 				359E44EC2C11A6BD00BF6093 /* MenuBarStatusView.swift */,
 				357154F62C17339100A41AA4 /* SettingsView.swift */,
 				3568505F2C2B46FF006E64B8 /* ProcessesStatusView.swift */,
+				3505D94D2C2D5DD300E8FF61 /* KillProcessesConfirmationDialogView.swift */,
 				3570E4812C249FC300CB5D42 /* GeneralSettingsEditView.swift */,
 				3568505B2C2B1999006E64B8 /* ApplicationsToCloseEditView.swift */,
 				3570E48B2C25B02600CB5D42 /* MenuBarStatusEditView.swift */,
@@ -383,6 +386,7 @@
 				357154F92C1739C300A41AA4 /* ApiCallable.swift in Sources */,
 				35F12F402C15B8C200AFA738 /* NetworkInferfacesView.swift in Sources */,
 				359C7C6D2C29605D00CA3CE1 /* LocationService.swift in Sources */,
+				3505D94E2C2D5DD300E8FF61 /* KillProcessesConfirmationDialogView.swift in Sources */,
 				3568505C2C2B1999006E64B8 /* ApplicationsToCloseEditView.swift in Sources */,
 				3570E48E2C25B81400CB5D42 /* DraggableImage.swift in Sources */,
 				3570E4872C258A5400CB5D42 /* Extensions.swift in Sources */,

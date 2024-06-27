@@ -19,6 +19,7 @@ struct GeneralSettingsEditView : View, Settable {
     @State private var useHigherProtection = false
     @State private var usePickyMode = false
     @State private var isLocationServicesEnabled = false
+    @State private var confirmationApplcationsClose = false
     @State private var initInterval: Double = 0
     @State private var interval: Double = 0
     
@@ -28,6 +29,7 @@ struct GeneralSettingsEditView : View, Settable {
     @State private var showOverDisableLocationServices = false
     @State private var showOverHigherProtection = false
     @State private var showOverPickyMode = false
+    @State private var showOverConfirmationApplicationsClose = false
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -101,7 +103,7 @@ struct GeneralSettingsEditView : View, Settable {
                     .popover(isPresented: $showOverDisableLocationServices, 
                              arrowEdge: .trailing,
                              content: {
-                        Text("Toggles location services after restart. If the required state is critical, this can be done manually in Settings → Privacy & Security → Location Services without restarting.")
+                        Text("Toggle location services after restart. If the required state is critical, this can be done manually in Settings → Privacy & Security → Location Services without restarting.")
                             .frame(width: 200)
                             .padding()
                     })
@@ -116,10 +118,6 @@ struct GeneralSettingsEditView : View, Settable {
                 ))
                 .toggleStyle(CheckToggleStyle())
                 .pointerOnHover()
-                .onAppear {
-                    let initState  = appManagementService.isLaunchAgentInstalled
-                    isKeepRunningOn = initState
-                }
                 .padding(.leading)
                 .padding(.top)
                 Spacer()
@@ -135,7 +133,37 @@ struct GeneralSettingsEditView : View, Settable {
                     .popover(isPresented: $showOverHigherProtection, 
                              arrowEdge: .trailing,
                              content: {
-                        Text("Disables the network when monitoring is enabled, if there is no reliable information about the current IP address. Also closes all running monitored applications, if any.")
+                        Text("Disable the network when monitoring is enabled, if there is no reliable information about the current IP address. Also closes all running monitored applications, if any.")
+                            .frame(width: 200)
+                            .padding()
+                    })
+            }
+            HStack {
+                Toggle("Confirmation to close applications", isOn: Binding(
+                    get: { confirmationApplcationsClose },
+                    set: {
+                        confirmationApplcationsClose = $0
+                        writeSetting(newValue: $0, key: Constants.settingsKeyConfirmationApplicationsClose)
+                    }
+                ))
+                .toggleStyle(CheckToggleStyle())
+                .pointerOnHover()
+                .padding(.leading)
+                .padding(.top)
+                Spacer()
+                Image(systemName: "questionmark.circle.fill")
+                    .resizable()
+                    .frame(width: 20, height: 20)
+                    .foregroundColor(/*@START_MENU_TOKEN@*/.blue/*@END_MENU_TOKEN@*/)
+                    .padding(.top)
+                    .padding(.trailing)
+                    .onHover(perform: { hovering in
+                        showOverConfirmationApplicationsClose = hovering && controlActiveState == .key
+                    })
+                    .popover(isPresented: $showOverConfirmationApplicationsClose,
+                             arrowEdge: .trailing,
+                             content: {
+                        Text("Confirmation dialog when closing applications. This option is ignored in higher protection mode.")
                             .frame(width: 200)
                             .padding()
                     })
@@ -150,10 +178,6 @@ struct GeneralSettingsEditView : View, Settable {
                 ))
                 .toggleStyle(CheckToggleStyle())
                 .pointerOnHover()
-                .onAppear {
-                    let initState  = appManagementService.isLaunchAgentInstalled
-                    isKeepRunningOn = initState
-                }
                 .padding(.leading)
                 .padding(.top)
                 Spacer()
@@ -169,7 +193,7 @@ struct GeneralSettingsEditView : View, Settable {
                     .popover(isPresented: $showOverPickyMode, 
                              arrowEdge: .trailing,
                              content: {
-                        Text("Uses extended information about current IP address, such as country. Does not allow the use of an IP address as an allowed one if there is no reliable information about it.")
+                        Text("Use extended information about current IP address, such as country. Does not allow the use of an IP address as an allowed one if there is no reliable information about it.")
                             .frame(width: 200)
                             .padding()
                     })
@@ -194,6 +218,7 @@ struct GeneralSettingsEditView : View, Settable {
             isLocationServicesEnabled = locationService.isLocationServicesEnabled()
             useHigherProtection = readSetting(key: Constants.settingsKeyHigherProtection) ?? false
             usePickyMode = readSetting(key: Constants.settingsKeyUsePickyMode) ?? true
+            confirmationApplcationsClose = readSetting(key: Constants.settingsKeyConfirmationApplicationsClose) ?? true
             initInterval = readSetting(key: Constants.settingsKeyIntervalBetweenChecks) ?? 10
             interval = initInterval
         }

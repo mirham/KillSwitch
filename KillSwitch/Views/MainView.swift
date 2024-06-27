@@ -37,8 +37,6 @@ struct MainView : View {
                     .frame(minHeight: 20)
                 NetworkInterfacesView()
                     .environmentObject(networkStatusService)
-                // NetworkCapabilitesView()
-                //    .environmentObject(networkStatusService)
             }
             .opacity(controlActiveState == .key ? 1 : 0.6)
             .navigationSplitViewColumnWidth(220)

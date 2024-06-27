@@ -49,12 +49,13 @@ struct ApplicationsToCloseEditView : View, Settable {
         .fileImporter(isPresented: $showFileImporter, allowedContentTypes: [.application]) { result in
             addAppToClose(dialogResult: result)
         }
+        .fileDialogDefaultDirectory(.applicationDirectory)
         .alert(isPresented: $isAppToCloseInvalid) {
             Alert(title: Text(Constants.dialogHeaderCannotAddAppToClose),
                   message: Text(String(format: Constants.dialogBodyCannotAddAppToClose, errorMessage)),
                   dismissButton: .default(Text(Constants.dialogButtonOk), action: {
-                    errorMessage = String()
-                    isAppToCloseInvalid = false
+                errorMessage = String()
+                isAppToCloseInvalid = false
             }))
         }
     }

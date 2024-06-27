@@ -92,4 +92,3 @@ struct MenuBarStatusView : View {
 #Preview {
     MenuBarStatusView()
 }
-
