@@ -9,20 +9,18 @@ import SwiftUI
 
 @main
 struct KillSwitchApp: App {
-    let monitoringService = MonitoringService.shared
-    let networkStatusService = NetworkStatusService.shared
-    let addressesService = AddressesService.shared
-    let appManagementService = AppManagementService.shared
-    let processsesService = ProcessesService.shared
+    let appState = AppState.shared
+    
+    init() {
+        NetworkStatusService()
+        ProcessesService()
+    }
     
     var body: some Scene {
         MenuBarExtra {
             VStack{
                 MenuBarView()
-                    .environmentObject(monitoringService)
-                    .environmentObject(networkStatusService)
-                    .environmentObject(appManagementService)
-                    .environmentObject(processsesService)
+                    .environmentObject(appState)
             }
             .padding(.top, 10)
             .padding(.bottom, 10)
@@ -30,32 +28,27 @@ struct KillSwitchApp: App {
         } label: {
             HStack {
                 MenuBarStatusView()
-                    .environmentObject(monitoringService)
-                    .environmentObject(networkStatusService)
+                    .environmentObject(appState)
             }
         }
         .menuBarExtraStyle(.window)
         
         WindowGroup(id:Constants.windowIdMain, content: {
             MainView()
-                .environmentObject(monitoringService)
-                .environmentObject(networkStatusService)
-                .environmentObject(appManagementService)
-                .environmentObject(processsesService)
+                .environmentObject(appState)
         })
         .windowToolbarStyle(UnifiedCompactWindowToolbarStyle())
         
         WindowGroup(id:Constants.windowIdSettings, content: {
             SettingsView()
+                .environmentObject(appState)
                 .navigationTitle(Constants.settings)
-                .environmentObject(monitoringService)
-                .environmentObject(addressesService)
-                .environmentObject(processsesService)
                 .frame(maxWidth: 500, maxHeight: 500)
         }).windowResizability(.contentSize)
         
         WindowGroup(id: Constants.windowIdKillProcessesConfirmationDialog, content: {
             KillProcessesConfirmationDialogView()
+                .environmentObject(appState)
                 .hidden()
         })
         .windowResizability(.contentSize)

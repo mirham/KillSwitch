@@ -8,14 +8,14 @@
 import SwiftUI
 
 struct NetworkInterfacesView : View {
-    @EnvironmentObject var networkStatusService : NetworkStatusService
+    @EnvironmentObject var appState: AppState
     
     var body: some View {
         Section() {
             VStack(spacing: 10){
                 Text("Active connections".uppercased())
                     .font(.caption2)
-                ForEach(networkStatusService.currentNetworkInterfaces, id: \.id) { activeNetworkInterface in
+                ForEach(appState.network.interfaces, id: \.id) { activeNetworkInterface in
                     HStack {
                         Text(activeNetworkInterface.name)
                         Spacer()

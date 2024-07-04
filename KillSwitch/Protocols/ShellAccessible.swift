@@ -1,16 +1,18 @@
 //
-//  NetworkManagementService.swift
+//  ShellAccessible.swift
 //  KillSwitch
 //
-//  Created by UglyGeorge on 04.06.2024.
+//  Created by UglyGeorge on 04.07.2024.
 //
 
 import Foundation
 
-class ShellService{
+protocol ShellAccessible {
+    func safeShell(_ command: String) throws -> String
+    func rootShell(command: String) throws -> String
+}
 
-    static let shared = ShellService()
-    
+extension ShellAccessible {
     @discardableResult
     func safeShell(_ command: String) throws -> String {
         let task = Process()
@@ -21,7 +23,7 @@ class ShellService{
         task.arguments = ["-c", command]
         task.executableURL = URL(fileURLWithPath: Constants.zshPath)
         task.standardInput = nil
-
+        
         try task.run()
         
         let data = pipe.fileHandleForReading.readDataToEndOfFile()

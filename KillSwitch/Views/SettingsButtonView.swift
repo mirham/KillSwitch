@@ -8,11 +8,10 @@
 import SwiftUI
 
 struct SettingsButtonView : View {
+    @EnvironmentObject var appState: AppState
+    
     @Environment(\.openWindow) private var openWindow
-    
-    @Environment(\.controlActiveState) var controlActiveState
-    
-    @EnvironmentObject var appManagementService: AppManagementService
+    @Environment(\.controlActiveState) private var controlActiveState
     
     @State private var showOverText = false
     @State private var quitOverText = false
@@ -43,9 +42,9 @@ struct SettingsButtonView : View {
     // MARK: Private functions
     
     private func showSettingsWindow() {
-        if(!appManagementService.isSettingsViewShowed){
+        if(!appState.views.isSettingsViewShowed){
             openWindow(id: Constants.windowIdSettings)
-            appManagementService.showSettingsView()
+            appState.views.isSettingsViewShowed = true
         }
     }
 }

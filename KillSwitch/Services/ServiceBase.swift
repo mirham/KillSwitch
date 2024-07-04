@@ -8,5 +8,5 @@
 import Foundation
 
 class ServiceBase {
-    let loggingService = LoggingService.shared
+    let appState = AppState.shared
 }

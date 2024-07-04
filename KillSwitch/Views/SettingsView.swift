@@ -8,9 +8,9 @@
 import SwiftUI
 
 struct SettingsView : View {
-    @Environment(\.controlActiveState) var controlActiveState
+    @EnvironmentObject var appState: AppState
     
-    let appManagementService = AppManagementService.shared
+    @Environment(\.controlActiveState) var controlActiveState
 
     var body: some View {
         TabView {
@@ -28,6 +28,7 @@ struct SettingsView : View {
                     Text("Allowed IP addresses")
                 }
             AddressApisEditView()
+                .environmentObject(appState)
                 .tabItem {
                     Text("IP address APIs")
                 }
@@ -38,10 +39,10 @@ struct SettingsView : View {
         }
         .opacity(controlActiveState == .key ? 1 : 0.6)
         .onAppear(perform: {
-            appManagementService.setViewToTop(viewName: "settings-view")
+            AppHelper.setViewToTop(viewName: Constants.windowIdSettings)
         })
         .onDisappear(perform: {
-            appManagementService.isSettingsViewShowed = false
+            appState.views.isSettingsViewShowed = false
         })
         .padding()
         .frame(maxWidth: 500, maxHeight: 500)
@@ -50,6 +51,5 @@ struct SettingsView : View {
 
 #Preview {
     SettingsView()
-        .environmentObject(MonitoringService())
-        .environmentObject(AddressesService())
+        .environmentObject(AppState())
 }

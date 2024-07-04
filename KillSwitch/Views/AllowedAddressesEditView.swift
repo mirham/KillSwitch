@@ -10,7 +10,7 @@ import Network
 import FlagKit
 
 struct AllowedAddressesEditView : View, Settable {
-    @EnvironmentObject var monitoringService: MonitoringService
+    @EnvironmentObject var appState: AppState
     
     @State private var newIp = String()
     @State private var isNewIpValid = false
@@ -18,6 +18,7 @@ struct AllowedAddressesEditView : View, Settable {
     @State private var isNewIpInvalid: Bool = false
 
     private let addressesService = AddressesService.shared
+    private let monitoringService = MonitoringService.shared
     
     var body: some View {
         VStack{
@@ -27,7 +28,7 @@ struct AllowedAddressesEditView : View, Settable {
                 .padding(.top)
             NavigationStack() {
                 List {
-                    ForEach(monitoringService.allowedIpAddresses, id: \.ipAddress) { ipAddress in
+                    ForEach(appState.userData.allowedIps, id: \.ipAddress) { ipAddress in
                         HStack {
                             Text(ipAddress.ipAddress).frame(maxWidth: .infinity, alignment: .leading)
                             Spacer()
@@ -53,7 +54,7 @@ struct AllowedAddressesEditView : View, Settable {
                         }
                         .contextMenu {
                             Button(action: {
-                                monitoringService.allowedIpAddresses.removeAll(where: {$0 == ipAddress})
+                                appState.userData.allowedIps.removeAll(where: {$0 == ipAddress})
                             }){
                                 Text("Delete")
                             }
@@ -143,11 +144,11 @@ struct AllowedAddressesEditView : View, Settable {
     
     private func writeSettings() {
         writeSettingsArray(
-            allObjects: monitoringService.allowedIpAddresses,
+            allObjects: appState.userData.allowedIps,
             key: Constants.settingsKeyAddresses)
     }
 }
 
 #Preview {
-    AllowedAddressesEditView().environmentObject(MonitoringService())
+    AllowedAddressesEditView().environmentObject(AppState())
 }

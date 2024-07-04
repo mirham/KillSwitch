@@ -9,10 +9,9 @@ import SwiftUI
 import FlagKit
 
 struct CurrentIpView: View, Settable {
-    @EnvironmentObject var networkStatusService : NetworkStatusService
-    @EnvironmentObject var monitoringService : MonitoringService
+    @EnvironmentObject var appState: AppState
     
-    var appManagementService = AppManagementService.shared
+    var monitoringService = MonitoringService.shared
     
     var body: some View {
         Section() {
@@ -20,18 +19,18 @@ struct CurrentIpView: View, Settable {
                 Text("Current IP".uppercased())
                     .font(.title3)
                     .multilineTextAlignment(.center)
-                Text(networkStatusService.currentIpAddressInfo?.ipAddress.uppercased() ?? Constants.none.uppercased())
+                Text(appState.network.ipAddressInfo?.ipAddress.uppercased() ?? Constants.none.uppercased())
                     .font(.largeTitle)
                     .bold()
                     .foregroundStyle(getCurrentSafetyColor())
                     .contextMenu {
-                        if(networkStatusService.currentIpAddressInfo?.ipAddress != nil){
+                        if(appState.network.ipAddressInfo?.ipAddress != nil){
                             Button(action: {
-                                appManagementService.copyTextToClipboard(text: networkStatusService.currentIpAddressInfo!.ipAddress)
+                                AppHelper.copyTextToClipboard(text: appState.network.ipAddressInfo!.ipAddress)
                             }){
                                 Text("Copy")
                             }
-                            if (monitoringService.currentSafetyType == .unknown) {
+                            if (appState.current.safetyType == .unknown) {
                                 Button(action: {
                                     addAllowedIpAddress(safetyType: AddressSafetyType.compete)
                                 }){
@@ -62,7 +61,7 @@ struct CurrentIpView: View, Settable {
                     Image(nsImage: getIpCountryFlag())
                         .resizable()
                         .frame(width: 20, height: 12)
-                    Text(networkStatusService.currentIpAddressInfo?.countryName.uppercased() ?? String())
+                    Text(appState.network.ipAddressInfo?.countryName.uppercased() ?? String())
                         .font(.system(size: 12))
                         .bold()
                 }
@@ -80,11 +79,11 @@ struct CurrentIpView: View, Settable {
     private func getCurrentSafetyTypeText() -> String {
         let mask = "%1$@ safety"
         
-        let result = networkStatusService.currentIpAddressInfo?.ipAddress != nil
-                        && monitoringService.currentSafetyType != .unknown
-            ? monitoringService.locationServicesEnabled
+        let result = appState.network.ipAddressInfo?.ipAddress != nil
+                        && appState.current.safetyType != .unknown
+        ? appState.system.locationServicesEnabled
                 ? String(AddressSafetyType.unsafe.description)
-                : String(format: mask, monitoringService.currentSafetyType.description)
+                : String(format: mask, appState.current.safetyType.description)
             : String()
         
         return result
@@ -93,7 +92,7 @@ struct CurrentIpView: View, Settable {
     private func getCurrentSafetyColor() -> Color {
         var result = Color.primary
         
-        guard networkStatusService.currentIpAddressInfo?.ipAddress != nil else { return result }
+        guard appState.network.ipAddressInfo?.ipAddress != nil else { return result }
         
         if (isHighRisk()) {
             result = Color.red
@@ -101,9 +100,9 @@ struct CurrentIpView: View, Settable {
             return result
         }
         
-        result = monitoringService.currentSafetyType == AddressSafetyType.compete
+        result = appState.current.safetyType == AddressSafetyType.compete
             ? .green
-            : monitoringService.currentSafetyType == AddressSafetyType.some
+            : appState.current.safetyType == AddressSafetyType.some
                 ? .yellow
                 : .primary
         
@@ -113,9 +112,9 @@ struct CurrentIpView: View, Settable {
     private func getIpCountryFlag() -> NSImage{
         var result = NSImage()
         
-        if(networkStatusService.currentIpAddressInfo?.countryCode != nil
-           && !networkStatusService.currentIpAddressInfo!.countryCode.isEmpty){
-            result = Flag(countryCode: networkStatusService.currentIpAddressInfo!.countryCode)?.originalImage ?? NSImage()
+        if(appState.network.ipAddressInfo?.countryCode != nil
+           && !appState.network.ipAddressInfo!.countryCode.isEmpty){
+            result = Flag(countryCode: appState.network.ipAddressInfo!.countryCode)?.originalImage ?? NSImage()
         }
         
         return result
@@ -123,27 +122,27 @@ struct CurrentIpView: View, Settable {
     
     private func addAllowedIpAddress(safetyType : AddressSafetyType){
         monitoringService.addAllowedIpAddress(
-            ipAddress: networkStatusService.currentIpAddressInfo!.ipAddress,
-            ipAddressInfo: networkStatusService.currentIpAddressInfo,
+            ipAddress: appState.network.ipAddressInfo!.ipAddress,
+            ipAddressInfo: appState.network.ipAddressInfo,
             safetyType: safetyType)
     }
     
     private func isCountryDetected() -> Bool {
-        let result = networkStatusService.currentIpAddressInfo != nil
-         && !networkStatusService.currentIpAddressInfo!.countryName.isEmpty
+        let result = appState.network.ipAddressInfo != nil
+         && !appState.network.ipAddressInfo!.countryName.isEmpty
         
         return result
     }
     
     private func isHighRisk() -> Bool {
-        let result = monitoringService.isMonitoringEnabled && monitoringService.locationServicesEnabled
+        let result = appState.monitoring.isEnabled && appState.system.locationServicesEnabled
         
         return result
     }
     
     private func writeSettings() {
         writeSettingsArray(
-            allObjects: monitoringService.allowedIpAddresses,
+            allObjects: appState.userData.allowedIps,
             key: Constants.settingsKeyAddresses)
     }
 }

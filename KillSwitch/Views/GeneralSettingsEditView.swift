@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct GeneralSettingsEditView : View, Settable {
-    private let appManagementService = AppManagementService.shared
+    private let launchAgentService = LaunchAgentService.shared
     private let monitoringService = MonitoringService.shared
     private let locationService = LocationService.shared
     private let computerManagementService = ComputerManagementService.shared
@@ -37,18 +37,18 @@ struct GeneralSettingsEditView : View, Settable {
                 Toggle("Keep application running", isOn: .init(
                     get: { isKeepRunningOn },
                     set: { _, _ in if isKeepRunningOn {
-                             isKeepRunningOn = !appManagementService.uninstallLaunchAgent()
-                             appManagementService.isLaunchAgentInstalled = false
+                             isKeepRunningOn = !launchAgentService.delete()
+                             launchAgentService.isLaunchAgentInstalled = false
                          }
                          else {
-                             isKeepRunningOn = appManagementService.installLaunchAgent()
-                             appManagementService.isLaunchAgentInstalled = true
+                             isKeepRunningOn = launchAgentService.create()
+                             launchAgentService.isLaunchAgentInstalled = true
                         }
                     }))
                 .toggleStyle(CheckToggleStyle())
                 .pointerOnHover()
                 .onAppear {
-                    let initState  = appManagementService.isLaunchAgentInstalled
+                    let initState  = launchAgentService.isLaunchAgentInstalled
                     isKeepRunningOn = initState
                 }
                 .padding(.leading)
@@ -240,5 +240,5 @@ struct GeneralSettingsEditView : View, Settable {
 }
 
 #Preview {
-    AddressApisEditView().environmentObject(AddressesService())
+    GeneralSettingsEditView()
 }

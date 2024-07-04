@@ -10,7 +10,9 @@ import Foundation
 struct ApiInfo: Codable, Identifiable, Equatable {
     var id = UUID()
     var url: String
-    var active: Bool
+    
+    @CodableIgnored
+    var active: Bool?
     
     static func == (lhs: ApiInfo, rhs: ApiInfo) -> Bool {
         return lhs.url.uppercased() == rhs.url.uppercased()

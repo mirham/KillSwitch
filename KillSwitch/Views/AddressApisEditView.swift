@@ -8,9 +8,9 @@
 import SwiftUI
 
 struct AddressApisEditView : View, Settable {
-    @EnvironmentObject var addressesService: AddressesService
+    @EnvironmentObject var appState: AppState
     
-    private let addressService = AddressesService.shared
+    private let addressesService = AddressesService.shared
     
     @State private var newUrl = String()
     @State private var isNewUrlValid = false
@@ -24,19 +24,19 @@ struct AddressApisEditView : View, Settable {
                 .padding(.top)
             NavigationStack {
                 List {
-                    ForEach(addressesService.apis, id: \.id) { api in
+                    ForEach(appState.userData.ipApis, id: \.id) { api in
                         HStack {
                             Text(api.url)
                             Spacer()
                             Circle()
-                                .fill(api.active ? .green : .red)
-                                .fill(api.active ? .green : .red)
+                                .fill((api.active == nil || api.active!) ? .green : .red)
+                                .fill((api.active == nil || api.active!) ? .green : .red)
                                 .frame(width: 10, height: 10)
                                 .help(Constants.hintApiIsActive)
                         }
                         .contextMenu {
                             Button(action: {
-                                addressesService.apis.removeAll(where: {$0 == api})
+                                appState.userData.ipApis.removeAll(where: {$0 == api})
                             }){
                                 Text("Delete")
                             }
@@ -88,7 +88,7 @@ struct AddressApisEditView : View, Settable {
         
         let newApi = ApiInfo(url: newUrl, active: true)
         
-        addressesService.apis.append(newApi)
+        appState.userData.ipApis.append(newApi)
         
         newUrl = String()
         isNewUrlValid = false
@@ -97,11 +97,11 @@ struct AddressApisEditView : View, Settable {
     
     private func writeSettings() {
         writeSettingsArray(
-            allObjects: addressesService.apis,
+            allObjects: appState.userData.ipApis,
             key: Constants.settingsKeyApis)
     }
 }
 
 #Preview {
-    AddressApisEditView().environmentObject(AddressesService())
+    AddressApisEditView().environmentObject(AppState())
 }

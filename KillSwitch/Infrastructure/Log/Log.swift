@@ -8,22 +8,18 @@
 import Foundation
 import Combine
 
-class LoggingService: ObservableObject {
-    @Published var logs = [LogEntry]()
-    
+class Log {
     var scrollViewId = UUID()
     
-    static let shared = LoggingService()
-    
     // TODO RUSS: Add truncate log setting, copy to clipboard.
-    func log(message: String, type: LogEntryType = .info){
+    static func write(message: String, type: LogEntryType = .info){
         let logEntry = LogEntry(message: message, type: type)
-        log(logEntry: logEntry)
+        write(logEntry: logEntry)
     }
     
-    func log(logEntry: LogEntry){
+    static func write(logEntry: LogEntry){
         DispatchQueue.main.async {
-            self.logs.insert(logEntry, at: 0)
+            AppState.shared.log.insert(logEntry, at: 0)
             // self.scrollViewId = logEntry.id
         }
     }

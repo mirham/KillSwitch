@@ -9,10 +9,9 @@ import Foundation
 import SwiftUI
 
 struct MenuBarStatusView : View {
-    @Environment(\.colorScheme) var colorScheme
+    @EnvironmentObject var appState: AppState
     
-    @EnvironmentObject var monitoringService: MonitoringService
-    @EnvironmentObject var networkStatusService : NetworkStatusService
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         HStack{
@@ -52,7 +51,7 @@ struct MenuBarStatusView : View {
     }
     
     private func getText(currentSafetyType: AddressSafetyType) -> Text {
-        let result = Text((monitoringService.isMonitoringEnabled ? " On" : "Off").uppercased())
+        let result = Text((appState.monitoring.isEnabled ? " On" : "Off").uppercased())
             .font(.system(size: 16.0))
             .bold()
             .foregroundColor(getMainColor(currentSafetyType: currentSafetyType))
@@ -74,14 +73,14 @@ struct MenuBarStatusView : View {
     private func determineCurrentSafetyType() -> AddressSafetyType {
         var result = AddressSafetyType.unsafe
         
-        let baseContition = networkStatusService.currentStatus == .on
-            && monitoringService.isMonitoringEnabled
-            && !monitoringService.locationServicesEnabled
+        let baseContition = appState.network.status == .on
+            && appState.monitoring.isEnabled
+            && !appState.system.locationServicesEnabled
         
-        if (baseContition && monitoringService.currentSafetyType == .compete) {
+        if (baseContition && appState.current.safetyType == .compete) {
             result = AddressSafetyType.compete
         }
-        else if (baseContition && monitoringService.currentSafetyType == .some) {
+        else if (baseContition && appState.current.safetyType == .some) {
             result = AddressSafetyType.some
         }
         

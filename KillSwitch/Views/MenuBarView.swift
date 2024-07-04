@@ -7,13 +7,12 @@
 
 import SwiftUI
 
-struct MenuBarView : View {   
+struct MenuBarView : View {
+    @EnvironmentObject var appState: AppState
+    
     @Environment(\.openWindow) private var openWindow
     
-    @EnvironmentObject var appManagementService: AppManagementService
-    @EnvironmentObject var monitoringService: MonitoringService
-    @EnvironmentObject var networkStatusService: NetworkStatusService
-    @EnvironmentObject var processesService: ProcessesService
+    private var launchAgentService = LaunchAgentService.shared
     
     @State private var showOverText = false
     @State private var quitOverText = false
@@ -21,17 +20,16 @@ struct MenuBarView : View {
     var body: some View {
         VStack{
             CurrentIpView()
-                .environmentObject(monitoringService)
-                .environmentObject(networkStatusService)
+                .environmentObject(appState)
             HStack{
                 MonitoringStatusView()
-                    .environmentObject(monitoringService)
+                    .environmentObject(appState)
                     .padding()
                 NetworkStatusView()
-                    .environmentObject(networkStatusService)
+                    .environmentObject(appState)
                     .padding()
                 ProcessesStatusView()
-                    .environmentObject(processesService)
+                    .environmentObject(appState)
                     .padding()
             }
             Spacer()
@@ -50,7 +48,8 @@ struct MenuBarView : View {
                 Spacer()
                     .frame(width: 20)
                 Button("Quit", systemImage: "xmark.circle") {
-                    appManagementService.quitApp()
+                    launchAgentService.apply()
+                    NSApplication.shared.terminate(nil)
                 }
                 .buttonStyle(.plain)
                 .focusEffectDisabled()
@@ -62,20 +61,19 @@ struct MenuBarView : View {
             }
         }
         .onAppear(perform: {
-            appManagementService.isStatusBarViewShowed = true
+            appState.views.isStatusBarViewShowed = true
         })
         .onDisappear(perform: {
-            print("hidden")
-            appManagementService.isStatusBarViewShowed = false
+            appState.views.isStatusBarViewShowed = false
         })
     }
     
     // MARK: Private functions
     
     private func showMainWindow(){
-        if(!appManagementService.isMainViewShowed){
+        if(!appState.views.isMainViewShowed){
             openWindow(id: Constants.windowIdMain)
-            appManagementService.showMainView()
+            appState.views.isMainViewShowed = true
         }
     }
 }

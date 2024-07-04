@@ -165,54 +165,6 @@
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "5C9981EA-3EF5-4EF6-AA1F-049DCDCD8A73"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "KillSwitch/Services/AppManagementService.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "69"
-            endingLineNumber = "69"
-            landmarkName = "installLaunchAgent()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "DF433BF9-6E64-47A6-942F-A8BB29A396CA"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "KillSwitch/Services/AppManagementService.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "79"
-            endingLineNumber = "79"
-            landmarkName = "installLaunchAgent()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "3543C246-C942-4888-BDB1-C4666F882E27"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "KillSwitch/Services/AppManagementService.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "83"
-            endingLineNumber = "83"
-            landmarkName = "installLaunchAgent()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.ExceptionBreakpoint">
          <BreakpointContent
             uuid = "4E490480-A9A7-4E70-9F4E-E8A6DFC913CB"
@@ -311,8 +263,8 @@
             filePath = "KillSwitch/Services/MonitoringService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "73"
-            endingLineNumber = "73"
+            startingLineNumber = "60"
+            endingLineNumber = "60"
             landmarkName = "startMonitoring()"
             landmarkType = "7">
          </BreakpointContent>
@@ -327,8 +279,8 @@
             filePath = "KillSwitch/Services/MonitoringService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "77"
-            endingLineNumber = "77"
+            startingLineNumber = "64"
+            endingLineNumber = "64"
             landmarkName = "startMonitoring()"
             landmarkType = "7">
          </BreakpointContent>
@@ -352,22 +304,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "A4E9FFBF-F860-4A8B-B0B4-5EF896364A5A"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "KillSwitch/Services/MonitoringService.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "32"
-            endingLineNumber = "32"
-            landmarkName = "init()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "FA663944-CC64-4BCA-A316-6A22CE06C454"
             shouldBeEnabled = "No"
             ignoreCount = "0"
@@ -375,8 +311,8 @@
             filePath = "KillSwitch/Services/AddressesService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "66"
-            endingLineNumber = "66"
+            startingLineNumber = "48"
+            endingLineNumber = "48"
             landmarkName = "getIpAddressInfo(ipAddress:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -391,25 +327,9 @@
             filePath = "KillSwitch/Services/AddressesService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "61"
-            endingLineNumber = "61"
+            startingLineNumber = "43"
+            endingLineNumber = "43"
             landmarkName = "getIpAddressInfo(ipAddress:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "E40E5C2B-45AA-43E1-B200-E7C676AFE00C"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "KillSwitch/Services/AddressesService.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "21"
-            endingLineNumber = "21"
-            landmarkName = "init()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -423,8 +343,8 @@
             filePath = "KillSwitch/Services/NetworkStatusService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "31"
-            endingLineNumber = "31"
+            startingLineNumber = "22"
+            endingLineNumber = "22"
             landmarkName = "init()"
             landmarkType = "7">
          </BreakpointContent>
@@ -439,8 +359,8 @@
             filePath = "KillSwitch/Services/NetworkStatusService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "34"
-            endingLineNumber = "34"
+            startingLineNumber = "25"
+            endingLineNumber = "25"
             landmarkName = "init()"
             landmarkType = "7">
          </BreakpointContent>
@@ -455,8 +375,8 @@
             filePath = "KillSwitch/Services/NetworkStatusService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "28"
-            endingLineNumber = "28"
+            startingLineNumber = "19"
+            endingLineNumber = "19"
             landmarkName = "init()"
             landmarkType = "7">
          </BreakpointContent>
@@ -487,8 +407,8 @@
             filePath = "KillSwitch/Views/CurrentIpView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "20"
-            endingLineNumber = "20"
+            startingLineNumber = "19"
+            endingLineNumber = "19"
             landmarkName = "body"
             landmarkType = "24">
          </BreakpointContent>
@@ -503,8 +423,8 @@
             filePath = "KillSwitch/Views/CurrentIpView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "18"
-            endingLineNumber = "18"
+            startingLineNumber = "17"
+            endingLineNumber = "17"
             landmarkName = "body"
             landmarkType = "24">
          </BreakpointContent>
@@ -519,8 +439,8 @@
             filePath = "KillSwitch/Services/MonitoringService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "56"
-            endingLineNumber = "56"
+            startingLineNumber = "43"
+            endingLineNumber = "43"
             landmarkName = "startMonitoring()"
             landmarkType = "7">
          </BreakpointContent>
@@ -535,8 +455,8 @@
             filePath = "KillSwitch/Services/MonitoringService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "53"
-            endingLineNumber = "53"
+            startingLineNumber = "40"
+            endingLineNumber = "40"
             landmarkName = "startMonitoring()"
             landmarkType = "7">
          </BreakpointContent>
@@ -551,8 +471,8 @@
             filePath = "KillSwitch/Services/MonitoringService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "49"
-            endingLineNumber = "49"
+            startingLineNumber = "36"
+            endingLineNumber = "36"
             landmarkName = "startMonitoring()"
             landmarkType = "7">
          </BreakpointContent>
@@ -567,8 +487,8 @@
             filePath = "KillSwitch/Views/CurrentIpView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "118"
-            endingLineNumber = "118"
+            startingLineNumber = "117"
+            endingLineNumber = "117"
             landmarkName = "getIpCountryFlag()"
             landmarkType = "7">
          </BreakpointContent>
@@ -583,8 +503,8 @@
             filePath = "KillSwitch/Services/MonitoringService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "64"
-            endingLineNumber = "64"
+            startingLineNumber = "51"
+            endingLineNumber = "51"
             landmarkName = "startMonitoring()"
             landmarkType = "7">
          </BreakpointContent>
@@ -663,8 +583,8 @@
             filePath = "KillSwitch/Services/LocationService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "24"
-            endingLineNumber = "24"
+            startingLineNumber = "22"
+            endingLineNumber = "22"
             landmarkName = "toggleLocationServices(isEnabled:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -711,8 +631,8 @@
             filePath = "KillSwitch/Views/CurrentIpView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "90"
-            endingLineNumber = "90"
+            startingLineNumber = "89"
+            endingLineNumber = "89"
             landmarkName = "getCurrentSafetyTypeText()"
             landmarkType = "7">
          </BreakpointContent>
@@ -727,8 +647,8 @@
             filePath = "KillSwitch/Views/CurrentIpView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "83"
-            endingLineNumber = "83"
+            startingLineNumber = "82"
+            endingLineNumber = "82"
             landmarkName = "getCurrentSafetyTypeText()"
             landmarkType = "7">
          </BreakpointContent>
@@ -743,9 +663,9 @@
             filePath = "KillSwitch/Services/NetworkStatusService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "129"
-            endingLineNumber = "129"
-            landmarkName = "updateStatus(currentIpAddressInfo:currentStatus:networkInterfaces:resetNonPublisedProps:)"
+            startingLineNumber = "117"
+            endingLineNumber = "117"
+            landmarkName = "updateStatus(currentIpAddressInfo:currentStatus:networkInterfaces:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -759,8 +679,8 @@
             filePath = "KillSwitch/Services/MonitoringService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "156"
-            endingLineNumber = "156"
+            startingLineNumber = "143"
+            endingLineNumber = "143"
             landmarkName = "checkIfUpdatedIpAddressAllowed(updatedIpAddress:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -775,8 +695,8 @@
             filePath = "KillSwitch/Services/MonitoringService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "152"
-            endingLineNumber = "152"
+            startingLineNumber = "139"
+            endingLineNumber = "139"
             landmarkName = "checkIfUpdatedIpAddressAllowed(updatedIpAddress:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -791,8 +711,8 @@
             filePath = "KillSwitch/Services/MonitoringService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "70"
-            endingLineNumber = "70"
+            startingLineNumber = "57"
+            endingLineNumber = "57"
             landmarkName = "startMonitoring()"
             landmarkType = "7">
          </BreakpointContent>
@@ -890,6 +810,38 @@
             startingLineNumber = "14"
             endingLineNumber = "14"
             landmarkName = "body(content:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "C94837F0-8D4B-4A58-A527-923659B06473"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "KillSwitch/Views/MonitoringStatusView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "25"
+            endingLineNumber = "25"
+            landmarkName = "body"
+            landmarkType = "24">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "F5002DD6-5BB8-476D-9712-7F9DE4CF035F"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "KillSwitch/Services/MonitoringService.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "181"
+            endingLineNumber = "181"
+            landmarkName = "updateStatus(isMonitoringEnabled:currentSafetyType:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

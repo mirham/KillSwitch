@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 struct NetworkStatusView : View {
-    @EnvironmentObject var networkStatusService : NetworkStatusService
+    @EnvironmentObject var appState: AppState
     
     @Environment(\.controlActiveState) var controlActiveState
     
@@ -23,7 +23,7 @@ struct NetworkStatusView : View {
                 Text("Network".uppercased())
                     .font(.title3)
                     .multilineTextAlignment(.center)
-                switch networkStatusService.currentStatus {
+                switch appState.network.status {
                     case .on:
                         Text("On".uppercased())
                             .frame(width: 60, height: 60)

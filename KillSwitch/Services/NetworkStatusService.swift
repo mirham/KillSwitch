@@ -8,17 +8,8 @@
 import Foundation
 import Network
 
-class NetworkStatusService: ServiceBase, ApiCallable, ObservableObject {
-    @Published var currentStatus: NetworkStatusType = NetworkStatusType.unknown
-    @Published var currentNetworkInterfaces: [NetworkInterface] = [NetworkInterface]()
-    @Published var currentIpAddressInfo: AddressInfoBase? = nil
-    
-    static let shared = NetworkStatusService()
-    
+class NetworkStatusService: ServiceBase, ApiCallable {    
     private let addressesService = AddressesService.shared
-    
-    var currentStatusNonPublished: NetworkStatusType = NetworkStatusType.unknown
-    var currentIpAddressNonPublished: String? = nil
     
     private let monitor = NWPathMonitor()
     private let queue = DispatchQueue(label: Constants.networkMonitorQueryLabel, qos: .background)
@@ -48,13 +39,12 @@ class NetworkStatusService: ServiceBase, ApiCallable, ObservableObject {
                 newNetworkInterfaces.append(networkInterfaceInfo)
             }
             
-            if (self.currentStatus != newStatus || self.currentNetworkInterfaces != newNetworkInterfaces) {
+            if (self.appState.network.status != newStatus || self.appState.network.interfaces != newNetworkInterfaces) {
                 let updatedStatus = newStatus
                 let updatedNetworkInterfaces = newNetworkInterfaces
                 
                 Task {
                     await MainActor.run {
-                        self.updateStatus(resetNonPublisedProps: true)
                         self.updateStatus(currentStatus: updatedStatus, networkInterfaces: updatedNetworkInterfaces)
                     }
                 }
@@ -117,29 +107,21 @@ class NetworkStatusService: ServiceBase, ApiCallable, ObservableObject {
     private func updateStatus(
         currentIpAddressInfo: AddressInfoBase? = nil,
         currentStatus: NetworkStatusType? = nil,
-        networkInterfaces: [NetworkInterface]? = nil,
-        resetNonPublisedProps: Bool? = nil) {
+        networkInterfaces: [NetworkInterface]? = nil) {
         DispatchQueue.main.async {
             if(currentStatus != nil){
-                self.currentStatus = currentStatus!
-                self.currentStatusNonPublished = currentStatus!
+                self.appState.network.status = currentStatus!
             }
             
             if(currentIpAddressInfo != nil) {
-                self.currentIpAddressInfo = currentIpAddressInfo!
-                self.currentIpAddressNonPublished = currentIpAddressInfo!.ipAddress
+                self.appState.network.ipAddressInfo = currentIpAddressInfo!
             }
                 
             if(networkInterfaces != nil) {
-                self.currentNetworkInterfaces = networkInterfaces!
+                self.appState.network.interfaces = networkInterfaces!
             }
             
-            self.objectWillChange.send()
-        }
-            
-        if(resetNonPublisedProps != nil && resetNonPublisedProps!) {
-            self.currentIpAddressInfo = nil
-            self.currentIpAddressNonPublished = nil
+            self.appState.objectWillChange.send()
         }
     }
 }

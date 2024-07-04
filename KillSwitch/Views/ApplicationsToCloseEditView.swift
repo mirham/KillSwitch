@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 struct ApplicationsToCloseEditView : View, Settable {
-    @EnvironmentObject var processesService: ProcessesService
+    @EnvironmentObject var appState: AppState
     
     @State private var showFileImporter = false
     @State private var isAppToCloseInvalid = false
@@ -23,14 +23,14 @@ struct ApplicationsToCloseEditView : View, Settable {
                 .padding(.top)
             NavigationStack {
                 List {
-                    ForEach(processesService.applicationsToClose, id: \.id) { appInfo in
+                    ForEach(appState.userData.appsToClose, id: \.id) { appInfo in
                         HStack {
                             Image(nsImage: NSWorkspace.shared.icon(forFile: appInfo.url))
                             Text(appInfo.name)
                         }
                         .contextMenu {
                             Button(action: {
-                                processesService.applicationsToClose.removeAll(where: {$0.id == appInfo.id})
+                                appState.userData.appsToClose.removeAll(where: {$0.id == appInfo.id})
                                 writeSettings()
                             }){
                                 Text("Delete")
@@ -70,7 +70,7 @@ struct ApplicationsToCloseEditView : View, Settable {
                 let bundleId = bundle?.bundleIdentifier ?? appName
                 let appInfo = AppInfo(url: url.path().removingPercentEncoding ?? String(), name:  appName, bundleId: bundleId)
                 
-                processesService.applicationsToClose.append(appInfo)
+                appState.userData.appsToClose.append(appInfo)
                 
                 writeSettings()
                 
@@ -85,7 +85,7 @@ struct ApplicationsToCloseEditView : View, Settable {
     
     private func writeSettings() {
         writeSettingsArray(
-            allObjects: processesService.applicationsToClose,
+            allObjects: appState.userData.appsToClose,
             key: Constants.settingsKeyAppsToClose)
     }
 }

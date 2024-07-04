@@ -8,10 +8,7 @@
 import SwiftUI
 
 struct MainView : View {
-    @EnvironmentObject var monitoringService: MonitoringService
-    @EnvironmentObject var networkStatusService: NetworkStatusService
-    @EnvironmentObject var appManagementService: AppManagementService
-    @EnvironmentObject var processesService: ProcessesService
+    @EnvironmentObject var appState: AppState
     
     @Environment(\.controlActiveState) var controlActiveState
     
@@ -19,42 +16,41 @@ struct MainView : View {
         NavigationSplitView {
             VStack{
                 CurrentIpView()
-                    .environmentObject(monitoringService)
-                    .environmentObject(networkStatusService)
+                    .environmentObject(appState)
                     .padding(.top)
                 Spacer()
                     .frame(height: 25)
                 MonitoringStatusView()
-                    .environmentObject(monitoringService)
+                    .environmentObject(appState)
                     .padding(.top)
                 NetworkStatusView()
-                    .environmentObject(networkStatusService)
+                    .environmentObject(appState)
                     .padding(.top)
                 ProcessesStatusView()
-                    .environmentObject(processesService)
+                    .environmentObject(appState)
                     .padding(.top)
                 Spacer()
                     .frame(minHeight: 20)
                 NetworkInterfacesView()
-                    .environmentObject(networkStatusService)
+                    .environmentObject(appState)
             }
             .opacity(controlActiveState == .key ? 1 : 0.6)
             .navigationSplitViewColumnWidth(220)
         } detail: {
             VStack{
-                LogView.init()
+                LogView()
+                    .environmentObject(appState)
             }
             .navigationSplitViewColumnWidth(min: 600, ideal: 600)
         }.onAppear(perform: {
-            appManagementService.setViewToTop(viewName: Constants.windowIdMain)
+            AppHelper.setViewToTop(viewName: Constants.windowIdMain)
         })
         .onDisappear(perform: {
-            appManagementService.isMainViewShowed = false
+            appState.views.isMainViewShowed = false
         })
         .frame(minHeight: 600)
         .toolbar(content: {
             SettingsButtonView()
-                .environmentObject(appManagementService)
                 .padding(.trailing)
         })
     }

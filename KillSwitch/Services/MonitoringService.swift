@@ -7,15 +7,9 @@
 
 import Foundation
 
-class MonitoringService: ServiceBase, Settable, ObservableObject {
-    @Published var isMonitoringEnabled = false
-    @Published var locationServicesEnabled = true
-    @Published var currentSafetyType = AddressSafetyType.unknown
-    @Published var allowedIpAddresses = [AddressInfo]()
-    
+class MonitoringService: ServiceBase, Settable {
     static let shared = MonitoringService()
     
-    private let networkStatusService = NetworkStatusService.shared
     private let locationService = LocationService.shared
     private let addressesService = AddressesService.shared
     private let networkManagementService = NetworkManagementService.shared
@@ -25,14 +19,7 @@ class MonitoringService: ServiceBase, Settable, ObservableObject {
     override init() {
         super.init()
         
-        let isMonitoringEnabled: Bool = readSetting(key: Constants.settingsKeyIsMonitoringEnabled) ?? false
-        let savedAllowedIpAddresses: [AddressInfo]? = readSettingsArray(key: Constants.settingsKeyAddresses)
-        
-        if(savedAllowedIpAddresses != nil){
-            self.allowedIpAddresses = savedAllowedIpAddresses!
-        }
-        
-        if(isMonitoringEnabled){
+        if(appState.monitoring.isEnabled){
             startMonitoring()
         }
     }
@@ -44,13 +31,13 @@ class MonitoringService: ServiceBase, Settable, ObservableObject {
         
         updateStatus(isMonitoringEnabled: true)
         
-        loggingService.log(message: Constants.logMonitoringHasBeenEnabled)
+        Log.write(message: Constants.logMonitoringHasBeenEnabled)
         
         currentTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { timer in
-            if self.isMonitoringEnabled {
+            if self.appState.monitoring.isEnabled {
                 Task {
-                    do {                        
-                        guard self.networkStatusService.currentStatusNonPublished == .on else { return }
+                    do {
+                        guard self.appState.network.status == .on else { return }
                         
                         let useHigherProtection = self.readSetting(key: Constants.settingsKeyHigherProtection) ?? false
                         let updatedIpAddress =  await self.getCurrentIpAddressAsync()
@@ -70,8 +57,8 @@ class MonitoringService: ServiceBase, Settable, ObservableObject {
                             return
                         }
                         
-                        if (updatedIpAddress! != self.networkStatusService.currentIpAddressNonPublished) {
-                            self.loggingService.log(message: String(format: Constants.logCurrentIpHasBeenUpdated, updatedIpAddress!))
+                        if (updatedIpAddress! != self.appState.network.ipAddressInfo?.ipAddress ?? "Fix") {
+                            Log.write(message: String(format: Constants.logCurrentIpHasBeenUpdated, updatedIpAddress!))
                         }
                             
                         self.performActionForUpdatedIpAddress(updatedIpAddress: updatedIpAddress!)
@@ -91,7 +78,7 @@ class MonitoringService: ServiceBase, Settable, ObservableObject {
         
         updateStatus(isMonitoringEnabled: false, currentSafetyType: AddressSafetyType.unknown)
 
-        loggingService.log(message: Constants.logMonitoringHasBeenDisabled, type: LogEntryType.warning)
+        Log.write(message: Constants.logMonitoringHasBeenDisabled, type: LogEntryType.warning)
     }
     
     func restartMonitoring(){
@@ -109,13 +96,13 @@ class MonitoringService: ServiceBase, Settable, ObservableObject {
         safetyType: AddressSafetyType) {
         let newIpAddress = AddressInfo(ipAddress: ipAddress, ipAddressInfo: ipAddressInfo, safetyType: safetyType)
             
-        if !allowedIpAddresses.contains(newIpAddress) {
-            allowedIpAddresses.append(newIpAddress)
+        if !appState.userData.allowedIps.contains(newIpAddress) {
+            appState.userData.allowedIps.append(newIpAddress)
         }
         else {
-            if let currentAllowedIpAddressIndex = allowedIpAddresses.firstIndex(
+            if let currentAllowedIpAddressIndex = appState.userData.allowedIps.firstIndex(
                 where: {$0.ipAddress == ipAddress && $0.safetyType != safetyType}) {
-                allowedIpAddresses[currentAllowedIpAddressIndex] = newIpAddress
+                appState.userData.allowedIps[currentAllowedIpAddressIndex] = newIpAddress
             }
         }
     }
@@ -126,9 +113,9 @@ class MonitoringService: ServiceBase, Settable, ObservableObject {
         let result = self.addressesService.getRandomActiveAddressApi()
         
         if(result == nil){
-            loggingService.log(message: Constants.logNoActiveAddressApiFound)
+            Log.write(message: Constants.logNoActiveAddressApiFound)
             
-            if(self.isMonitoringEnabled){
+            if(self.appState.monitoring.isEnabled){
                 updateStatus(isMonitoringEnabled: false, currentSafetyType: AddressSafetyType.unknown)
             }
         }
@@ -151,7 +138,7 @@ class MonitoringService: ServiceBase, Settable, ObservableObject {
     private func checkIfUpdatedIpAddressAllowed(updatedIpAddress: String) -> Bool {
         var result = false
         
-        for allowedIpAddress in self.allowedIpAddresses {
+        for allowedIpAddress in self.appState.userData.allowedIps {
             if (updatedIpAddress == allowedIpAddress.ipAddress) {
                 updateStatus(currentSafetyType: allowedIpAddress.safetyType)
                 result = true
@@ -171,7 +158,7 @@ class MonitoringService: ServiceBase, Settable, ObservableObject {
             self.networkManagementService.disableNetworkInterface(
                 interfaceName: Constants.primaryNetworkInterfaceName)
             
-            loggingService.log(
+            Log.write(
                 message: String(format: Constants.logCurrentIpHasBeenUpdatedWithNotFromWhitelist, updatedIpAddress),
                 type: LogEntryType.warning)
         }
@@ -181,17 +168,17 @@ class MonitoringService: ServiceBase, Settable, ObservableObject {
         isMonitoringEnabled: Bool? = nil,
         currentSafetyType: AddressSafetyType? = nil) {
         DispatchQueue.main.async {
-            self.locationServicesEnabled = self.locationService.isLocationServicesEnabled()
+            self.appState.system.locationServicesEnabled = self.locationService.isLocationServicesEnabled()
             
             if(isMonitoringEnabled != nil) {
-                self.isMonitoringEnabled = isMonitoringEnabled!
+                self.appState.monitoring.isEnabled = isMonitoringEnabled!
             }
             
             if(currentSafetyType != nil) {
-                self.currentSafetyType = currentSafetyType!
+                self.appState.current.safetyType = currentSafetyType!
             }
             
-            self.objectWillChange.send()
+            self.appState.objectWillChange.send()
         }
     }
 }

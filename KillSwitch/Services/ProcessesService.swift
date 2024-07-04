@@ -10,25 +10,14 @@ import CoreLocation
 import Darwin
 import AppKit
 
-class ProcessesService : ServiceBase, Settable, ObservableObject {
-    @Published var applicationsToClose = [AppInfo]()
-    @Published var activeProcessesToClose = [ProcessInfo]()
-    
+class ProcessesService : ServiceBase, Settable, ShellAccessible {
     static let shared = ProcessesService()
-    
-    private let shellService = ShellService.shared
     
     private var currentTimer: Timer? = nil
     
     override init() {
         super.init()
-        
-        let savedAppsToClose: [AppInfo]? = readSettingsArray(key: Constants.settingsKeyAppsToClose)
-        
-        if(savedAppsToClose != nil){
-            self.applicationsToClose = savedAppsToClose!
-        }
-        
+
         startProcessesMonitoring()
     }
     
@@ -37,11 +26,11 @@ class ProcessesService : ServiceBase, Settable, ObservableObject {
     }
     
     func killActiveProcesses() {
-        guard !activeProcessesToClose.isEmpty else { return }
+        guard !appState.system.processesToClose.isEmpty else { return }
         
-        for activeProcessToClose in activeProcessesToClose {
+        for activeProcessToClose in appState.system.processesToClose {
             kill(activeProcessToClose.pid, SIGTERM)
-            loggingService.log(message: String(format: Constants.logProcessTerminated, activeProcessToClose.name))
+            Log.write(message: String(format: Constants.logProcessTerminated, activeProcessToClose.name))
         }
     }
     
@@ -49,7 +38,7 @@ class ProcessesService : ServiceBase, Settable, ObservableObject {
     
     private func startProcessesMonitoring() {
         currentTimer = Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { timer in
-            if self.applicationsToClose.count > 0 {
+            if self.appState.userData.appsToClose.count > 0 {
                 Task {
                     do {
                         let useHigherProtection = self.readSetting(key: Constants.settingsKeyHigherProtection) ?? false
@@ -58,7 +47,7 @@ class ProcessesService : ServiceBase, Settable, ObservableObject {
                         
                         var activeProcessesToClose = [ProcessInfo]()
                         
-                        for appToClose in self.applicationsToClose {
+                        for appToClose in self.appState.userData.appsToClose {
                             var escapedBundleId = appToClose.bundleId.replacingOccurrences(of: ".", with: "\\.")
                             escapedBundleId = escapedBundleId.replacingOccurrences(of: "(", with: "\\(")
                             escapedBundleId = escapedBundleId.replacingOccurrences(of: ")", with: "\\)")
@@ -91,10 +80,10 @@ class ProcessesService : ServiceBase, Settable, ObservableObject {
     private func updateStatus(activeProcessesToClose: [ProcessInfo]? = nil) {
         DispatchQueue.main.async {
             if activeProcessesToClose != nil {
-                self.activeProcessesToClose = activeProcessesToClose!
+                self.appState.system.processesToClose = activeProcessesToClose!
             }
             
-            self.objectWillChange.send()
+            self.appState.objectWillChange.send()
         }
     }
 }

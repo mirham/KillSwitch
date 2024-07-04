@@ -8,10 +8,8 @@
 import Foundation
 import CoreLocation
 
-class LocationService : ServiceBase {
+class LocationService : ServiceBase, ShellAccessible {
     static let shared = LocationService()
-    
-    private let shellService = ShellService.shared
     
     func isLocationServicesEnabled() -> Bool {
         let result = CLLocationManager.locationServicesEnabled()
@@ -21,14 +19,14 @@ class LocationService : ServiceBase {
     
     func toggleLocationServices(isEnabled : Bool){
         do {
-            try shellService.rootShell(command: String(format: Constants.shCommandToggleLocationServices, isEnabled.description))
+            try rootShell(command: String(format: Constants.shCommandToggleLocationServices, isEnabled.description))
             
-            loggingService.log(
+            Log.write(
                 message: String(format: Constants.logLocationServicesHaveBeenToggled, isEnabled ? Constants.enabled : Constants.disabled),
                 type: LogEntryType.warning)
         }
         catch{
-            loggingService.log(
+            Log.write(
                 message: String(format: Constants.logCannotToggleLocationServices, error.localizedDescription),
                 type: LogEntryType.error)
         }

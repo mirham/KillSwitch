@@ -7,19 +7,17 @@
 
 import Foundation
 
-class ComputerManagementService : ServiceBase {
+class ComputerManagementService : ServiceBase, ShellAccessible {
     static let shared = ComputerManagementService()
-    
-    private let shellService = ShellService.shared
     
     func reboot(){
         do {
-            try shellService.rootShell(command: Constants.shCommandReboot)
+            try rootShell(command: Constants.shCommandReboot)
             
-            loggingService.log(message: Constants.logRebooting)
+            Log.write(message: Constants.logRebooting)
         }
         catch{
-            loggingService.log(
+            Log.write(
                 message: String(format: Constants.logCannotReboot, error.localizedDescription),
                 type: LogEntryType.error)
         }

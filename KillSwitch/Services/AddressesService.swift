@@ -8,29 +8,11 @@
 import Foundation
 import Network
 
-class AddressesService : ServiceBase, ApiCallable, Settable, ObservableObject {
-    @Published var apis = [ApiInfo]()
-    
+class AddressesService : ServiceBase, ApiCallable, Settable {
     static let shared = AddressesService()
     
-    override init() {
-        super.init()
-        
-        let savedApis: [ApiInfo]? = readSettingsArray(key: Constants.settingsKeyApis)
-        
-        if(savedApis == nil){
-            for addressApiUrl in Constants.addressApiUrls {
-                let apiInfo = ApiInfo(url: addressApiUrl, active: true)
-                apis.append(apiInfo)
-            }
-        }
-        else{
-            self.apis = savedApis!
-        }
-    }
-    
     func getRandomActiveAddressApi() -> ApiInfo? {
-        let result = self.apis.filter({$0.active}).randomElement()
+        let result = self.appState.userData.ipApis.filter({$0.active == nil || $0.active!}).randomElement()
         
         return result
     }
@@ -40,7 +22,7 @@ class AddressesService : ServiceBase, ApiCallable, Settable, ObservableObject {
         let ipAddressString = ipAddressResponse.trimmingCharacters(in: .whitespacesAndNewlines)
         
         if((IPv4Address(ipAddressString) != nil) || (IPv6Address(ipAddressString) != nil)){
-            self.loggingService.log(message: String(format: Constants.logCurrentIp, ipAddressString))
+            Log.write(message: String(format: Constants.logCurrentIp, ipAddressString))
             
             return ipAddressString
         }
@@ -70,7 +52,7 @@ class AddressesService : ServiceBase, ApiCallable, Settable, ObservableObject {
                 return nil
             }
             else{
-                loggingService.log(
+                Log.write(
                     message: String(format: Constants.logErrorWhenCallingIpInfoApi, error.localizedDescription),
                     type: .error)
                 
@@ -114,11 +96,11 @@ class AddressesService : ServiceBase, ApiCallable, Settable, ObservableObject {
                 return String()
             }
             else{
-                if let inactiveApi = self.apis.firstIndex(where: {$0.url == urlAddress}) {
-                    self.apis[inactiveApi].active = false
+                if let inactiveApiIndex = self.appState.userData.ipApis.firstIndex(where: {$0.url == urlAddress}) {
+                    self.appState.userData.ipApis[inactiveApiIndex].active = false
                 }
                 
-                loggingService.log(
+                Log.write(
                     message: String(format: Constants.logErrorWhenCallingIpAddressApi, urlAddress, error.localizedDescription),
                     type: .error
                 )

@@ -7,30 +7,28 @@
 
 import Foundation
 
-class NetworkManagementService : ServiceBase {
+class NetworkManagementService : ServiceBase, ShellAccessible {
     static let shared = NetworkManagementService()
-    
-    private let shellService = ShellService.shared
     
     func enableNetworkInterface(interfaceName: String){
         do {
-            try shellService.safeShell(String(format: Constants.shCommandEnableNetworkIterface, interfaceName))
+            try safeShell(String(format: Constants.shCommandEnableNetworkIterface, interfaceName))
             
-            loggingService.log(message: String(format: Constants.logNetworkInterfaceHasBeenEnabled, interfaceName))
+            Log.write(message: String(format: Constants.logNetworkInterfaceHasBeenEnabled, interfaceName))
         }
         catch {
-            loggingService.log(message: String(format: Constants.logCannotEnableNetworkInterface, interfaceName), type: .error)
+            Log.write(message: String(format: Constants.logCannotEnableNetworkInterface, interfaceName), type: .error)
         }
     }
     
     func disableNetworkInterface(interfaceName: String) {
         do {
-            try shellService.safeShell(String(format: Constants.shCommandDisableNetworkIterface, interfaceName))
+            try safeShell(String(format: Constants.shCommandDisableNetworkIterface, interfaceName))
             
-            loggingService.log(message: String(format: Constants.logNetworkInterfaceHasBeenDisabled, interfaceName))
+            Log.write(message: String(format: Constants.logNetworkInterfaceHasBeenDisabled, interfaceName))
         }
         catch {
-            loggingService.log(message: String(format: Constants.logCannotDisableNetworkInterface, interfaceName), type: .error)
+            Log.write(message: String(format: Constants.logCannotDisableNetworkInterface, interfaceName), type: .error)
         }
     }
 }
