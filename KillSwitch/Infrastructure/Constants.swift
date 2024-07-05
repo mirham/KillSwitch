@@ -24,6 +24,8 @@ struct Constants{
     static let disabled = "disabled"
     static let ipV4: Int = 4
     static let ipV6: Int = 6
+    static let utun = "utun"
+    static let defaultIntervalBetweenChecksInSeconds: Double = 10
     
     // MARK: Regexes
     static let regexUrl = "((?:http|https)://)?(?:www\\.)?[\\w\\d\\-_]+\\.\\w{2,3}(\\.\\w{2})?(/(?<=/)(?:[\\w\\d\\-./_]+)?)?"
@@ -57,6 +59,12 @@ struct Constants{
     static let shCommandToggleLocationServices = "defaults -currentHost write '/var/db/locationd/Library/Preferences/ByHost/com.apple.locationd' LocationServicesEnabled -bool %1$@"
     static let shCommandReboot = "reboot"
     
+    // MARK: Error messages
+    static let errorNoActiveAddressApiFound = "No active IP address API found, add a new one in the Settings"
+    static let errorWhenCallingIpAddressApi = "Error when called IP address API '%1$@': '%2$@', API marked as inactive and will be skipped until next application run"
+    static let errorIpApiResponseIsInvalid = "IP address API returned invalid IP address"
+    static let errorWhenCallingIpInfoApi = "Error when called IP info API: %1$@"
+    
     // MARK: Dialog messages
     static let dialogHeaderIpAddressIsNotValid = "IP Address is not valid"
     static let dialogBodyIpAddressIsNotValid = "IP Address seems to not be valid and cannot be added."
@@ -78,11 +86,8 @@ struct Constants{
     static let logMonitoringHasBeenEnabled = "Monitoring has been enabled"
     static let logMonitoringHasBeenDisabled = "Monitoring has been disabled"
     static let logCurrentIp = "Current IP is %1$@"
-    static let logNoActiveAddressApiFound = "No any active address API found, add a new one in the Settings"
     static let logCurrentIpHasBeenUpdated = "Current IP has been updated to %1$@"
     static let logCurrentIpHasBeenUpdatedWithNotFromWhitelist = "Current IP address has been changed to %1$@ which is not from allowed IPs, network disabled"
-    static let logErrorWhenCallingIpInfoApi = "Error when called IP info API: %1$@"
-    static let logErrorWhenCallingIpAddressApi = "Error when called IP address API '%1$@': '%2$@', API marked as inactive and will be skipped until next application run"
     static let logNetworkInterfaceHasBeenEnabled = "Network interface '%1$@' has been enabled"
     static let logNetworkInterfaceHasBeenDisabled = "Network interface '%1$@' has been disabled"
     static let logCannotEnableNetworkInterface = "Cannot enable network interface '%1$@'"
@@ -102,7 +107,7 @@ struct Constants{
     static let hintApiIsInactive = "API is not active and not in use"
     
     // MARK: Static data
-    static let addressApiUrls = [
+    static let ipApiUrls = [
         "http://api.ipify.org",
         "http://icanhazip.com",
         "http://ipinfo.io/ip",

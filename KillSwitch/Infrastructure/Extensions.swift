@@ -37,6 +37,30 @@ extension KeyedEncodingContainer {
     }
 }
 
+extension String {
+    func isValidIp() -> Bool {
+        var result = false
+        
+        var sin = sockaddr_in()
+        var sin6 = sockaddr_in6()
+        
+        if self.withCString({ cstring in inet_pton(AF_INET6, cstring, &sin6.sin6_addr) }) == 1 {
+            result = true
+        }
+        else if self.withCString({ cstring in inet_pton(AF_INET, cstring, &sin.sin_addr) }) == 1 {
+            result = true
+        }
+        
+        return result
+    }
+    
+    func isValidUrl() -> Bool {
+        let predicate = NSPredicate(format: "SELF MATCHES %@", argumentArray: [Constants.regexUrl])
+        
+        return predicate.evaluate(with: self)
+    }
+}
+
 extension String: LocalizedError {
     public var errorDescription: String? { return self }
 }

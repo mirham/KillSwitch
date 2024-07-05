@@ -10,7 +10,7 @@ import CoreLocation
 import Darwin
 import AppKit
 
-class ProcessesService : ServiceBase, Settable, ShellAccessible {
+class ProcessesService : ServiceBase, ShellAccessible {
     static let shared = ProcessesService()
     
     private var currentTimer: Timer? = nil
@@ -26,9 +26,9 @@ class ProcessesService : ServiceBase, Settable, ShellAccessible {
     }
     
     func killActiveProcesses() {
-        guard !appState.system.processesToClose.isEmpty else { return }
+        guard !appState.system.processesToKill.isEmpty else { return }
         
-        for activeProcessToClose in appState.system.processesToClose {
+        for activeProcessToClose in appState.system.processesToKill {
             kill(activeProcessToClose.pid, SIGTERM)
             Log.write(message: String(format: Constants.logProcessTerminated, activeProcessToClose.name))
         }
@@ -41,8 +41,6 @@ class ProcessesService : ServiceBase, Settable, ShellAccessible {
             if self.appState.userData.appsToClose.count > 0 {
                 Task {
                     do {
-                        let useHigherProtection = self.readSetting(key: Constants.settingsKeyHigherProtection) ?? false
-                        
                         let activeProcesses = NSWorkspace.shared.runningApplications
                         
                         var activeProcessesToClose = [ProcessInfo]()
@@ -68,7 +66,7 @@ class ProcessesService : ServiceBase, Settable, ShellAccessible {
                         
                         self.updateStatus(activeProcessesToClose: activeProcessesToClose)
                         
-                        if(!activeProcessesToClose.isEmpty && useHigherProtection){
+                        if(!activeProcessesToClose.isEmpty && self.appState.userData.useHigherProtection){
                             self.killActiveProcesses()
                         }
                     }
@@ -80,7 +78,7 @@ class ProcessesService : ServiceBase, Settable, ShellAccessible {
     private func updateStatus(activeProcessesToClose: [ProcessInfo]? = nil) {
         DispatchQueue.main.async {
             if activeProcessesToClose != nil {
-                self.appState.system.processesToClose = activeProcessesToClose!
+                self.appState.system.processesToKill = activeProcessesToClose!
             }
             
             self.appState.objectWillChange.send()

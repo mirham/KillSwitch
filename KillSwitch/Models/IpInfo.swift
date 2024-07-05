@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct AddressInfo: Codable, Identifiable, Equatable {
+struct IpInfo: Codable, Identifiable, Equatable {
     var id = UUID()
     var ipVersion: Int
     var ipAddress: String
@@ -16,9 +16,9 @@ struct AddressInfo: Codable, Identifiable, Equatable {
     var safetyType: AddressSafetyType
     
     init(ipAddress: String,
-         ipAddressInfo: AddressInfoBase?,
+         ipAddressInfo: IpInfoBase?,
          safetyType: AddressSafetyType = .unknown){
-        let info = ipAddressInfo ?? AddressInfoBase(ipAddress: ipAddress)
+        let info = ipAddressInfo ?? IpInfoBase(ipAddress: ipAddress)
         
         self.ipVersion = info.ipVersion
         self.ipAddress = info.ipAddress
@@ -27,7 +27,7 @@ struct AddressInfo: Codable, Identifiable, Equatable {
         self.safetyType = safetyType
     }
     
-    static func == (lhs: AddressInfo, rhs: AddressInfo) -> Bool {
+    static func == (lhs: IpInfo, rhs: IpInfo) -> Bool {
         return lhs.ipAddress == rhs.ipAddress
     }
     

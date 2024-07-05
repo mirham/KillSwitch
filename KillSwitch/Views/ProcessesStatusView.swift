@@ -25,7 +25,7 @@ struct ProcessesStatusView : View, Settable {
                     .font(.title3)
                     .multilineTextAlignment(.center)
                 Section {
-                    Text(appState.system.processesToClose.count.description)
+                    Text(appState.system.processesToKill.count.description)
                         .frame(width: 60, height: 60)
                         .background(.yellow)
                         .foregroundColor(.black.opacity(0.5))
@@ -42,7 +42,7 @@ struct ProcessesStatusView : View, Settable {
                     VStack{
                         Text("Click to close")
                         VStack(alignment: .leading) {
-                            ForEach(appState.system.processesToClose, id: \.pid) { processInfo in
+                            ForEach(appState.system.processesToKill, id: \.pid) { processInfo in
                                 HStack {
                                     Image(nsImage: NSWorkspace.shared.icon(forFile: processInfo.url))
                                     Text(processInfo.name)
@@ -67,7 +67,7 @@ struct ProcessesStatusView : View, Settable {
             }
         }
         .frame(width: 110, height: 90)
-        .isHidden(hidden:appState.system.processesToClose.isEmpty, remove: true)
+        .isHidden(hidden:appState.system.processesToKill.isEmpty, remove: true)
     }
     
     // MARK: Private functions

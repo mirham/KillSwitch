@@ -8,13 +8,13 @@
 import Foundation
 import Network
 
-struct AddressInfoBase: Codable, Equatable {
+struct IpInfoBase: Codable, Equatable {
     var ipVersion: Int
     var ipAddress: String
     var countryName: String
     var countryCode: String
     
-    static func == (lhs: AddressInfoBase, rhs: AddressInfoBase) -> Bool {
+    static func == (lhs: IpInfoBase, rhs: IpInfoBase) -> Bool {
         return lhs.ipAddress == rhs.ipAddress
     }
     

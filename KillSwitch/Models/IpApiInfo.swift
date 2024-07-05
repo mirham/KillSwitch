@@ -7,14 +7,14 @@
 
 import Foundation
 
-struct ApiInfo: Codable, Identifiable, Equatable {
+struct IpApiInfo: Codable, Identifiable, Equatable {
     var id = UUID()
     var url: String
     
     @CodableIgnored
     var active: Bool?
     
-    static func == (lhs: ApiInfo, rhs: ApiInfo) -> Bool {
+    static func == (lhs: IpApiInfo, rhs: IpApiInfo) -> Bool {
         return lhs.url.uppercased() == rhs.url.uppercased()
     }
     

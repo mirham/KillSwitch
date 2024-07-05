@@ -17,8 +17,7 @@ struct AllowedAddressesEditView : View, Settable {
     @State private var newIpAddressSafetyType: AddressSafetyType = AddressSafetyType.compete
     @State private var isNewIpInvalid: Bool = false
 
-    private let addressesService = AddressesService.shared
-    private let monitoringService = MonitoringService.shared
+    private let ipService = IpService.shared
     
     var body: some View {
         VStack{
@@ -72,7 +71,7 @@ struct AllowedAddressesEditView : View, Settable {
                         VStack(alignment: .leading, spacing: 12) {
                             TextField("A new valid IP address", text: $newIp)
                                 .onChange(of: newIp) {
-                                    isNewIpValid = !newIp.isEmpty && addressesService.validateIpAddress(ipToValidate: newIp)
+                                    isNewIpValid = newIp.isValidIp()
                                 }
                             HStack {
                                 RadioButton(
@@ -117,23 +116,17 @@ struct AllowedAddressesEditView : View, Settable {
     // MARK: Private functions
     
     private func addAllowedIpAddressAsync() async {
-        let pickyMode = readSetting(key: Constants.settingsKeyUsePickyMode) ?? false
-        var ipAddressInfo = await addressesService.getIpAddressInfo(ipAddress: newIp)
+        let ipInfoResult = await ipService.getIpInfoAsync(ip: newIp)
         
-        if(ipAddressInfo == nil){
-            if(pickyMode) {
-                isNewIpInvalid = true
-                
-                return
-            }
-            else{
-                ipAddressInfo = AddressInfoBase(ipAddress: newIp)
-            }
+        if (appState.userData.pickyMode && ipInfoResult.error != nil) {
+            isNewIpInvalid = true
+            
+            return
         }
         
-        monitoringService.addAllowedIpAddress(
-            ipAddress: newIp,
-            ipAddressInfo: ipAddressInfo,
+        ipService.addAllowedIp(
+            ip: newIp,
+            ipInfo: ipInfoResult.result,
             safetyType: newIpAddressSafetyType)
         
         newIp = String()

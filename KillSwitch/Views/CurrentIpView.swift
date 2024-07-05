@@ -11,7 +11,7 @@ import FlagKit
 struct CurrentIpView: View, Settable {
     @EnvironmentObject var appState: AppState
     
-    var monitoringService = MonitoringService.shared
+    var ipService = IpService.shared
     
     var body: some View {
         Section() {
@@ -19,14 +19,14 @@ struct CurrentIpView: View, Settable {
                 Text("Current IP".uppercased())
                     .font(.title3)
                     .multilineTextAlignment(.center)
-                Text(appState.network.ipAddressInfo?.ipAddress.uppercased() ?? Constants.none.uppercased())
+                Text(appState.network.currentIpInfo?.ipAddress.uppercased() ?? Constants.none.uppercased())
                     .font(.largeTitle)
                     .bold()
                     .foregroundStyle(getCurrentSafetyColor())
                     .contextMenu {
-                        if(appState.network.ipAddressInfo?.ipAddress != nil){
+                        if(appState.network.currentIpInfo?.ipAddress != nil){
                             Button(action: {
-                                AppHelper.copyTextToClipboard(text: appState.network.ipAddressInfo!.ipAddress)
+                                AppHelper.copyTextToClipboard(text: appState.network.currentIpInfo!.ipAddress)
                             }){
                                 Text("Copy")
                             }
@@ -61,7 +61,7 @@ struct CurrentIpView: View, Settable {
                     Image(nsImage: getIpCountryFlag())
                         .resizable()
                         .frame(width: 20, height: 12)
-                    Text(appState.network.ipAddressInfo?.countryName.uppercased() ?? String())
+                    Text(appState.network.currentIpInfo?.countryName.uppercased() ?? String())
                         .font(.system(size: 12))
                         .bold()
                 }
@@ -79,7 +79,7 @@ struct CurrentIpView: View, Settable {
     private func getCurrentSafetyTypeText() -> String {
         let mask = "%1$@ safety"
         
-        let result = appState.network.ipAddressInfo?.ipAddress != nil
+        let result = appState.network.currentIpInfo?.ipAddress != nil
                         && appState.current.safetyType != .unknown
         ? appState.system.locationServicesEnabled
                 ? String(AddressSafetyType.unsafe.description)
@@ -92,7 +92,7 @@ struct CurrentIpView: View, Settable {
     private func getCurrentSafetyColor() -> Color {
         var result = Color.primary
         
-        guard appState.network.ipAddressInfo?.ipAddress != nil else { return result }
+        guard appState.network.currentIpInfo?.ipAddress != nil else { return result }
         
         if (isHighRisk()) {
             result = Color.red
@@ -112,24 +112,24 @@ struct CurrentIpView: View, Settable {
     private func getIpCountryFlag() -> NSImage{
         var result = NSImage()
         
-        if(appState.network.ipAddressInfo?.countryCode != nil
-           && !appState.network.ipAddressInfo!.countryCode.isEmpty){
-            result = Flag(countryCode: appState.network.ipAddressInfo!.countryCode)?.originalImage ?? NSImage()
+        if(appState.network.currentIpInfo?.countryCode != nil
+           && !appState.network.currentIpInfo!.countryCode.isEmpty){
+            result = Flag(countryCode: appState.network.currentIpInfo!.countryCode)?.originalImage ?? NSImage()
         }
         
         return result
     }
     
     private func addAllowedIpAddress(safetyType : AddressSafetyType){
-        monitoringService.addAllowedIpAddress(
-            ipAddress: appState.network.ipAddressInfo!.ipAddress,
-            ipAddressInfo: appState.network.ipAddressInfo,
+        ipService.addAllowedIp(
+            ip: appState.network.currentIpInfo!.ipAddress,
+            ipInfo: appState.network.currentIpInfo,
             safetyType: safetyType)
     }
     
     private func isCountryDetected() -> Bool {
-        let result = appState.network.ipAddressInfo != nil
-         && !appState.network.ipAddressInfo!.countryName.isEmpty
+        let result = appState.network.currentIpInfo != nil
+         && !appState.network.currentIpInfo!.countryName.isEmpty
         
         return result
     }

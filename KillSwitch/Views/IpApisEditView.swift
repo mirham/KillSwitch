@@ -7,10 +7,10 @@
 
 import SwiftUI
 
-struct AddressApisEditView : View, Settable {
+struct IpApisEditView : View, Settable {
     @EnvironmentObject var appState: AppState
     
-    private let addressesService = AddressesService.shared
+    private let addressesService = IpService.shared
     
     @State private var newUrl = String()
     @State private var isNewUrlValid = false
@@ -53,11 +53,11 @@ struct AddressApisEditView : View, Settable {
                         VStack(alignment: .leading, spacing: 12) {
                             TextField("New API URL", text: $newUrl)
                                 .onChange(of: newUrl) {
-                                    isNewUrlValid = !newUrl.isEmpty && addressesService.validateApiAddress(apiAddressToValidate:newUrl)
+                                    isNewUrlValid = newUrl.isValidUrl()
                                 }
                         }
                     }
-                    AsyncButton("Add", action: addAddressApiAsync)
+                    AsyncButton("Add", action: addIpApiAsync)
                     .disabled(!isNewUrlValid)
                     .alert(isPresented: $isNewUrlInvalid) {
                         Alert(title: Text(Constants.dialogHeaderApiIsNotValid),
@@ -77,16 +77,16 @@ struct AddressApisEditView : View, Settable {
     
     // MARK: Private functions
     
-    private func addAddressApiAsync() async {
-        let ipAddress = await addressesService.getCurrentIpAddress(addressApiUrl: newUrl)
+    private func addIpApiAsync() async {
+        let ipAddressResult = await addressesService.getCurrentIpAsync(ipApiUrl: newUrl)
         
-        guard ipAddress != nil else {
+        guard ipAddressResult.success else {
             isNewUrlInvalid = true
             
             return
         }
         
-        let newApi = ApiInfo(url: newUrl, active: true)
+        let newApi = IpApiInfo(url: newUrl, active: true)
         
         appState.userData.ipApis.append(newApi)
         
@@ -103,5 +103,5 @@ struct AddressApisEditView : View, Settable {
 }
 
 #Preview {
-    AddressApisEditView().environmentObject(AppState())
+    IpApisEditView().environmentObject(AppState())
 }

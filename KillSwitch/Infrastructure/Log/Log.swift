@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Combine
 
 class Log {
     var scrollViewId = UUID()
@@ -18,9 +17,10 @@ class Log {
     }
     
     static func write(logEntry: LogEntry){
-        DispatchQueue.main.async {
-            AppState.shared.log.insert(logEntry, at: 0)
-            // self.scrollViewId = logEntry.id
+        Task {
+            await MainActor.run {
+                AppState.shared.log.insert(logEntry, at: 0)
+            }
         }
     }
 }

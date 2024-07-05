@@ -33,7 +33,7 @@ struct KillProcessesConfirmationDialogView : View {
                     .font(.system(size: 10))
                 Spacer().frame(height: 20)
                 VStack(alignment: .leading) {
-                    ForEach(appState.system.processesToClose, id: \.pid) { processInfo in
+                    ForEach(appState.system.processesToKill, id: \.pid) { processInfo in
                         HStack {
                             Image(nsImage: NSWorkspace.shared.icon(forFile: processInfo.url))
                             Text(processInfo.name)

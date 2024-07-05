@@ -27,7 +27,7 @@ struct SettingsView : View {
                 .tabItem {
                     Text("Allowed IP addresses")
                 }
-            AddressApisEditView()
+            IpApisEditView()
                 .environmentObject(appState)
                 .tabItem {
                     Text("IP address APIs")
