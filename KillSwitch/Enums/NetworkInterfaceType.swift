@@ -1,5 +1,5 @@
 //
-//  NetworkStatus.swift
+//  NetworkInterfaceType.swift
 //  KillSwitch
 //
 //  Created by UglyGeorge on 09.06.2024.

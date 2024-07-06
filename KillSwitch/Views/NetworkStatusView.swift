@@ -59,19 +59,19 @@ struct NetworkStatusView : View {
         switch appState.network.status {
             case .on:
                 return NetworkStatusControlData(
-                    text:Constants.on,
+                    text: appState.network.status.description,
                     color: .green,
                     action: { toggleNetwork(enable: false) },
                     hintText: Constants.hintClickToDisableNetwork)
             case .off:
                 return NetworkStatusControlData(
-                    text:Constants.off,
+                    text: appState.network.status.description,
                     color: .red,
                     action: { toggleNetwork(enable: true) },
                     hintText: Constants.hintClickToEnableNetwork)
             case .wait:
                 return NetworkStatusControlData(
-                    text:Constants.wait,
+                    text: appState.network.status.description,
                     color: .yellow,
                     action: {})
             default:

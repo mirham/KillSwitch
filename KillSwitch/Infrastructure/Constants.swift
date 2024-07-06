@@ -55,7 +55,6 @@ struct Constants{
     static let yes = "Yes"
     static let no = "No"
     static let ok = "OK"
-    static let wait = "Wait"
     static let na = "N/A"
     static let later = "Later"
     static let ip = "IP"

@@ -38,7 +38,7 @@ struct CurrentIpView: View, Settable {
                         }
                     }
                 Spacer().frame(height: 1)
-                Text(String(format: Constants.safetyDescriprion, appState.current.safetyType.description))
+                Text(appState.current.safetyType.fullDesctiption)
                     .textCase(.uppercase)
                     .font(.system(size: 10))
                     .bold()
@@ -79,5 +79,5 @@ struct CurrentIpView: View, Settable {
 }
 
 #Preview {
-    CurrentIpView()
+    CurrentIpView().environmentObject(AppState())
 }

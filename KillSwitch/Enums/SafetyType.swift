@@ -1,5 +1,5 @@
 //
-//  IpAddressType.swift
+//  SafetyType.swift
 //  KillSwitch
 //
 //  Created by UglyGeorge on 18.06.2024.
@@ -19,6 +19,15 @@ enum SafetyType : Int, CaseIterable, Codable {
             case .compete: return "Compete"
             case .some: return "Some"
             case .unsafe: return "Unsafe"
+        }
+    }
+    
+    var fullDesctiption : String {
+        switch self {
+            case .unknown: return String(format:Constants.safetyDescriprion, description)
+            case .compete: return String(format:Constants.safetyDescriprion, description)
+            case .some: return String(format:Constants.safetyDescriprion, description)
+            case .unsafe: return description
         }
     }
 }
