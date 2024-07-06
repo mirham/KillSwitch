@@ -39,8 +39,6 @@ struct LogView : View {
                 .textSelection(.enabled)
                 .focusable(false)
             }
-            //.environmentObject(appState.log)
-            //.id(loggingService.scrollViewId)
             .scrollIndicators(.visible)
         }
     }

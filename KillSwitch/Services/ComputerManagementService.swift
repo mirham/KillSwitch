@@ -1,5 +1,5 @@
 //
-//  LocationService.swift
+//  ComputerManagementService.swift
 //  KillSwitch
 //
 //  Created by UglyGeorge on 24.06.2024.

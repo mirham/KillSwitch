@@ -23,20 +23,18 @@ struct MenuBarStatusView : View {
     
     @MainActor
     private func renderMenuBarStatusImage() -> CGImage{
-        let currentSafetyType = determineCurrentSafetyType()
-        
-        let icon = getIcon(currentSafetyType: currentSafetyType)
-        let text = getText(currentSafetyType: currentSafetyType)
+        let icon = getIcon()
+        let text = getText()
         let renderer = ImageRenderer(content: icon + text)
         let result = renderer.cgImage
         
         return result!
     }
     
-    private func getIcon(currentSafetyType: AddressSafetyType) -> Text {
+    private func getIcon() -> Text {
         var result: Text
         
-        switch currentSafetyType {
+        switch appState.current.safetyType {
             case .compete:
                 result = Text(Image(systemName:Constants.iconCompleteSafety))
             case .some:
@@ -45,49 +43,23 @@ struct MenuBarStatusView : View {
                 result = Text(Image(systemName:Constants.iconUnsafe))
         }
         
-        result = result.foregroundColor(getMainColor(currentSafetyType: currentSafetyType)).font(.system(size: 16.0))
+        result = result
+            .foregroundColor(getSafetyColor(safetyType: appState.current.safetyType))
+            .font(.system(size: 16.0))
         
         return result
     }
     
-    private func getText(currentSafetyType: AddressSafetyType) -> Text {
-        let result = Text((appState.monitoring.isEnabled ? " On" : "Off").uppercased())
+    private func getText() -> Text {
+        let result = Text((appState.monitoring.isEnabled ? Constants.on : Constants.off).uppercased())
             .font(.system(size: 16.0))
             .bold()
-            .foregroundColor(getMainColor(currentSafetyType: currentSafetyType))
-        
-        return result
-    }
-    
-    private func getMainColor(currentSafetyType: AddressSafetyType) -> Color {
-        switch currentSafetyType {
-            case .compete:
-                return Color.green
-            case .some:
-                return Color.yellow
-            default:
-                return Color.red
-        }
-    }
-    
-    private func determineCurrentSafetyType() -> AddressSafetyType {
-        var result = AddressSafetyType.unsafe
-        
-        let baseContition = appState.network.status == .on
-            && appState.monitoring.isEnabled
-            && !appState.system.locationServicesEnabled
-        
-        if (baseContition && appState.current.safetyType == .compete) {
-            result = AddressSafetyType.compete
-        }
-        else if (baseContition && appState.current.safetyType == .some) {
-            result = AddressSafetyType.some
-        }
+            .foregroundColor(getSafetyColor(safetyType: appState.current.safetyType))
         
         return result
     }
 }
 
 #Preview {
-    MenuBarStatusView()
+    MenuBarStatusView().environmentObject(AppState())
 }

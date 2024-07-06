@@ -23,13 +23,17 @@ class AppState : ObservableObject {
     private func setCurrentState() {
         current.safetyType = determineSafetyType()
         current.isCurrentIpAllowed = getCurrentAllowedIp() != nil
+        current.highRisk = checkIfHighRisk()
+        current.countyDetected = checkIfCountryDetected()
     }
 }
 
 extension AppState {
     struct Current {
-        var safetyType = AddressSafetyType.unknown
+        var safetyType = SafetyType.unknown
         var isCurrentIpAllowed = false
+        var highRisk = false
+        var countyDetected = false
     }
 }
 
@@ -76,9 +80,15 @@ extension AppState {
 
 extension AppState {
     struct UserData : Settable {
-        var ipApis = [IpApiInfo]()
-        var allowedIps = [IpInfo]()
-        var appsToClose = [AppInfo]()
+        var ipApis = [IpApiInfo]() {
+            didSet { writeSettingsArray(newValues: ipApis, key: Constants.settingsKeyApis) }
+        }
+        var allowedIps = [IpInfo]() {
+            didSet { writeSettingsArray(newValues: allowedIps, key: Constants.settingsKeyAddresses) }
+        }
+        var appsToClose = [AppInfo]() {
+            didSet { writeSettingsArray(newValues: appsToClose, key: Constants.settingsKeyAppsToClose) }
+        }
         var useHigherProtection: Bool = false {
             didSet { writeSetting(newValue: useHigherProtection, key: Constants.settingsKeyHigherProtection) }
         }
@@ -88,31 +98,35 @@ extension AppState {
         var pickyMode: Bool = false {
             didSet { writeSetting(newValue: pickyMode, key: Constants.settingsKeyHigherProtection) }
         }
+        var appCloseConfirmation: Bool = false {
+            didSet { writeSetting(newValue: appCloseConfirmation, key: Constants.settingsKeyConfirmationApplicationsClose) }
+        }
         
         init() {
             useHigherProtection = readSetting(key: Constants.settingsKeyHigherProtection) ?? false
             intervalBetweenChecks = readSetting(key: Constants.settingsKeyIntervalBetweenChecks) ?? Constants.defaultIntervalBetweenChecksInSeconds
             pickyMode = readSetting(key: Constants.settingsKeyUsePickyMode) ?? false
+            appCloseConfirmation = readSetting(key: Constants.settingsKeyConfirmationApplicationsClose) ?? true
             
             let savedAllowedIps: [IpInfo]? = readSettingsArray(key: Constants.settingsKeyAddresses)
             let savedIpApis: [IpApiInfo]? = readSettingsArray(key: Constants.settingsKeyApis)
             let savedAppsToClose: [AppInfo]? = readSettingsArray(key: Constants.settingsKeyAppsToClose)
             
-            if(savedAllowedIps != nil){
+            if (savedAllowedIps != nil) {
                 allowedIps = savedAllowedIps!
             }
             
-            if(savedIpApis == nil){
+            if (savedIpApis == nil) {
                 for ipApiUrl in Constants.ipApiUrls {
                     let apiInfo = IpApiInfo(url: ipApiUrl, active: true)
                     ipApis.append(apiInfo)
                 }
             }
-            else{
+            else {
                 ipApis = savedIpApis!
             }
             
-            if(savedAppsToClose != nil){
+            if (savedAppsToClose != nil) {
                 appsToClose = savedAppsToClose!
             }
         }
@@ -120,7 +134,7 @@ extension AppState {
 }
 
 extension AppState {
-    private func determineSafetyType() -> AddressSafetyType {
+    private func determineSafetyType() -> SafetyType {
         if (monitoring.isEnabled) {
             let currentAllowedIp = getCurrentAllowedIp()
             
@@ -128,10 +142,10 @@ extension AppState {
                 return currentAllowedIp!.safetyType
             }
             
-            return AddressSafetyType.unsafe
+            return SafetyType.unsafe
         }
         
-        return AddressSafetyType.unknown
+        return SafetyType.unknown
     }
     
     private func getCurrentAllowedIp() -> IpInfo? {
@@ -145,4 +159,13 @@ extension AppState {
         
         return result
     }
+    
+    private func checkIfHighRisk() -> Bool {
+        return monitoring.isEnabled && system.locationServicesEnabled
+    }
+    
+    private func checkIfCountryDetected() -> Bool {
+        return network.currentIpInfo != nil && !network.currentIpInfo!.countryName.isEmpty
+    }
+
 }

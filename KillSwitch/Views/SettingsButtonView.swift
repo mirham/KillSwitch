@@ -1,5 +1,5 @@
 //
-//  ToggleNetworkView.swift
+//  SettingsButtonView.swift
 //  KillSwitch
 //
 //  Created by UglyGeorge on 04.06.2024.
@@ -18,7 +18,7 @@ struct SettingsButtonView : View {
 
     var body: some View {
         Section {
-            Button("Settings", systemImage: "gearshape.2") {
+            Button(Constants.settings, systemImage: Constants.iconSettings) {
                 showSettingsWindow()
             }
             .buttonStyle(.plain)
@@ -35,7 +35,7 @@ struct SettingsButtonView : View {
             })
         }
         .font(.system(size: 18))
-        .opacity(controlActiveState == .key ? 1 : 0.6)
+        .opacity(getViewOpacity(state: controlActiveState))
         .pointerOnHover()
     }
     
@@ -50,5 +50,5 @@ struct SettingsButtonView : View {
 }
 
 #Preview {
-    SettingsButtonView()
+    SettingsButtonView().environmentObject(AppState())
 }

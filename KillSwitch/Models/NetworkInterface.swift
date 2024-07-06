@@ -8,10 +8,16 @@
 import Foundation
 
 
-class NetworkInterface: Hashable, Equatable {
+struct NetworkInterface: Hashable, Equatable {
     let id: UUID
     let name: String
-    let type: NetworkInterfaceType
+    var type: NetworkInterfaceType
+    var isPhysical: Bool {
+        get {
+            let result = (type == .wired || type == .wifi || type == .cellular)
+            return result
+        }
+    }
     
     init(name: String,
          type: NetworkInterfaceType) {

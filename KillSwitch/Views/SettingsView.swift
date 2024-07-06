@@ -16,40 +16,39 @@ struct SettingsView : View {
         TabView {
             GeneralSettingsEditView()
                 .tabItem {
-                    Text("General")
+                    Text(Constants.settingsElementGeneral)
                 }
             /* MenuBarStatusEditView()
                  .tabItem {
                      Text("Menubar")
              } */
             AllowedAddressesEditView()
-                .navigationSplitViewColumnWidth(250)
                 .tabItem {
-                    Text("Allowed IP addresses")
+                    Text(Constants.settingsElementAllowedIpAddresses)
                 }
+                .navigationSplitViewColumnWidth(250)
             IpApisEditView()
                 .environmentObject(appState)
                 .tabItem {
-                    Text("IP address APIs")
+                    Text(Constants.settingsElementIpAddressApis)
                 }
             ApplicationsToCloseEditView()
                 .tabItem {
-                    Text("Apps to close")
+                    Text(Constants.settingsElementAppsToClose)
                 }
         }
-        .opacity(controlActiveState == .key ? 1 : 0.6)
         .onAppear(perform: {
             AppHelper.setViewToTop(viewName: Constants.windowIdSettings)
         })
         .onDisappear(perform: {
             appState.views.isSettingsViewShowed = false
         })
+        .opacity(getViewOpacity(state: controlActiveState))
         .padding()
         .frame(maxWidth: 500, maxHeight: 500)
     }
 }
 
 #Preview {
-    SettingsView()
-        .environmentObject(AppState())
+    SettingsView().environmentObject(AppState())
 }

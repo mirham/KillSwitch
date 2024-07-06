@@ -5,7 +5,6 @@
 //  Created by UglyGeorge on 04.06.2024.
 //
 
-import Foundation
 import SwiftUI
 
 struct NetworkStatusView : View {
@@ -20,69 +19,68 @@ struct NetworkStatusView : View {
     var body: some View {
         Section {
             VStack {
-                Text("Network".uppercased())
+                Text(Constants.network.uppercased())
                     .font(.title3)
-                    .multilineTextAlignment(.center)
-                switch appState.network.status {
-                    case .on:
-                        Text("On".uppercased())
-                            .frame(width: 60, height: 60)
-                            .background(.green)
-                            .foregroundColor(.black.opacity(0.5))
-                            .font(.system(size: 18))
-                            .bold()
-                            .clipShape(Circle())
-                            .onTapGesture(perform: { toggleNetwork(enable: false) })
-                            .pointerOnHover()
-                            .onHover(perform: { hovering in
-                                showOverText = hovering && controlActiveState == .key
-                            })
-                            .popover(isPresented: $showOverText, arrowEdge: .trailing, content: {
-                                Text("Click to disable network")
-                                    .padding()
-                                    .interactiveDismissDisabled()
-                            })
-                    case .off:
-                        Text("Off".uppercased())
-                            .frame(width: 60, height: 60)
-                            .background(.red)
-                            .foregroundColor(.black.opacity(0.5))
-                            .font(.system(size: 18))
-                            .bold()
-                            .clipShape(/*@START_MENU_TOKEN@*/Circle()/*@END_MENU_TOKEN@*/)
-                            .onTapGesture(perform: { toggleNetwork(enable: true) })
-                            .pointerOnHover()
-                            .onHover(perform: { hovering in
-                                showOverText = hovering
-                            })
-                            .popover(isPresented: $showOverText, arrowEdge: .trailing, content: {
-                                Text("Click to enable network")
-                                    .padding()
-                                    .interactiveDismissDisabled()
-                            })
-                    case .wait:
-                        Text("Wait".uppercased())
-                            .frame(width: 60, height: 60)
-                            .background(.yellow)
-                            .foregroundColor(.black.opacity(0.5))
-                            .font(.system(size: 18))
-                            .bold()
-                            .clipShape(/*@START_MENU_TOKEN@*/Circle()/*@END_MENU_TOKEN@*/)
-                    case .unknown:
-                        Text("N/A".uppercased())
-                            .frame(width: 60, height: 60)
-                            .background(.gray)
-                            .foregroundColor(.black.opacity(0.5))
-                            .font(.system(size: 18))
-                            .bold()
-                            .clipShape(/*@START_MENU_TOKEN@*/Circle()/*@END_MENU_TOKEN@*/)
-                }
+                renderNetworkStatusControl()
             }
         }
         .frame(width: 110, height: 90)
     }
     
     // MARK: Private functions
+    
+    private func renderNetworkStatusControl() -> some View {
+        let data = getNetworkStatusControlData()
+        
+        let result = Text(data.text.uppercased())
+            .frame(width: 60, height: 60)
+            .background(data.color)
+            .foregroundColor(.black.opacity(0.5))
+            .font(.system(size: 18))
+            .bold()
+            .clipShape(Circle())
+            .overlay(content: { Circle().stroke(.blue, lineWidth: showOverText ? 2 : 0) })
+            .onTapGesture(perform: data.action)
+            .pointerOnHover()
+            .onHover(perform: { hovering in
+                showOverText = hovering && controlActiveState == .key && data.hintText != nil
+            })
+            .popover(isPresented: $showOverText, arrowEdge: .trailing, content: {
+                Text(data.hintText!)
+                    .padding()
+                    .focusEffectDisabled()
+                    .interactiveDismissDisabled()
+            })
+        
+        return result
+    }
+    
+    private func getNetworkStatusControlData() -> NetworkStatusControlData {
+        switch appState.network.status {
+            case .on:
+                return NetworkStatusControlData(
+                    text:Constants.on,
+                    color: .green,
+                    action: { toggleNetwork(enable: false) },
+                    hintText: Constants.hintClickToDisableNetwork)
+            case .off:
+                return NetworkStatusControlData(
+                    text:Constants.off,
+                    color: .red,
+                    action: { toggleNetwork(enable: true) },
+                    hintText: Constants.hintClickToEnableNetwork)
+            case .wait:
+                return NetworkStatusControlData(
+                    text:Constants.wait,
+                    color: .yellow,
+                    action: {})
+            default:
+                return NetworkStatusControlData(
+                    text:Constants.na,
+                    color: .gray,
+                    action: {})
+        }
+    }
     
     private func toggleNetwork(enable : Bool) {
         showOverText = false
@@ -95,6 +93,14 @@ struct NetworkStatusView : View {
         }
     }
     
+    // MARK: Inner types
+    
+    private struct NetworkStatusControlData {
+        let text: String
+        let color: Color
+        var action: () -> Void
+        var hintText: String?
+    }
 }
 
 #Preview {

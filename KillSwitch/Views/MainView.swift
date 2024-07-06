@@ -1,5 +1,5 @@
 //
-//  ContentView.swift
+//  MainView.swift
 //  KillSwitch
 //
 //  Created by UglyGeorge on 04.06.2024.
@@ -57,5 +57,5 @@ struct MainView : View {
 }
 
 #Preview {
-    MainView()
+    MainView().environmentObject(AppState())
 }

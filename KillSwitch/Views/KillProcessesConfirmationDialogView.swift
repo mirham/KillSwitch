@@ -1,5 +1,5 @@
 //
-//  ConfirmationDialogView.swift
+//  KillProcessesConfirmationDialogView.swift
 //  KillSwitch
 //
 //  Created by UglyGeorge on 27.06.2024.
@@ -19,7 +19,7 @@ struct KillProcessesConfirmationDialogView : View {
         .frame(width: 0, height: 0)
         .sheet(isPresented: $isPresented, content: {
             VStack(alignment: .center){
-                Image(nsImage: NSImage(imageLiteralResourceName: "AppIcon"))
+                Image(nsImage: NSImage(imageLiteralResourceName: Constants.iconApp))
                     .resizable()
                     .frame(width: 60, height: 60)
                 Spacer()
@@ -41,15 +41,18 @@ struct KillProcessesConfirmationDialogView : View {
                     }
                 }
                 HStack {
-                    Button(action: primaryButtonClickEventHandler) {
-                        Text(Constants.dialogButtonYes)
-                            .frame(width: 100, height: 25)
-                            .background(.red, in: RoundedRectangle(cornerRadius: 5))
-                    }
+                    Button(action: primaryButtonClickHandler) {
+                        Text(Constants.yes)
+                            .frame(height: 25)
+                            .frame(maxWidth: /*@START_MENU_TOKEN@*/.infinity/*@END_MENU_TOKEN@*/)
+                            .background(
+                                RoundedRectangle(cornerRadius: 5, style: .continuous).fill(Color.red)
+                            )
+                    }.buttonStyle(.plain)
                     Spacer()
                         .frame(width: 20)
-                    Button(action: secondaryButtonClickEventHandler) {
-                        Text(Constants.dialogButtonNo)
+                    Button(action: secondaryButtonClickHandler) {
+                        Text(Constants.no)
                             .frame(width: 100, height: 25)
                     }
                 }.padding()
@@ -62,23 +65,27 @@ struct KillProcessesConfirmationDialogView : View {
             isPresented = true
         })
         .onDisappear(perform: {
-            disappearDialod()
+            closeDialog()
         })
     }
     
     // MARK: Private function
     
-    private func primaryButtonClickEventHandler() {
+    private func primaryButtonClickHandler() {
         processesService.killActiveProcesses()
-        disappearDialod()
+        closeDialog()
     }
     
-    private func secondaryButtonClickEventHandler() {
-        disappearDialod()
+    private func secondaryButtonClickHandler() {
+        closeDialog()
     }
     
-    private func disappearDialod() {
+    private func closeDialog() {
         appState.views.isKillProcessesConfirmationDialogShowed = false
         isPresented = false
     }
+}
+
+#Preview {
+    KillProcessesConfirmationDialogView().environmentObject(AppState())
 }

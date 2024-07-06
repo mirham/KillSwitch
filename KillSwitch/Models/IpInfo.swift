@@ -13,11 +13,11 @@ struct IpInfo: Codable, Identifiable, Equatable {
     var ipAddress: String
     var countryName: String
     var countryCode: String
-    var safetyType: AddressSafetyType
+    var safetyType: SafetyType
     
     init(ipAddress: String,
          ipAddressInfo: IpInfoBase?,
-         safetyType: AddressSafetyType = .unknown){
+         safetyType: SafetyType = .unknown){
         let info = ipAddressInfo ?? IpInfoBase(ipAddress: ipAddress)
         
         self.ipVersion = info.ipVersion

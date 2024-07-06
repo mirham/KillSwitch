@@ -7,21 +7,20 @@
 
 import SwiftUI
 import Network
-import FlagKit
 
-struct AllowedAddressesEditView : View, Settable {
+struct AllowedAddressesEditView : View {
     @EnvironmentObject var appState: AppState
     
     @State private var newIp = String()
     @State private var isNewIpValid = false
-    @State private var newIpAddressSafetyType: AddressSafetyType = AddressSafetyType.compete
+    @State private var newIpAddressSafetyType: SafetyType = SafetyType.compete
     @State private var isNewIpInvalid: Bool = false
 
     private let ipService = IpService.shared
     
     var body: some View {
         VStack{
-            Text("Allowed IP addresses")
+            Text(Constants.settingsElementAllowedIpAddresses)
                 .font(.title3)
                 .multilineTextAlignment(.center)
                 .padding(.top)
@@ -29,33 +28,20 @@ struct AllowedAddressesEditView : View, Settable {
                 List {
                     ForEach(appState.userData.allowedIps, id: \.ipAddress) { ipAddress in
                         HStack {
-                            Text(ipAddress.ipAddress).frame(maxWidth: .infinity, alignment: .leading)
+                            Text(ipAddress.ipAddress)
+                                .frame(maxWidth: .infinity, alignment: .leading)
                             Spacer()
-                            Image(nsImage: ipAddress.countryCode.isEmpty
-                                  ? NSImage()
-                                  : Flag(countryCode:ipAddress.countryCode)?.originalImage ?? NSImage())
-                            Text(ipAddress.countryName).frame(maxWidth: .infinity, alignment: .leading)
+                            Image(nsImage: getCountryFlag(countryCode: ipAddress.countryCode))
+                            Text(ipAddress.countryName)
+                                .frame(maxWidth: .infinity, alignment: .leading)
                             Spacer()
-                            switch ipAddress.safetyType {
-                                case AddressSafetyType.compete:
-                                    Circle()
-                                        .fill(.green)
-                                        .frame(width: 10, height: 10)
-                                case AddressSafetyType.some:
-                                    Circle()
-                                        .fill(.yellow)
-                                        .frame(width: 10, height: 10)
-                                default:
-                                    Circle()
-                                        .fill(.gray)
-                                        .frame(width: 5, height: 5)
-                            }
+                            Circle()
+                                .fill(getSafetyColor(safetyType: ipAddress.safetyType))
+                                .frame(width: 10, height: 10)
                         }
                         .contextMenu {
-                            Button(action: {
-                                appState.userData.allowedIps.removeAll(where: {$0 == ipAddress})
-                            }){
-                                Text("Delete")
+                            Button(action: { appState.userData.allowedIps.removeAll(where: {$0 == ipAddress})}) {
+                                Text(Constants.delete)
                             }
                         }
                     }
@@ -65,42 +51,42 @@ struct AllowedAddressesEditView : View, Settable {
                 VStack {
                     HStack {
                         VStack(alignment: .leading, spacing: 12) {
-                            Text("IP:")
-                            Text("Safety:")
+                            Text("\(Constants.ip):")
+                            Text("\(Constants.safety):")
                         }
                         VStack(alignment: .leading, spacing: 12) {
-                            TextField("A new valid IP address", text: $newIp)
+                            TextField(Constants.hintNewVaildIpAddress, text: $newIp)
                                 .onChange(of: newIp) {
                                     isNewIpValid = newIp.isValidIp()
                                 }
                             HStack {
                                 RadioButton(
-                                    id: String(AddressSafetyType.compete.rawValue),
-                                    label: "Complete",
+                                    id: String(SafetyType.compete.rawValue),
+                                    label: SafetyType.compete.description,
                                     size: 12,
                                     color: Color.green,
                                     textSize: 11,
-                                    isMarked: newIpAddressSafetyType == AddressSafetyType.compete ? true : false,
-                                    callback: { _ in newIpAddressSafetyType = AddressSafetyType.compete }
+                                    isMarked: newIpAddressSafetyType == SafetyType.compete,
+                                    callback: { _ in newIpAddressSafetyType = SafetyType.compete }
                                 )
                                 RadioButton(
-                                    id: String(AddressSafetyType.some.rawValue),
-                                    label: "Some",
+                                    id: String(SafetyType.some.rawValue),
+                                    label: SafetyType.some.description,
                                     size: 12,
                                     color: Color.yellow,
                                     textSize: 11,
-                                    isMarked: newIpAddressSafetyType == AddressSafetyType.some ? true : false,
-                                    callback: { _ in newIpAddressSafetyType = AddressSafetyType.some }
+                                    isMarked: newIpAddressSafetyType == SafetyType.some,
+                                    callback: { _ in newIpAddressSafetyType = SafetyType.some }
                                 )
                             }
                         }
                     }
-                    AsyncButton("Add", action: addAllowedIpAddressAsync)
+                    AsyncButton(Constants.add, action: addAllowedIpAddressClickHandlerAsync)
                     .disabled(!isNewIpValid)
                     .alert(isPresented: $isNewIpInvalid) {
                         Alert(title: Text(Constants.dialogHeaderIpAddressIsNotValid),
                               message: Text(Constants.dialogBodyIpAddressIsNotValid),
-                              dismissButton: .default(Text(Constants.dialogButtonOk)))
+                              dismissButton: .default(Text(Constants.ok)))
                     }
                     .bold()
                     .pointerOnHover()
@@ -108,14 +94,11 @@ struct AllowedAddressesEditView : View, Settable {
                 .padding()
             }
         }
-        .onDisappear(){
-            writeSettings()
-        }
     }
     
     // MARK: Private functions
     
-    private func addAllowedIpAddressAsync() async {
+    private func addAllowedIpAddressClickHandlerAsync() async {
         let ipInfoResult = await ipService.getIpInfoAsync(ip: newIp)
         
         if (appState.userData.pickyMode && ipInfoResult.error != nil) {
@@ -131,14 +114,8 @@ struct AllowedAddressesEditView : View, Settable {
         
         newIp = String()
         isNewIpValid = false
-        newIpAddressSafetyType = AddressSafetyType.compete
+        newIpAddressSafetyType = SafetyType.compete
         isNewIpInvalid = false
-    }
-    
-    private func writeSettings() {
-        writeSettingsArray(
-            allObjects: appState.userData.allowedIps,
-            key: Constants.settingsKeyAddresses)
     }
 }
 

@@ -1,5 +1,5 @@
 //
-//  MenuBarWindowView.swift
+//  MenuBarView.swift
 //  KillSwitch
 //
 //  Created by UglyGeorge on 06.06.2024.
@@ -35,8 +35,8 @@ struct MenuBarView : View {
             Spacer()
                 .frame(height: 5)
             HStack {
-                Button("Show", systemImage: "macwindow") {
-                    showMainWindow()
+                Button(Constants.show, systemImage: Constants.iconWindow) {
+                    showButtonClickHandler()
                 }
                 .buttonStyle(.plain)
                 .foregroundColor(showOverText ? .blue : .gray)
@@ -47,7 +47,7 @@ struct MenuBarView : View {
                 })
                 Spacer()
                     .frame(width: 20)
-                Button("Quit", systemImage: "xmark.circle") {
+                Button(Constants.quit, systemImage: Constants.iconQuit) {
                     launchAgentService.apply()
                     NSApplication.shared.terminate(nil)
                 }
@@ -70,7 +70,7 @@ struct MenuBarView : View {
     
     // MARK: Private functions
     
-    private func showMainWindow(){
+    private func showButtonClickHandler(){
         if(!appState.views.isMainViewShowed){
             openWindow(id: Constants.windowIdMain)
             appState.views.isMainViewShowed = true
@@ -79,5 +79,5 @@ struct MenuBarView : View {
 }
 
 #Preview {
-    MenuBarView()
+    MenuBarView().environmentObject(AppState())
 }

@@ -1,5 +1,5 @@
 //
-//  MonitoringStateView.swift
+//  ProcessesStatusView.swift
 //  KillSwitch
 //
 //  Created by UglyGeorge on 05.06.2024.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ProcessesStatusView : View, Settable {
+struct ProcessesStatusView : View {
     @EnvironmentObject var appState: AppState
 
     @Environment(\.openWindow) private var openWindow
@@ -21,7 +21,7 @@ struct ProcessesStatusView : View, Settable {
     var body: some View {
         Section() {
             VStack{
-                Text("Applications".uppercased())
+                Text(Constants.applications.uppercased())
                     .font(.title3)
                     .multilineTextAlignment(.center)
                 Section {
@@ -32,6 +32,7 @@ struct ProcessesStatusView : View, Settable {
                         .font(.system(size: 18))
                         .bold()
                         .clipShape(Circle())
+                        .overlay(content: { Circle().stroke(.blue, lineWidth: showOverText ? 2 : 0) })
                         .onTapGesture(perform: closeAllpicationsButtonClickHandler)
                         .pointerOnHover()
                 }
@@ -40,7 +41,7 @@ struct ProcessesStatusView : View, Settable {
                 })
                 .popover(isPresented: ($showOverText), arrowEdge: .trailing, content: {
                     VStack{
-                        Text("Click to close")
+                        Text(Constants.clickToClose)
                         VStack(alignment: .leading) {
                             ForEach(appState.system.processesToKill, id: \.pid) { processInfo in
                                 HStack {
@@ -57,11 +58,11 @@ struct ProcessesStatusView : View, Settable {
                     Alert(
                         title: Text(Constants.dialogHeaderCloseApps),
                         message: Text(Constants.dialogBodyCloseApps),
-                        primaryButton: Alert.Button.default(Text(Constants.dialogButtonYes), action: {
+                        primaryButton: Alert.Button.default(Text(Constants.yes), action: {
                             closeApplications()
                             showConfirmation = false
                         }),
-                        secondaryButton: .cancel(Text(Constants.dialogButtonNo), action: { showConfirmation = false })
+                        secondaryButton: .cancel(Text(Constants.no), action: { showConfirmation = false })
                     )
                 }
             }
@@ -73,12 +74,9 @@ struct ProcessesStatusView : View, Settable {
     // MARK: Private functions
     
     private func closeAllpicationsButtonClickHandler(){
-        let useConfirmation = readSetting(key: Constants.settingsKeyConfirmationApplicationsClose) ?? true
-        
-        if (useConfirmation) {
-            // TODO RUSS: Fix this isuue
-            if (appState.views.isMainViewShowed
-                && !appState.views.isStatusBarViewShowed) {
+        if (appState.userData.appCloseConfirmation) {
+            // TODO RUSS: Fix this issue
+            if (appState.views.isMainViewShowed && !appState.views.isStatusBarViewShowed) {
                 showConfirmation = true
             }
             else {
@@ -90,19 +88,19 @@ struct ProcessesStatusView : View, Settable {
         }
     }
     
-    private func closeApplications(){
-        processesService.killActiveProcesses()
-        showOverText = false
-    }
-    
     private func showKillProcessesConfirmationDialog() {
         if(!appState.views.isKillProcessesConfirmationDialogShowed){
             openWindow(id: Constants.windowIdKillProcessesConfirmationDialog)
             appState.views.isKillProcessesConfirmationDialogShowed = true
         }
     }
+    
+    private func closeApplications(){
+        processesService.killActiveProcesses()
+        showOverText = false
+    }
 }
 
 #Preview {
-    ProcessesStatusView()
+    ProcessesStatusView().environmentObject(AppState())
 }

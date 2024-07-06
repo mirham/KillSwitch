@@ -1,5 +1,5 @@
 //
-//  AddressApisEditView.swift
+//  IpApisEditView.swift
 //  KillSwitch
 //
 //  Created by UglyGeorge on 18.06.2024.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct IpApisEditView : View, Settable {
+struct IpApisEditView : View {
     @EnvironmentObject var appState: AppState
     
     private let addressesService = IpService.shared
@@ -18,7 +18,7 @@ struct IpApisEditView : View, Settable {
     
     var body: some View {
         VStack{
-            Text("IP Address APIs")
+            Text(Constants.settingsElementIpAddressApis)
                 .font(.title3)
                 .multilineTextAlignment(.center)
                 .padding(.top)
@@ -30,15 +30,12 @@ struct IpApisEditView : View, Settable {
                             Spacer()
                             Circle()
                                 .fill((api.active == nil || api.active!) ? .green : .red)
-                                .fill((api.active == nil || api.active!) ? .green : .red)
                                 .frame(width: 10, height: 10)
                                 .help(Constants.hintApiIsActive)
                         }
                         .contextMenu {
-                            Button(action: {
-                                appState.userData.ipApis.removeAll(where: {$0 == api})
-                            }){
-                                Text("Delete")
+                            Button(action: { appState.userData.ipApis.removeAll(where: {$0 == api})}) {
+                                Text(Constants.delete)
                             }
                         }
                     }
@@ -48,21 +45,21 @@ struct IpApisEditView : View, Settable {
                 VStack {
                     HStack {
                         VStack(alignment: .leading, spacing: 12) {
-                            Text("API URL:")
+                            Text("\(Constants.apiUrl):")
                         }
                         VStack(alignment: .leading, spacing: 12) {
-                            TextField("New API URL", text: $newUrl)
+                            TextField(Constants.hintNewVaildApiUrl, text: $newUrl)
                                 .onChange(of: newUrl) {
                                     isNewUrlValid = newUrl.isValidUrl()
                                 }
                         }
                     }
-                    AsyncButton("Add", action: addIpApiAsync)
+                    AsyncButton(Constants.add, action: addIpApiClickHandlerAsync)
                     .disabled(!isNewUrlValid)
                     .alert(isPresented: $isNewUrlInvalid) {
                         Alert(title: Text(Constants.dialogHeaderApiIsNotValid),
                               message: Text(Constants.dialogBodyApiIsNotValid),
-                              dismissButton: .default(Text(Constants.dialogButtonOk)))
+                              dismissButton: .default(Text(Constants.ok)))
                     }
                     .pointerOnHover()
                     .bold()
@@ -70,14 +67,11 @@ struct IpApisEditView : View, Settable {
                 .padding()
             }
         }
-        .onDisappear() {
-            writeSettings()
-        }
     }
     
     // MARK: Private functions
     
-    private func addIpApiAsync() async {
+    private func addIpApiClickHandlerAsync() async {
         let ipAddressResult = await addressesService.getCurrentIpAsync(ipApiUrl: newUrl)
         
         guard ipAddressResult.success else {
@@ -93,12 +87,6 @@ struct IpApisEditView : View, Settable {
         newUrl = String()
         isNewUrlValid = false
         isNewUrlInvalid = false
-    }
-    
-    private func writeSettings() {
-        writeSettingsArray(
-            allObjects: appState.userData.ipApis,
-            key: Constants.settingsKeyApis)
     }
 }
 

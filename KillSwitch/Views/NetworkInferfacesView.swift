@@ -1,5 +1,5 @@
 //
-//  NetworkStateView.swift
+//  NetworkInterfacesView.swift
 //  KillSwitch
 //
 //  Created by UglyGeorge on 04.06.2024.
@@ -13,7 +13,7 @@ struct NetworkInterfacesView : View {
     var body: some View {
         Section() {
             VStack(spacing: 10){
-                Text("Active connections".uppercased())
+                Text(Constants.activeConnections.uppercased())
                     .font(.caption2)
                 ForEach(appState.network.interfaces, id: \.id) { activeNetworkInterface in
                     HStack {
@@ -28,5 +28,5 @@ struct NetworkInterfacesView : View {
 }
 
 #Preview {
-    NetworkInterfacesView()
+    NetworkInterfacesView().environmentObject(AppState())
 }

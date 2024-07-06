@@ -9,14 +9,13 @@ import Foundation
 
 struct Constants{
     // MARK: Default values
-    static let settings = "Settings"
-    static let none = "None"
     static let primaryNetworkInterfaceName = "en0"
     static let minTimeIntervalToCheck: Double = 1
     static let maxTimeIntervalToCheck: Double = 3600
     static let zshPath = "/bin/zsh"
     static let launchAgentName = "user.launchkeep.KillSwitch"
     static let launchAgentPlistName = "user.launchkeep.KillSwitch.plist"
+    static let launchAgents = "LaunchAgents"
     static let launchAgentsFolderPath = "~/Library/LaunchAgents/"
     static let logDateFormat = "dd.MM.yyyy HH:mm:ss"
     static let networkMonitorQueryLabel = "KSNetworkMonitor"
@@ -31,14 +30,58 @@ struct Constants{
     static let regexUrl = "((?:http|https)://)?(?:www\\.)?[\\w\\d\\-_]+\\.\\w{2,3}(\\.\\w{2})?(/(?<=/)(?:[\\w\\d\\-./_]+)?)?"
     
     // MARK: Icons
+    static let iconApp = "AppIcon"
     static let iconCompleteSafety = "checkmark.shield.fill"
     static let iconSomeSafety = "exclamationmark.shield.fill"
     static let iconUnsafe = "xmark.shield.fill"
+    static let iconWindow = "macwindow"
+    static let iconQuit = "xmark.circle"
+    static let iconSettings = "gearshape.2"
     
     // MARK: Window IDs
     static let windowIdMain = "main-view"
     static let windowIdSettings = "settings-view"
     static let windowIdKillProcessesConfirmationDialog = "kill-processess-confirmation-dialog-view"
+    
+    // MARK: Elements names
+    static let settings = "Settings"
+    static let show = "Show"
+    static let quit = "Quit"
+    static let none = "None"
+    static let on = "On"
+    static let off = "Off"
+    static let add = "Add"
+    static let delete = "Delete"
+    static let yes = "Yes"
+    static let no = "No"
+    static let ok = "OK"
+    static let wait = "Wait"
+    static let na = "N/A"
+    static let later = "Later"
+    static let ip = "IP"
+    static let apiUrl = "API URL"
+    static let safety = "Safety"
+    static let network = "Network"
+    static let monitoring = "Monitoring"
+    static let applications = "Applications"
+    static let clickToClose = "Click to close"
+    static let activeConnections = "Active connections"
+    static let safetyDescriprion = "%1$@ safety"
+    static let disableLocationServices = "(disable location services)"
+    static let currentIp = "Current IP"
+    
+    // MARK: Menu items
+    
+    static let menuItemCopy = "Copy"
+    static let menuItemAddAsAllowedIpWithCompletePrivacy = "Add as allowed IP with complete privacy"
+    static let menuItemAddAsAllowedIpWithSomePrivacy = "Add as allowed IP with some privacy"
+    
+    // MARK: Settings elements names
+    static let settingsElementGeneral = "General"
+    static let settingsElementAllowedIpAddresses = "Allowed IP addresses"
+    static let settingsElementIpAddressApis = "IP address APIs"
+    static let settingsElementAppsToClose = "Apps to close"
+    static let settingsElementApplicationsToClose = "Applications to close"
     
     // MARK:  Settings key names
     static let settingsKeyAddresses = "allowed-addresses"
@@ -65,22 +108,18 @@ struct Constants{
     static let errorIpApiResponseIsInvalid = "IP address API returned invalid IP address"
     static let errorWhenCallingIpInfoApi = "Error when called IP info API: %1$@"
     
-    // MARK: Dialog messages
+    // MARK: Dialogs
     static let dialogHeaderIpAddressIsNotValid = "IP Address is not valid"
     static let dialogBodyIpAddressIsNotValid = "IP Address seems to not be valid and cannot be added."
     static let dialogHeaderApiIsNotValid = "API for getting IP Address is not valid"
     static let dialogBodyApiIsNotValid = "API doesn't return a valid IP address as a plain text and cannot be added."
-    static let dialogButtonOk = "OK"
     static let dialogHeaderLocationServicesToggled = "Location services"
     static let dialogBodyLocationServicesToggled = "It's needed to reboot the computer to apply Location services changes."
     static let dialogButtonRebootNow = "Reboot now"
-    static let dialogButtonLater = "Later"
     static let dialogHeaderCannotAddAppToClose = "Cannot add application to close."
     static let dialogBodyCannotAddAppToClose = "Cannot add application to close: %1$@"
     static let dialogHeaderCloseApps = "Close applications"
     static let dialogBodyCloseApps = "Are you sure you want to close these applications?\nThis operation cannot be undone."
-    static let dialogButtonYes = "Yes"
-    static let dialogButtonNo = "No"
     
     // MARK: Log messages
     static let logMonitoringHasBeenEnabled = "Monitoring has been enabled"
@@ -105,6 +144,12 @@ struct Constants{
     // MARK: Hints
     static let hintApiIsActive = "API is active and in use"
     static let hintApiIsInactive = "API is not active and not in use"
+    static let hintNewVaildIpAddress = "A new valid IP address"
+    static let hintNewVaildApiUrl = "A new valid API URL"
+    static let hintClickToEnableNetwork = "Click to enable network"
+    static let hintClickToDisableNetwork = "Click to disable network"
+    static let hintClickToEnableMonitoring = "Click to enable monitoring"
+    static let hintClickToDisableMonitoring = "Click to disable monitoring"
     
     // MARK: Static data
     static let ipApiUrls = [
@@ -133,4 +178,12 @@ struct Constants{
             </dict>
         </plist>
         """;
+    
+    static let vpnProtocols = [
+        "tap", 
+        "tun",
+        "ppp",
+        "ipsec",
+        "utun"
+    ]
 }

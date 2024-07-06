@@ -1,5 +1,5 @@
 //
-//  NetworkStatus.swift
+//  NetworkStatusService.swift
 //  KillSwitch
 //
 //  Created by UglyGeorge on 07.06.2024.
@@ -14,7 +14,7 @@ class NetworkStatusService: ServiceBase, ApiCallable {
     private let monitor = NWPathMonitor()
     private let queue = DispatchQueue(label: Constants.networkMonitorQueryLabel, qos: .background)
     
-    let lock = NSLock()
+    private let lock = NSLock()
     
     override init() {
         super.init()
@@ -30,7 +30,7 @@ class NetworkStatusService: ServiceBase, ApiCallable {
             
             switch path.status {
                 case .satisfied:
-                    newStatus = self.networkInterfacesContainsPhysical(interfaces: newNetworkInterfaces) 
+                    newStatus = newNetworkInterfaces.contains(where: {$0.isPhysical})
                         ? NetworkStatusType.on
                         : NetworkStatusType.wait
                 case .requiresConnection:
@@ -99,16 +99,19 @@ class NetworkStatusService: ServiceBase, ApiCallable {
             case .other:
                 return NetworkInterface(
                     name: interface.name,
-                    type: interface.name.hasPrefix(Constants.utun) ? NetworkInterfaceType.vpn : NetworkInterfaceType.other)
+                    type: isVpn(name: interface.name) ? NetworkInterfaceType.vpn : NetworkInterfaceType.other)
             @unknown default:
                 return NetworkInterface(name: interface.name, type: NetworkInterfaceType.unknown)
         }
     }
     
-    private func networkInterfacesContainsPhysical(interfaces: [NetworkInterface]) -> Bool {
-        let result = interfaces.contains(where: {$0.type == .cellular || $0.type == .wifi || $0.type == .wired})
+    private func isVpn(name: String) -> Bool {
+        for vpnProtocol in Constants.vpnProtocols
+        where name.starts(with: vpnProtocol) {
+            return true
+        }
         
-        return result
+        return false
     }
     
     private func updateStatus(

@@ -85,7 +85,7 @@ struct GeneralSettingsEditView : View, Settable {
                     Alert(title: Text(Constants.dialogHeaderLocationServicesToggled),
                           message: Text(Constants.dialogBodyLocationServicesToggled),
                           primaryButton: Alert.Button.default(Text(Constants.dialogButtonRebootNow), action: { computerManagementService.reboot() }),
-                          secondaryButton: .default(Text(Constants.dialogButtonLater)))
+                          secondaryButton: .default(Text(Constants.later)))
                 }
                 .pointerOnHover()
                 .padding(.leading)

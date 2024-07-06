@@ -6,8 +6,6 @@
 //
 
 import Foundation
-import CoreLocation
-import Darwin
 import AppKit
 
 class ProcessesService : ServiceBase, ShellAccessible {

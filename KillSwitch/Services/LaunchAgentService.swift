@@ -1,5 +1,5 @@
 //
-//  AppManagementService.swift
+//  LaunchAgentService.swift
 //  KillSwitch
 //
 //  Created by UglyGeorge on 06.06.2024.
@@ -74,9 +74,13 @@ class LaunchAgentService : ServiceBase, ShellAccessible {
     // MARK: Private functions
     
     private func getPlistFilePath() -> String {
-        let userDirectory = try! FileManager.default.url(for: .libraryDirectory, in: .userDomainMask, appropriateFor:.libraryDirectory, create: false)
+        let userDirectory = try! FileManager.default.url(
+            for: .libraryDirectory,
+            in: .userDomainMask,
+            appropriateFor:.libraryDirectory,
+            create: false)
         let launchAgentsFolder = userDirectory
-            .appendingPathComponent("LaunchAgents")
+            .appendingPathComponent(Constants.launchAgents)
             .appendingPathComponent(Constants.launchAgentPlistName)
         let filename = URL(fileURLWithPath: launchAgentsFolder.path(), isDirectory: false)
         let result = filename.path()

@@ -1,5 +1,5 @@
 //
-//  IpAddressesService.swift
+//  IpService.swift
 //  KillSwitch
 //
 //  Created by UglyGeorge on 10.06.2024.
@@ -20,13 +20,9 @@ class IpService : ServiceBase, ApiCallable {
         }
         
         guard currentIpApiUrl != nil else { return OperationResult(error: Constants.errorNoActiveAddressApiFound) }
-        
         let ipAddressResult = await callIpApiAsync(ipApiUrl: currentIpApiUrl!)
-        
         guard ipAddressResult.success else { return OperationResult(error: ipAddressResult.error!) }
-        
         let ipAddressString = ipAddressResult.result!.trimmingCharacters(in: .whitespacesAndNewlines)
-        
         guard ipAddressString.isValidIp() else { return OperationResult(error: Constants.errorIpApiResponseIsInvalid) }
         
         if (withInfo) {
@@ -64,7 +60,7 @@ class IpService : ServiceBase, ApiCallable {
         }
     }
     
-    func addAllowedIp(ip : String, ipInfo: IpInfoBase?, safetyType: AddressSafetyType) {
+    func addAllowedIp(ip : String, ipInfo: IpInfoBase?, safetyType: SafetyType) {
             let newAllowedIp = IpInfo(ipAddress: ip, ipAddressInfo: ipInfo, safetyType: safetyType)
             
             if !appState.userData.allowedIps.contains(newAllowedIp) {
@@ -84,7 +80,6 @@ class IpService : ServiceBase, ApiCallable {
         
         return result
     }
-    
     
     private func callIpApiAsync(ipApiUrl : String) async -> OperationResult<String> {
         do {

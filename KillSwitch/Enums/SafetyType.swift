@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum AddressSafetyType : Int, CaseIterable, Codable {
+enum SafetyType : Int, CaseIterable, Codable {
     case unknown = 0
     case compete = 1
     case some = 2

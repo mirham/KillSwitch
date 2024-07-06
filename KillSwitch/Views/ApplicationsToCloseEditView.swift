@@ -1,14 +1,13 @@
 //
-//  ApplicationsEditView.swift
+//  ApplicationsToCloseEditView.swift
 //  KillSwitch
 //
 //  Created by UglyGeorge on 25.06.2024.
 //
 
-import Foundation
 import SwiftUI
 
-struct ApplicationsToCloseEditView : View, Settable {
+struct ApplicationsToCloseEditView : View {
     @EnvironmentObject var appState: AppState
     
     @State private var showFileImporter = false
@@ -17,7 +16,7 @@ struct ApplicationsToCloseEditView : View, Settable {
     
     var body: some View {
         VStack{
-            Text("Applications to close")
+            Text(Constants.settingsElementApplicationsToClose)
                 .font(.title3)
                 .multilineTextAlignment(.center)
                 .padding(.top)
@@ -29,31 +28,26 @@ struct ApplicationsToCloseEditView : View, Settable {
                             Text(appInfo.name)
                         }
                         .contextMenu {
-                            Button(action: {
-                                appState.userData.appsToClose.removeAll(where: {$0.id == appInfo.id})
-                                writeSettings()
-                            }){
-                                Text("Delete")
+                            Button(action: {appState.userData.appsToClose.removeAll(where: {$0.id == appInfo.id}) }) {
+                                Text(Constants.delete)
                             }
                         }
                     }
                 }
             }
-            Button(action: {
-                showFileImporter = true
-            }){
-                Text("Add")
+            Button(action: { showFileImporter = true }){
+                Text(Constants.add)
             }
             .padding()
         }
         .fileImporter(isPresented: $showFileImporter, allowedContentTypes: [.application]) { result in
-            addAppToClose(dialogResult: result)
+            addAppsToCloseDialogResultHandler(dialogResult: result)
         }
         .fileDialogDefaultDirectory(.applicationDirectory)
         .alert(isPresented: $isAppToCloseInvalid) {
             Alert(title: Text(Constants.dialogHeaderCannotAddAppToClose),
                   message: Text(String(format: Constants.dialogBodyCannotAddAppToClose, errorMessage)),
-                  dismissButton: .default(Text(Constants.dialogButtonOk), action: {
+                  dismissButton: .default(Text(Constants.ok), action: {
                 errorMessage = String()
                 isAppToCloseInvalid = false
             }))
@@ -62,34 +56,28 @@ struct ApplicationsToCloseEditView : View, Settable {
     
     // MARK: Private functions
     
-    private func addAppToClose(dialogResult: Result<URL, any Error>) {
+    private func addAppsToCloseDialogResultHandler(dialogResult: Result<URL, any Error>) {
         switch dialogResult {
             case .success(let url):
                 let appName = url.deletingPathExtension().lastPathComponent
                 let bundle = Bundle(url: url)
                 let bundleId = bundle?.bundleIdentifier ?? appName
-                let appInfo = AppInfo(url: url.path().removingPercentEncoding ?? String(), name:  appName, bundleId: bundleId)
+                let appInfo = AppInfo(
+                    url: url.path().removingPercentEncoding ?? String(),
+                    name:  appName,
+                    bundleId: bundleId)
                 
                 appState.userData.appsToClose.append(appInfo)
-                
-                writeSettings()
                 
                 showFileImporter = false
             case .failure(let error):
                 errorMessage = error.localizedDescription
                 isAppToCloseInvalid = true
                 showFileImporter = false
-                
         }
-    }
-    
-    private func writeSettings() {
-        writeSettingsArray(
-            allObjects: appState.userData.appsToClose,
-            key: Constants.settingsKeyAppsToClose)
     }
 }
 
 #Preview {
-    ApplicationsToCloseEditView()
+    ApplicationsToCloseEditView().environmentObject(AppState())
 }
