@@ -33,7 +33,7 @@
 		3570E4732C22F95B00CB5D42 /* IpInfoBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3570E4722C22F95B00CB5D42 /* IpInfoBase.swift */; };
 		3570E4752C23058200CB5D42 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3570E4742C23058200CB5D42 /* Constants.swift */; };
 		3570E4772C2317E800CB5D42 /* LogEntryType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3570E4762C2317E800CB5D42 /* LogEntryType.swift */; };
-		3570E4792C23396E00CB5D42 /* SettingsButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3570E4782C23396E00CB5D42 /* SettingsButtonView.swift */; };
+		3570E4792C23396E00CB5D42 /* ToolbarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3570E4782C23396E00CB5D42 /* ToolbarView.swift */; };
 		3570E4822C249FC300CB5D42 /* GeneralSettingsEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3570E4812C249FC300CB5D42 /* GeneralSettingsEditView.swift */; };
 		3570E4852C258A0000CB5D42 /* IsHiddenModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3570E4842C258A0000CB5D42 /* IsHiddenModifier.swift */; };
 		3570E4872C258A5400CB5D42 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3570E4862C258A5400CB5D42 /* Extensions.swift */; };
@@ -65,7 +65,7 @@
 		35F12F392C15ACB900AFA738 /* NetworkStatusType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35F12F382C15ACB900AFA738 /* NetworkStatusType.swift */; };
 		35F12F3B2C15B3BE00AFA738 /* NetworkInterfaceType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35F12F3A2C15B3BE00AFA738 /* NetworkInterfaceType.swift */; };
 		35F12F3E2C15B4E100AFA738 /* NetworkInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35F12F3D2C15B4E100AFA738 /* NetworkInterface.swift */; };
-		35F12F402C15B8C200AFA738 /* NetworkInferfacesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35F12F3F2C15B8C200AFA738 /* NetworkInferfacesView.swift */; };
+		35F12F402C15B8C200AFA738 /* ActiveConnectionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35F12F3F2C15B8C200AFA738 /* ActiveConnectionsView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -98,7 +98,7 @@
 		3570E4722C22F95B00CB5D42 /* IpInfoBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IpInfoBase.swift; sourceTree = "<group>"; };
 		3570E4742C23058200CB5D42 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		3570E4762C2317E800CB5D42 /* LogEntryType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogEntryType.swift; sourceTree = "<group>"; };
-		3570E4782C23396E00CB5D42 /* SettingsButtonView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsButtonView.swift; sourceTree = "<group>"; };
+		3570E4782C23396E00CB5D42 /* ToolbarView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToolbarView.swift; sourceTree = "<group>"; };
 		3570E4812C249FC300CB5D42 /* GeneralSettingsEditView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeneralSettingsEditView.swift; sourceTree = "<group>"; };
 		3570E4842C258A0000CB5D42 /* IsHiddenModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IsHiddenModifier.swift; sourceTree = "<group>"; };
 		3570E4862C258A5400CB5D42 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
@@ -129,7 +129,7 @@
 		35F12F382C15ACB900AFA738 /* NetworkStatusType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkStatusType.swift; sourceTree = "<group>"; };
 		35F12F3A2C15B3BE00AFA738 /* NetworkInterfaceType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkInterfaceType.swift; sourceTree = "<group>"; };
 		35F12F3D2C15B4E100AFA738 /* NetworkInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkInterface.swift; sourceTree = "<group>"; };
-		35F12F3F2C15B8C200AFA738 /* NetworkInferfacesView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkInferfacesView.swift; sourceTree = "<group>"; };
+		35F12F3F2C15B8C200AFA738 /* ActiveConnectionsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActiveConnectionsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -177,8 +177,8 @@
 				3570E4682C21CC1600CB5D42 /* IpApisEditView.swift */,
 				35DD1C4B2C0F96E1003AA3ED /* NetworkStatusView.swift */,
 				351E9CEF2C10C03700CEC15F /* MonitoringStatusView.swift */,
-				35F12F3F2C15B8C200AFA738 /* NetworkInferfacesView.swift */,
-				3570E4782C23396E00CB5D42 /* SettingsButtonView.swift */,
+				35F12F3F2C15B8C200AFA738 /* ActiveConnectionsView.swift */,
+				3570E4782C23396E00CB5D42 /* ToolbarView.swift */,
 				351E9CE62C10A6C100CEC15F /* LogView.swift */,
 				359E44F22C11C37D00BF6093 /* CurrentIpView.swift */,
 			);
@@ -403,7 +403,7 @@
 				351E9CE92C10ADB300CEC15F /* AllowedAddressesEditView.swift in Sources */,
 				359E44ED2C11A6BD00BF6093 /* MenuBarStatusView.swift in Sources */,
 				351F0C642C0F599400644C66 /* Log.swift in Sources */,
-				3570E4792C23396E00CB5D42 /* SettingsButtonView.swift in Sources */,
+				3570E4792C23396E00CB5D42 /* ToolbarView.swift in Sources */,
 				351F0C662C0F6D2A00644C66 /* NetworkManagementService.swift in Sources */,
 				35E7DD4F2C13420000CC68F7 /* NetworkStatusService.swift in Sources */,
 				35DD1C4E2C0FA9D2003AA3ED /* CheckToggleStyle.swift in Sources */,
@@ -426,7 +426,7 @@
 				357154FD2C17422600A41AA4 /* IpInfo.swift in Sources */,
 				3572667A2C36A4110021978C /* AppState.swift in Sources */,
 				357154F92C1739C300A41AA4 /* ApiCallable.swift in Sources */,
-				35F12F402C15B8C200AFA738 /* NetworkInferfacesView.swift in Sources */,
+				35F12F402C15B8C200AFA738 /* ActiveConnectionsView.swift in Sources */,
 				3590333C2C396950006787AD /* ViewExtensions.swift in Sources */,
 				359C7C6D2C29605D00CA3CE1 /* LocationService.swift in Sources */,
 				3505D94E2C2D5DD300E8FF61 /* KillProcessesConfirmationDialogView.swift in Sources */,

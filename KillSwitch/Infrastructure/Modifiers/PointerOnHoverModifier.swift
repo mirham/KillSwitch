@@ -1,5 +1,5 @@
 //
-//  IsHiddenModifier.swift
+//  PointerOnHoverModifier.swift
 //  KillSwitch
 //
 //  Created by UglyGeorge on 21.06.2024.

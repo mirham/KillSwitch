@@ -1,5 +1,5 @@
 //
-//  IpAddressInfo.swift
+//  IpInfoBase.swift
 //  KillSwitch
 //
 //  Created by UglyGeorge on 10.06.2024.

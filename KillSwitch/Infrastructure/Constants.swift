@@ -19,11 +19,8 @@ struct Constants{
     static let launchAgentsFolderPath = "~/Library/LaunchAgents/"
     static let logDateFormat = "dd.MM.yyyy HH:mm:ss"
     static let networkMonitorQueryLabel = "KSNetworkMonitor"
-    static let enabled = "enabled"
-    static let disabled = "disabled"
     static let ipV4: Int = 4
     static let ipV6: Int = 6
-    static let utun = "utun"
     static let defaultIntervalBetweenChecksInSeconds: Double = 10
     
     // MARK: Regexes
@@ -38,6 +35,15 @@ struct Constants{
     static let iconQuit = "xmark.circle"
     static let iconSettings = "gearshape.2"
     static let iconQuestionMark = "questionmark.circle.fill"
+    static let iconCopyLog = "doc.on.doc"
+    static let iconClearLog = "eraser"
+    static let iconInfo = "info.circle"
+    static let iconCellular = "cellularbars"
+    static let iconLoopback = "point.forward.to.point.capsulepath"
+    static let iconVpn = "network.badge.shield.half.filled"
+    static let iconWifi = "wifi"
+    static let iconWired = "cable.connector"
+    static let iconUnknownConnection = "questionmark"
     
     // MARK: Window IDs
     static let windowIdMain = "main-view"
@@ -69,9 +75,18 @@ struct Constants{
     static let safetyDescriprion = "%1$@ safety"
     static let disableLocationServices = "(disable location services)"
     static let currentIp = "Current IP"
+    static let enabled = "enabled"
+    static let disabled = "disabled"
+    static let physical = "physical"
+    static let virtual = "virtual"
+    
+    // MARK: Toolbar
+    static let toolbarSettings = "Settings"
+    static let toolbarCopyLog = "Copy log"
+    static let toolbarClearLog = "Clear log"
+    static let toolbarInfo = "Info"
     
     // MARK: Menu items
-    
     static let menuItemCopy = "Copy"
     static let menuItemAddAsAllowedIpWithCompletePrivacy = "Add as allowed IP with complete privacy"
     static let menuItemAddAsAllowedIpWithSomePrivacy = "Add as allowed IP with some privacy"

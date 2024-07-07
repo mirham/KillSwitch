@@ -1,5 +1,5 @@
 //
-//  NetworkServiceBase.swift
+//  ApiCallable.swift
 //  KillSwitch
 //
 //  Created by UglyGeorge on 10.06.2024.

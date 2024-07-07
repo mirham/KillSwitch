@@ -1,5 +1,5 @@
 //
-//  ViewHelper.swift
+//  AppHelper.swift
 //  KillSwitch
 //
 //  Created by UglyGeorge on 04.07.2024.

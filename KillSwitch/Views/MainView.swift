@@ -31,7 +31,7 @@ struct MainView : View {
                     .padding(.top)
                 Spacer()
                     .frame(minHeight: 20)
-                NetworkInterfacesView()
+                ActiveConnectionsView()
                     .environmentObject(appState)
             }
             .opacity(controlActiveState == .key ? 1 : 0.6)
@@ -50,7 +50,7 @@ struct MainView : View {
         })
         .frame(minHeight: 600)
         .toolbar(content: {
-            SettingsButtonView()
+            ToolbarView()
                 .padding(.trailing)
         })
     }
