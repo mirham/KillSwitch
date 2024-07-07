@@ -74,7 +74,7 @@ struct ProcessesStatusView : View {
     // MARK: Private functions
     
     private func closeAllpicationsButtonClickHandler(){
-        if (appState.userData.appCloseConfirmation) {
+        if (appState.userData.appsCloseConfirmation) {
             // TODO RUSS: Fix this issue
             if (appState.views.isMainViewShowed && !appState.views.isStatusBarViewShowed) {
                 showConfirmation = true

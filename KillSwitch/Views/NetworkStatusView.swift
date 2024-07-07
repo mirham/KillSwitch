@@ -104,5 +104,5 @@ struct NetworkStatusView : View {
 }
 
 #Preview {
-    NetworkStatusView()
+    NetworkStatusView().environmentObject(AppState())
 }

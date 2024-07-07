@@ -13,7 +13,7 @@ struct AllowedAddressesEditView : View {
     
     @State private var newIp = String()
     @State private var isNewIpValid = false
-    @State private var newIpAddressSafetyType: SafetyType = SafetyType.compete
+    @State private var newIpSafetyType: SafetyType = SafetyType.compete
     @State private var isNewIpInvalid: Bool = false
 
     private let ipService = IpService.shared
@@ -66,8 +66,8 @@ struct AllowedAddressesEditView : View {
                                     size: 12,
                                     color: Color.green,
                                     textSize: 11,
-                                    isMarked: newIpAddressSafetyType == SafetyType.compete,
-                                    callback: { _ in newIpAddressSafetyType = SafetyType.compete }
+                                    isMarked: newIpSafetyType == SafetyType.compete,
+                                    callback: { _ in newIpSafetyType = SafetyType.compete }
                                 )
                                 RadioButton(
                                     id: String(SafetyType.some.rawValue),
@@ -75,8 +75,8 @@ struct AllowedAddressesEditView : View {
                                     size: 12,
                                     color: Color.yellow,
                                     textSize: 11,
-                                    isMarked: newIpAddressSafetyType == SafetyType.some,
-                                    callback: { _ in newIpAddressSafetyType = SafetyType.some }
+                                    isMarked: newIpSafetyType == SafetyType.some,
+                                    callback: { _ in newIpSafetyType = SafetyType.some }
                                 )
                             }
                         }
@@ -110,11 +110,11 @@ struct AllowedAddressesEditView : View {
         ipService.addAllowedIp(
             ip: newIp,
             ipInfo: ipInfoResult.result,
-            safetyType: newIpAddressSafetyType)
+            safetyType: newIpSafetyType)
         
         newIp = String()
         isNewIpValid = false
-        newIpAddressSafetyType = SafetyType.compete
+        newIpSafetyType = SafetyType.compete
         isNewIpInvalid = false
     }
 }

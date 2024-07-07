@@ -93,20 +93,22 @@ extension AppState {
             didSet { writeSetting(newValue: useHigherProtection, key: Constants.settingsKeyHigherProtection) }
         }
         var intervalBetweenChecks: Double = Constants.defaultIntervalBetweenChecksInSeconds {
+            willSet { intervalBetweenChecksChanged = intervalBetweenChecks != newValue }
             didSet { writeSetting(newValue: intervalBetweenChecks, key: Constants.settingsKeyIntervalBetweenChecks) }
         }
         var pickyMode: Bool = false {
             didSet { writeSetting(newValue: pickyMode, key: Constants.settingsKeyHigherProtection) }
         }
-        var appCloseConfirmation: Bool = false {
-            didSet { writeSetting(newValue: appCloseConfirmation, key: Constants.settingsKeyConfirmationApplicationsClose) }
+        var appsCloseConfirmation: Bool = false {
+            didSet { writeSetting(newValue: appsCloseConfirmation, key: Constants.settingsKeyConfirmationApplicationsClose) }
         }
+        var intervalBetweenChecksChanged: Bool = false
         
         init() {
             useHigherProtection = readSetting(key: Constants.settingsKeyHigherProtection) ?? false
             intervalBetweenChecks = readSetting(key: Constants.settingsKeyIntervalBetweenChecks) ?? Constants.defaultIntervalBetweenChecksInSeconds
             pickyMode = readSetting(key: Constants.settingsKeyUsePickyMode) ?? false
-            appCloseConfirmation = readSetting(key: Constants.settingsKeyConfirmationApplicationsClose) ?? true
+            appsCloseConfirmation = readSetting(key: Constants.settingsKeyConfirmationApplicationsClose) ?? true
             
             let savedAllowedIps: [IpInfo]? = readSettingsArray(key: Constants.settingsKeyAddresses)
             let savedIpApis: [IpApiInfo]? = readSettingsArray(key: Constants.settingsKeyApis)

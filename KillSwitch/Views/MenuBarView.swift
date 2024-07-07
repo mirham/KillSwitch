@@ -14,8 +14,8 @@ struct MenuBarView : View {
     
     private var launchAgentService = LaunchAgentService.shared
     
-    @State private var showOverText = false
-    @State private var quitOverText = false
+    @State private var overShowText = false
+    @State private var overQuitText = false
     
     var body: some View {
         VStack{
@@ -38,12 +38,9 @@ struct MenuBarView : View {
                 Button(Constants.show, systemImage: Constants.iconWindow) {
                     showButtonClickHandler()
                 }
-                .buttonStyle(.plain)
-                .foregroundColor(showOverText ? .blue : .gray)
-                .bold(showOverText)
-                .focusEffectDisabled()
+                .withMenuBarButtonStyle(bold: overShowText, color: overShowText ? .blue : .gray)
                 .onHover(perform: { hovering in
-                    showOverText = hovering
+                    overShowText = hovering
                 })
                 Spacer()
                     .frame(width: 20)
@@ -51,12 +48,9 @@ struct MenuBarView : View {
                     launchAgentService.apply()
                     NSApplication.shared.terminate(nil)
                 }
-                .buttonStyle(.plain)
-                .focusEffectDisabled()
-                .bold(quitOverText)
-                .foregroundColor(quitOverText ? .red : .gray)
+                .withMenuBarButtonStyle(bold: overQuitText, color: overQuitText ? .red : .gray)
                 .onHover(perform: { hovering in
-                    quitOverText = hovering
+                    overQuitText = hovering
                 })
             }
         }
@@ -75,6 +69,15 @@ struct MenuBarView : View {
             openWindow(id: Constants.windowIdMain)
             appState.views.isMainViewShowed = true
         }
+    }
+}
+
+private extension Button {
+    func withMenuBarButtonStyle(bold: Bool, color: Color) -> some View {
+        self.buttonStyle(.plain)
+            .focusEffectDisabled()
+            .foregroundColor(color)
+            .bold(bold)
     }
 }
 

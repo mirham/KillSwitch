@@ -37,6 +37,7 @@ struct Constants{
     static let iconWindow = "macwindow"
     static let iconQuit = "xmark.circle"
     static let iconSettings = "gearshape.2"
+    static let iconQuestionMark = "questionmark.circle.fill"
     
     // MARK: Window IDs
     static let windowIdMain = "main-view"
@@ -81,6 +82,12 @@ struct Constants{
     static let settingsElementIpAddressApis = "IP address APIs"
     static let settingsElementAppsToClose = "Apps to close"
     static let settingsElementApplicationsToClose = "Applications to close"
+    static let settingsElementKeepAppRunning = "Keep application running"
+    static let settingsElementDisableLocationServices = "Disable location services"
+    static let settingsElementHigherProtection = "Higher protection"
+    static let settingsElementPickyMode = "Picky mode"
+    static let settingsElementConfirmationToCloseApps = "Confirmation to close applications"
+    static let settingsElementInterval = "second(s) between IP address checks"
     
     // MARK:  Settings key names
     static let settingsKeyAddresses = "allowed-addresses"
@@ -149,6 +156,12 @@ struct Constants{
     static let hintClickToDisableNetwork = "Click to disable network"
     static let hintClickToEnableMonitoring = "Click to enable monitoring"
     static let hintClickToDisableMonitoring = "Click to disable monitoring"
+    static let hintKeepApplicationRunning = "The application will be opened after the system starts or if it was closed."
+    static let hintToggleLocationServices = "Toggle location services after restart. If the required state is critical, this can be done manually in Settings → Privacy & Security → Location Services without restarting."
+    static let hintHigherProtection = "Disable the network when monitoring is enabled, if there is no reliable information about the current IP address. Also closes all running monitored applications, if any."
+    static let hintCloseApplicationConfirmation = "Confirmation dialog when closing applications. This option is ignored in higher protection mode."
+    static let hintPickyMode = "Use extended information about current IP address, such as country. Does not allow the use of an IP address as an allowed one if there is no reliable information about it."
+    static let hintInterval = "1..3600"
     
     // MARK: Static data
     static let ipApiUrls = [
