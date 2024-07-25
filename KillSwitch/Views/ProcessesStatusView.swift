@@ -16,7 +16,6 @@ struct ProcessesStatusView : View {
     private let processesService = ProcessesService.shared
     
     @State private var showOverText = false
-    @State private var showConfirmation = false
     
     var body: some View {
         Section() {
@@ -54,17 +53,6 @@ struct ProcessesStatusView : View {
                     .padding()
                     .interactiveDismissDisabled()
                 })
-                .alert(isPresented: $showConfirmation) {
-                    Alert(
-                        title: Text(Constants.dialogHeaderCloseApps),
-                        message: Text(Constants.dialogBodyCloseApps),
-                        primaryButton: Alert.Button.default(Text(Constants.yes), action: {
-                            closeApplications()
-                            showConfirmation = false
-                        }),
-                        secondaryButton: .cancel(Text(Constants.no), action: { showConfirmation = false })
-                    )
-                }
             }
         }
         .frame(width: 110, height: 90)
@@ -75,13 +63,7 @@ struct ProcessesStatusView : View {
     
     private func closeAllpicationsButtonClickHandler(){
         if (appState.userData.appsCloseConfirmation) {
-            // TODO RUSS: Fix this issue
-            if (appState.views.isMainViewShowed && !appState.views.isStatusBarViewShowed) {
-                showConfirmation = true
-            }
-            else {
-                showKillProcessesConfirmationDialog()
-            }
+            showKillProcessesConfirmationDialog()
         }
         else {
             closeApplications()
