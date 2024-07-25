@@ -9,7 +9,6 @@ import Foundation
 
 struct Constants{
     // MARK: Default values
-    static let primaryNetworkInterfaceName = "en0"
     static let minTimeIntervalToCheck: Double = 1
     static let maxTimeIntervalToCheck: Double = 3600
     static let zshPath = "/bin/zsh"
@@ -22,6 +21,10 @@ struct Constants{
     static let ipV4: Int = 4
     static let ipV6: Int = 6
     static let defaultIntervalBetweenChecksInSeconds: Double = 10
+    static let physicalNetworkInterfacePrefix = "en"
+    static let physicalNetworkInterfaceWiFi = "Wi-Fi"
+    static let physicalNetworkInterfaceLan = "LAN"
+    static let physicalNetworkInterfaceExclusion = "Thunderbolt"
     
     // MARK: Regexes
     static let regexUrl = "((?:http|https)://)?(?:www\\.)?[\\w\\d\\-_]+\\.\\w{2,3}(\\.\\w{2})?(/(?<=/)(?:[\\w\\d\\-./_]+)?)?"
@@ -49,6 +52,7 @@ struct Constants{
     static let windowIdMain = "main-view"
     static let windowIdSettings = "settings-view"
     static let windowIdKillProcessesConfirmationDialog = "kill-processess-confirmation-dialog-view"
+    static let windowIdEnableNetworkDialog = "enable-network-dialog-view"
     
     // MARK: Elements names
     static let settings = "Settings"
@@ -59,6 +63,8 @@ struct Constants{
     static let off = "Off"
     static let add = "Add"
     static let delete = "Delete"
+    static let enable = "Enable"
+    static let cancel = "Cancel"
     static let yes = "Yes"
     static let no = "No"
     static let ok = "OK"
@@ -105,7 +111,7 @@ struct Constants{
     static let settingsElementInterval = "second(s) between IP address checks"
     
     // MARK:  Settings key names
-    static let settingsKeyAddresses = "allowed-addresses"
+    static let settingsKeyIps = "allowed-addresses"
     static let settingsKeyApis = "apis"
     static let settingsKeyIsMonitoringEnabled = "is-monitoring-enabled"
     static let settingsKeyHigherProtection = "higher-protection"
@@ -141,6 +147,8 @@ struct Constants{
     static let dialogBodyCannotAddAppToClose = "Cannot add application to close: %1$@"
     static let dialogHeaderCloseApps = "Close applications"
     static let dialogBodyCloseApps = "Are you sure you want to close these applications?\nThis operation cannot be undone."
+    static let dialogHeaderEnableNetwork = "Enable network"
+    static let dialogBodyEnableNetwork = "Select a network interface to enable:\n"
     
     // MARK: Log messages
     static let logMonitoringHasBeenEnabled = "Monitoring has been enabled"

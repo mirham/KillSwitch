@@ -15,7 +15,7 @@ struct ActiveConnectionsView : View {
             VStack(spacing: 10){
                 Text(Constants.activeConnections.uppercased())
                     .font(.caption2)
-                ForEach(appState.network.interfaces, id: \.id) { activeNetworkInterface in
+                ForEach(appState.network.activeNetworkInterfaces.sorted(by: {$0.name < $1.name}), id: \.id) { activeNetworkInterface in
                     HStack {
                         Image(systemName: getConnectionIcon(networkInterfaceType: activeNetworkInterface.type))
                         Text("\(activeNetworkInterface.type)".uppercased())

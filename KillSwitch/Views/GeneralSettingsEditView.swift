@@ -15,7 +15,7 @@ struct GeneralSettingsEditView: View {
     private let launchAgentService = LaunchAgentService.shared
     private let monitoringService = MonitoringService.shared
     private let locationService = LocationService.shared
-    private let computerManagementService = ComputerManagementService.shared
+    private let computerService = ComputerService.shared
     
     @State private var isKeepRunningOn = false
     @State private var isLocationServicesToggled: Bool = false
@@ -69,7 +69,7 @@ struct GeneralSettingsEditView: View {
                     .alert(isPresented: $isLocationServicesToggled) {
                         Alert(title: Text(Constants.dialogHeaderLocationServicesToggled),
                               message: Text(Constants.dialogBodyLocationServicesToggled),
-                              primaryButton: Alert.Button.default(Text(Constants.dialogButtonRebootNow), action: { computerManagementService.reboot() }),
+                              primaryButton: Alert.Button.default(Text(Constants.dialogButtonRebootNow), action: { computerService.reboot() }),
                               secondaryButton: .default(Text(Constants.later)))
                     }
                 Spacer()

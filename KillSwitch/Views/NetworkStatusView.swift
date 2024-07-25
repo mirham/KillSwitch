@@ -10,9 +10,10 @@ import SwiftUI
 struct NetworkStatusView : View {
     @EnvironmentObject var appState: AppState
     
-    @Environment(\.controlActiveState) var controlActiveState
+    @Environment(\.openWindow) private var openWindow
+    @Environment(\.controlActiveState) private var controlActiveState
     
-    private let networkManagementService = NetworkManagementService.shared
+    private let networkService = NetworkService.shared
     
     @State private var showOverText = false
 
@@ -85,11 +86,29 @@ struct NetworkStatusView : View {
     private func toggleNetwork(enable : Bool) {
         showOverText = false
         
+        let physicalNetworkInterfaces = networkService.getPhysicalInterfaces()
+        
         if (enable) {
-            networkManagementService.enableNetworkInterface(interfaceName: Constants.primaryNetworkInterfaceName)
+            if (appState.network.physicalNetworkInterfaces.count > 1) {
+                showEnableNetworkDialog()
+            }
+            else {
+                networkService.enableNetworkInterface(interfaceName: appState.network.physicalNetworkInterfaces.first!.name)
+            }
         }
         else {
-            networkManagementService.disableNetworkInterface(interfaceName: Constants.primaryNetworkInterfaceName)
+            for interface in physicalNetworkInterfaces {
+                networkService.disableNetworkInterface(interfaceName: interface.name)
+            }
+        }
+    }
+    
+    // MARK: Private functions
+    
+    private func showEnableNetworkDialog() {
+        if(!appState.views.isEnableNetworkDialogShowed){
+            openWindow(id: Constants.windowIdEnableNetworkDialog)
+            appState.views.isEnableNetworkDialogShowed = true
         }
     }
     

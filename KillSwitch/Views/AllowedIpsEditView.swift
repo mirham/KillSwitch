@@ -8,7 +8,7 @@
 import SwiftUI
 import Network
 
-struct AllowedAddressesEditView : View {
+struct AllowedIpsEditView : View {
     @EnvironmentObject var appState: AppState
     
     @State private var newIp = String()
@@ -120,5 +120,5 @@ struct AllowedAddressesEditView : View {
 }
 
 #Preview {
-    AllowedAddressesEditView().environmentObject(AppState())
+    AllowedIpsEditView().environmentObject(AppState())
 }

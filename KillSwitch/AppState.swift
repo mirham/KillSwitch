@@ -25,6 +25,7 @@ class AppState : ObservableObject {
         current.isCurrentIpAllowed = getCurrentAllowedIp() != nil
         current.highRisk = checkIfHighRisk()
         current.countyDetected = checkIfCountryDetected()
+        current.mainNetworkInterface = determineMainNetworkInterface()
     }
 }
 
@@ -34,6 +35,7 @@ extension AppState {
         var isCurrentIpAllowed = false
         var highRisk = false
         var countyDetected = false
+        var mainNetworkInterface = String()
     }
 }
 
@@ -43,6 +45,7 @@ extension AppState {
         var isStatusBarViewShowed = false
         var isSettingsViewShowed = false
         var isKillProcessesConfirmationDialogShowed = false
+        var isEnableNetworkDialogShowed = false
     }
 }
 
@@ -70,7 +73,8 @@ extension AppState {
 extension AppState {
     struct Network {
         var status: NetworkStatusType = NetworkStatusType.unknown
-        var interfaces: [NetworkInterface] = [NetworkInterface]()
+        var activeNetworkInterfaces: [NetworkInterface] = [NetworkInterface]()
+        var physicalNetworkInterfaces: [NetworkInterface] = [NetworkInterface]()
         var previousIpInfo: IpInfoBase? = nil
         var currentIpInfo: IpInfoBase? = nil {
             willSet { previousIpInfo = currentIpInfo }
@@ -84,7 +88,7 @@ extension AppState {
             didSet { writeSettingsArray(newValues: ipApis, key: Constants.settingsKeyApis) }
         }
         var allowedIps = [IpInfo]() {
-            didSet { writeSettingsArray(newValues: allowedIps, key: Constants.settingsKeyAddresses) }
+            didSet { writeSettingsArray(newValues: allowedIps, key: Constants.settingsKeyIps) }
         }
         var appsToClose = [AppInfo]() {
             didSet { writeSettingsArray(newValues: appsToClose, key: Constants.settingsKeyAppsToClose) }
@@ -97,7 +101,7 @@ extension AppState {
             didSet { writeSetting(newValue: intervalBetweenChecks, key: Constants.settingsKeyIntervalBetweenChecks) }
         }
         var pickyMode: Bool = false {
-            didSet { writeSetting(newValue: pickyMode, key: Constants.settingsKeyHigherProtection) }
+            didSet { writeSetting(newValue: pickyMode, key: Constants.settingsKeyUsePickyMode) }
         }
         var appsCloseConfirmation: Bool = false {
             didSet { writeSetting(newValue: appsCloseConfirmation, key: Constants.settingsKeyConfirmationApplicationsClose) }
@@ -110,7 +114,7 @@ extension AppState {
             pickyMode = readSetting(key: Constants.settingsKeyUsePickyMode) ?? false
             appsCloseConfirmation = readSetting(key: Constants.settingsKeyConfirmationApplicationsClose) ?? true
             
-            let savedAllowedIps: [IpInfo]? = readSettingsArray(key: Constants.settingsKeyAddresses)
+            let savedAllowedIps: [IpInfo]? = readSettingsArray(key: Constants.settingsKeyIps)
             let savedIpApis: [IpApiInfo]? = readSettingsArray(key: Constants.settingsKeyApis)
             let savedAppsToClose: [AppInfo]? = readSettingsArray(key: Constants.settingsKeyAppsToClose)
             
@@ -169,5 +173,16 @@ extension AppState {
     private func checkIfCountryDetected() -> Bool {
         return network.currentIpInfo != nil && !network.currentIpInfo!.countryName.isEmpty
     }
-
+    
+    private func determineMainNetworkInterface() -> String {
+        for activeInterface in network.activeNetworkInterfaces {
+            for physicalInterface in network.physicalNetworkInterfaces {
+                if (activeInterface.name == physicalInterface.name) {
+                    return activeInterface.name
+                }
+            }
+        }
+        
+        return current.mainNetworkInterface
+    }
 }

@@ -7,8 +7,8 @@
 
 import Foundation
 
-class ComputerManagementService : ServiceBase, ShellAccessible {
-    static let shared = ComputerManagementService()
+class ComputerService : ServiceBase, ShellAccessible {
+    static let shared = ComputerService()
     
     func reboot(){
         do {

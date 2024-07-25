@@ -22,7 +22,7 @@ struct SettingsView : View {
                  .tabItem {
                      Text("Menubar")
              } */
-            AllowedAddressesEditView()
+            AllowedIpsEditView()
                 .tabItem {
                     Text(Constants.settingsElementAllowedIpAddresses)
                 }

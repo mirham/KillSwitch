@@ -52,5 +52,12 @@ struct KillSwitchApp: App {
                 .hidden()
         })
         .windowResizability(.contentSize)
+        
+        WindowGroup(id: Constants.windowIdEnableNetworkDialog, content: {
+            EnableNetworkDialogView()
+                .environmentObject(appState)
+                .hidden()
+        })
+        .windowResizability(.contentSize)
     }
 }

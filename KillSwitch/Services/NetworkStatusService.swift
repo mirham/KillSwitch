@@ -10,6 +10,7 @@ import Network
 
 class NetworkStatusService: ServiceBase, ApiCallable {    
     private let ipService = IpService.shared
+    private let networkService = NetworkService.shared
     
     private let monitor = NWPathMonitor()
     private let queue = DispatchQueue(label: Constants.networkMonitorQueryLabel, qos: .background)
@@ -22,9 +23,9 @@ class NetworkStatusService: ServiceBase, ApiCallable {
         monitor.pathUpdateHandler = { path in
             var newStatus = NetworkStatusType.unknown
             var newNetworkInterfaces = [NetworkInterface]()
-             
+            
             for networkInterface in path.availableInterfaces {
-                let networkInterfaceInfo = self.getActiveNetworkInterfaceInfo(interface: networkInterface)
+                let networkInterfaceInfo = networkInterface.asNetworkInterface()
                 newNetworkInterfaces.append(networkInterfaceInfo)
             }
             
@@ -39,7 +40,7 @@ class NetworkStatusService: ServiceBase, ApiCallable {
                     newStatus = NetworkStatusType.off
             }
             
-            if (self.appState.network.status != newStatus || self.appState.network.interfaces != newNetworkInterfaces) {
+            if (self.appState.network.status != newStatus || self.appState.network.activeNetworkInterfaces != newNetworkInterfaces) {
                 let updatedStatus = newStatus
                 let updatedNetworkInterfaces = newNetworkInterfaces
                 
@@ -51,7 +52,8 @@ class NetworkStatusService: ServiceBase, ApiCallable {
                     await MainActor.run {
                         self.updateStatus(
                             currentStatus: updatedStatus,
-                            networkInterfaces: updatedNetworkInterfaces,
+                            activeNetworkInterfaces: updatedNetworkInterfaces,
+                            physicalNetworkInterfaces: self.networkService.getPhysicalInterfaces(),
                             disconnected: updatedStatus != .on)
                     }
                 }
@@ -86,38 +88,11 @@ class NetworkStatusService: ServiceBase, ApiCallable {
         lock.unlock()
     }
     
-    private func getActiveNetworkInterfaceInfo(interface: NWInterface) -> NetworkInterface {
-        switch interface.type {
-            case .cellular:
-                return NetworkInterface(name: interface.name, type: NetworkInterfaceType.cellular)
-            case .loopback:
-                return NetworkInterface(name: interface.name, type: NetworkInterfaceType.loopback)
-            case .wifi:
-                return NetworkInterface(name: interface.name, type: NetworkInterfaceType.wifi)
-            case .wiredEthernet:
-                return NetworkInterface(name: interface.name, type: NetworkInterfaceType.wired)
-            case .other:
-                return NetworkInterface(
-                    name: interface.name,
-                    type: isVpn(name: interface.name) ? NetworkInterfaceType.vpn : NetworkInterfaceType.other)
-            @unknown default:
-                return NetworkInterface(name: interface.name, type: NetworkInterfaceType.unknown)
-        }
-    }
-    
-    private func isVpn(name: String) -> Bool {
-        for vpnProtocol in Constants.vpnProtocols
-        where name.starts(with: vpnProtocol) {
-            return true
-        }
-        
-        return false
-    }
-    
     private func updateStatus(
         currentIpInfo: IpInfoBase? = nil,
         currentStatus: NetworkStatusType? = nil,
-        networkInterfaces: [NetworkInterface]? = nil,
+        activeNetworkInterfaces: [NetworkInterface]? = nil,
+        physicalNetworkInterfaces: [NetworkInterface]? = nil,
         disconnected: Bool? = nil) {
         DispatchQueue.main.async {
             if (currentStatus != nil) {
@@ -128,8 +103,12 @@ class NetworkStatusService: ServiceBase, ApiCallable {
                 self.appState.network.currentIpInfo = currentIpInfo!
             }
                 
-            if (networkInterfaces != nil) {
-                self.appState.network.interfaces = networkInterfaces!
+            if (activeNetworkInterfaces != nil) {
+                self.appState.network.activeNetworkInterfaces = activeNetworkInterfaces!
+            }
+            
+            if (physicalNetworkInterfaces != nil) {
+                self.appState.network.physicalNetworkInterfaces = physicalNetworkInterfaces!
             }
             
             if(disconnected != nil && disconnected!) {

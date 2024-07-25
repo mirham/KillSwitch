@@ -11,7 +11,7 @@ class MonitoringService: ServiceBase {
     static let shared = MonitoringService()
     
     private let addressesService = IpService.shared
-    private let networkManagementService = NetworkManagementService.shared
+    private let networkService = NetworkService.shared
     
     private var currentTimer: Timer? = nil
     
@@ -68,7 +68,7 @@ class MonitoringService: ServiceBase {
         }
         
         if (isUnsafeForHigherProtection(updatedIpAddressResult: updatedIpAddressResult)) {
-            networkManagementService.disableNetworkInterface(interfaceName: Constants.primaryNetworkInterfaceName)
+            disableActiveNetworkInterfaces()
         }
         
         guard updatedIpAddressResult.result != nil else { return }
@@ -81,7 +81,7 @@ class MonitoringService: ServiceBase {
         Log.write(message: String(format: Constants.logCurrentIp, updatedIpAddressResult.result!.ipAddress))
         
         if(!appState.current.isCurrentIpAllowed) {
-            networkManagementService.disableNetworkInterface(interfaceName: Constants.primaryNetworkInterfaceName)
+            disableActiveNetworkInterfaces()
             Log.write(
                 message: String(format: Constants.logCurrentIpHasBeenUpdatedWithNotFromWhitelist, appState.network.currentIpInfo!.ipAddress),
                 type: LogEntryType.warning)
@@ -94,6 +94,12 @@ class MonitoringService: ServiceBase {
                             || updatedIpAddressResult.result == nil)
         
         return result
+    }
+    
+    private func disableActiveNetworkInterfaces() {
+        for activeInterface in appState.network.physicalNetworkInterfaces {
+            networkService.disableNetworkInterface(interfaceName: activeInterface.name)
+        }
     }
     
     private func updateStatus(
