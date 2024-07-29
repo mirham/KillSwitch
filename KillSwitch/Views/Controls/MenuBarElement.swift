@@ -12,11 +12,24 @@ struct MenuBarElement: View, Equatable {
     let image: NSImage
     let id = UUID()
     let key: String
+    let isSeparator: Bool
+    
+    init(image: NSImage, key: String, isSeparator: Bool = false) {
+        self.image = image
+        self.key = key
+        self.isSeparator = isSeparator
+    }
     
     var body: some View {
         Image(nsImage: image)
             .resizable()
             .frame(width: image.size.width, height: image.size.height)
+    }
+    
+    func clone() -> MenuBarElement {
+        let result = MenuBarElement(image: self.image, key: self.key, isSeparator: self.isSeparator)
+        
+        return result
     }
 }
 

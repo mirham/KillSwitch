@@ -8,7 +8,7 @@
 import Foundation
 import CoreLocation
 
-class AppState : ObservableObject {
+class AppState : ObservableObject, Equatable {
     @Published var log = [LogEntry]()
     
     @Published var current = Current()
@@ -20,6 +20,14 @@ class AppState : ObservableObject {
     
     static let shared = AppState()
     
+    static func == (lhs: AppState, rhs: AppState) -> Bool {
+        let result = lhs.current == rhs.current
+        && lhs.monitoring == rhs.monitoring
+        && lhs.network == rhs.network
+        
+        return result
+    }
+    
     private func setCurrentState() {
         current.safetyType = determineSafetyType()
         current.isCurrentIpAllowed = getCurrentAllowedIp() != nil
@@ -30,12 +38,20 @@ class AppState : ObservableObject {
 }
 
 extension AppState {
-    struct Current {
+    struct Current : Equatable {
         var safetyType = SafetyType.unknown
         var isCurrentIpAllowed = false
         var highRisk = false
         var countyDetected = false
         var mainNetworkInterface = String()
+        
+        static func == (lhs: Current, rhs: Current) -> Bool {
+            let result = lhs.safetyType == rhs.safetyType
+            && lhs.highRisk == rhs.highRisk
+            && lhs.isCurrentIpAllowed == rhs.isCurrentIpAllowed
+            
+            return result
+        }
     }
 }
 
@@ -50,13 +66,19 @@ extension AppState {
 }
 
 extension AppState {
-    struct Monitoring : Settable {
+    struct Monitoring : Settable, Equatable {
         var isEnabled = false {
             didSet { writeSetting(newValue: isEnabled, key: Constants.settingsKeyIsMonitoringEnabled) }
         }
         
         init() {
             isEnabled = readSetting(key: Constants.settingsKeyIsMonitoringEnabled) ?? false
+        }
+        
+        static func == (lhs: Monitoring, rhs: Monitoring) -> Bool {
+            let result = lhs.isEnabled == rhs.isEnabled
+            
+            return result
         }
     }
 }
@@ -71,7 +93,7 @@ extension AppState {
 }
 
 extension AppState {
-    struct Network {
+    struct Network : Equatable {
         var status: NetworkStatusType = NetworkStatusType.unknown
         var activeNetworkInterfaces: [NetworkInterface] = [NetworkInterface]()
         var physicalNetworkInterfaces: [NetworkInterface] = [NetworkInterface]()
@@ -79,11 +101,18 @@ extension AppState {
         var currentIpInfo: IpInfoBase? = nil {
             willSet { previousIpInfo = currentIpInfo }
         }
+        
+        static func == (lhs: Network, rhs: Network) -> Bool {
+            let result = lhs.status == rhs.status
+            && lhs.currentIpInfo == rhs.currentIpInfo
+            
+            return result
+        }
     }
 }
 
 extension AppState {
-    struct UserData : Settable {
+    struct UserData : Settable, Equatable {
         var ipApis = [IpApiInfo]() {
             didSet { writeSettingsArray(newValues: ipApis, key: Constants.settingsKeyApis) }
         }
@@ -116,6 +145,12 @@ extension AppState {
             didSet { writeSetting(newValue: menuBarUseThemeColor, key: Constants.settingsKeyMenuBarUseThemeColor) }
         }
         var intervalBetweenChecksChanged: Bool = false
+        
+        static func == (lhs: UserData, rhs: UserData) -> Bool {
+            let result = lhs.menuBarUseThemeColor == rhs.menuBarUseThemeColor
+            
+            return result
+        }
         
         init() {
             useHigherProtection = readSetting(key: Constants.settingsKeyHigherProtection) ?? false

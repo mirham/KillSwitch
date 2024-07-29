@@ -49,6 +49,7 @@ struct Constants{
     static let iconWifi = "wifi"
     static let iconWired = "cable.connector"
     static let iconUnknownConnection = "questionmark"
+    static let iconInfoFill = "info.circle.fill"
     
     // MARK: Window IDs
     static let windowIdMain = "main-view"
@@ -88,6 +89,12 @@ struct Constants{
     static let physical = "physical"
     static let virtual = "virtual"
     
+    // MARK: Symbols
+    static let bullet = "•"
+    static let pipe = "|"
+    static let leftBracket = "("
+    static let rightBracket = ")"
+    
     // MARK: Toolbar
     static let toolbarSettings = "Settings"
     static let toolbarCopyLog = "Copy log"
@@ -102,8 +109,8 @@ struct Constants{
     // MARK: Settings elements names
     static let settingsElementGeneral = "General"
     static let settingsElementMenubar = "Menu bar"
-    static let settingsElementShownItems = "Shown items"
-    static let settingsElementHiddenItems = "Hidden items"
+    static let settingsElementShownItems = "Shown menu bar items"
+    static let settingsElementHiddenItems = "Hidden menu bar items"
     static let settingsElementAllowedIpAddresses = "Allowed IPs"
     static let settingsElementIpAddressApis = "IP APIs"
     static let settingsElementAppsToClose = "Apps to close"
@@ -114,6 +121,7 @@ struct Constants{
     static let settingsElementPickyMode = "Picky mode"
     static let settingsElementConfirmationToCloseApps = "Confirmation to close applications"
     static let settingsElementInterval = "second(s) between IP address checks"
+    static let settingsElementThemeColor = "Use system theme color"
     
     // MARK:  Settings key names
     static let settingsKeyIps = "allowed-addresses"
@@ -134,6 +142,10 @@ struct Constants{
     static let mbItemKeyIpAddress = "ip-address"
     static let mbItemKeyCountryCode = "country-code"
     static let mbItemKeyCountryFlag = "country-flag"
+    static let mbItemKeySeparatorBullet = "separator-bullet"
+    static let mbItemKeySeparatorPipe = "separator-pipe"
+    static let mbItemKeySeparatorLeftBracket = "separator-left-bracket"
+    static let mbItemKeySeparatorRightBracket = "separator-right-bracket"
     
     // MARK: Shell commands
     static let shCommandEnableNetworkIterface = "networksetup -setairportpower %1$@ on"
@@ -199,7 +211,8 @@ struct Constants{
     static let hintHigherProtection = "Disable the network when monitoring is enabled, if there is no reliable information about the current IP address. Also closes all running monitored applications, if any."
     static let hintCloseApplicationConfirmation = "Confirmation dialog when closing applications. This option is ignored in higher protection mode."
     static let hintPickyMode = "Use extended information about current IP address, such as country. Does not allow the use of an IP address as an allowed one if there is no reliable information about it."
-    static let hintInterval = "1..3600"
+    static let hintInterval = "\(minTimeIntervalToCheck)..\(maxTimeIntervalToCheck)"
+    static let hintMenuBarAdjustment = "Drag menu bar item icons between the sections below to arrange item as you want"
     
     // MARK: Static data
     static let ipApiUrls = [
@@ -244,7 +257,11 @@ struct Constants{
     
     static let defaultHiddenMenuBarItems = [
         mbItemKeyIpAddress,
+        mbItemKeyCountryFlag,
         mbItemKeyCountryCode,
-        mbItemKeyCountryFlag
+        mbItemKeySeparatorBullet,
+        mbItemKeySeparatorPipe,
+        mbItemKeySeparatorLeftBracket,
+        mbItemKeySeparatorRightBracket
     ]
 }

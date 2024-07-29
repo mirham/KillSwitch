@@ -36,11 +36,6 @@ struct DropViewDelegate: DropDelegate {
         let to = sourceItems.firstIndex(of: item) != nil ? sourceItems.firstIndex(of: item)! : start
         
         withAnimation(.default) {
-            if (from == to && destinationItems.isEmpty) {
-                destinationItems.append(draggedItem)
-                sourceItems.removeAll(where: {$0.id == draggedItem.id})
-            }
-            
             if(from != nil) {
                 sourceItems.move(
                     fromOffsets: IndexSet(integer: from!),
@@ -48,17 +43,22 @@ struct DropViewDelegate: DropDelegate {
             }
             else {
                 if (keepLastItem) {
-                    if (destinationItems.count == 1) {
+                    if (destinationItems.count == step) {
                         return
                     }
                     else {
-                        sourceItems.insert(draggedItem, at: to == start ? to : to + step)
-                        destinationItems.removeAll(where: {$0.id == draggedItem.id})
+                        if (!draggedItem.isSeparator) {
+                            sourceItems.insert(draggedItem, at: to == start ? to : to + step)
+                        }
+                        
+                        destinationItems.removeAll(where: {$0.id == draggedItem.id })
                     }
                 }
                 else {
-                    sourceItems.insert(draggedItem, at: to == start ? to : to + step)
-                    destinationItems.removeAll(where: {$0.id == draggedItem.id})
+                    let item = draggedItem.isSeparator ? draggedItem.clone() : draggedItem
+                    
+                    sourceItems.insert(item, at: to == start ? to : to + step)
+                    destinationItems.removeAll(where: {$0.id == item.id})
                 }
             }
         }

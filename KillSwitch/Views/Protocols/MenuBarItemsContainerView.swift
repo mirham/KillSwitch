@@ -20,9 +20,9 @@ extension MenuBarItemsContainerView {
     @MainActor
     func renderMenuBarItemImage(view: some View) -> NSImage {
         let renderer = ImageRenderer(content: view)
-        let result = renderer.nsImage
+        let result = renderer.nsImage ?? NSImage()
         
-        return result!
+        return result
     }
     
     func getMenuBarElements(
@@ -80,6 +80,22 @@ extension MenuBarItemsContainerView {
                         exampleAllowed: exampleAllowed)
                     let menuBarItem = MenuBarElement(image: countryFlag, key: key)
                     result.append(menuBarItem)
+                case Constants.mbItemKeySeparatorBullet:
+                    let bullet = getBulletItem(color: baseColor)
+                    let menuBarItem = MenuBarElement(image: renderMenuBarItemImage(view: bullet), key: key, isSeparator: true)
+                    result.append(menuBarItem)
+                case Constants.mbItemKeySeparatorPipe:
+                    let pipe = getPipeItem(color: baseColor)
+                    let menuBarItem = MenuBarElement(image: renderMenuBarItemImage(view: pipe), key: key, isSeparator: true)
+                    result.append(menuBarItem)
+                case Constants.mbItemKeySeparatorLeftBracket:
+                    let leftBracket = getLeftBracketItem(color: baseColor)
+                    let menuBarItem = MenuBarElement(image: renderMenuBarItemImage(view: leftBracket), key: key, isSeparator: true)
+                    result.append(menuBarItem)
+                case Constants.mbItemKeySeparatorRightBracket:
+                    let rightBracket = getRightBracketItem(color: baseColor)
+                    let menuBarItem = MenuBarElement(image: renderMenuBarItemImage(view: rightBracket), key: key, isSeparator: true)
+                    result.append(menuBarItem)
                 default:
                     break
             }
@@ -122,7 +138,7 @@ extension MenuBarItemsContainerView {
             ? Constants.defaultIpAddress
             : ipAddress
         
-        let result = Text(effectiveIpAddress)
+        let result = Text(effectiveIpAddress.uppercased())
             .asOptionalMenuBarItem(color: color)
         
         return result
@@ -131,15 +147,46 @@ extension MenuBarItemsContainerView {
     private func getCountryCodeItem(countryCode: String, color: Color, exampleAllowed: Bool) -> Text {
         let effectiveCountryCode = countryCode.isEmpty && exampleAllowed ? Constants.defaultCountryCode : countryCode
         
-        let result = Text(effectiveCountryCode)
+        let result = Text(effectiveCountryCode.uppercased())
             .asOptionalMenuBarItem(color: color)
         
         return result
     }
     
     private func getCountryFlagItem(countryCode: String, exampleAllowed: Bool) -> NSImage {
+        let scale = 0.9
         let effectiveCountryCode = countryCode.isEmpty && exampleAllowed ? Constants.defaultCountryCode : countryCode
         let result = getCountryFlag(countryCode: effectiveCountryCode)
+        result.size.width = result.size.width * scale
+        result.size.height = result.size.height * scale
+        
+        return result
+    }
+    
+    private func getBulletItem(color: Color) -> Text {
+        let result = Text(Constants.bullet)
+            .asOptionalMenuBarItem(color: color)
+        
+        return result
+    }
+    
+    private func getPipeItem(color: Color) -> Text {
+        let result = Text(Constants.pipe)
+            .asOptionalMenuBarItem(color: color)
+        
+        return result
+    }
+    
+    private func getLeftBracketItem(color: Color) -> Text {
+        let result = Text(Constants.leftBracket)
+            .asOptionalMenuBarItem(color: color)
+        
+        return result
+    }
+    
+    private func getRightBracketItem(color: Color) -> Text {
+        let result = Text(Constants.rightBracket)
+            .asOptionalMenuBarItem(color: color)
         
         return result
     }
