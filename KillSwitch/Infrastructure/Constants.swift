@@ -9,6 +9,8 @@ import Foundation
 
 struct Constants{
     // MARK: Default values
+    static let defaultCountryCode = "US"
+    static let defaultIpAddress = "1.1.1.1"
     static let minTimeIntervalToCheck: Double = 1
     static let maxTimeIntervalToCheck: Double = 3600
     static let zshPath = "/bin/zsh"
@@ -39,7 +41,7 @@ struct Constants{
     static let iconSettings = "gearshape.2"
     static let iconQuestionMark = "questionmark.circle.fill"
     static let iconCopyLog = "doc.on.doc"
-    static let iconClearLog = "eraser"
+    static let iconClearLog = "trash"
     static let iconInfo = "info.circle"
     static let iconCellular = "cellularbars"
     static let iconLoopback = "point.forward.to.point.capsulepath"
@@ -99,8 +101,11 @@ struct Constants{
     
     // MARK: Settings elements names
     static let settingsElementGeneral = "General"
-    static let settingsElementAllowedIpAddresses = "Allowed IP addresses"
-    static let settingsElementIpAddressApis = "IP address APIs"
+    static let settingsElementMenubar = "Menu bar"
+    static let settingsElementShownItems = "Shown items"
+    static let settingsElementHiddenItems = "Hidden items"
+    static let settingsElementAllowedIpAddresses = "Allowed IPs"
+    static let settingsElementIpAddressApis = "IP APIs"
     static let settingsElementAppsToClose = "Apps to close"
     static let settingsElementApplicationsToClose = "Applications to close"
     static let settingsElementKeepAppRunning = "Keep application running"
@@ -119,6 +124,16 @@ struct Constants{
     static let settingsKeyIntervalBetweenChecks = "interval-between-checks"
     static let settingsKeyAppsToClose = "apps-to-close"
     static let settingsKeyConfirmationApplicationsClose = "confirmation-apps-close"
+    static let settingsKeyShownMenuBarItems = "shown-menubar-items"
+    static let settingsKeyHiddenMenuBarItems = "hidden-menubar-items"
+    static let settingsKeyMenuBarUseThemeColor = "menubar-use-theme-color"
+    
+    // MARK: Menubar item keys
+    static let mbItemKeyShield = "shiled"
+    static let mbItemKeyMonitoringStatus = "monitoring-status"
+    static let mbItemKeyIpAddress = "ip-address"
+    static let mbItemKeyCountryCode = "country-code"
+    static let mbItemKeyCountryFlag = "country-flag"
     
     // MARK: Shell commands
     static let shCommandEnableNetworkIterface = "networksetup -setairportpower %1$@ on"
@@ -220,5 +235,16 @@ struct Constants{
         "ppp",
         "ipsec",
         "utun"
+    ]
+    
+    static let defaultShownMenuBarItems = [
+        mbItemKeyShield,
+        mbItemKeyMonitoringStatus
+    ]
+    
+    static let defaultHiddenMenuBarItems = [
+        mbItemKeyIpAddress,
+        mbItemKeyCountryCode,
+        mbItemKeyCountryFlag
     ]
 }

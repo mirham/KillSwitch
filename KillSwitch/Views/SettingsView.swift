@@ -18,10 +18,10 @@ struct SettingsView : View {
                 .tabItem {
                     Text(Constants.settingsElementGeneral)
                 }
-            /* MenuBarStatusEditView()
+            MenuBarStatusEditView()
                  .tabItem {
-                     Text("Menubar")
-             } */
+                     Text(Constants.settingsElementMenubar)
+                 }
             AllowedIpsEditView()
                 .tabItem {
                     Text(Constants.settingsElementAllowedIpAddresses)

@@ -8,55 +8,50 @@
 import Foundation
 import SwiftUI
 
-struct MenuBarStatusView : View {
+struct MenuBarStatusView : MenuBarItemsContainerView {
     @EnvironmentObject var appState: AppState
     
     @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         HStack{
-            Image(renderMenuBarStatusImage(), scale: 1, label: Text(String()))
+            Image(renderMenuBarStatus(), scale: 1, label: Text(String()))
         }
     }
     
     // MARK: Private functions
     
     @MainActor
-    private func renderMenuBarStatusImage() -> CGImage{
-        let icon = getIcon()
-        let text = getText()
-        let renderer = ImageRenderer(content: icon + text)
+    private func renderMenuBarStatus() -> CGImage{
+        let renderer = ImageRenderer(content: MenuBarStatusRawView(appState: appState, colorScheme: colorScheme))
         let result = renderer.cgImage
         
         return result!
     }
+}
+
+// MARK: Inner types
+
+private struct MenuBarStatusRawView: MenuBarItemsContainerView {
+    private let appState: AppState
+    private let colorScheme: ColorScheme
     
-    private func getIcon() -> Text {
-        var result: Text
-        
-        switch appState.current.safetyType {
-            case .compete:
-                result = Text(Image(systemName:Constants.iconCompleteSafety))
-            case .some:
-                result = Text(Image(systemName:Constants.iconSomeSafety))
-            default:
-                result = Text(Image(systemName:Constants.iconUnsafe))
-        }
-        
-        result = result
-            .foregroundColor(getSafetyColor(safetyType: appState.current.safetyType))
-            .font(.system(size: 16.0))
-        
-        return result
+    init(appState: AppState, colorScheme: ColorScheme) {
+        self.appState = appState
+        self.colorScheme = colorScheme
     }
     
-    private func getText() -> Text {
-        let result = Text((appState.monitoring.isEnabled ? Constants.on : Constants.off).uppercased())
-            .font(.system(size: 16.0))
-            .bold()
-            .foregroundColor(getSafetyColor(safetyType: appState.current.safetyType))
+    var body: some View {
+        let shownItems = getMenuBarElements(
+            keys: appState.userData.menuBarShownItems,
+            appState: appState,
+            colorScheme: colorScheme)
         
-        return result
+        HStack(spacing: 5) {
+            ForEach(shownItems, id: \.id) { item in
+                Image(nsImage: item.image)
+            }
+        }
     }
 }
 

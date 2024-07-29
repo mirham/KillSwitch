@@ -106,6 +106,15 @@ extension AppState {
         var appsCloseConfirmation: Bool = false {
             didSet { writeSetting(newValue: appsCloseConfirmation, key: Constants.settingsKeyConfirmationApplicationsClose) }
         }
+        var menuBarShownItems = Constants.defaultShownMenuBarItems {
+            didSet { writeSettingsArray(newValues: menuBarShownItems, key: Constants.settingsKeyShownMenuBarItems) }
+        }
+        var menuBarHiddenItems = Constants.defaultHiddenMenuBarItems {
+            didSet { writeSettingsArray(newValues: menuBarHiddenItems, key: Constants.settingsKeyHiddenMenuBarItems) }
+        }
+        var menuBarUseThemeColor: Bool = false {
+            didSet { writeSetting(newValue: menuBarUseThemeColor, key: Constants.settingsKeyMenuBarUseThemeColor) }
+        }
         var intervalBetweenChecksChanged: Bool = false
         
         init() {
@@ -113,10 +122,13 @@ extension AppState {
             intervalBetweenChecks = readSetting(key: Constants.settingsKeyIntervalBetweenChecks) ?? Constants.defaultIntervalBetweenChecksInSeconds
             pickyMode = readSetting(key: Constants.settingsKeyUsePickyMode) ?? false
             appsCloseConfirmation = readSetting(key: Constants.settingsKeyConfirmationApplicationsClose) ?? true
+            menuBarUseThemeColor = readSetting(key: Constants.settingsKeyMenuBarUseThemeColor) ?? false
             
             let savedAllowedIps: [IpInfo]? = readSettingsArray(key: Constants.settingsKeyIps)
             let savedIpApis: [IpApiInfo]? = readSettingsArray(key: Constants.settingsKeyApis)
             let savedAppsToClose: [AppInfo]? = readSettingsArray(key: Constants.settingsKeyAppsToClose)
+            let savedMenuBarShownItems: [String]? = readSettingsArray(key: Constants.settingsKeyShownMenuBarItems)
+            let savedMenuBarHiddenItems: [String]? = readSettingsArray(key: Constants.settingsKeyHiddenMenuBarItems)
             
             if (savedAllowedIps != nil) {
                 allowedIps = savedAllowedIps!
@@ -134,6 +146,14 @@ extension AppState {
             
             if (savedAppsToClose != nil) {
                 appsToClose = savedAppsToClose!
+            }
+            
+            if (savedMenuBarShownItems != nil) {
+                menuBarShownItems = savedMenuBarShownItems!
+            }
+            
+            if (savedMenuBarHiddenItems != nil) {
+                menuBarHiddenItems = savedMenuBarHiddenItems!
             }
         }
     }
