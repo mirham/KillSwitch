@@ -43,10 +43,12 @@ struct MainView : View {
             }
             .navigationSplitViewColumnWidth(min: 600, ideal: 600)
         }.onAppear(perform: {
-            AppHelper.setViewToTop(viewName: Constants.windowIdMain)
+            AppHelper.setUpView(
+                viewName: Constants.windowIdMain,
+                onTop: appState.userData.onTopOfAllWindows)
         })
         .onDisappear(perform: {
-            appState.views.isMainViewShowed = false
+            appState.views.isMainViewShown = false
         })
         .frame(minHeight: 600)
         .toolbar(content: {

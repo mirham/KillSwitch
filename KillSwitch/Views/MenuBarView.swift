@@ -11,6 +11,7 @@ struct MenuBarView : View {
     @EnvironmentObject var appState: AppState
     
     @Environment(\.openWindow) private var openWindow
+    @Environment(\.dismiss) var dismiss
     
     private var launchAgentService = LaunchAgentService.shared
     
@@ -55,20 +56,25 @@ struct MenuBarView : View {
             }
         }
         .onAppear(perform: {
-            appState.views.isStatusBarViewShowed = true
+            appState.views.isStatusBarViewShown = true
         })
         .onDisappear(perform: {
-            appState.views.isStatusBarViewShowed = false
+            appState.views.isStatusBarViewShown = false
         })
     }
     
     // MARK: Private functions
     
     private func showButtonClickHandler(){
-        if(!appState.views.isMainViewShowed){
+        if(!appState.views.isMainViewShown){
             openWindow(id: Constants.windowIdMain)
-            appState.views.isMainViewShowed = true
+            AppHelper.activateView(viewName: Constants.windowIdMain)
+            appState.views.isMainViewShown = true
         }
+        else {
+            AppHelper.activateView(viewName: Constants.windowIdMain, simple: false)
+        }
+        dismiss()
     }
 }
 

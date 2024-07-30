@@ -106,9 +106,9 @@ struct NetworkStatusView : View {
     // MARK: Private functions
     
     private func showEnableNetworkDialog() {
-        if(!appState.views.isEnableNetworkDialogShowed){
+        if(!appState.views.isEnableNetworkDialogShown){
             openWindow(id: Constants.windowIdEnableNetworkDialog)
-            appState.views.isEnableNetworkDialogShowed = true
+            appState.views.isEnableNetworkDialogShown = true
         }
     }
     

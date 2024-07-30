@@ -22,6 +22,7 @@ struct GeneralSettingsEditView: View {
     @State private var interval: Int = 0
     
     @State private var showOverKeepApplicationRunning = false
+    @State private var showOverOnTopOfAllWindows = false
     @State private var showOverDisableLocationServices = false
     @State private var showOverHigherProtection = false
     @State private var showOverPickyMode = false
@@ -56,6 +57,24 @@ struct GeneralSettingsEditView: View {
                     .popover(isPresented: $showOverKeepApplicationRunning,
                              arrowEdge: .trailing,
                              content: { renderHelpHint(hint: Constants.hintKeepApplicationRunning) })
+            }
+            HStack {
+                Toggle(Constants.settingsElementOnTopOfAllWindows, isOn: Binding(
+                    get: { appState.userData.onTopOfAllWindows },
+                    set: {
+                        appState.userData.onTopOfAllWindows = $0
+                    }
+                ))
+                .withSettingToggleStyle()
+                Spacer()
+                Image(systemName: Constants.iconQuestionMark)
+                    .asHelpIcon()
+                    .onHover(perform: { hovering in
+                        showOverOnTopOfAllWindows = hovering && controlActiveState == .key
+                    })
+                    .popover(isPresented: $showOverOnTopOfAllWindows,
+                             arrowEdge: .trailing,
+                             content: { renderHelpHint(hint: Constants.hintOnTopOfAllWindows) })
             }
             HStack(alignment: .top) {
                 Toggle(Constants.settingsElementDisableLocationServices, isOn: Binding(

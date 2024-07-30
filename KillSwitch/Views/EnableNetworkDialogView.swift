@@ -72,7 +72,9 @@ struct EnableNetworkDialogView : View {
         })
         .onAppear(perform: {
             interfaceToEnable = appState.current.mainNetworkInterface
-            AppHelper.setViewToTop(viewName: Constants.windowIdEnableNetworkDialog)
+            AppHelper.setUpView(
+                viewName: Constants.windowIdEnableNetworkDialog,
+                onTop: true)
             isPresented = true
         })
         .onDisappear(perform: {
@@ -94,7 +96,7 @@ struct EnableNetworkDialogView : View {
     }
     
     private func closeDialog() {
-        appState.views.isEnableNetworkDialogShowed = false
+        appState.views.isEnableNetworkDialogShown = false
         isPresented = false
     }
 }

@@ -57,11 +57,12 @@ extension AppState {
 
 extension AppState {
     struct Views {
-        var isMainViewShowed = false
-        var isStatusBarViewShowed = false
-        var isSettingsViewShowed = false
-        var isKillProcessesConfirmationDialogShowed = false
-        var isEnableNetworkDialogShowed = false
+        var isMainViewShown = false
+        var isStatusBarViewShown = false
+        var isSettingsViewShown = false
+        var isKillProcessesConfirmationDialogShown = false
+        var isEnableNetworkDialogShown = false
+        var isInfoViewShown = false
     }
 }
 
@@ -147,6 +148,9 @@ extension AppState {
         var menuBarUseThemeColor: Bool = false {
             didSet { writeSetting(newValue: menuBarUseThemeColor, key: Constants.settingsKeyMenuBarUseThemeColor) }
         }
+        var onTopOfAllWindows: Bool = false {
+            didSet { writeSetting(newValue: onTopOfAllWindows, key: Constants.settingsKeyOnTopOfAllWindows) }
+        }
         
         static func == (lhs: UserData, rhs: UserData) -> Bool {
             let result = lhs.menuBarUseThemeColor == rhs.menuBarUseThemeColor
@@ -160,6 +164,7 @@ extension AppState {
             pickyMode = readSetting(key: Constants.settingsKeyUsePickyMode) ?? false
             periodicIpCheck = readSetting(key: Constants.settingsKeyPeriodicIpCheck) ?? true
             appsCloseConfirmation = readSetting(key: Constants.settingsKeyConfirmationApplicationsClose) ?? true
+            onTopOfAllWindows = readSetting(key: Constants.settingsKeyOnTopOfAllWindows) ?? false
             menuBarUseThemeColor = readSetting(key: Constants.settingsKeyMenuBarUseThemeColor) ?? false
             
             let savedAllowedIps: [IpInfo]? = readSettingsArray(key: Constants.settingsKeyIps)

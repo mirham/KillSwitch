@@ -52,6 +52,7 @@ struct ToolbarView : View {
                 showOverSettings = hovering && controlActiveState == .key
             })
             Button(Constants.toolbarInfo, systemImage: Constants.iconInfo) {
+                showInfoWindow()
             }
             .withToolbarButtonStyle(showOver: showOverInfo, activeState: controlActiveState)
             .popover(isPresented: $showOverInfo, content: {
@@ -74,9 +75,24 @@ struct ToolbarView : View {
     }
     
     private func showSettingsWindow() {
-        if(!appState.views.isSettingsViewShowed){
+        if (!appState.views.isSettingsViewShown){
             openWindow(id: Constants.windowIdSettings)
-            appState.views.isSettingsViewShowed = true
+            AppHelper.activateView(viewName: Constants.windowIdSettings)
+            appState.views.isSettingsViewShown = true
+        }
+        else {
+            AppHelper.activateView(viewName: Constants.windowIdSettings)
+        }
+    }
+    
+    private func showInfoWindow() {
+        if (!appState.views.isInfoViewShown){
+            openWindow(id: Constants.windowIdInfo)
+            AppHelper.activateView(viewName: Constants.windowIdInfo)
+            appState.views.isInfoViewShown = true
+        }
+        else {
+            AppHelper.activateView(viewName: Constants.windowIdInfo)
         }
     }
 }

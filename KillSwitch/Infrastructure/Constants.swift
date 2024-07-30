@@ -57,9 +57,11 @@ struct Constants{
     static let windowIdSettings = "settings-view"
     static let windowIdKillProcessesConfirmationDialog = "kill-processess-confirmation-dialog-view"
     static let windowIdEnableNetworkDialog = "enable-network-dialog-view"
+    static let windowIdInfo = "info-view"
     
     // MARK: Elements names
     static let settings = "Settings"
+    static let info = "Info"
     static let show = "Show"
     static let quit = "Quit"
     static let none = "None"
@@ -117,6 +119,7 @@ struct Constants{
     static let settingsElementAppsToClose = "Apps to close"
     static let settingsElementApplicationsToClose = "Applications to close"
     static let settingsElementKeepAppRunning = "Keep application running"
+    static let settingsElementOnTopOfAllWindows = "Always on top of all windows"
     static let settingsElementDisableLocationServices = "Disable location services"
     static let settingsElementHigherProtection = "Higher protection"
     static let settingsElementPickyMode = "Picky mode"
@@ -139,6 +142,7 @@ struct Constants{
     static let settingsKeyShownMenuBarItems = "shown-menubar-items"
     static let settingsKeyHiddenMenuBarItems = "hidden-menubar-items"
     static let settingsKeyMenuBarUseThemeColor = "menubar-use-theme-color"
+    static let settingsKeyOnTopOfAllWindows = "on-top-of-all-windows"
     
     // MARK: Menubar item keys
     static let mbItemKeyShield = "shiled"
@@ -211,6 +215,7 @@ struct Constants{
     static let hintClickToEnableMonitoring = "Click to enable monitoring"
     static let hintClickToDisableMonitoring = "Click to disable monitoring"
     static let hintKeepApplicationRunning = "The application will be opened after the system starts or if it was closed."
+    static let hintOnTopOfAllWindows = "Put application windows on top of all other windows."
     static let hintToggleLocationServices = "Toggle location services after restart. If the required state is critical, this can be done manually in Settings → Privacy & Security → Location Services without restarting."
     static let hintHigherProtection = "Disable the network when monitoring is enabled, if there is no reliable information about the current IP address. Also close all running monitored applications, if any."
     static let hintCloseApplicationConfirmation = "Confirmation dialog when closing applications. This option is ignored in higher protection mode."
@@ -218,6 +223,18 @@ struct Constants{
     static let hintPeriodicIpCheck = "Check the public IP address periodically when monitoring is enabled at the interval specified below."
     static let hintInterval = "\(minTimeIntervalToCheck)..\(maxTimeIntervalToCheck)"
     static let hintMenuBarAdjustment = "Drag menu bar item icons between the sections below to arrange item as you want"
+    
+    // MARK: About
+    static let aboutSupportMail = "bWlyaGFtQGFidi5iZw=="
+    static let aboutGitHubLink = "https://github.com/mirham/KillSwitch"
+    
+    static let aboutBackground = "AppInfo"
+    
+    static let aboutVersionKey = "CFBundleShortVersionString"
+    static let aboutGetSupport = "Get support:"
+    static let aboutVersion = "Version: %1$@"
+    static let aboutMailTo = "mailto:%1$@"
+    static let aboutGitHub = "GitHub"
     
     // MARK: Static data
     static let ipApiUrls = [

@@ -8,14 +8,44 @@
 import SwiftUI
 
 class AppHelper {    
-    static func setViewToTop(viewName: String) {
+    static func setUpView(viewName: String, onTop: Bool) {
         for window in NSApplication.shared.windows {
             let windowId = String(window.identifier?.rawValue ?? String())
             
             if(windowId.starts(with: viewName)) {
-                window.level = .floating
+                window.level = onTop ? .floating : .normal
                 window.standardWindowButton(.zoomButton)?.isHidden = true
                 window.standardWindowButton(.miniaturizeButton)?.isHidden = true
+            }
+        }
+    }
+    
+    static func activateView(viewName: String, simple: Bool = true) {
+        for window in NSApplication.shared.windows {
+            let windowId = String(window.identifier?.rawValue ?? String())
+            
+            if(windowId.starts(with: viewName)) {
+                if (simple) {
+                    window.makeKeyAndOrderFront(window)
+                }
+                else {
+                    let prevLevel = window.level
+                    window.level = .floating
+                    NSApp.activate()
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                        window.level = prevLevel
+                    }
+                }
+            }
+        }
+    }
+    
+    static func closeView(viewName: String) {
+        for window in NSApplication.shared.windows {
+            let windowId = String(window.identifier?.rawValue ?? String())
+            
+            if(windowId.starts(with: viewName)) {
+                window.close()
             }
         }
     }

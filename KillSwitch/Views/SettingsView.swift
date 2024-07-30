@@ -38,10 +38,12 @@ struct SettingsView : View {
                 }
         }
         .onAppear(perform: {
-            AppHelper.setViewToTop(viewName: Constants.windowIdSettings)
+            AppHelper.setUpView(
+                viewName: Constants.windowIdSettings,
+                onTop: appState.userData.onTopOfAllWindows)
         })
         .onDisappear(perform: {
-            appState.views.isSettingsViewShowed = false
+            appState.views.isSettingsViewShown = false
         })
         .opacity(getViewOpacity(state: controlActiveState))
         .padding()
