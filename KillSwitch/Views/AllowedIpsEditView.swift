@@ -8,8 +8,10 @@
 import SwiftUI
 import Network
 
-struct AllowedIpsEditView : View {
+struct AllowedIpsEditView : IpAddressContainerView {
     @EnvironmentObject var appState: AppState
+    
+    @Environment(\.colorScheme) private var colorScheme
     
     @State private var newIp = String()
     @State private var isNewIpValid = false
@@ -36,7 +38,7 @@ struct AllowedIpsEditView : View {
                                 .frame(maxWidth: .infinity, alignment: .leading)
                             Spacer()
                             Circle()
-                                .fill(getSafetyColor(safetyType: ipAddress.safetyType))
+                                .fill(getSafetyColor(safetyType: ipAddress.safetyType, colorScheme: colorScheme))
                                 .frame(width: 10, height: 10)
                         }
                         .contextMenu {

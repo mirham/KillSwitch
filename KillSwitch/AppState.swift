@@ -95,6 +95,7 @@ extension AppState {
 extension AppState {
     struct Network : Equatable {
         var status: NetworkStatusType = NetworkStatusType.unknown
+        var obtainingIp = false
         var activeNetworkInterfaces: [NetworkInterface] = [NetworkInterface]()
         var physicalNetworkInterfaces: [NetworkInterface] = [NetworkInterface]()
         var previousIpInfo: IpInfoBase? = nil
@@ -125,12 +126,14 @@ extension AppState {
         var useHigherProtection: Bool = false {
             didSet { writeSetting(newValue: useHigherProtection, key: Constants.settingsKeyHigherProtection) }
         }
-        var intervalBetweenChecks: Double = Constants.defaultIntervalBetweenChecksInSeconds {
-            willSet { intervalBetweenChecksChanged = intervalBetweenChecks != newValue }
+        var intervalBetweenChecks: Int = Constants.defaultIntervalBetweenChecksInSeconds {
             didSet { writeSetting(newValue: intervalBetweenChecks, key: Constants.settingsKeyIntervalBetweenChecks) }
         }
         var pickyMode: Bool = false {
             didSet { writeSetting(newValue: pickyMode, key: Constants.settingsKeyUsePickyMode) }
+        }
+        var periodicIpCheck: Bool = false {
+            didSet { writeSetting(newValue: periodicIpCheck, key: Constants.settingsKeyPeriodicIpCheck) }
         }
         var appsCloseConfirmation: Bool = false {
             didSet { writeSetting(newValue: appsCloseConfirmation, key: Constants.settingsKeyConfirmationApplicationsClose) }
@@ -144,7 +147,6 @@ extension AppState {
         var menuBarUseThemeColor: Bool = false {
             didSet { writeSetting(newValue: menuBarUseThemeColor, key: Constants.settingsKeyMenuBarUseThemeColor) }
         }
-        var intervalBetweenChecksChanged: Bool = false
         
         static func == (lhs: UserData, rhs: UserData) -> Bool {
             let result = lhs.menuBarUseThemeColor == rhs.menuBarUseThemeColor
@@ -156,6 +158,7 @@ extension AppState {
             useHigherProtection = readSetting(key: Constants.settingsKeyHigherProtection) ?? false
             intervalBetweenChecks = readSetting(key: Constants.settingsKeyIntervalBetweenChecks) ?? Constants.defaultIntervalBetweenChecksInSeconds
             pickyMode = readSetting(key: Constants.settingsKeyUsePickyMode) ?? false
+            periodicIpCheck = readSetting(key: Constants.settingsKeyPeriodicIpCheck) ?? true
             appsCloseConfirmation = readSetting(key: Constants.settingsKeyConfirmationApplicationsClose) ?? true
             menuBarUseThemeColor = readSetting(key: Constants.settingsKeyMenuBarUseThemeColor) ?? false
             
@@ -196,7 +199,7 @@ extension AppState {
 
 extension AppState {
     private func determineSafetyType() -> SafetyType {
-        if (monitoring.isEnabled) {
+        if (monitoring.isEnabled && network.currentIpInfo != nil) {
             let currentAllowedIp = getCurrentAllowedIp()
             
             if(currentAllowedIp != nil && !system.locationServicesEnabled) {

@@ -19,12 +19,13 @@ struct GeneralSettingsEditView: View {
     
     @State private var isKeepRunningOn = false
     @State private var isLocationServicesToggled: Bool = false
-    @State private var interval: Double = 0
+    @State private var interval: Int = 0
     
     @State private var showOverKeepApplicationRunning = false
     @State private var showOverDisableLocationServices = false
     @State private var showOverHigherProtection = false
     @State private var showOverPickyMode = false
+    @State private var showOverPeriodicIpCheck = false
     @State private var showOverConfirmationApplicationsClose = false
     
     var body: some View {
@@ -137,6 +138,27 @@ struct GeneralSettingsEditView: View {
                              content: { renderHelpHint(hint: Constants.hintPickyMode) })
             }
             HStack {
+                Toggle(Constants.settingsElementPeriodicIpCheck, isOn: Binding(
+                    get: { appState.userData.periodicIpCheck },
+                    set: {
+                        appState.userData.periodicIpCheck = $0
+                    }
+                ))
+                .withSettingToggleStyle()
+                Spacer()
+                Image(systemName: Constants.iconQuestionMark)
+                    .asHelpIcon()
+                    .onHover(perform: { hovering in
+                        showOverPeriodicIpCheck = hovering && controlActiveState == .key
+                    })
+                    .popover(isPresented: $showOverPeriodicIpCheck,
+                             arrowEdge: .trailing,
+                             content: { renderHelpHint(hint: Constants.hintPeriodicIpCheck) })
+            }
+            .padding(.bottom, 0)
+            HStack {
+                Text(Constants.settingsElementIntervalBegin)
+                    .padding(.leading, 45)
                 TextField(Constants.hintInterval, value: $interval, formatter: NumberFormatter())
                     .foregroundColor(checkIfTimeIntervalValid(interval: interval) ? .primary : .red)
                     .onChange(of: interval) {
@@ -145,9 +167,10 @@ struct GeneralSettingsEditView: View {
                         }
                     }
                     .textFieldStyle(.roundedBorder)
-                    .frame(width: 70)
-                Text(Constants.settingsElementInterval)
-            }.padding()
+                    .frame(width: 59)
+                Text(Constants.settingsElementIntervalEnd)
+            }
+            .isHidden(hidden: !appState.userData.periodicIpCheck, remove: true)
             
             Spacer()
         }
@@ -155,17 +178,11 @@ struct GeneralSettingsEditView: View {
         .onAppear {
             interval = appState.userData.intervalBetweenChecks
         }
-        .onDisappear {
-            if appState.userData.intervalBetweenChecksChanged {
-                appState.userData.intervalBetweenChecksChanged = false
-                monitoringService.restartMonitoring()
-            }
-        }
     }
     
     // MARK: Private functions
     
-    private func checkIfTimeIntervalValid(interval: Double) -> Bool {
+    private func checkIfTimeIntervalValid(interval: Int) -> Bool {
         let result = interval >= Constants.minTimeIntervalToCheck && interval <= Constants.maxTimeIntervalToCheck
         
         return result

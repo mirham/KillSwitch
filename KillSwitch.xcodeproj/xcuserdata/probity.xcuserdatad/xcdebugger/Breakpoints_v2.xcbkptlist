@@ -359,8 +359,8 @@
             filePath = "KillSwitch/Views/CurrentIpView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "18"
-            endingLineNumber = "18"
+            startingLineNumber = "20"
+            endingLineNumber = "20"
             landmarkName = "body"
             landmarkType = "24">
          </BreakpointContent>
@@ -375,8 +375,8 @@
             filePath = "KillSwitch/Views/CurrentIpView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "16"
-            endingLineNumber = "16"
+            startingLineNumber = "18"
+            endingLineNumber = "18"
             landmarkName = "body"
             landmarkType = "24">
          </BreakpointContent>
@@ -391,8 +391,8 @@
             filePath = "KillSwitch/Services/MonitoringService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "37"
-            endingLineNumber = "37"
+            startingLineNumber = "46"
+            endingLineNumber = "46"
             landmarkName = "startMonitoring()"
             landmarkType = "7">
          </BreakpointContent>
@@ -407,8 +407,8 @@
             filePath = "KillSwitch/Services/MonitoringService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "35"
-            endingLineNumber = "35"
+            startingLineNumber = "40"
+            endingLineNumber = "40"
             landmarkName = "startMonitoring()"
             landmarkType = "7">
          </BreakpointContent>
@@ -423,8 +423,8 @@
             filePath = "KillSwitch/Services/MonitoringService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "31"
-            endingLineNumber = "31"
+            startingLineNumber = "34"
+            endingLineNumber = "34"
             landmarkName = "startMonitoring()"
             landmarkType = "7">
          </BreakpointContent>
@@ -439,8 +439,8 @@
             filePath = "KillSwitch/Views/GeneralSettingsEditView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "69"
-            endingLineNumber = "69"
+            startingLineNumber = "70"
+            endingLineNumber = "70"
             landmarkName = "body"
             landmarkType = "24">
          </BreakpointContent>
@@ -631,8 +631,8 @@
             filePath = "KillSwitch/Services/MonitoringService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "118"
-            endingLineNumber = "118"
+            startingLineNumber = "128"
+            endingLineNumber = "128"
             landmarkName = "updateStatus(isMonitoringEnabled:currentIpInfo:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -912,22 +912,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "0E3EE382-EA8A-48AA-88DF-9E053ED7D435"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "KillSwitch/Views/Protocols/MenuBarItemsContainerView.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "25"
-            endingLineNumber = "25"
-            landmarkName = "renderMenuBarItemImage(view:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "68B32C60-CDD2-446C-A35A-A842F8F67F01"
             shouldBeEnabled = "No"
             ignoreCount = "0"
@@ -999,8 +983,8 @@
             filePath = "KillSwitch/AppState.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "187"
-            endingLineNumber = "187"
+            startingLineNumber = "190"
+            endingLineNumber = "190"
             landmarkName = "init()"
             landmarkType = "7">
          </BreakpointContent>
@@ -1015,8 +999,8 @@
             filePath = "KillSwitch/AppState.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "191"
-            endingLineNumber = "191"
+            startingLineNumber = "194"
+            endingLineNumber = "194"
             landmarkName = "init()"
             landmarkType = "7">
          </BreakpointContent>
@@ -1031,8 +1015,8 @@
             filePath = "KillSwitch/Views/Protocols/MenuBarItemsContainerView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "85"
-            endingLineNumber = "85"
+            startingLineNumber = "77"
+            endingLineNumber = "77"
             landmarkName = "getMenuBarElements(keys:appState:colorScheme:exampleAllowed:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -1047,8 +1031,8 @@
             filePath = "KillSwitch/Views/Protocols/MenuBarItemsContainerView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "89"
-            endingLineNumber = "89"
+            startingLineNumber = "81"
+            endingLineNumber = "81"
             landmarkName = "getMenuBarElements(keys:appState:colorScheme:exampleAllowed:)"
             landmarkType = "7">
          </BreakpointContent>

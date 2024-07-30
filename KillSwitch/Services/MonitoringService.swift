@@ -14,6 +14,7 @@ class MonitoringService: ServiceBase {
     private let networkService = NetworkService.shared
     
     private var currentTimer: Timer? = nil
+    private var monitoringTime: Int = 0
     
     override init() {
         super.init()
@@ -26,17 +27,27 @@ class MonitoringService: ServiceBase {
     func startMonitoring() {
         updateStatus(isMonitoringEnabled: true)
         
+        monitoringTime = 0
+        
         Log.write(message: Constants.logMonitoringHasBeenEnabled)
         
-        currentTimer = Timer.scheduledTimer(withTimeInterval: appState.userData.intervalBetweenChecks, repeats: true) { timer in
+        currentTimer = Timer.scheduledTimer(withTimeInterval: TimeInterval(Constants.defaultMonitoringInterval), repeats: true) { timer in
             if self.appState.monitoring.isEnabled {
                 Task {
                     do {
+                        self.monitoringTime += Constants.defaultMonitoringInterval
+                        
                         guard self.appState.network.status == .on else { return }
                         
-                        let updatedIpAddressResult =  await self.addressesService.getCurrentIpAsync()
+                        let ipCheckNeeded = self.appState.userData.periodicIpCheck
+                        && self.monitoringTime % self.appState.userData.intervalBetweenChecks == 0
                         
-                        self.handleUpdatedIpAddressResult(updatedIpAddressResult: updatedIpAddressResult)
+                        if (ipCheckNeeded) {
+                            let updatedIpAddressResult =  await self.addressesService.getCurrentIpAsync()
+                            self.handleUpdatedIpAddressResult(updatedIpAddressResult: updatedIpAddressResult)
+                        }
+                        
+                        self.checkIfCurrentIpIsAllowed()
                     }
                 }
             }
@@ -50,13 +61,6 @@ class MonitoringService: ServiceBase {
         updateStatus(isMonitoringEnabled: false)
         currentTimer?.invalidate()
         Log.write(message: Constants.logMonitoringHasBeenDisabled, type: LogEntryType.warning)
-    }
-    
-    func restartMonitoring(){
-        if(appState.monitoring.isEnabled){
-            stopMonitoring()
-            startMonitoring()
-        }
     }
     
     // MARK: Private functions
@@ -79,12 +83,19 @@ class MonitoringService: ServiceBase {
         }
         
         Log.write(message: String(format: Constants.logCurrentIp, updatedIpAddressResult.result!.ipAddress))
-        
-        if(!appState.current.isCurrentIpAllowed) {
+    }
+    
+    private func checkIfCurrentIpIsAllowed() {
+        if(!appState.current.isCurrentIpAllowed && !appState.network.obtainingIp) {
+            let message = String(
+                format: Constants.logCurrentIpHasBeenUpdatedWithNotFromWhitelist,
+                appState.network.currentIpInfo == nil
+                    ? Constants.none.uppercased()
+                    : appState.network.currentIpInfo!.ipAddress)
+            
             disableActiveNetworkInterfaces()
-            Log.write(
-                message: String(format: Constants.logCurrentIpHasBeenUpdatedWithNotFromWhitelist, appState.network.currentIpInfo!.ipAddress),
-                type: LogEntryType.warning)
+            
+            Log.write(message: message, type: LogEntryType.warning)
         }
     }
     
@@ -106,7 +117,6 @@ class MonitoringService: ServiceBase {
         isMonitoringEnabled: Bool? = nil,
         currentIpInfo: IpInfoBase? = nil) {
         DispatchQueue.main.async {
-            
             if (isMonitoringEnabled != nil) {
                 self.appState.monitoring.isEnabled = isMonitoringEnabled!
             }

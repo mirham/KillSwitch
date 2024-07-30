@@ -52,8 +52,8 @@
 		3572667A2C36A4110021978C /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 357266792C36A4110021978C /* AppState.swift */; };
 		3572667D2C36EDC30021978C /* ShellAccessible.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3572667C2C36EDC30021978C /* ShellAccessible.swift */; };
 		357266822C36FE710021978C /* AppHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 357266812C36FE710021978C /* AppHelper.swift */; };
+		3582BF612C59073F004E0B80 /* IpAddressContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3582BF602C59073F004E0B80 /* IpAddressContainerView.swift */; };
 		3590333C2C396950006787AD /* ViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3590333B2C396950006787AD /* ViewExtensions.swift */; };
-		3590333F2C396A15006787AD /* ImageExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3590333E2C396A15006787AD /* ImageExtensions.swift */; };
 		359C7C6D2C29605D00CA3CE1 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 359C7C6C2C29605D00CA3CE1 /* LocationService.swift */; };
 		359E44ED2C11A6BD00BF6093 /* MenuBarStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 359E44EC2C11A6BD00BF6093 /* MenuBarStatusView.swift */; };
 		359E44EF2C11BFED00BF6093 /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 359E44EE2C11BFED00BF6093 /* MenuBarView.swift */; };
@@ -120,8 +120,8 @@
 		357266792C36A4110021978C /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		3572667C2C36EDC30021978C /* ShellAccessible.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShellAccessible.swift; sourceTree = "<group>"; };
 		357266812C36FE710021978C /* AppHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppHelper.swift; sourceTree = "<group>"; };
+		3582BF602C59073F004E0B80 /* IpAddressContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IpAddressContainerView.swift; sourceTree = "<group>"; };
 		3590333B2C396950006787AD /* ViewExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewExtensions.swift; sourceTree = "<group>"; };
-		3590333E2C396A15006787AD /* ImageExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageExtensions.swift; sourceTree = "<group>"; };
 		359C7C6C2C29605D00CA3CE1 /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
 		359E44EC2C11A6BD00BF6093 /* MenuBarStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarStatusView.swift; sourceTree = "<group>"; };
 		359E44EE2C11BFED00BF6093 /* MenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarView.swift; sourceTree = "<group>"; };
@@ -314,7 +314,6 @@
 			isa = PBXGroup;
 			children = (
 				3590333B2C396950006787AD /* ViewExtensions.swift */,
-				3590333E2C396A15006787AD /* ImageExtensions.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -331,6 +330,7 @@
 			isa = PBXGroup;
 			children = (
 				35EE63702C57983700D45D66 /* MenuBarItemsContainerView.swift */,
+				3582BF602C59073F004E0B80 /* IpAddressContainerView.swift */,
 			);
 			path = Protocols;
 			sourceTree = "<group>";
@@ -455,7 +455,6 @@
 				35F12F392C15ACB900AFA738 /* NetworkStatusType.swift in Sources */,
 				351F0C5F2C0F3B4500644C66 /* AsyncButton.swift in Sources */,
 				351E9CF02C10C03700CEC15F /* MonitoringStatusView.swift in Sources */,
-				3590333F2C396A15006787AD /* ImageExtensions.swift in Sources */,
 				359E44F32C11C37E00BF6093 /* CurrentIpView.swift in Sources */,
 				3570E4892C258D1E00CB5D42 /* PointerOnHoverModifier.swift in Sources */,
 				3570E4822C249FC300CB5D42 /* GeneralSettingsEditView.swift in Sources */,
@@ -465,6 +464,7 @@
 				35449FC32C563FAD00369CBC /* DropViewDelegate.swift in Sources */,
 				357154F92C1739C300A41AA4 /* ApiCallable.swift in Sources */,
 				35F12F402C15B8C200AFA738 /* ActiveConnectionsView.swift in Sources */,
+				3582BF612C59073F004E0B80 /* IpAddressContainerView.swift in Sources */,
 				3590333C2C396950006787AD /* ViewExtensions.swift in Sources */,
 				359C7C6D2C29605D00CA3CE1 /* LocationService.swift in Sources */,
 				3505D94E2C2D5DD300E8FF61 /* KillProcessesConfirmationDialogView.swift in Sources */,

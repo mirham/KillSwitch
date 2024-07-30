@@ -7,8 +7,10 @@
 
 import SwiftUI
 
-struct CurrentIpView: View, Settable {
+struct CurrentIpView: IpAddressContainerView, Settable {
     @EnvironmentObject var appState: AppState
+    
+    @Environment(\.colorScheme) private var colorScheme
     
     var ipService = IpService.shared
     
@@ -42,13 +44,13 @@ struct CurrentIpView: View, Settable {
                     .textCase(.uppercase)
                     .font(.system(size: 10))
                     .bold()
-                    .foregroundStyle(getSafetyColor(safetyType: appState.current.safetyType))
+                    .foregroundStyle(getSafetyColor(safetyType: appState.current.safetyType, colorScheme: colorScheme))
                     .isHidden(hidden: appState.current.safetyType == .unknown, remove: true)
                 Text(Constants.disableLocationServices)
                     .textCase(.lowercase)
                     .font(.system(size: 9))
                     .bold()
-                    .foregroundStyle(getSafetyColor(safetyType: appState.current.safetyType))
+                    .foregroundStyle(getSafetyColor(safetyType: appState.current.safetyType, colorScheme: colorScheme))
                     .isHidden(hidden: !appState.current.highRisk, remove: true)
                 HStack {
                     Image(nsImage: getCountryFlag(countryCode: appState.network.currentIpInfo?.countryCode ?? String()))
@@ -67,7 +69,9 @@ struct CurrentIpView: View, Settable {
     // MARK: Private functions
     
     private func getIpAddressColor() -> Color {
-        return appState.monitoring.isEnabled ? getSafetyColor(safetyType: appState.current.safetyType) : .primary
+        return appState.monitoring.isEnabled
+            ? getSafetyColor(safetyType: appState.current.safetyType, colorScheme: colorScheme)
+            : .primary
     }
     
     private func addAllowedIpAddress(safetyType : SafetyType) {

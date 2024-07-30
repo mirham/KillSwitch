@@ -20,21 +20,4 @@ extension View {
     func getViewOpacity(state: ControlActiveState) -> Double {
         return state == .key ? 1 : 0.6
     }
-    
-    func getSafetyColor(safetyType: SafetyType) -> Color {
-        switch safetyType {
-            case .compete:
-                return Color.green
-            case .some:
-                return Color.yellow
-            default:
-                return Color.red
-        }
-    }
-    
-    func getCountryFlag(countryCode: String) -> NSImage {
-        return countryCode.isEmpty 
-            ? NSImage()
-            : Flag(countryCode: countryCode)?.originalImage ?? NSImage()
-    }
 }

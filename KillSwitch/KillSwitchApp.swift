@@ -12,8 +12,8 @@ struct KillSwitchApp: App {
     let appState = AppState.shared
     
     init() {
-        let networkStatusService = NetworkStatusService()
-        let processService = ProcessesService()
+        _ = NetworkStatusService()
+        _ = ProcessesService()
     }
     
     var body: some Scene {

@@ -11,8 +11,9 @@ struct Constants{
     // MARK: Default values
     static let defaultCountryCode = "US"
     static let defaultIpAddress = "1.1.1.1"
-    static let minTimeIntervalToCheck: Double = 1
-    static let maxTimeIntervalToCheck: Double = 3600
+    static let defaultMonitoringInterval: Int = 1
+    static let minTimeIntervalToCheck: Int = 1
+    static let maxTimeIntervalToCheck: Int = 300
     static let zshPath = "/bin/zsh"
     static let launchAgentName = "user.launchkeep.KillSwitch"
     static let launchAgentPlistName = "user.launchkeep.KillSwitch.plist"
@@ -22,7 +23,7 @@ struct Constants{
     static let networkMonitorQueryLabel = "KSNetworkMonitor"
     static let ipV4: Int = 4
     static let ipV6: Int = 6
-    static let defaultIntervalBetweenChecksInSeconds: Double = 10
+    static let defaultIntervalBetweenChecksInSeconds: Int = 10
     static let physicalNetworkInterfacePrefix = "en"
     static let physicalNetworkInterfaceWiFi = "Wi-Fi"
     static let physicalNetworkInterfaceLan = "LAN"
@@ -119,8 +120,10 @@ struct Constants{
     static let settingsElementDisableLocationServices = "Disable location services"
     static let settingsElementHigherProtection = "Higher protection"
     static let settingsElementPickyMode = "Picky mode"
+    static let settingsElementPeriodicIpCheck = "Periodic IP address check"
     static let settingsElementConfirmationToCloseApps = "Confirmation to close applications"
-    static let settingsElementInterval = "second(s) between IP address checks"
+    static let settingsElementIntervalBegin = "at intervals of"
+    static let settingsElementIntervalEnd = "second(s)"
     static let settingsElementThemeColor = "Use system theme color"
     
     // MARK:  Settings key names
@@ -129,6 +132,7 @@ struct Constants{
     static let settingsKeyIsMonitoringEnabled = "is-monitoring-enabled"
     static let settingsKeyHigherProtection = "higher-protection"
     static let settingsKeyUsePickyMode = "use-picky-mode"
+    static let settingsKeyPeriodicIpCheck = "periodic-ip-check"
     static let settingsKeyIntervalBetweenChecks = "interval-between-checks"
     static let settingsKeyAppsToClose = "apps-to-close"
     static let settingsKeyConfirmationApplicationsClose = "confirmation-apps-close"
@@ -208,9 +212,10 @@ struct Constants{
     static let hintClickToDisableMonitoring = "Click to disable monitoring"
     static let hintKeepApplicationRunning = "The application will be opened after the system starts or if it was closed."
     static let hintToggleLocationServices = "Toggle location services after restart. If the required state is critical, this can be done manually in Settings → Privacy & Security → Location Services without restarting."
-    static let hintHigherProtection = "Disable the network when monitoring is enabled, if there is no reliable information about the current IP address. Also closes all running monitored applications, if any."
+    static let hintHigherProtection = "Disable the network when monitoring is enabled, if there is no reliable information about the current IP address. Also close all running monitored applications, if any."
     static let hintCloseApplicationConfirmation = "Confirmation dialog when closing applications. This option is ignored in higher protection mode."
     static let hintPickyMode = "Use extended information about current IP address, such as country. Does not allow the use of an IP address as an allowed one if there is no reliable information about it."
+    static let hintPeriodicIpCheck = "Check the public IP address periodically when monitoring is enabled at the interval specified below."
     static let hintInterval = "\(minTimeIntervalToCheck)..\(maxTimeIntervalToCheck)"
     static let hintMenuBarAdjustment = "Drag menu bar item icons between the sections below to arrange item as you want"
     
@@ -222,7 +227,6 @@ struct Constants{
         "http://ipecho.net/plain",
         "https://checkip.amazonaws.com",
         "http://whatismyip.akamai.com",
-        "https://ip.istatmenus.app",
         "https://api.seeip.org",
         "https://ipapi.co/ip"
     ]

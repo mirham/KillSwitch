@@ -7,24 +7,16 @@
 
 import SwiftUI
 
-protocol MenuBarItemsContainerView : View {
+protocol MenuBarItemsContainerView : IpAddressContainerView {
     func getMenuBarElements(
         keys: [String],
         appState: AppState,
         colorScheme: ColorScheme,
         exampleAllowed: Bool) -> [MenuBarElement]
-    func renderMenuBarItemImage(view: some View) -> NSImage
 }
 
 extension MenuBarItemsContainerView {
-    @MainActor
-    func renderMenuBarItemImage(view: some View) -> NSImage {
-        let renderer = ImageRenderer(content: view)
-        let result = renderer.nsImage ?? NSImage()
-        
-        return result
-    }
-    
+    @MainActor 
     func getMenuBarElements(
         keys: [String],
         appState: AppState,
@@ -35,10 +27,10 @@ extension MenuBarItemsContainerView {
         let baseColor = colorScheme == .dark ? Color.white : Color.black
         let safetyColor = appState.userData.menuBarUseThemeColor
             ? baseColor
-            : getSafetyColor(safetyType: appState.current.safetyType)
+            : getSafetyColor(safetyType: appState.current.safetyType, colorScheme: colorScheme)
         let mainColor = appState.userData.menuBarUseThemeColor || !appState.monitoring.isEnabled
             ? baseColor
-            : getSafetyColor(safetyType: appState.current.safetyType)
+            : getSafetyColor(safetyType: appState.current.safetyType, colorScheme: colorScheme)
         
         for key in keys {
             switch key {
@@ -105,6 +97,13 @@ extension MenuBarItemsContainerView {
     }
     
     // MARK: Private functions
+    @MainActor
+    private func renderMenuBarItemImage(view: some View) -> NSImage {
+        let renderer = ImageRenderer(content: view)
+        let result = renderer.nsImage ?? NSImage()
+        
+        return result
+    }
     
     private func getShieldIconItem(safetyType: SafetyType, color: Color) -> Text {
         var result: Text

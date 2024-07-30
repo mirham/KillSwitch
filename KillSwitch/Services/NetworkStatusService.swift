@@ -73,16 +73,18 @@ class NetworkStatusService: ServiceBase, ApiCallable {
         lock.lock()
         Task {
             do {
+                await MainActor.run { updateStatus(obtainingIp: true) }
+                
                 try await Task.sleep(nanoseconds: 100_000_000) // Fixes SSL errors after network changes
                 
                 let updatedIpResult = await self.ipService.getCurrentIpAsync()
                 
                 if (updatedIpResult.success) {
-                    await MainActor.run {
-                        updateStatus(currentIpInfo: updatedIpResult.result)
-                    }
+                    await MainActor.run { updateStatus(currentIpInfo: updatedIpResult.result) }
                     Log.write(message: String(format: Constants.logCurrentIp, updatedIpResult.result!.ipAddress))
                 }
+                
+                await MainActor.run { updateStatus(obtainingIp: false) }
             }
         }
         lock.unlock()
@@ -93,7 +95,8 @@ class NetworkStatusService: ServiceBase, ApiCallable {
         currentStatus: NetworkStatusType? = nil,
         activeNetworkInterfaces: [NetworkInterface]? = nil,
         physicalNetworkInterfaces: [NetworkInterface]? = nil,
-        disconnected: Bool? = nil) {
+        disconnected: Bool? = nil,
+        obtainingIp: Bool? = nil) {
         DispatchQueue.main.async {
             if (currentStatus != nil) {
                 self.appState.network.status = currentStatus!
@@ -111,9 +114,12 @@ class NetworkStatusService: ServiceBase, ApiCallable {
                 self.appState.network.physicalNetworkInterfaces = physicalNetworkInterfaces!
             }
             
-            if(disconnected != nil && disconnected!) {
+            if (disconnected != nil && disconnected!) {
                 self.appState.network.currentIpInfo = nil
-                self.appState.current.safetyType = .unknown
+            }
+            
+            if (obtainingIp != nil) {
+                self.appState.network.obtainingIp = obtainingIp!
             }
             
             self.appState.objectWillChange.send()
