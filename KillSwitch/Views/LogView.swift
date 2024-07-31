@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct LogView : View {
-    @StateObject var loggingService = LoggingService.shared
+    @EnvironmentObject var appState: AppState
     
     @State private var showOverText = false
     
@@ -21,10 +21,10 @@ struct LogView : View {
     var body: some View {
         Section {
             ScrollViewReader { item in
-                List(loggingService.logs) { log in
+                List(appState.log) { log in
                     HStack{
                         Rectangle()
-                            .foregroundColor(log.type == LogEntryType.error ? .red : log.type == LogEntryType.warning ? .yellow : .gray)
+                            .foregroundColor(determineBadgeColor(logEntryType: log.type))
                             .frame(width: 4)
                             .cornerRadius(1.5)
                         Text("\(dateFormatter.string(from: log.date))")
@@ -39,13 +39,24 @@ struct LogView : View {
                 .textSelection(.enabled)
                 .focusable(false)
             }
-            .environmentObject(loggingService)
-            .id(loggingService.scrollViewId)
             .scrollIndicators(.visible)
+        }
+    }
+    
+    // MARK: Private functions
+    
+    private func determineBadgeColor(logEntryType: LogEntryType) -> Color {
+        switch logEntryType {
+            case .warning:
+                return .yellow
+            case .error:
+                return .red
+            default:
+                return .gray
         }
     }
 }
 
 #Preview {
-    LogView()
+    LogView().environmentObject(AppState())
 }

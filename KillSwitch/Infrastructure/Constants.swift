@@ -9,44 +9,156 @@ import Foundation
 
 struct Constants{
     // MARK: Default values
-    static let settings = "Settings"
-    static let none = "None"
-    static let primaryNetworkInterfaceName = "en0"
-    static let minTimeIntervalToCheck: Double = 1
-    static let maxTimeIntervalToCheck: Double = 3600
+    static let defaultCountryCode = "US"
+    static let defaultIpAddress = "1.1.1.1"
+    static let defaultMonitoringInterval: Int = 1
+    static let minTimeIntervalToCheck: Int = 1
+    static let maxTimeIntervalToCheck: Int = 300
     static let zshPath = "/bin/zsh"
-    static let launchAgentName = "user.launchkeep.KillSwitch"
-    static let launchAgentPlistName = "user.launchkeep.KillSwitch.plist"
+    static let launchAgentName = "\(Bundle.main.bundleIdentifier!)"
+    static let launchAgentPlistName = "\(Bundle.main.bundleIdentifier!).plist"
+    static let launchAgents = "LaunchAgents"
     static let launchAgentsFolderPath = "~/Library/LaunchAgents/"
     static let logDateFormat = "dd.MM.yyyy HH:mm:ss"
     static let networkMonitorQueryLabel = "KSNetworkMonitor"
-    static let enabled = "enabled"
-    static let disabled = "disabled"
     static let ipV4: Int = 4
     static let ipV6: Int = 6
+    static let defaultToleranceInNanoseconds: UInt64 = 100_000_000
+    static let menuBarItemTimeToleranceInSeconds: Int = 1
+    static let defaultIntervalBetweenChecksInSeconds: Int = 10
+    static let physicalNetworkInterfacePrefix = "en"
+    static let physicalNetworkInterfaceWiFi = "Wi-Fi"
+    static let physicalNetworkInterfaceLan = "LAN"
+    static let physicalNetworkInterfaceExclusion = "Thunderbolt"
     
     // MARK: Regexes
-    static let regexUrl = "((?:http|https)://)?(?:www\\.)?[\\w\\d\\-_]+\\.\\w{2,3}(\\.\\w{2})?(/(?<=/)(?:[\\w\\d\\-./_]+)?)?"
+    static let regexUrl = /(?<protocol>https?):\/\/(?:(?<username>[^:@\s\/\\]*)(?::(?<password>[^:@\s\/\\]*))?@)?(?<domain>[\w\d]+[\w\d.\-]+[\w\d]+|\[[a-f\d:]+\])(?::(?<port>\d+))?(?:(?<path>\/[^\?#\s]*)(?:\?(?<query>[^\?#\s]*))?(?:#(?<anchor>[^\?#\s]*))?)?/
     
     // MARK: Icons
+    static let iconApp = "AppIcon"
     static let iconCompleteSafety = "checkmark.shield.fill"
     static let iconSomeSafety = "exclamationmark.shield.fill"
     static let iconUnsafe = "xmark.shield.fill"
+    static let iconWindow = "macwindow"
+    static let iconQuit = "xmark.circle"
+    static let iconSettings = "gearshape.2"
+    static let iconQuestionMark = "questionmark.circle.fill"
+    static let iconCopyLog = "doc.on.doc"
+    static let iconClearLog = "trash"
+    static let iconInfo = "info.circle"
+    static let iconCellular = "cellularbars"
+    static let iconLoopback = "point.forward.to.point.capsulepath"
+    static let iconVpn = "network.badge.shield.half.filled"
+    static let iconWifi = "wifi"
+    static let iconWired = "cable.connector"
+    static let iconUnknownConnection = "questionmark"
+    static let iconInfoFill = "info.circle.fill"
+    static let iconCheckmark = "checkmark.circle.fill"
+    static let iconCircle = "circle"
+    static let iconMarkedCircle = "largecircle.fill.circle"
     
     // MARK: Window IDs
     static let windowIdMain = "main-view"
     static let windowIdSettings = "settings-view"
     static let windowIdKillProcessesConfirmationDialog = "kill-processess-confirmation-dialog-view"
+    static let windowIdEnableNetworkDialog = "enable-network-dialog-view"
+    static let windowIdInfo = "info-view"
+    
+    // MARK: Elements names
+    static let settings = "Settings"
+    static let info = "Info"
+    static let show = "Show"
+    static let quit = "Quit"
+    static let none = "None"
+    static let on = "On"
+    static let off = "Off"
+    static let add = "Add"
+    static let delete = "Delete"
+    static let enable = "Enable"
+    static let cancel = "Cancel"
+    static let yes = "Yes"
+    static let no = "No"
+    static let ok = "OK"
+    static let na = "N/A"
+    static let later = "Later"
+    static let ip = "IP"
+    static let apiUrl = "API URL"
+    static let safety = "Safety"
+    static let network = "Network"
+    static let monitoring = "Monitoring"
+    static let applications = "Applications"
+    static let clickToClose = "Click to close"
+    static let activeConnections = "Active connections"
+    static let safetyDescriprion = "%1$@ safety"
+    static let disableLocationServices = "(disable location services)"
+    static let currentIp = "Current IP"
+    static let enabled = "enabled"
+    static let disabled = "disabled"
+    static let physical = "physical"
+    static let virtual = "virtual"
+    
+    // MARK: Symbols
+    static let bullet = "•"
+    static let pipe = "|"
+    static let leftBracket = "("
+    static let rightBracket = ")"
+    
+    // MARK: Toolbar
+    static let toolbarSettings = "Settings"
+    static let toolbarCopyLog = "Copy log"
+    static let toolbarClearLog = "Clear log"
+    static let toolbarInfo = "Info"
+    
+    // MARK: Menu items
+    static let menuItemCopy = "Copy"
+    static let menuItemAddAsAllowedIpWithCompletePrivacy = "Add as allowed IP with complete privacy"
+    static let menuItemAddAsAllowedIpWithSomePrivacy = "Add as allowed IP with some privacy"
+    
+    // MARK: Settings elements names
+    static let settingsElementGeneral = "General"
+    static let settingsElementMenubar = "Menu bar"
+    static let settingsElementShownItems = "Shown menu bar items"
+    static let settingsElementHiddenItems = "Hidden menu bar items"
+    static let settingsElementAllowedIpAddresses = "Allowed IPs"
+    static let settingsElementIpAddressApis = "IP APIs"
+    static let settingsElementAppsToClose = "Apps to close"
+    static let settingsElementApplicationsToClose = "Applications to close"
+    static let settingsElementKeepAppRunning = "Keep application running"
+    static let settingsElementOnTopOfAllWindows = "Always on top of all windows"
+    static let settingsElementDisableLocationServices = "Disable location services"
+    static let settingsElementHigherProtection = "Higher protection"
+    static let settingsElementPickyMode = "Picky mode"
+    static let settingsElementPeriodicIpCheck = "Periodic IP address check"
+    static let settingsElementConfirmationToCloseApps = "Confirmation to close applications"
+    static let settingsElementIntervalBegin = "at intervals of"
+    static let settingsElementIntervalEnd = "second(s)"
+    static let settingsElementThemeColor = "Use system theme color"
     
     // MARK:  Settings key names
-    static let settingsKeyAddresses = "allowed-addresses"
+    static let settingsKeyIps = "allowed-addresses"
     static let settingsKeyApis = "apis"
     static let settingsKeyIsMonitoringEnabled = "is-monitoring-enabled"
     static let settingsKeyHigherProtection = "higher-protection"
     static let settingsKeyUsePickyMode = "use-picky-mode"
+    static let settingsKeyPeriodicIpCheck = "periodic-ip-check"
     static let settingsKeyIntervalBetweenChecks = "interval-between-checks"
     static let settingsKeyAppsToClose = "apps-to-close"
     static let settingsKeyConfirmationApplicationsClose = "confirmation-apps-close"
+    static let settingsKeyShownMenuBarItems = "shown-menubar-items"
+    static let settingsKeyHiddenMenuBarItems = "hidden-menubar-items"
+    static let settingsKeyMenuBarUseThemeColor = "menubar-use-theme-color"
+    static let settingsKeyOnTopOfAllWindows = "on-top-of-all-windows"
+    
+    // MARK: Menubar item keys
+    static let mbItemKeyShield = "shiled"
+    static let mbItemKeyMonitoringStatus = "monitoring-status"
+    static let mbItemKeyIpAddress = "ip-address"
+    static let mbItemKeyCountryCode = "country-code"
+    static let mbItemKeyCountryFlag = "country-flag"
+    static let mbItemKeySeparatorBullet = "separator-bullet"
+    static let mbItemKeySeparatorPipe = "separator-pipe"
+    static let mbItemKeySeparatorLeftBracket = "separator-left-bracket"
+    static let mbItemKeySeparatorRightBracket = "separator-right-bracket"
     
     // MARK: Shell commands
     static let shCommandEnableNetworkIterface = "networksetup -setairportpower %1$@ on"
@@ -57,32 +169,33 @@ struct Constants{
     static let shCommandToggleLocationServices = "defaults -currentHost write '/var/db/locationd/Library/Preferences/ByHost/com.apple.locationd' LocationServicesEnabled -bool %1$@"
     static let shCommandReboot = "reboot"
     
-    // MARK: Dialog messages
+    // MARK: Error messages
+    static let errorNoActiveIpApiFound = "Not possible to obtain IP, try to add a new IP API in the Settings to proceed work or check DNS availability"
+    static let errorWhenCallingIpAddressApi = "Error when called IP address API '%1$@': '%2$@', API marked as inactive and will be skipped until next application run"
+    static let errorIpApiResponseIsInvalid = "IP address API returned invalid IP address"
+    static let errorWhenCallingIpInfoApi = "Error when called IP info API: %1$@"
+    
+    // MARK: Dialogs
     static let dialogHeaderIpAddressIsNotValid = "IP Address is not valid"
     static let dialogBodyIpAddressIsNotValid = "IP Address seems to not be valid and cannot be added."
     static let dialogHeaderApiIsNotValid = "API for getting IP Address is not valid"
     static let dialogBodyApiIsNotValid = "API doesn't return a valid IP address as a plain text and cannot be added."
-    static let dialogButtonOk = "OK"
     static let dialogHeaderLocationServicesToggled = "Location services"
     static let dialogBodyLocationServicesToggled = "It's needed to reboot the computer to apply Location services changes."
     static let dialogButtonRebootNow = "Reboot now"
-    static let dialogButtonLater = "Later"
     static let dialogHeaderCannotAddAppToClose = "Cannot add application to close."
     static let dialogBodyCannotAddAppToClose = "Cannot add application to close: %1$@"
     static let dialogHeaderCloseApps = "Close applications"
     static let dialogBodyCloseApps = "Are you sure you want to close these applications?\nThis operation cannot be undone."
-    static let dialogButtonYes = "Yes"
-    static let dialogButtonNo = "No"
+    static let dialogHeaderEnableNetwork = "Enable network"
+    static let dialogBodyEnableNetwork = "Select a network interface to enable:\n"
     
     // MARK: Log messages
     static let logMonitoringHasBeenEnabled = "Monitoring has been enabled"
     static let logMonitoringHasBeenDisabled = "Monitoring has been disabled"
     static let logCurrentIp = "Current IP is %1$@"
-    static let logNoActiveAddressApiFound = "No any active address API found, add a new one in the Settings"
     static let logCurrentIpHasBeenUpdated = "Current IP has been updated to %1$@"
     static let logCurrentIpHasBeenUpdatedWithNotFromWhitelist = "Current IP address has been changed to %1$@ which is not from allowed IPs, network disabled"
-    static let logErrorWhenCallingIpInfoApi = "Error when called IP info API: %1$@"
-    static let logErrorWhenCallingIpAddressApi = "Error when called IP address API '%1$@': '%2$@', API marked as inactive and will be skipped until next application run"
     static let logNetworkInterfaceHasBeenEnabled = "Network interface '%1$@' has been enabled"
     static let logNetworkInterfaceHasBeenDisabled = "Network interface '%1$@' has been disabled"
     static let logCannotEnableNetworkInterface = "Cannot enable network interface '%1$@'"
@@ -100,16 +213,42 @@ struct Constants{
     // MARK: Hints
     static let hintApiIsActive = "API is active and in use"
     static let hintApiIsInactive = "API is not active and not in use"
+    static let hintNewVaildIpAddress = "A new valid IP address"
+    static let hintNewVaildApiUrl = "A new valid API URL"
+    static let hintClickToEnableNetwork = "Click to enable network"
+    static let hintClickToDisableNetwork = "Click to disable network"
+    static let hintClickToEnableMonitoring = "Click to enable monitoring"
+    static let hintClickToDisableMonitoring = "Click to disable monitoring"
+    static let hintKeepApplicationRunning = "The application will be opened after the system starts or if it was closed."
+    static let hintOnTopOfAllWindows = "Put application windows on top of all other windows."
+    static let hintToggleLocationServices = "Toggle location services after restart. If the required state is critical, this can be done manually in Settings → Privacy & Security → Location Services without restarting."
+    static let hintHigherProtection = "Disable the network when monitoring is enabled, if there is no reliable information about the current IP address. Also close all running monitored applications, if any."
+    static let hintCloseApplicationConfirmation = "Confirmation dialog when closing applications. This option is ignored in higher protection mode."
+    static let hintPickyMode = "Use extended information about current IP address, such as country. Does not allow the use of an IP address as an allowed one if there is no reliable information about it."
+    static let hintPeriodicIpCheck = "Check the public IP address periodically when monitoring is enabled at the interval specified below."
+    static let hintInterval = "\(minTimeIntervalToCheck)..\(maxTimeIntervalToCheck)"
+    static let hintMenuBarAdjustment = "Drag menu bar item icons between the sections below to arrange item as you want"
+    
+    // MARK: About
+    static let aboutSupportMail = "bWlyaGFtQGFidi5iZw=="
+    static let aboutGitHubLink = "https://github.com/mirham/KillSwitch"
+    
+    static let aboutBackground = "AppInfo"
+    
+    static let aboutVersionKey = "CFBundleShortVersionString"
+    static let aboutGetSupport = "Get support:"
+    static let aboutVersion = "Version: %1$@"
+    static let aboutMailTo = "mailto:%1$@"
+    static let aboutGitHub = "GitHub"
     
     // MARK: Static data
-    static let addressApiUrls = [
+    static let ipApiUrls = [
         "http://api.ipify.org",
         "http://icanhazip.com",
         "http://ipinfo.io/ip",
         "http://ipecho.net/plain",
         "https://checkip.amazonaws.com",
         "http://whatismyip.akamai.com",
-        "https://ip.istatmenus.app",
         "https://api.seeip.org",
         "https://ipapi.co/ip"
     ]
@@ -120,7 +259,7 @@ struct Constants{
         <plist version="1.0">
             <dict>
                 <key>Label</key>
-                <string>user.launchkeep.KillSwitch</string>
+                <string>\(Bundle.main.bundleIdentifier!)</string>
                 <key>KeepAlive</key>
                 <true/>
                 <key>Program</key>
@@ -128,4 +267,27 @@ struct Constants{
             </dict>
         </plist>
         """;
+    
+    static let vpnProtocols = [
+        "tap", 
+        "tun",
+        "ppp",
+        "ipsec",
+        "utun"
+    ]
+    
+    static let defaultShownMenuBarItems = [
+        mbItemKeyShield,
+        mbItemKeyMonitoringStatus
+    ]
+    
+    static let defaultHiddenMenuBarItems = [
+        mbItemKeyIpAddress,
+        mbItemKeyCountryFlag,
+        mbItemKeyCountryCode,
+        mbItemKeySeparatorBullet,
+        mbItemKeySeparatorPipe,
+        mbItemKeySeparatorLeftBracket,
+        mbItemKeySeparatorRightBracket
+    ]
 }

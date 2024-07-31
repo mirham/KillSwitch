@@ -1,5 +1,5 @@
 //
-//  MonitoringStateView.swift
+//  ProcessesStatusView.swift
 //  KillSwitch
 //
 //  Created by UglyGeorge on 05.06.2024.
@@ -7,32 +7,31 @@
 
 import SwiftUI
 
-struct ProcessesStatusView : View, Settable {
+struct ProcessesStatusView : View {
+    @EnvironmentObject var appState: AppState
+
     @Environment(\.openWindow) private var openWindow
+    @Environment(\.controlActiveState) private var controlActiveState
     
-    @EnvironmentObject var processesService : ProcessesService
-    
-    @Environment(\.controlActiveState) var controlActiveState
-    
-    private let appManagementService = AppManagementService.shared
+    private let processesService = ProcessesService.shared
     
     @State private var showOverText = false
-    @State private var showConfirmation = false
     
     var body: some View {
         Section() {
             VStack{
-                Text("Applications".uppercased())
+                Text(Constants.applications.uppercased())
                     .font(.title3)
                     .multilineTextAlignment(.center)
                 Section {
-                    Text(processesService.activeProcessesToClose.count.description)
+                    Text(appState.system.processesToKill.count.description)
                         .frame(width: 60, height: 60)
                         .background(.yellow)
                         .foregroundColor(.black.opacity(0.5))
                         .font(.system(size: 18))
                         .bold()
                         .clipShape(Circle())
+                        .overlay(content: { Circle().stroke(.blue, lineWidth: showOverText ? 2 : 0) })
                         .onTapGesture(perform: closeAllpicationsButtonClickHandler)
                         .pointerOnHover()
                 }
@@ -41,9 +40,9 @@ struct ProcessesStatusView : View, Settable {
                 })
                 .popover(isPresented: ($showOverText), arrowEdge: .trailing, content: {
                     VStack{
-                        Text("Click to close")
+                        Text(Constants.clickToClose)
                         VStack(alignment: .leading) {
-                            ForEach(processesService.activeProcessesToClose, id: \.pid) { processInfo in
+                            ForEach(appState.system.processesToKill, id: \.pid) { processInfo in
                                 HStack {
                                     Image(nsImage: NSWorkspace.shared.icon(forFile: processInfo.url))
                                     Text(processInfo.name)
@@ -54,39 +53,27 @@ struct ProcessesStatusView : View, Settable {
                     .padding()
                     .interactiveDismissDisabled()
                 })
-                .alert(isPresented: $showConfirmation) {
-                    Alert(
-                        title: Text(Constants.dialogHeaderCloseApps),
-                        message: Text(Constants.dialogBodyCloseApps),
-                        primaryButton: Alert.Button.default(Text(Constants.dialogButtonYes), action: {
-                            closeApplications()
-                            showConfirmation = false
-                        }),
-                        secondaryButton: .cancel(Text(Constants.dialogButtonNo), action: { showConfirmation = false })
-                    )
-                }
             }
         }
         .frame(width: 110, height: 90)
-        .isHidden(hidden:processesService.activeProcessesToClose.isEmpty, remove: true)
+        .isHidden(hidden:appState.system.processesToKill.isEmpty, remove: true)
     }
     
     // MARK: Private functions
     
     private func closeAllpicationsButtonClickHandler(){
-        let useConfirmation = readSetting(key: Constants.settingsKeyConfirmationApplicationsClose) ?? true
-        
-        if (useConfirmation) {
-            // TODO RUSS: Fix this isuue
-            if (appManagementService.isMainViewShowed && !appManagementService.isStatusBarViewShowed) {
-                showConfirmation = true
-            }
-            else {
-                showKillProcessesConfirmationDialog()
-            }
+        if (appState.userData.appsCloseConfirmation) {
+            showKillProcessesConfirmationDialog()
         }
         else {
             closeApplications()
+        }
+    }
+    
+    private func showKillProcessesConfirmationDialog() {
+        if(!appState.views.isKillProcessesConfirmationDialogShown){
+            openWindow(id: Constants.windowIdKillProcessesConfirmationDialog)
+            appState.views.isKillProcessesConfirmationDialogShown = true
         }
     }
     
@@ -94,15 +81,8 @@ struct ProcessesStatusView : View, Settable {
         processesService.killActiveProcesses()
         showOverText = false
     }
-    
-    private func showKillProcessesConfirmationDialog() {
-        if(!appManagementService.isKillProcessesConfirmationDialogShowed){
-            openWindow(id: Constants.windowIdKillProcessesConfirmationDialog)
-            appManagementService.showKillProcessesConfirmationDialog()
-        }
-    }
 }
 
 #Preview {
-    ProcessesStatusView()
+    ProcessesStatusView().environmentObject(AppState())
 }

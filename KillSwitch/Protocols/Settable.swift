@@ -11,7 +11,7 @@ protocol Settable {
     func readSetting<T: Codable>(key: String) -> T?
     func writeSetting<T: Codable>(newValue: T, key: String)
     func readSettingsArray<T: Codable>(key: String) -> [T]?
-    func writeSettingsArray<T: Codable>(allObjects: [T], key: String)
+    func writeSettingsArray<T: Codable>(newValues: [T], key: String)
 }
 
 extension Settable {
@@ -42,9 +42,9 @@ extension Settable {
         }
     }
     
-    func writeSettingsArray<T: Codable>(allObjects: [T], key: String) {
+    func writeSettingsArray<T: Codable>(newValues: [T], key: String) {
         let encoder = JSONEncoder()
-        if let encoded = try? encoder.encode(allObjects){
+        if let encoded = try? encoder.encode(newValues){
             UserDefaults.standard.set(encoded, forKey: key)
         }
     }

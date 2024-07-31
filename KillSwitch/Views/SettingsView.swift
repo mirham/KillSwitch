@@ -8,48 +8,49 @@
 import SwiftUI
 
 struct SettingsView : View {
-    @Environment(\.controlActiveState) var controlActiveState
+    @EnvironmentObject var appState: AppState
     
-    let appManagementService = AppManagementService.shared
+    @Environment(\.controlActiveState) var controlActiveState
 
     var body: some View {
         TabView {
             GeneralSettingsEditView()
                 .tabItem {
-                    Text("General")
+                    Text(Constants.settingsElementGeneral)
                 }
-            /* MenuBarStatusEditView()
+            MenuBarStatusEditView()
                  .tabItem {
-                     Text("Menubar")
-             } */
-            AllowedAddressesEditView()
+                     Text(Constants.settingsElementMenubar)
+                 }
+            AllowedIpsEditView()
+                .tabItem {
+                    Text(Constants.settingsElementAllowedIpAddresses)
+                }
                 .navigationSplitViewColumnWidth(250)
+            IpApisEditView()
+                .environmentObject(appState)
                 .tabItem {
-                    Text("Allowed IP addresses")
+                    Text(Constants.settingsElementIpAddressApis)
                 }
-            AddressApisEditView()
+            ClosingApplicationsEditView()
                 .tabItem {
-                    Text("IP address APIs")
-                }
-            ApplicationsToCloseEditView()
-                .tabItem {
-                    Text("Apps to close")
+                    Text(Constants.settingsElementAppsToClose)
                 }
         }
-        .opacity(controlActiveState == .key ? 1 : 0.6)
         .onAppear(perform: {
-            appManagementService.setViewToTop(viewName: "settings-view")
+            AppHelper.setUpView(
+                viewName: Constants.windowIdSettings,
+                onTop: appState.userData.onTopOfAllWindows)
         })
         .onDisappear(perform: {
-            appManagementService.isSettingsViewShowed = false
+            appState.views.isSettingsViewShown = false
         })
+        .opacity(getViewOpacity(state: controlActiveState))
         .padding()
         .frame(maxWidth: 500, maxHeight: 500)
     }
 }
 
 #Preview {
-    SettingsView()
-        .environmentObject(MonitoringService())
-        .environmentObject(AddressesService())
+    SettingsView().environmentObject(AppState())
 }

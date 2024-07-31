@@ -5,78 +5,24 @@
 //  Created by UglyGeorge on 04.06.2024.
 //
 
-import Foundation
 import SwiftUI
 
 struct NetworkStatusView : View {
-    @EnvironmentObject var networkStatusService : NetworkStatusService
+    @EnvironmentObject var appState: AppState
     
-    @Environment(\.controlActiveState) var controlActiveState
+    @Environment(\.openWindow) private var openWindow
+    @Environment(\.controlActiveState) private var controlActiveState
     
-    private let networkManagementService = NetworkManagementService.shared
+    private let networkService = NetworkService.shared
     
     @State private var showOverText = false
 
     var body: some View {
         Section {
             VStack {
-                Text("Network".uppercased())
+                Text(Constants.network.uppercased())
                     .font(.title3)
-                    .multilineTextAlignment(.center)
-                switch networkStatusService.currentStatus {
-                    case .on:
-                        Text("On".uppercased())
-                            .frame(width: 60, height: 60)
-                            .background(.green)
-                            .foregroundColor(.black.opacity(0.5))
-                            .font(.system(size: 18))
-                            .bold()
-                            .clipShape(Circle())
-                            .onTapGesture(perform: { toggleNetwork(enable: false) })
-                            .pointerOnHover()
-                            .onHover(perform: { hovering in
-                                showOverText = hovering && controlActiveState == .key
-                            })
-                            .popover(isPresented: $showOverText, arrowEdge: .trailing, content: {
-                                Text("Click to disable network")
-                                    .padding()
-                                    .interactiveDismissDisabled()
-                            })
-                    case .off:
-                        Text("Off".uppercased())
-                            .frame(width: 60, height: 60)
-                            .background(.red)
-                            .foregroundColor(.black.opacity(0.5))
-                            .font(.system(size: 18))
-                            .bold()
-                            .clipShape(/*@START_MENU_TOKEN@*/Circle()/*@END_MENU_TOKEN@*/)
-                            .onTapGesture(perform: { toggleNetwork(enable: true) })
-                            .pointerOnHover()
-                            .onHover(perform: { hovering in
-                                showOverText = hovering
-                            })
-                            .popover(isPresented: $showOverText, arrowEdge: .trailing, content: {
-                                Text("Click to enable network")
-                                    .padding()
-                                    .interactiveDismissDisabled()
-                            })
-                    case .wait:
-                        Text("Wait".uppercased())
-                            .frame(width: 60, height: 60)
-                            .background(.yellow)
-                            .foregroundColor(.black.opacity(0.5))
-                            .font(.system(size: 18))
-                            .bold()
-                            .clipShape(/*@START_MENU_TOKEN@*/Circle()/*@END_MENU_TOKEN@*/)
-                    case .unknown:
-                        Text("N/A".uppercased())
-                            .frame(width: 60, height: 60)
-                            .background(.gray)
-                            .foregroundColor(.black.opacity(0.5))
-                            .font(.system(size: 18))
-                            .bold()
-                            .clipShape(/*@START_MENU_TOKEN@*/Circle()/*@END_MENU_TOKEN@*/)
-                }
+                renderNetworkStatusControl()
             }
         }
         .frame(width: 110, height: 90)
@@ -84,19 +30,98 @@ struct NetworkStatusView : View {
     
     // MARK: Private functions
     
-    private func toggleNetwork(enable : Bool) {
-        showOverText = false
+    private func renderNetworkStatusControl() -> some View {
+        let data = getNetworkStatusControlData()
         
-        if (enable) {
-            networkManagementService.enableNetworkInterface(interfaceName: Constants.primaryNetworkInterfaceName)
-        }
-        else {
-            networkManagementService.disableNetworkInterface(interfaceName: Constants.primaryNetworkInterfaceName)
+        let result = Text(data.text.uppercased())
+            .frame(width: 60, height: 60)
+            .background(data.color)
+            .foregroundColor(.black.opacity(0.5))
+            .font(.system(size: 18))
+            .bold()
+            .clipShape(Circle())
+            .overlay(content: { Circle().stroke(.blue, lineWidth: showOverText ? 2 : 0) })
+            .onTapGesture(perform: data.action)
+            .pointerOnHover()
+            .onHover(perform: { hovering in
+                showOverText = hovering && controlActiveState == .key && data.hintText != nil
+            })
+            .popover(isPresented: $showOverText, arrowEdge: .trailing, content: {
+                Text(data.hintText!)
+                    .padding()
+                    .focusEffectDisabled()
+                    .interactiveDismissDisabled()
+            })
+        
+        return result
+    }
+    
+    private func getNetworkStatusControlData() -> NetworkStatusControlData {
+        switch appState.network.status {
+            case .on:
+                return NetworkStatusControlData(
+                    text: appState.network.status.description,
+                    color: .green,
+                    action: { toggleNetwork(enable: false) },
+                    hintText: Constants.hintClickToDisableNetwork)
+            case .off:
+                return NetworkStatusControlData(
+                    text: appState.network.status.description,
+                    color: .red,
+                    action: { toggleNetwork(enable: true) },
+                    hintText: Constants.hintClickToEnableNetwork)
+            case .wait:
+                return NetworkStatusControlData(
+                    text: appState.network.status.description,
+                    color: .yellow,
+                    action: {})
+            default:
+                return NetworkStatusControlData(
+                    text:Constants.na,
+                    color: .gray,
+                    action: {})
         }
     }
     
+    private func toggleNetwork(enable : Bool) {
+        showOverText = false
+        
+        let physicalNetworkInterfaces = networkService.getPhysicalInterfaces()
+        
+        if (enable) {
+            if (appState.network.physicalNetworkInterfaces.count > 1) {
+                showEnableNetworkDialog()
+            }
+            else {
+                networkService.enableNetworkInterface(interfaceName: appState.network.physicalNetworkInterfaces.first!.name)
+            }
+        }
+        else {
+            for interface in physicalNetworkInterfaces {
+                networkService.disableNetworkInterface(interfaceName: interface.name)
+            }
+        }
+    }
+    
+    // MARK: Private functions
+    
+    private func showEnableNetworkDialog() {
+        if(!appState.views.isEnableNetworkDialogShown){
+            openWindow(id: Constants.windowIdEnableNetworkDialog)
+            appState.views.isEnableNetworkDialogShown = true
+        }
+    }
+    
+    // MARK: Inner types
+    
+    private struct NetworkStatusControlData {
+        let text: String
+        let color: Color
+        var action: () -> Void
+        var hintText: String?
+    }
 }
 
 #Preview {
-    NetworkStatusView()
+    NetworkStatusView().environmentObject(AppState())
 }

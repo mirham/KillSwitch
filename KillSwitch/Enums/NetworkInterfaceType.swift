@@ -1,5 +1,5 @@
 //
-//  NetworkStatus.swift
+//  NetworkInterfaceType.swift
 //  KillSwitch
 //
 //  Created by UglyGeorge on 09.06.2024.
@@ -14,4 +14,5 @@ enum NetworkInterfaceType : Int, CaseIterable {
     case wifi = 3
     case wired = 4
     case other = 5
+    case vpn = 6
 }

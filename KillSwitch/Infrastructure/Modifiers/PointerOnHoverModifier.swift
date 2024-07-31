@@ -1,5 +1,5 @@
 //
-//  IsHiddenModifier.swift
+//  PointerOnHoverModifier.swift
 //  KillSwitch
 //
 //  Created by UglyGeorge on 21.06.2024.
@@ -11,9 +11,9 @@ struct PointerOnHoverModifier: ViewModifier {
     func body(content: Content) -> some View {
          content.onHover(perform: { hovering in
             if hovering {
-                NSCursor.pointingHand.set()
+                NSCursor.pointingHand.push()
             } else {
-                NSCursor.arrow.set()
+                NSCursor.pop()
             }
         })
     }

@@ -1,153 +1,87 @@
 //
-//  MonitoringStateView.swift
+//  CurrentIpView.swift
 //  KillSwitch
 //
 //  Created by UglyGeorge on 05.06.2024.
 //
 
 import SwiftUI
-import FlagKit
 
-struct CurrentIpView: View, Settable {
-    @EnvironmentObject var networkStatusService : NetworkStatusService
-    @EnvironmentObject var monitoringService : MonitoringService
+struct CurrentIpView: IpAddressContainerView {
+    @EnvironmentObject var appState: AppState
     
-    var appManagementService = AppManagementService.shared
+    @Environment(\.colorScheme) private var colorScheme
+    
+    var ipService = IpService.shared
     
     var body: some View {
         Section() {
             VStack{
-                Text("Current IP".uppercased())
+                Text(Constants.currentIp.uppercased())
                     .font(.title3)
                     .multilineTextAlignment(.center)
-                Text(networkStatusService.currentIpAddressInfo?.ipAddress.uppercased() ?? Constants.none.uppercased())
+                Text(appState.network.currentIpInfo?.ipAddress.uppercased() ?? Constants.none.uppercased())
                     .font(.largeTitle)
                     .bold()
-                    .foregroundStyle(getCurrentSafetyColor())
+                    .foregroundStyle(getIpAddressColor())
                     .contextMenu {
-                        if(networkStatusService.currentIpAddressInfo?.ipAddress != nil){
-                            Button(action: {
-                                appManagementService.copyTextToClipboard(text: networkStatusService.currentIpAddressInfo!.ipAddress)
-                            }){
-                                Text("Copy")
+                        if(appState.network.currentIpInfo?.ipAddress != nil){
+                            Button(action: { AppHelper.copyTextToClipboard(text: appState.network.currentIpInfo!.ipAddress)}) {
+                                Text(Constants.menuItemCopy)
                             }
-                            if (monitoringService.currentSafetyType == .unknown) {
-                                Button(action: {
-                                    addAllowedIpAddress(safetyType: AddressSafetyType.compete)
-                                }){
-                                    Text("Add as allowed IP with complete privacy")
+                            if (appState.current.safetyType == .unknown) {
+                                Button(action: { addAllowedIpAddress(safetyType: SafetyType.compete)}) {
+                                    Text(Constants.menuItemAddAsAllowedIpWithCompletePrivacy)
                                 }
-                                Button(action: {
-                                    addAllowedIpAddress(safetyType: AddressSafetyType.some)
-                                }){
-                                    Text("Add as allowed IP with some privacy")
+                                Button(action: { addAllowedIpAddress(safetyType: SafetyType.some)}) {
+                                    Text(Constants.menuItemAddAsAllowedIpWithSomePrivacy)
                                 }
                             }
                         }
                     }
                 Spacer().frame(height: 1)
-                Text(getCurrentSafetyTypeText())
+                Text(appState.current.safetyType.fullDesctiption)
                     .textCase(.uppercase)
                     .font(.system(size: 10))
                     .bold()
-                    .foregroundStyle(getCurrentSafetyColor())
-                    .isHidden(hidden: getCurrentSafetyTypeText().isEmpty, remove: true)
-                Text("(disable location services)")
+                    .foregroundStyle(getSafetyColor(safetyType: appState.current.safetyType, colorScheme: colorScheme))
+                    .isHidden(hidden: appState.current.safetyType == .unknown, remove: true)
+                Text(Constants.disableLocationServices)
                     .textCase(.lowercase)
                     .font(.system(size: 9))
                     .bold()
-                    .foregroundStyle(getCurrentSafetyColor())
-                    .isHidden(hidden: !isHighRisk(), remove: true)
+                    .foregroundStyle(getSafetyColor(safetyType: appState.current.safetyType, colorScheme: colorScheme))
+                    .isHidden(hidden: !appState.current.highRisk, remove: true)
                 HStack {
-                    Image(nsImage: getIpCountryFlag())
+                    Image(nsImage: getCountryFlag(countryCode: appState.network.currentIpInfo?.countryCode ?? String()))
                         .resizable()
                         .frame(width: 20, height: 12)
-                    Text(networkStatusService.currentIpAddressInfo?.countryName.uppercased() ?? String())
+                    Text(appState.network.currentIpInfo?.countryName.uppercased() ?? String())
                         .font(.system(size: 12))
                         .bold()
                 }
                 .opacity(0.7)
-                .isHidden(hidden: !isCountryDetected(), remove: true)
-            }
-            .onDisappear(){
-                writeSettings()
+                .isHidden(hidden: !appState.current.countyDetected, remove: true)
             }
         }
     }
     
     // MARK: Private functions
     
-    private func getCurrentSafetyTypeText() -> String {
-        let mask = "%1$@ safety"
-        
-        let result = networkStatusService.currentIpAddressInfo?.ipAddress != nil
-                        && monitoringService.currentSafetyType != .unknown
-            ? monitoringService.locationServicesEnabled
-                ? String(AddressSafetyType.unsafe.description)
-                : String(format: mask, monitoringService.currentSafetyType.description)
-            : String()
-        
-        return result
+    private func getIpAddressColor() -> Color {
+        return appState.monitoring.isEnabled
+            ? getSafetyColor(safetyType: appState.current.safetyType, colorScheme: colorScheme)
+            : .primary
     }
     
-    private func getCurrentSafetyColor() -> Color {
-        var result = Color.primary
-        
-        guard networkStatusService.currentIpAddressInfo?.ipAddress != nil else { return result }
-        
-        if (isHighRisk()) {
-            result = Color.red
-            
-            return result
-        }
-        
-        result = monitoringService.currentSafetyType == AddressSafetyType.compete
-            ? .green
-            : monitoringService.currentSafetyType == AddressSafetyType.some
-                ? .yellow
-                : .primary
-        
-        return result
-    }
-    
-    private func getIpCountryFlag() -> NSImage{
-        var result = NSImage()
-        
-        if(networkStatusService.currentIpAddressInfo?.countryCode != nil
-           && !networkStatusService.currentIpAddressInfo!.countryCode.isEmpty){
-            result = Flag(countryCode: networkStatusService.currentIpAddressInfo!.countryCode)?.originalImage ?? NSImage()
-        }
-        
-        return result
-    }
-    
-    private func addAllowedIpAddress(safetyType : AddressSafetyType){
-        monitoringService.addAllowedIpAddress(
-            ipAddress: networkStatusService.currentIpAddressInfo!.ipAddress,
-            ipAddressInfo: networkStatusService.currentIpAddressInfo,
+    private func addAllowedIpAddress(safetyType : SafetyType) {
+        ipService.addAllowedIp(
+            ip: appState.network.currentIpInfo!.ipAddress,
+            ipInfo: appState.network.currentIpInfo,
             safetyType: safetyType)
-    }
-    
-    private func isCountryDetected() -> Bool {
-        let result = networkStatusService.currentIpAddressInfo != nil
-         && !networkStatusService.currentIpAddressInfo!.countryName.isEmpty
-        
-        return result
-    }
-    
-    private func isHighRisk() -> Bool {
-        let result = monitoringService.isMonitoringEnabled && monitoringService.locationServicesEnabled
-        
-        return result
-    }
-    
-    private func writeSettings() {
-        writeSettingsArray(
-            allObjects: monitoringService.allowedIpAddresses,
-            key: Constants.settingsKeyAddresses)
-    }
+    }    
 }
 
 #Preview {
-    CurrentIpView()
+    CurrentIpView().environmentObject(AppState())
 }

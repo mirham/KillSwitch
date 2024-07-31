@@ -1,5 +1,5 @@
 //
-//  MenuBarWindowView.swift
+//  MenuBarView.swift
 //  KillSwitch
 //
 //  Created by UglyGeorge on 06.06.2024.
@@ -7,79 +7,86 @@
 
 import SwiftUI
 
-struct MenuBarView : View {   
+struct MenuBarView : View {
+    @EnvironmentObject var appState: AppState
+    
     @Environment(\.openWindow) private var openWindow
+    @Environment(\.dismiss) var dismiss
     
-    @EnvironmentObject var appManagementService: AppManagementService
-    @EnvironmentObject var monitoringService: MonitoringService
-    @EnvironmentObject var networkStatusService: NetworkStatusService
-    @EnvironmentObject var processesService: ProcessesService
+    private var launchAgentService = LaunchAgentService.shared
     
-    @State private var showOverText = false
-    @State private var quitOverText = false
+    @State private var overShowText = false
+    @State private var overQuitText = false
     
     var body: some View {
         VStack{
             CurrentIpView()
-                .environmentObject(monitoringService)
-                .environmentObject(networkStatusService)
+                .environmentObject(appState)
             HStack{
                 MonitoringStatusView()
-                    .environmentObject(monitoringService)
+                    .environmentObject(appState)
                     .padding()
                 NetworkStatusView()
-                    .environmentObject(networkStatusService)
+                    .environmentObject(appState)
                     .padding()
                 ProcessesStatusView()
-                    .environmentObject(processesService)
+                    .environmentObject(appState)
                     .padding()
             }
             Spacer()
                 .frame(height: 5)
             HStack {
-                Button("Show", systemImage: "macwindow") {
-                    showMainWindow()
+                Button(Constants.show, systemImage: Constants.iconWindow) {
+                    showButtonClickHandler()
                 }
-                .buttonStyle(.plain)
-                .foregroundColor(showOverText ? .blue : .gray)
-                .bold(showOverText)
-                .focusEffectDisabled()
+                .withMenuBarButtonStyle(bold: overShowText, color: overShowText ? .blue : .gray)
                 .onHover(perform: { hovering in
-                    showOverText = hovering
+                    overShowText = hovering
                 })
                 Spacer()
                     .frame(width: 20)
-                Button("Quit", systemImage: "xmark.circle") {
-                    appManagementService.quitApp()
+                Button(Constants.quit, systemImage: Constants.iconQuit) {
+                    launchAgentService.apply()
+                    NSApplication.shared.terminate(nil)
                 }
-                .buttonStyle(.plain)
-                .focusEffectDisabled()
-                .bold(quitOverText)
-                .foregroundColor(quitOverText ? .red : .gray)
+                .withMenuBarButtonStyle(bold: overQuitText, color: overQuitText ? .red : .gray)
                 .onHover(perform: { hovering in
-                    quitOverText = hovering
+                    overQuitText = hovering
                 })
             }
         }
         .onAppear(perform: {
-            appManagementService.isStatusBarViewShowed = true
+            appState.views.isStatusBarViewShown = true
         })
         .onDisappear(perform: {
-            print("hidden")
-            appManagementService.isStatusBarViewShowed = false
+            appState.views.isStatusBarViewShown = false
         })
     }
     
     // MARK: Private functions
     
-    private func showMainWindow(){
-        if(!appManagementService.isMainViewShowed){
+    private func showButtonClickHandler(){
+        if(!appState.views.isMainViewShown){
             openWindow(id: Constants.windowIdMain)
-            appManagementService.showMainView()
+            AppHelper.activateView(viewName: Constants.windowIdMain)
+            appState.views.isMainViewShown = true
         }
+        else {
+            AppHelper.activateView(viewName: Constants.windowIdMain, simple: false)
+        }
+        dismiss()
+    }
+}
+
+private extension Button {
+    func withMenuBarButtonStyle(bold: Bool, color: Color) -> some View {
+        self.buttonStyle(.plain)
+            .focusEffectDisabled()
+            .foregroundColor(color)
+            .bold(bold)
     }
 }
 
 #Preview {
-    MenuBarView()
+    MenuBarView().environmentObject(AppState())
 }

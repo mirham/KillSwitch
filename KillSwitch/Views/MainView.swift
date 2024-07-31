@@ -1,5 +1,5 @@
 //
-//  ContentView.swift
+//  MainView.swift
 //  KillSwitch
 //
 //  Created by UglyGeorge on 04.06.2024.
@@ -8,10 +8,7 @@
 import SwiftUI
 
 struct MainView : View {
-    @EnvironmentObject var monitoringService: MonitoringService
-    @EnvironmentObject var networkStatusService: NetworkStatusService
-    @EnvironmentObject var appManagementService: AppManagementService
-    @EnvironmentObject var processesService: ProcessesService
+    @EnvironmentObject var appState: AppState
     
     @Environment(\.controlActiveState) var controlActiveState
     
@@ -19,47 +16,48 @@ struct MainView : View {
         NavigationSplitView {
             VStack{
                 CurrentIpView()
-                    .environmentObject(monitoringService)
-                    .environmentObject(networkStatusService)
+                    .environmentObject(appState)
                     .padding(.top)
                 Spacer()
                     .frame(height: 25)
                 MonitoringStatusView()
-                    .environmentObject(monitoringService)
+                    .environmentObject(appState)
                     .padding(.top)
                 NetworkStatusView()
-                    .environmentObject(networkStatusService)
+                    .environmentObject(appState)
                     .padding(.top)
                 ProcessesStatusView()
-                    .environmentObject(processesService)
+                    .environmentObject(appState)
                     .padding(.top)
                 Spacer()
                     .frame(minHeight: 20)
-                NetworkInterfacesView()
-                    .environmentObject(networkStatusService)
+                ActiveConnectionsView()
+                    .environmentObject(appState)
             }
             .opacity(controlActiveState == .key ? 1 : 0.6)
             .navigationSplitViewColumnWidth(220)
         } detail: {
             VStack{
-                LogView.init()
+                LogView()
+                    .environmentObject(appState)
             }
             .navigationSplitViewColumnWidth(min: 600, ideal: 600)
         }.onAppear(perform: {
-            appManagementService.setViewToTop(viewName: Constants.windowIdMain)
+            AppHelper.setUpView(
+                viewName: Constants.windowIdMain,
+                onTop: appState.userData.onTopOfAllWindows)
         })
         .onDisappear(perform: {
-            appManagementService.isMainViewShowed = false
+            appState.views.isMainViewShown = false
         })
         .frame(minHeight: 600)
         .toolbar(content: {
-            SettingsButtonView()
-                .environmentObject(appManagementService)
+            ToolbarView()
                 .padding(.trailing)
         })
     }
 }
 
 #Preview {
-    MainView()
+    MainView().environmentObject(AppState())
 }

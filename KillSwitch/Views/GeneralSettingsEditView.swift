@@ -1,5 +1,5 @@
 //
-//  AddressApisEditView.swift
+//  GeneralSettingsEditView.swift
 //  KillSwitch
 //
 //  Created by UglyGeorge on 18.06.2024.
@@ -7,238 +7,234 @@
 
 import SwiftUI
 
-struct GeneralSettingsEditView : View, Settable {
-    private let appManagementService = AppManagementService.shared
-    private let monitoringService = MonitoringService.shared
-    private let locationService = LocationService.shared
-    private let computerManagementService = ComputerManagementService.shared
+struct GeneralSettingsEditView: View {
+    @EnvironmentObject var appState: AppState
     
     @Environment(\.controlActiveState) var controlActiveState
     
-    @State private var isKeepRunningOn = false
-    @State private var useHigherProtection = false
-    @State private var usePickyMode = false
-    @State private var isLocationServicesEnabled = false
-    @State private var confirmationApplcationsClose = false
-    @State private var initInterval: Double = 0
-    @State private var interval: Double = 0
+    private let launchAgentService = LaunchAgentService.shared
+    private let monitoringService = MonitoringService.shared
+    private let locationService = LocationService.shared
+    private let computerService = ComputerService.shared
     
+    @State private var isKeepRunningOn = false
     @State private var isLocationServicesToggled: Bool = false
+    @State private var interval: Int = 0
     
     @State private var showOverKeepApplicationRunning = false
+    @State private var showOverOnTopOfAllWindows = false
     @State private var showOverDisableLocationServices = false
     @State private var showOverHigherProtection = false
     @State private var showOverPickyMode = false
+    @State private var showOverPeriodicIpCheck = false
     @State private var showOverConfirmationApplicationsClose = false
     
     var body: some View {
         VStack(alignment: .leading) {
-            HStack (alignment: .center) {
-                Toggle("Keep application running", isOn: .init(
+            HStack(alignment: .center) {
+                Toggle(Constants.settingsElementKeepAppRunning, isOn: .init(
                     get: { isKeepRunningOn },
                     set: { _, _ in if isKeepRunningOn {
-                             isKeepRunningOn = !appManagementService.uninstallLaunchAgent()
-                             appManagementService.isLaunchAgentInstalled = false
-                         }
-                         else {
-                             isKeepRunningOn = appManagementService.installLaunchAgent()
-                             appManagementService.isLaunchAgentInstalled = true
-                        }
+                        isKeepRunningOn = !launchAgentService.delete()
+                        launchAgentService.isLaunchAgentInstalled = false
+                    }
+                    else {
+                        isKeepRunningOn = launchAgentService.create()
+                        launchAgentService.isLaunchAgentInstalled = true
+                    }
                     }))
-                .toggleStyle(CheckToggleStyle())
-                .pointerOnHover()
-                .onAppear {
-                    let initState  = appManagementService.isLaunchAgentInstalled
-                    isKeepRunningOn = initState
-                }
-                .padding(.leading)
-                .padding(.top)
+                    .withSettingToggleStyle()
+                    .onAppear {
+                        let initState = launchAgentService.isLaunchAgentInstalled
+                        isKeepRunningOn = initState
+                    }
                 Spacer()
-                Image(systemName: "questionmark.circle.fill")
-                    .resizable()
-                    .frame(width: 20, height: 20)
-                    .foregroundColor(/*@START_MENU_TOKEN@*/.blue/*@END_MENU_TOKEN@*/)
-                    .padding(.top)
-                    .padding(.trailing)
+                Image(systemName: Constants.iconQuestionMark)
+                    .asHelpIcon()
                     .onHover(perform: { hovering in
                         showOverKeepApplicationRunning = hovering && controlActiveState == .key
                     })
-                    .popover(isPresented: $showOverKeepApplicationRunning, 
+                    .popover(isPresented: $showOverKeepApplicationRunning,
                              arrowEdge: .trailing,
-                             content: {
-                        Text("The application will be opened after the system starts or if it was closed.")
-                            .frame(width: 200)
-                            .padding()
-                    })
+                             content: { renderHelpHint(hint: Constants.hintKeepApplicationRunning) })
             }
-            HStack (alignment: .top) {
-                Toggle("Disable location services", isOn: Binding(
-                    get: { !isLocationServicesEnabled },
+            HStack {
+                Toggle(Constants.settingsElementOnTopOfAllWindows, isOn: Binding(
+                    get: { appState.userData.onTopOfAllWindows },
+                    set: {
+                        appState.userData.onTopOfAllWindows = $0
+                    }
+                ))
+                .withSettingToggleStyle()
+                Spacer()
+                Image(systemName: Constants.iconQuestionMark)
+                    .asHelpIcon()
+                    .onHover(perform: { hovering in
+                        showOverOnTopOfAllWindows = hovering && controlActiveState == .key
+                    })
+                    .popover(isPresented: $showOverOnTopOfAllWindows,
+                             arrowEdge: .trailing,
+                             content: { renderHelpHint(hint: Constants.hintOnTopOfAllWindows) })
+            }
+            HStack(alignment: .top) {
+                Toggle(Constants.settingsElementDisableLocationServices, isOn: Binding(
+                    get: { !appState.system.locationServicesEnabled },
                     set: {
                         isLocationServicesToggled = true
-                        if (isLocationServicesEnabled) {
+                        if appState.system.locationServicesEnabled {
                             locationService.toggleLocationServices(isEnabled: !$0)
                         }
                     }))
-                .toggleStyle(CheckToggleStyle())
-                .alert(isPresented: $isLocationServicesToggled) {
-                    Alert(title: Text(Constants.dialogHeaderLocationServicesToggled),
-                          message: Text(Constants.dialogBodyLocationServicesToggled),
-                          primaryButton: Alert.Button.default(Text(Constants.dialogButtonRebootNow), action: { computerManagementService.reboot() }),
-                          secondaryButton: .default(Text(Constants.dialogButtonLater)))
-                }
-                .pointerOnHover()
-                .padding(.leading)
-                .padding(.top)
+                    .withSettingToggleStyle()
+                    .alert(isPresented: $isLocationServicesToggled) {
+                        Alert(title: Text(Constants.dialogHeaderLocationServicesToggled),
+                              message: Text(Constants.dialogBodyLocationServicesToggled),
+                              primaryButton: Alert.Button.default(Text(Constants.dialogButtonRebootNow), action: { computerService.reboot() }),
+                              secondaryButton: .default(Text(Constants.later)))
+                    }
                 Spacer()
-                Image(systemName: "questionmark.circle.fill")
-                    .resizable()
-                    .frame(width: 20, height: 20)
-                    .foregroundColor(/*@START_MENU_TOKEN@*/.blue/*@END_MENU_TOKEN@*/)
-                    .padding(.top)
-                    .padding(.trailing)
+                Image(systemName: Constants.iconQuestionMark)
+                    .asHelpIcon()
                     .onHover(perform: { hovering in
                         showOverDisableLocationServices = hovering && controlActiveState == .key
                     })
-                    .popover(isPresented: $showOverDisableLocationServices, 
+                    .popover(isPresented: $showOverDisableLocationServices,
                              arrowEdge: .trailing,
-                             content: {
-                        Text("Toggle location services after restart. If the required state is critical, this can be done manually in Settings → Privacy & Security → Location Services without restarting.")
-                            .frame(width: 200)
-                            .padding()
-                    })
+                             content: { renderHelpHint(hint: Constants.hintToggleLocationServices) })
             }
             HStack {
-                Toggle("Higher protection", isOn: Binding(
-                    get: { useHigherProtection },
+                Toggle(Constants.settingsElementHigherProtection, isOn: Binding(
+                    get: { appState.userData.useHigherProtection },
                     set: {
-                        useHigherProtection = $0
-                        writeSetting(newValue: $0, key: Constants.settingsKeyHigherProtection)
+                        appState.userData.useHigherProtection = $0
                     }
                 ))
-                .toggleStyle(CheckToggleStyle())
-                .pointerOnHover()
-                .padding(.leading)
-                .padding(.top)
+                .withSettingToggleStyle()
                 Spacer()
-                Image(systemName: "questionmark.circle.fill")
-                    .resizable()
-                    .frame(width: 20, height: 20)
-                    .foregroundColor(/*@START_MENU_TOKEN@*/.blue/*@END_MENU_TOKEN@*/)
-                    .padding(.top)
-                    .padding(.trailing)
+                Image(systemName: Constants.iconQuestionMark)
+                    .asHelpIcon()
                     .onHover(perform: { hovering in
                         showOverHigherProtection = hovering && controlActiveState == .key
                     })
-                    .popover(isPresented: $showOverHigherProtection, 
+                    .popover(isPresented: $showOverHigherProtection,
                              arrowEdge: .trailing,
-                             content: {
-                        Text("Disable the network when monitoring is enabled, if there is no reliable information about the current IP address. Also closes all running monitored applications, if any.")
-                            .frame(width: 200)
-                            .padding()
-                    })
+                             content: { renderHelpHint(hint: Constants.hintHigherProtection) })
             }
             HStack {
-                Toggle("Confirmation to close applications", isOn: Binding(
-                    get: { confirmationApplcationsClose },
+                Toggle(Constants.settingsElementConfirmationToCloseApps, isOn: Binding(
+                    get: { appState.userData.appsCloseConfirmation },
                     set: {
-                        confirmationApplcationsClose = $0
-                        writeSetting(newValue: $0, key: Constants.settingsKeyConfirmationApplicationsClose)
+                        appState.userData.appsCloseConfirmation = $0
                     }
                 ))
-                .toggleStyle(CheckToggleStyle())
-                .pointerOnHover()
-                .padding(.leading)
-                .padding(.top)
+                .withSettingToggleStyle()
                 Spacer()
-                Image(systemName: "questionmark.circle.fill")
-                    .resizable()
-                    .frame(width: 20, height: 20)
-                    .foregroundColor(/*@START_MENU_TOKEN@*/.blue/*@END_MENU_TOKEN@*/)
-                    .padding(.top)
-                    .padding(.trailing)
+                Image(systemName: Constants.iconQuestionMark)
+                    .asHelpIcon()
                     .onHover(perform: { hovering in
                         showOverConfirmationApplicationsClose = hovering && controlActiveState == .key
                     })
                     .popover(isPresented: $showOverConfirmationApplicationsClose,
                              arrowEdge: .trailing,
-                             content: {
-                        Text("Confirmation dialog when closing applications. This option is ignored in higher protection mode.")
-                            .frame(width: 200)
-                            .padding()
-                    })
+                             content: { renderHelpHint(hint: Constants.hintCloseApplicationConfirmation) })
             }
             HStack {
-                Toggle("Picky mode", isOn: Binding(
-                    get: { usePickyMode },
+                Toggle(Constants.settingsElementPickyMode, isOn: Binding(
+                    get: { appState.userData.pickyMode },
                     set: {
-                        usePickyMode = $0
-                        writeSetting(newValue: $0, key: Constants.settingsKeyUsePickyMode)
+                        appState.userData.pickyMode = $0
                     }
                 ))
-                .toggleStyle(CheckToggleStyle())
-                .pointerOnHover()
-                .padding(.leading)
-                .padding(.top)
+                .withSettingToggleStyle()
                 Spacer()
-                Image(systemName: "questionmark.circle.fill")
-                    .resizable()
-                    .frame(width: 20, height: 20)
-                    .foregroundColor(/*@START_MENU_TOKEN@*/.blue/*@END_MENU_TOKEN@*/)
-                    .padding(.top)
-                    .padding(.trailing)
+                Image(systemName: Constants.iconQuestionMark)
+                    .asHelpIcon()
                     .onHover(perform: { hovering in
                         showOverPickyMode = hovering && controlActiveState == .key
                     })
-                    .popover(isPresented: $showOverPickyMode, 
+                    .popover(isPresented: $showOverPickyMode,
                              arrowEdge: .trailing,
-                             content: {
-                        Text("Use extended information about current IP address, such as country. Does not allow the use of an IP address as an allowed one if there is no reliable information about it.")
-                            .frame(width: 200)
-                            .padding()
-                    })
+                             content: { renderHelpHint(hint: Constants.hintPickyMode) })
             }
             HStack {
-                TextField("1..3600", value: $interval, formatter: NumberFormatter())
+                Toggle(Constants.settingsElementPeriodicIpCheck, isOn: Binding(
+                    get: { appState.userData.periodicIpCheck },
+                    set: {
+                        appState.userData.periodicIpCheck = $0
+                    }
+                ))
+                .withSettingToggleStyle()
+                Spacer()
+                Image(systemName: Constants.iconQuestionMark)
+                    .asHelpIcon()
+                    .onHover(perform: { hovering in
+                        showOverPeriodicIpCheck = hovering && controlActiveState == .key
+                    })
+                    .popover(isPresented: $showOverPeriodicIpCheck,
+                             arrowEdge: .trailing,
+                             content: { renderHelpHint(hint: Constants.hintPeriodicIpCheck) })
+            }
+            .padding(.bottom, 0)
+            HStack {
+                Text(Constants.settingsElementIntervalBegin)
+                    .padding(.leading, 45)
+                TextField(Constants.hintInterval, value: $interval, formatter: NumberFormatter())
                     .foregroundColor(checkIfTimeIntervalValid(interval: interval) ? .primary : .red)
                     .onChange(of: interval) {
-                        if (checkIfTimeIntervalValid(interval: interval)){
-                            writeSetting(newValue: interval, key: Constants.settingsKeyIntervalBetweenChecks)
+                        if checkIfTimeIntervalValid(interval: interval) {
+                            appState.userData.intervalBetweenChecks = interval
                         }
                     }
                     .textFieldStyle(.roundedBorder)
-                    .frame(width: 70)
-                Text("second(s) between IP address checks")
-            }.padding()
-
+                    .frame(width: 59)
+                Text(Constants.settingsElementIntervalEnd)
+            }
+            .isHidden(hidden: !appState.userData.periodicIpCheck, remove: true)
+            
             Spacer()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
-        .onAppear(){
-            isLocationServicesEnabled = locationService.isLocationServicesEnabled()
-            useHigherProtection = readSetting(key: Constants.settingsKeyHigherProtection) ?? false
-            usePickyMode = readSetting(key: Constants.settingsKeyUsePickyMode) ?? true
-            confirmationApplcationsClose = readSetting(key: Constants.settingsKeyConfirmationApplicationsClose) ?? true
-            initInterval = readSetting(key: Constants.settingsKeyIntervalBetweenChecks) ?? 10
-            interval = initInterval
-        }
-        .onDisappear() {
-            if(initInterval != interval){
-                monitoringService.restartMonitoring()
-            }
+        .onAppear {
+            interval = appState.userData.intervalBetweenChecks
         }
     }
     
     // MARK: Private functions
     
-    private func checkIfTimeIntervalValid(interval: Double) -> Bool {
+    private func checkIfTimeIntervalValid(interval: Int) -> Bool {
         let result = interval >= Constants.minTimeIntervalToCheck && interval <= Constants.maxTimeIntervalToCheck
         
         return result
     }
     
+    private func renderHelpHint(hint: String) -> some View {
+        let result = Text(hint)
+            .frame(width: 200)
+            .padding()
+        
+        return result
+    }
+}
+
+private extension Toggle {
+    func withSettingToggleStyle() -> some View {
+        self.toggleStyle(CheckToggleStyle())
+            .pointerOnHover()
+            .padding(.leading)
+            .padding(.top)
+    }
+}
+
+private extension Image {
+    func asHelpIcon() -> some View {
+        self.resizable()
+            .frame(width: 20, height: 20)
+            .foregroundColor(/*@START_MENU_TOKEN@*/ .blue/*@END_MENU_TOKEN@*/)
+            .padding(.top)
+            .padding(.trailing)
+    }
 }
 
 #Preview {
-    AddressApisEditView().environmentObject(AddressesService())
+    GeneralSettingsEditView().environmentObject(AppState())
 }

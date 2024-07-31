@@ -19,7 +19,5 @@ public struct CodableIgnored<T>: Codable {
         self.wrappedValue = nil
     }
     
-    public func encode(to encoder: Encoder) throws {
-        // Do nothing
-    }
+    public func encode(to encoder: Encoder) throws {}
 }

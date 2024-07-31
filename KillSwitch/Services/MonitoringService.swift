@@ -7,74 +7,49 @@
 
 import Foundation
 
-class MonitoringService: ServiceBase, Settable, ObservableObject {
-    @Published var isMonitoringEnabled = false
-    @Published var locationServicesEnabled = true
-    @Published var currentSafetyType = AddressSafetyType.unknown
-    @Published var allowedIpAddresses = [AddressInfo]()
-    
+class MonitoringService: ServiceBase {
     static let shared = MonitoringService()
     
-    private let networkStatusService = NetworkStatusService.shared
-    private let locationService = LocationService.shared
-    private let addressesService = AddressesService.shared
-    private let networkManagementService = NetworkManagementService.shared
+    private let addressesService = IpService.shared
+    private let networkService = NetworkService.shared
     
     private var currentTimer: Timer? = nil
+    private var monitoringTime: Int = 0
     
     override init() {
         super.init()
         
-        let isMonitoringEnabled: Bool = readSetting(key: Constants.settingsKeyIsMonitoringEnabled) ?? false
-        let savedAllowedIpAddresses: [AddressInfo]? = readSettingsArray(key: Constants.settingsKeyAddresses)
-        
-        if(savedAllowedIpAddresses != nil){
-            self.allowedIpAddresses = savedAllowedIpAddresses!
-        }
-        
-        if(isMonitoringEnabled){
+        if(appState.monitoring.isEnabled){
             startMonitoring()
         }
     }
     
     func startMonitoring() {
-        writeSetting(newValue: true, key: Constants.settingsKeyIsMonitoringEnabled)
-        
-        let interval: Double = readSetting(key: Constants.settingsKeyIntervalBetweenChecks) ?? 10
-        
         updateStatus(isMonitoringEnabled: true)
         
-        loggingService.log(message: Constants.logMonitoringHasBeenEnabled)
+        monitoringTime = 0
         
-        currentTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { timer in
-            if self.isMonitoringEnabled {
+        Log.write(message: Constants.logMonitoringHasBeenEnabled)
+        
+        currentTimer = Timer.scheduledTimer(withTimeInterval: TimeInterval(Constants.defaultMonitoringInterval), repeats: true) { 
+            timer in
+            if self.appState.monitoring.isEnabled {
                 Task {
-                    do {                        
-                        guard self.networkStatusService.currentStatusNonPublished == .on else { return }
+                    do {
+                        self.monitoringTime += Constants.defaultMonitoringInterval
                         
-                        let useHigherProtection = self.readSetting(key: Constants.settingsKeyHigherProtection) ?? false
-                        let updatedIpAddress =  await self.getCurrentIpAddressAsync()
-                        let locationServicesEnabled = self.locationService.isLocationServicesEnabled()
+                        guard self.appState.network.status == .on else { return }
                         
-                        if (locationServicesEnabled && useHigherProtection) {
-                            self.networkManagementService.disableNetworkInterface(
-                                interfaceName: Constants.primaryNetworkInterfaceName)
+                        let ipCheckNeeded = self.appState.userData.periodicIpCheck
+                        && self.monitoringTime % self.appState.userData.intervalBetweenChecks == 0
+                        
+                        if (ipCheckNeeded) {
+                            let updatedIpAddressResult =  await self.addressesService.getCurrentIpAsync()
+                            self.handleUpdatedIpAddressResult(updatedIpAddressResult: updatedIpAddressResult)
                         }
                         
-                        if (updatedIpAddress == nil) {
-                            if (useHigherProtection) {
-                                self.networkManagementService.disableNetworkInterface(
-                                    interfaceName: Constants.primaryNetworkInterfaceName)
-                            }
-                            
-                            return
-                        }
-                        
-                        if (updatedIpAddress! != self.networkStatusService.currentIpAddressNonPublished) {
-                            self.loggingService.log(message: String(format: Constants.logCurrentIpHasBeenUpdated, updatedIpAddress!))
-                        }
-                            
-                        self.performActionForUpdatedIpAddress(updatedIpAddress: updatedIpAddress!)
+                        self.checkIfCurrentIpIsAllowed()
+                        self.checkPossibilityOfObtaininigIp()
                     }
                 }
             }
@@ -85,113 +60,88 @@ class MonitoringService: ServiceBase, Settable, ObservableObject {
     }
     
     func stopMonitoring() {
-        writeSetting(newValue: false, key: Constants.settingsKeyIsMonitoringEnabled)
-        
+        updateStatus(isMonitoringEnabled: false)
         currentTimer?.invalidate()
-        
-        updateStatus(isMonitoringEnabled: false, currentSafetyType: AddressSafetyType.unknown)
-
-        loggingService.log(message: Constants.logMonitoringHasBeenDisabled, type: LogEntryType.warning)
-    }
-    
-    func restartMonitoring(){
-        let isMonitoringEnabled: Bool = readSetting(key: Constants.settingsKeyIsMonitoringEnabled) ?? false
-        
-        if(isMonitoringEnabled){
-            stopMonitoring()
-            startMonitoring()
-        }
-    }
-    
-    func addAllowedIpAddress(
-        ipAddress : String,
-        ipAddressInfo: AddressInfoBase?,
-        safetyType: AddressSafetyType) {
-        let newIpAddress = AddressInfo(ipAddress: ipAddress, ipAddressInfo: ipAddressInfo, safetyType: safetyType)
-            
-        if !allowedIpAddresses.contains(newIpAddress) {
-            allowedIpAddresses.append(newIpAddress)
-        }
-        else {
-            if let currentAllowedIpAddressIndex = allowedIpAddresses.firstIndex(
-                where: {$0.ipAddress == ipAddress && $0.safetyType != safetyType}) {
-                allowedIpAddresses[currentAllowedIpAddressIndex] = newIpAddress
-            }
-        }
+        Log.write(message: Constants.logMonitoringHasBeenDisabled, type: LogEntryType.warning)
     }
     
     // MARK: Private functions
     
-    private func getRandomActiveIpAddressApi() -> ApiInfo? {
-        let result = self.addressesService.getRandomActiveAddressApi()
-        
-        if(result == nil){
-            loggingService.log(message: Constants.logNoActiveAddressApiFound)
-            
-            if(self.isMonitoringEnabled){
-                updateStatus(isMonitoringEnabled: false, currentSafetyType: AddressSafetyType.unknown)
-            }
+    private func handleUpdatedIpAddressResult(updatedIpAddressResult : OperationResult<IpInfoBase>) {
+        if (isUnsafeForHigherProtection(updatedIpAddressResult: updatedIpAddressResult)
+            || noActiveIpApiFound(updatedIpAddressResult: updatedIpAddressResult)) {
+            disableActiveNetworkInterfaces()
         }
         
-        return result
-    }
-    
-    private func getCurrentIpAddressAsync() async -> String? {
-        var result: String? = nil
-        
-        let api = getRandomActiveIpAddressApi()
-        
-        guard api != nil else { return result }
-        
-        result = await self.addressesService.getCurrentIpAddress(addressApiUrl: api!.url)
-        
-        return result
-    }
-    
-    private func checkIfUpdatedIpAddressAllowed(updatedIpAddress: String) -> Bool {
-        var result = false
-        
-        for allowedIpAddress in self.allowedIpAddresses {
-            if (updatedIpAddress == allowedIpAddress.ipAddress) {
-                updateStatus(currentSafetyType: allowedIpAddress.safetyType)
-                result = true
-            }
+        guard updatedIpAddressResult.result != nil else {
+            Log.write(message: updatedIpAddressResult.error ?? String(), type: .error)
+            return
         }
         
+        if (updatedIpAddressResult.result!.ipAddress != appState.network.currentIpInfo?.ipAddress) {
+            updateStatus(currentIpInfo: updatedIpAddressResult.result)
+            Log.write(message: String(format: Constants.logCurrentIpHasBeenUpdated, updatedIpAddressResult.result!.ipAddress))
+        }
+        
+        Log.write(message: String(format: Constants.logCurrentIp, updatedIpAddressResult.result!.ipAddress))
+    }
+    
+    private func checkIfCurrentIpIsAllowed() {
+        if (!appState.current.isCurrentIpAllowed && !appState.network.obtainingIp && appState.network.currentIpInfo != nil) {
+            let message = String(
+                format: Constants.logCurrentIpHasBeenUpdatedWithNotFromWhitelist,
+                appState.network.currentIpInfo!.ipAddress)
+            
+            disableActiveNetworkInterfaces()
+            
+            Log.write(message: message, type: LogEntryType.warning)
+        }
+    }
+    
+    private func checkPossibilityOfObtaininigIp() {
+        if (appState.network.currentIpInfo == nil && appState.userData.ipApis.allSatisfy({!$0.isActive()})) {
+            let message = String(Constants.errorNoActiveIpApiFound)
+            
+            disableActiveNetworkInterfaces()
+            
+            Log.write(message: message, type: LogEntryType.error)
+        }
+    }
+    
+    private func isUnsafeForHigherProtection(updatedIpAddressResult: OperationResult<IpInfoBase>) -> Bool {
+        let result = appState.userData.useHigherProtection
+                     && (appState.system.locationServicesEnabled 
+                         || updatedIpAddressResult.result == nil)
+        
         return result
     }
     
-    private func performActionForUpdatedIpAddress(updatedIpAddress: String) {
-        let isAllowed = checkIfUpdatedIpAddressAllowed(updatedIpAddress: updatedIpAddress)
+    private func noActiveIpApiFound(updatedIpAddressResult: OperationResult<IpInfoBase>) -> Bool {
+        let result = updatedIpAddressResult.error != nil
+                     && updatedIpAddressResult.error == Constants.errorNoActiveIpApiFound
         
-        if(!isAllowed){
-            updateStatus(currentSafetyType: AddressSafetyType.unknown)
-            
-            // TODO RUSS: It should be all active interfaces
-            self.networkManagementService.disableNetworkInterface(
-                interfaceName: Constants.primaryNetworkInterfaceName)
-            
-            loggingService.log(
-                message: String(format: Constants.logCurrentIpHasBeenUpdatedWithNotFromWhitelist, updatedIpAddress),
-                type: LogEntryType.warning)
+        return result
+    }
+    
+    private func disableActiveNetworkInterfaces() {
+        for activeInterface in appState.network.physicalNetworkInterfaces {
+            networkService.disableNetworkInterface(interfaceName: activeInterface.name)
         }
     }
     
     private func updateStatus(
         isMonitoringEnabled: Bool? = nil,
-        currentSafetyType: AddressSafetyType? = nil) {
+        currentIpInfo: IpInfoBase? = nil) {
         DispatchQueue.main.async {
-            self.locationServicesEnabled = self.locationService.isLocationServicesEnabled()
-            
-            if(isMonitoringEnabled != nil) {
-                self.isMonitoringEnabled = isMonitoringEnabled!
+            if (isMonitoringEnabled != nil) {
+                self.appState.monitoring.isEnabled = isMonitoringEnabled!
             }
             
-            if(currentSafetyType != nil) {
-                self.currentSafetyType = currentSafetyType!
+            if (currentIpInfo != nil) {
+                self.appState.network.currentIpInfo = currentIpInfo
             }
             
-            self.objectWillChange.send()
+            self.appState.objectWillChange.send()
         }
     }
 }

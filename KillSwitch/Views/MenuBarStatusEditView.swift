@@ -1,67 +1,171 @@
 //
-//  AddressApisEditView.swift
+//  MenuBarStatusEditView.swift
 //  KillSwitch
 //
-//  Created by UglyGeorge on 18.06.2024.
+//  Created by UglyGeorge on 29.07.2024.
 //
 
 import SwiftUI
 
-struct MenuBarStatusEditView: View {
-    @State var list = [
-        DragableImage(image: NSImage(systemSymbolName: "figure.badminton", accessibilityDescription: nil)!, label: "One"),
-        DragableImage(image: NSImage(systemSymbolName: "figure.cricket", accessibilityDescription: nil)!,
-                      label: "Two"),
-        DragableImage(image: NSImage(systemSymbolName: "figure.fencing", accessibilityDescription: nil)!,
-                      label: "Three")
-    ]
+struct MenuBarStatusEditView: MenuBarItemsContainerView {
+    @EnvironmentObject var appState: AppState
     
-    @State var list2: [DragableImage] = [
-    ]
+    @Environment(\.colorScheme) private var colorScheme
+    
+    @State private var shownItems = [MenuBarElement]()
+    @State private var hiddenItems = [MenuBarElement]()
+    @State private var draggedItem: MenuBarElement?
     
     var body: some View {
-        VStack {
-            Text("Active items")
-                .font(.title3)
-                .padding(.top)
-            
+        VStack(alignment: .leading) {
             HStack {
-                ForEach(list, id: \.id) { item in
-                    item
-                }
+                Image(systemName: Constants.iconInfoFill)
+                    .asInfoIcon()
+                Text(Constants.hintMenuBarAdjustment)
+                    .padding(.top)
+                    .padding(.trailing)
             }
-            .background(Rectangle().fill(.gray).border(.green))
-            .frame(minWidth: 200, minHeight: 30)
-
-            Text("Inactive items")
-                .font(.title3)
-                .padding(.top)
-            
-            Spacer().frame(height: 10)
-            
-            HStack {
-                HStack {
-                    ForEach(list2, id: \.id) { item in
+            Spacer()
+                .frame(height: 15)
+            VStack(alignment: .center) {
+                Text(Constants.settingsElementShownItems)
+                    .asCenteredTitle()
+                LazyHStack(spacing: 5) {
+                    ForEach(shownItems, id: \.id) { item in
                         item
+                            .onDrag({
+                                self.draggedItem = item
+                                return NSItemProvider(object: item.image)
+                            })
+                            .onDrop(of: [.image], delegate: DropViewDelegate(
+                                draggedItem: $draggedItem,
+                                sourceItems: $shownItems,
+                                destinationItems: $hiddenItems,
+                                item: item,
+                                keepLastItem: false))
                     }
-                }.background(.gray)
-                Rectangle()
-                    .frame(width: 150, height: 150)
-            }.background(Rectangle().fill(Color.gray))
-                .frame(width: 300, height: 300)
-                .dropDestination(for: Data.self) { items, location in
-                    if(items.first != nil)
-                    {
-                        let im = DragableImage(image: NSImage(data: items.first!)!, label: "One")
-                        list2.append(im)
-                        //
-                    }
-                    return true
                 }
+                .asMenuBarPreview()
+                .onChange(of: shownItems, saveMenuBarElementItems)
+                .onChange(of: appState.monitoring, fillMenuBarElementItems)
+                .onChange(of: appState.network, fillMenuBarElementItems)
+                .onChange(of: appState.userData, fillMenuBarElementItems)
+                Text(Constants.settingsElementHiddenItems)
+                    .asCenteredTitle()
+                LazyHStack(spacing: 5) {
+                    ForEach(hiddenItems, id: \.id) { item in
+                        item
+                            .onDrag({
+                                self.draggedItem = item
+                                return NSItemProvider(object: item.image)
+                            })
+                            .onDrop(of: [.image], delegate: DropViewDelegate(
+                                draggedItem: $draggedItem,
+                                sourceItems: $hiddenItems,
+                                destinationItems: $shownItems,
+                                item: item,
+                                keepLastItem: true))
+                    }
+                }
+                .asMenuBarPreview()
+                .onChange(of: hiddenItems, saveMenuBarElementItems)
+                .onChange(of: appState.monitoring, fillMenuBarElementItems)
+                .onChange(of: appState.network, fillMenuBarElementItems)
+                .onChange(of: appState.userData, fillMenuBarElementItems)
+            }
+            .frame(maxWidth: .infinity, maxHeight: 150, alignment: .center)
+            Spacer()
+                .frame(height: 30)
+            Toggle(Constants.settingsElementThemeColor, isOn: Binding(
+                get: { appState.userData.menuBarUseThemeColor },
+                set: {
+                    appState.userData.menuBarUseThemeColor = $0
+                }
+            ))
+            .withSettingToggleStyle()
+            Spacer()
         }
+        .onAppear() {
+            fillMenuBarElementItems()
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+    }
+    
+    // MARK: Private functions
+    
+    private func fillMenuBarElementItems() {
+        let shownItems = getMenuBarElements(
+            keys: appState.userData.menuBarShownItems,
+            appState: appState,
+            colorScheme: colorScheme,
+            exampleAllowed: true)
+        
+        let hiddenItems = getMenuBarElements(
+            keys: appState.userData.menuBarHiddenItems,
+            appState: appState,
+            colorScheme: colorScheme,
+            exampleAllowed: true)
+        
+        self.shownItems.removeAll()
+        self.hiddenItems.removeAll()
+        
+        for shownItem in shownItems {
+            self.shownItems.append(shownItem)
+        }
+        
+        for hiddenItem in hiddenItems {
+            self.hiddenItems.append(hiddenItem)
+        }
+    }
+    
+    private func saveMenuBarElementItems() {
+        appState.userData.menuBarShownItems = self.shownItems.map { $0.key}
+        appState.userData.menuBarHiddenItems = self.hiddenItems.map { $0.key}
+    }
+}
+
+private extension LazyHStack {
+    func asMenuBarPreview() -> some View {
+        self.frame(width: 420, height: 30)
+            .clipShape(
+                RoundedRectangle(
+                    cornerRadius: 6
+                )
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 6)
+                    .stroke(.blue, lineWidth: 1)
+            )
+    }
+}
+
+private extension Text {
+    func asCenteredTitle() -> some View {
+        self.font(.title3)
+            .padding(.top)
+            .padding(.bottom, 5)
+    }
+}
+
+private extension Image {
+    func asInfoIcon() -> some View {
+        self.resizable()
+            .frame(width: 20, height: 20)
+            .foregroundColor(/*@START_MENU_TOKEN@*/ .blue/*@END_MENU_TOKEN@*/)
+            .padding(.top)
+            .padding(.leading)
+    }
+}
+
+private extension Toggle {
+    func withSettingToggleStyle() -> some View {
+        self.toggleStyle(CheckToggleStyle())
+            .pointerOnHover()
+            .padding(.leading)
+            .padding(.top)
     }
 }
 
 #Preview {
-    MenuBarStatusEditView()
+    MenuBarStatusEditView().environmentObject(AppState())
 }
