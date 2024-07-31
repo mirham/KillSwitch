@@ -32,7 +32,7 @@ struct SettingsView : View {
                 .tabItem {
                     Text(Constants.settingsElementIpAddressApis)
                 }
-            ApplicationsToCloseEditView()
+            ClosingApplicationsEditView()
                 .tabItem {
                     Text(Constants.settingsElementAppsToClose)
                 }

@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import FlagKit
 
 extension View {
     func isHidden(hidden: Bool = false, remove: Bool = false) -> some View {

@@ -40,9 +40,13 @@ extension String {
     }
     
     func isValidUrl() -> Bool {
-        let predicate = NSPredicate(format: "SELF MATCHES %@", argumentArray: [Constants.regexUrl])
-        
-        return predicate.evaluate(with: self)
+        do {
+            let match = try Constants.regexUrl.wholeMatch(in: self)
+            return match != nil
+        }
+        catch {
+            return false
+        }
     }
 }
 
@@ -51,7 +55,9 @@ extension String: LocalizedError {
 }
 
 extension Task where Failure == Error {
-    static func synchronous(priority: TaskPriority? = nil, operation: @escaping @Sendable () async throws -> Success) {
+    static func synchronous(
+        priority: TaskPriority? = nil,
+        operation: @escaping @Sendable () async throws -> Success) {
         let semaphore = DispatchSemaphore(value: 0)
         
         Task(priority: priority) {

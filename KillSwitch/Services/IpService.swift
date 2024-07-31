@@ -19,7 +19,7 @@ class IpService : ServiceBase, ApiCallable {
             currentIpApiUrl = randomIpApi?.url
         }
         
-        guard currentIpApiUrl != nil else { return OperationResult(error: Constants.errorNoActiveAddressApiFound) }
+        guard currentIpApiUrl != nil else { return OperationResult(error: Constants.errorNoActiveIpApiFound) }
         let ipAddressResult = await callIpApiAsync(ipApiUrl: currentIpApiUrl!)
         guard ipAddressResult.success else { return OperationResult(error: ipAddressResult.error!) }
         let ipAddressString = ipAddressResult.result!.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -75,8 +75,9 @@ class IpService : ServiceBase, ApiCallable {
         }
     
     // MARK: Private functions
+    
     private func getRandomActiveIpApi() -> IpApiInfo? {
-        let result = self.appState.userData.ipApis.filter({$0.active == nil || $0.active!}).randomElement()
+        let result = self.appState.userData.ipApis.filter({$0.isActive()}).randomElement()
         
         return result
     }

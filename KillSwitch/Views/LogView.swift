@@ -24,7 +24,7 @@ struct LogView : View {
                 List(appState.log) { log in
                     HStack{
                         Rectangle()
-                            .foregroundColor(log.type == LogEntryType.error ? .red : log.type == LogEntryType.warning ? .yellow : .gray)
+                            .foregroundColor(determineBadgeColor(logEntryType: log.type))
                             .frame(width: 4)
                             .cornerRadius(1.5)
                         Text("\(dateFormatter.string(from: log.date))")
@@ -40,6 +40,19 @@ struct LogView : View {
                 .focusable(false)
             }
             .scrollIndicators(.visible)
+        }
+    }
+    
+    // MARK: Private functions
+    
+    private func determineBadgeColor(logEntryType: LogEntryType) -> Color {
+        switch logEntryType {
+            case .warning:
+                return .yellow
+            case .error:
+                return .red
+            default:
+                return .gray
         }
     }
 }

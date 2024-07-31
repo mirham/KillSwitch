@@ -5,7 +5,6 @@
 //  Created by UglyGeorge on 04.06.2024.
 //
 
-import Foundation
 import SwiftUI
 
 extension AsyncButton {
@@ -55,7 +54,7 @@ struct AsyncButton<Label: View>: View {
 
                     if actionOptions.contains(.showProgressView) {
                         progressViewTask = Task {
-                            try await Task.sleep(nanoseconds: 150_000_000)
+                            try await Task.sleep(nanoseconds: Constants.defaultToleranceInNanoseconds)
                             showProgressView = true
                         }
                     }

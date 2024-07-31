@@ -64,7 +64,11 @@ class ProcessesService : ServiceBase, ShellAccessible {
                         
                         self.updateStatus(activeProcessesToClose: activeProcessesToClose)
                         
-                        if(!activeProcessesToClose.isEmpty && self.appState.userData.useHigherProtection){
+                        if (!activeProcessesToClose.isEmpty
+                            && self.appState.userData.useHigherProtection
+                            && self.appState.monitoring.isEnabled
+                            && self.appState.network.status == .on
+                            && !self.appState.current.isCurrentIpAllowed) {
                             self.killActiveProcesses()
                         }
                     }

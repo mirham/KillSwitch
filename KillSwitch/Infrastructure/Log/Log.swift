@@ -8,10 +8,11 @@
 import Foundation
 
 class Log {
-    // TODO RUSS: Add truncate log setting, copy to clipboard.
     static func write(message: String, type: LogEntryType = .info){
-        let logEntry = LogEntry(message: message, type: type)
-        write(logEntry: logEntry)
+        DispatchQueue.main.async {
+            let logEntry = LogEntry(message: message, type: type)
+            write(logEntry: logEntry)
+        }
     }
     
     static func write(logEntry: LogEntry){

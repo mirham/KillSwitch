@@ -1,5 +1,5 @@
 //
-//  ApplicationsToCloseEditView.swift
+//  ClosingApplicationsEditView.swift
 //  KillSwitch
 //
 //  Created by UglyGeorge on 25.06.2024.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ApplicationsToCloseEditView : View {
+struct ClosingApplicationsEditView : View {
     @EnvironmentObject var appState: AppState
     
     @State private var showFileImporter = false
@@ -79,5 +79,5 @@ struct ApplicationsToCloseEditView : View {
 }
 
 #Preview {
-    ApplicationsToCloseEditView().environmentObject(AppState())
+    ClosingApplicationsEditView().environmentObject(AppState())
 }

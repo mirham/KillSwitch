@@ -15,14 +15,16 @@ struct Constants{
     static let minTimeIntervalToCheck: Int = 1
     static let maxTimeIntervalToCheck: Int = 300
     static let zshPath = "/bin/zsh"
-    static let launchAgentName = "user.launchkeep.KillSwitch"
-    static let launchAgentPlistName = "user.launchkeep.KillSwitch.plist"
+    static let launchAgentName = "\(Bundle.main.bundleIdentifier!)"
+    static let launchAgentPlistName = "\(Bundle.main.bundleIdentifier!).plist"
     static let launchAgents = "LaunchAgents"
     static let launchAgentsFolderPath = "~/Library/LaunchAgents/"
     static let logDateFormat = "dd.MM.yyyy HH:mm:ss"
     static let networkMonitorQueryLabel = "KSNetworkMonitor"
     static let ipV4: Int = 4
     static let ipV6: Int = 6
+    static let defaultToleranceInNanoseconds: UInt64 = 100_000_000
+    static let menuBarItemTimeToleranceInSeconds: Int = 1
     static let defaultIntervalBetweenChecksInSeconds: Int = 10
     static let physicalNetworkInterfacePrefix = "en"
     static let physicalNetworkInterfaceWiFi = "Wi-Fi"
@@ -30,7 +32,7 @@ struct Constants{
     static let physicalNetworkInterfaceExclusion = "Thunderbolt"
     
     // MARK: Regexes
-    static let regexUrl = "((?:http|https)://)?(?:www\\.)?[\\w\\d\\-_]+\\.\\w{2,3}(\\.\\w{2})?(/(?<=/)(?:[\\w\\d\\-./_]+)?)?"
+    static let regexUrl = /(?<protocol>https?):\/\/(?:(?<username>[^:@\s\/\\]*)(?::(?<password>[^:@\s\/\\]*))?@)?(?<domain>[\w\d]+[\w\d.\-]+[\w\d]+|\[[a-f\d:]+\])(?::(?<port>\d+))?(?:(?<path>\/[^\?#\s]*)(?:\?(?<query>[^\?#\s]*))?(?:#(?<anchor>[^\?#\s]*))?)?/
     
     // MARK: Icons
     static let iconApp = "AppIcon"
@@ -51,6 +53,9 @@ struct Constants{
     static let iconWired = "cable.connector"
     static let iconUnknownConnection = "questionmark"
     static let iconInfoFill = "info.circle.fill"
+    static let iconCheckmark = "checkmark.circle.fill"
+    static let iconCircle = "circle"
+    static let iconMarkedCircle = "largecircle.fill.circle"
     
     // MARK: Window IDs
     static let windowIdMain = "main-view"
@@ -165,7 +170,7 @@ struct Constants{
     static let shCommandReboot = "reboot"
     
     // MARK: Error messages
-    static let errorNoActiveAddressApiFound = "No active IP address API found, add a new one in the Settings"
+    static let errorNoActiveIpApiFound = "Not possible to obtain IP, try to add a new IP API in the Settings to proceed work or check DNS availability"
     static let errorWhenCallingIpAddressApi = "Error when called IP address API '%1$@': '%2$@', API marked as inactive and will be skipped until next application run"
     static let errorIpApiResponseIsInvalid = "IP address API returned invalid IP address"
     static let errorWhenCallingIpInfoApi = "Error when called IP info API: %1$@"
@@ -254,7 +259,7 @@ struct Constants{
         <plist version="1.0">
             <dict>
                 <key>Label</key>
-                <string>user.launchkeep.KillSwitch</string>
+                <string>\(Bundle.main.bundleIdentifier!)</string>
                 <key>KeepAlive</key>
                 <true/>
                 <key>Program</key>

@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct CurrentIpView: IpAddressContainerView, Settable {
+struct CurrentIpView: IpAddressContainerView {
     @EnvironmentObject var appState: AppState
     
     @Environment(\.colorScheme) private var colorScheme

@@ -27,7 +27,7 @@ class LaunchAgentService : ServiceBase, ShellAccessible {
         let appPath = Bundle.main.executablePath
         let plistFilePath = getPlistFilePath()
         
-        let xmlContent = String(format: Constants.launchAgentXmlContent, appPath ?? String())
+        let xmlContent = String(format: Constants.launchAgentXmlContent, appPath!)
         
         do {
             try xmlContent.write(toFile: plistFilePath, atomically: true, encoding: String.Encoding.utf8)

@@ -32,7 +32,7 @@ class AppHelper {
                     let prevLevel = window.level
                     window.level = .floating
                     NSApp.activate()
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                         window.level = prevLevel
                     }
                 }

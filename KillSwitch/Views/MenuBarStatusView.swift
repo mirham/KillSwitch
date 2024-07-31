@@ -13,20 +13,14 @@ struct MenuBarStatusView : MenuBarItemsContainerView {
     
     @Environment(\.colorScheme) private var colorScheme
     
+    @MainActor
     var body: some View {
         HStack{
-            Image(renderMenuBarStatus(), scale: 1, label: Text(String()))
+            let renderer = ImageRenderer(content: MenuBarStatusRawView(
+                appState: appState,
+                colorScheme: colorScheme))
+            Image(renderer.cgImage!, scale: 1, label: Text(String()))
         }
-    }
-    
-    // MARK: Private functions
-    
-    @MainActor
-    private func renderMenuBarStatus() -> CGImage{
-        let renderer = ImageRenderer(content: MenuBarStatusRawView(appState: appState, colorScheme: colorScheme))
-        let result = renderer.cgImage
-        
-        return result!
     }
 }
 

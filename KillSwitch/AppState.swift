@@ -130,7 +130,7 @@ extension AppState {
         var intervalBetweenChecks: Int = Constants.defaultIntervalBetweenChecksInSeconds {
             didSet { writeSetting(newValue: intervalBetweenChecks, key: Constants.settingsKeyIntervalBetweenChecks) }
         }
-        var pickyMode: Bool = false {
+        var pickyMode: Bool = true {
             didSet { writeSetting(newValue: pickyMode, key: Constants.settingsKeyUsePickyMode) }
         }
         var periodicIpCheck: Bool = false {
@@ -161,7 +161,7 @@ extension AppState {
         init() {
             useHigherProtection = readSetting(key: Constants.settingsKeyHigherProtection) ?? false
             intervalBetweenChecks = readSetting(key: Constants.settingsKeyIntervalBetweenChecks) ?? Constants.defaultIntervalBetweenChecksInSeconds
-            pickyMode = readSetting(key: Constants.settingsKeyUsePickyMode) ?? false
+            pickyMode = readSetting(key: Constants.settingsKeyUsePickyMode) ?? true
             periodicIpCheck = readSetting(key: Constants.settingsKeyPeriodicIpCheck) ?? true
             appsCloseConfirmation = readSetting(key: Constants.settingsKeyConfirmationApplicationsClose) ?? true
             onTopOfAllWindows = readSetting(key: Constants.settingsKeyOnTopOfAllWindows) ?? false

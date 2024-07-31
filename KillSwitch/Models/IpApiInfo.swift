@@ -14,6 +14,10 @@ struct IpApiInfo: Codable, Identifiable, Equatable {
     @CodableIgnored
     var active: Bool?
     
+    func isActive() -> Bool {
+        return active ?? true
+    }
+    
     static func == (lhs: IpApiInfo, rhs: IpApiInfo) -> Bool {
         return lhs.url.uppercased() == rhs.url.uppercased()
     }

@@ -1,5 +1,5 @@
 //
-//  AllowedAddressesEditView.swift
+//  AllowedIpsEditView.swift
 //  KillSwitch
 //
 //  Created by UglyGeorge on 05.06.2024.

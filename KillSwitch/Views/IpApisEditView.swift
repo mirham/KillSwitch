@@ -29,7 +29,7 @@ struct IpApisEditView : View {
                             Text(api.url)
                             Spacer()
                             Circle()
-                                .fill((api.active == nil || api.active!) ? .green : .red)
+                                .fill(api.isActive() ? .green : .red)
                                 .frame(width: 10, height: 10)
                                 .help(Constants.hintApiIsActive)
                         }

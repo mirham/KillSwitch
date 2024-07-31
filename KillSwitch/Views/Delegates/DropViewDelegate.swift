@@ -55,10 +55,12 @@ struct DropViewDelegate: DropDelegate {
                     }
                 }
                 else {
-                    let item = draggedItem.isSeparator ? draggedItem.clone() : draggedItem
-                    
-                    sourceItems.insert(item, at: to == start ? to : to + step)
-                    destinationItems.removeAll(where: {$0.id == item.id})
+                    if (!sourceItems.contains(where: {Int(Date().timeIntervalSince($0.dateCreated))
+                        < Constants.menuBarItemTimeToleranceInSeconds })) {
+                        let item = draggedItem.isSeparator ? draggedItem.clone() : draggedItem
+                        sourceItems.insert(item, at: to == start ? to : to + step)
+                        destinationItems.removeAll(where: {$0.id == item.id})
+                    }
                 }
             }
         }

@@ -75,13 +75,23 @@ class NetworkStatusService: ServiceBase, ApiCallable {
             do {
                 await MainActor.run { updateStatus(obtainingIp: true) }
                 
-                try await Task.sleep(nanoseconds: 100_000_000) // Fixes SSL errors after network changes
+                // Fixes SSL errors after network changes
+                try await Task.sleep(nanoseconds: Constants.defaultToleranceInNanoseconds)
                 
-                let updatedIpResult = await self.ipService.getCurrentIpAsync()
+                var ipNotObtained = true
                 
-                if (updatedIpResult.success) {
-                    await MainActor.run { updateStatus(currentIpInfo: updatedIpResult.result) }
-                    Log.write(message: String(format: Constants.logCurrentIp, updatedIpResult.result!.ipAddress))
+                while ipNotObtained && self.appState.userData.ipApis.contains(where: {$0.isActive()}) {
+                    let updatedIpResult = await self.ipService.getCurrentIpAsync()
+                    
+                    if (updatedIpResult.success) {
+                        ipNotObtained = false
+                        await MainActor.run { updateStatus(currentIpInfo: updatedIpResult.result) }
+                        Log.write(message: String(format: Constants.logCurrentIp, updatedIpResult.result!.ipAddress))
+                    }
+                }
+                
+                if (ipNotObtained) {
+                    await MainActor.run { updateStatus(currentIpInfo: nil, allowCurrentIpInfoNil: true) }
                 }
                 
                 await MainActor.run { updateStatus(obtainingIp: false) }
@@ -96,14 +106,15 @@ class NetworkStatusService: ServiceBase, ApiCallable {
         activeNetworkInterfaces: [NetworkInterface]? = nil,
         physicalNetworkInterfaces: [NetworkInterface]? = nil,
         disconnected: Bool? = nil,
-        obtainingIp: Bool? = nil) {
+        obtainingIp: Bool? = nil,
+        allowCurrentIpInfoNil: Bool = false) {
         DispatchQueue.main.async {
             if (currentStatus != nil) {
                 self.appState.network.status = currentStatus!
             }
             
-            if (currentIpInfo != nil) {
-                self.appState.network.currentIpInfo = currentIpInfo!
+            if (currentIpInfo != nil || allowCurrentIpInfoNil) {
+                self.appState.network.currentIpInfo = currentIpInfo ?? nil
             }
                 
             if (activeNetworkInterfaces != nil) {

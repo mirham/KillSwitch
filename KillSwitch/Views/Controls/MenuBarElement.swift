@@ -13,11 +13,13 @@ struct MenuBarElement: View, Equatable {
     let id = UUID()
     let key: String
     let isSeparator: Bool
+    let dateCreated: Date
     
     init(image: NSImage, key: String, isSeparator: Bool = false) {
         self.image = image
         self.key = key
         self.isSeparator = isSeparator
+        self.dateCreated = Date()
     }
     
     var body: some View {
