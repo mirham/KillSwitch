@@ -3,7 +3,7 @@
 </p>
 
 <p align="center" style="text-align: center">
-  <a href="https://github.com/mirham/KillSwitch/blob/master/LICENSE">
+  <a href="https://github.com/mirham/KillSwitch/blob/main/LICENSE">
     <img alt="GitHub" src="https://img.shields.io/github/license/mirham/KillSwitch"/>
   </a>
   <a href="https://github.com/mirham/KillSwitch/tags" rel="nofollow">
