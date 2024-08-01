@@ -3,11 +3,11 @@
 </p>
 
 <p align="center" style="text-align: center">
-  <a href="https://github.com/mirham/KillSwitch/blob/main/LICENSE">
-    <img alt="GitHub" src="https://img.shields.io/github/license/mirham/KillSwitch"/>
-  </a>
   <a href="https://github.com/mirham/KillSwitch/tags" rel="nofollow">
     <img alt="GitHub tag (latest SemVer pre-release)" src="https://img.shields.io/github/v/tag/mirham/KillSwitch?include_prereleases&label=version"/>
+  </a>
+  <a href="https://github.com/mirham/KillSwitch/blob/main/LICENSE">
+    <img alt="License" src="https://img.shields.io/github/license/mirham/KillSwitch"/>
   </a>
 </p>
 
