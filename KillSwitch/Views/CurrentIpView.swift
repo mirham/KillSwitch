@@ -53,9 +53,10 @@ struct CurrentIpView: IpAddressContainerView {
                     .foregroundStyle(getSafetyColor(safetyType: appState.current.safetyType, colorScheme: colorScheme))
                     .isHidden(hidden: !appState.current.highRisk, remove: true)
                 HStack {
-                    Image(nsImage: getCountryFlag(countryCode: appState.network.currentIpInfo?.countryCode ?? String()))
+                    let flag = getCountryFlag(countryCode: appState.network.currentIpInfo?.countryCode ?? String())
+                    Image(nsImage: flag)
                         .resizable()
-                        .frame(width: 20, height: 12)
+                        .frame(width: flag.size.width, height: flag.size.height)
                     Text(appState.network.currentIpInfo?.countryName.uppercased() ?? String())
                         .font(.system(size: 12))
                         .bold()
