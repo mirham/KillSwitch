@@ -14,7 +14,7 @@
 </p>
 
 ## Introduction
-MirHam KillSwich is a MacOS menu bar application designed to provide additional control over your internet connection. It helps ensure your safety by disabling all physical network interfaces when your public IP address changes to an unsafe one. This allows you time to determine what happened to the connection and restore safe conditions before continuing your work. This application is especially useful for VPN users, particularly those using modern protocols such as VLESS, Trojan, SS, and more.
+MirHam KillSwich is a macOS menu bar application designed to provide additional control over your internet connection. It helps ensure your safety by disabling all physical network interfaces when your public IP address changes to an unsafe one. This allows you time to determine what happened to the connection and restore safe conditions before continuing your work. This application is especially useful for VPN users, particularly those using modern protocols such as VLESS, Trojan, SS, and more.
 
 ## Features
 - Easy to use
