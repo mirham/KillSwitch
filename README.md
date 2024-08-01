@@ -50,6 +50,7 @@ Download the DMG installer from the [releases](https://github.com/mirham/KillSwi
   <img src="https://github.com/mirham/KillSwitch/blob/main/Images/SettingsView2.png" width="400">
   <img src="https://github.com/mirham/KillSwitch/blob/main/Images/SettingsView3.png" width="400">
   <img src="https://github.com/mirham/KillSwitch/blob/main/Images/SettingsView4.png" width="400">
+  <img src="https://github.com/mirham/KillSwitch/blob/main/Images/SettingsView5.png" width="400">
 </p>
 
 ## Improvement
