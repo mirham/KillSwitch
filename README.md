@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/mirham/KillSwitch/blob/main/Images/AppLogo.png" width="350">
+  <img src="https://github.com/mirham/KillSwitch/blob/main/Images/AppLogo.png" width="350"/>
 </p>
 
 <p align="center" style="text-align: center">
