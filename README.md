@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/mirham/KillSwitch/blob/main/Images/AppLogo.png" width="350"/>
+  <img src="https://github.com/mirham/KillSwitch/blob/main/Images/AppLogo.png" width="370"/>
 </p>
 
 <p align="center" style="text-align: center">
@@ -11,6 +11,7 @@
   </a>
   <img alt="macOS" src="https://img.shields.io/badge/macOS-blue?logo=apple"/>
   <img alt="Swift" src="https://img.shields.io/badge/Swift-grey?logo=swift"/>
+  <img alt="Swift" src="https://img.shields.io/badge/Pet project-purple?logo=github"/>
 </p>
 
 ## Introduction
