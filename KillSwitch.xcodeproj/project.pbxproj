@@ -176,6 +176,8 @@
 		351E9CEC2C10B20900CEC15F /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				3570E48A2C258DAF00CB5D42 /* Modifiers */,
+				3540326D2C5E695A002624D2 /* Styles */,
 				35EE636F2C57980F00D45D66 /* Protocols */,
 				35449FC12C563F9A00369CBC /* Delegates */,
 				3590333D2C396973006787AD /* Extensions */,
@@ -207,12 +209,10 @@
 		351E9CED2C10B28400CEC15F /* Infrastructure */ = {
 			isa = PBXGroup;
 			children = (
+				3570E4742C23058200CB5D42 /* Constants.swift */,
+				3540326C2C5E68F0002624D2 /* Attributes */,
 				357266802C36FE370021978C /* Helpers */,
 				3572667B2C36E70F0021978C /* Log */,
-				3570E48A2C258DAF00CB5D42 /* Modifiers */,
-				3570E4742C23058200CB5D42 /* Constants.swift */,
-				35DD1C4D2C0FA9D2003AA3ED /* CheckToggleStyle.swift */,
-				3570E4702C22E04600CB5D42 /* CodableIgnored.swift */,
 				3570E4862C258A5400CB5D42 /* Extensions.swift */,
 				35DFC12C2C38338D001CAF43 /* OperationResult.swift */,
 			);
@@ -270,6 +270,22 @@
 				351F0C4E2C0EFCF400644C66 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		3540326C2C5E68F0002624D2 /* Attributes */ = {
+			isa = PBXGroup;
+			children = (
+				3570E4702C22E04600CB5D42 /* CodableIgnored.swift */,
+			);
+			path = Attributes;
+			sourceTree = "<group>";
+		};
+		3540326D2C5E695A002624D2 /* Styles */ = {
+			isa = PBXGroup;
+			children = (
+				35DD1C4D2C0FA9D2003AA3ED /* CheckToggleStyle.swift */,
+			);
+			path = Styles;
 			sourceTree = "<group>";
 		};
 		35449FC12C563F9A00369CBC /* Delegates */ = {

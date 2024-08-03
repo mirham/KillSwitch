@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Network
 
 class ServiceBase {
     let appState = AppState.shared
