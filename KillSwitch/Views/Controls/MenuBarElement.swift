@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct MenuBarElement: View, Equatable {
-    
     let image: NSImage
     let id = UUID()
     let key: String
