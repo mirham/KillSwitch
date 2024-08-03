@@ -20,11 +20,11 @@ class AppHelper {
         }
     }
     
-    static func activateView(viewName: String, simple: Bool = true) {
+    static func activateView(viewId: String, simple: Bool = true) {
         for window in NSApplication.shared.windows {
             let windowId = String(window.identifier?.rawValue ?? String())
             
-            if(windowId.starts(with: viewName)) {
+            if(windowId.starts(with: viewId)) {
                 if (simple) {
                     window.makeKeyAndOrderFront(window)
                 }

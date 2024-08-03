@@ -26,6 +26,8 @@ struct Constants{
     static let defaultToleranceInNanoseconds: UInt64 = 100_000_000
     static let menuBarItemTimeToleranceInSeconds: Int = 1
     static let defaultIntervalBetweenChecksInSeconds: Int = 10
+    static let memuBarScaleCurrentIp = 0.9
+    static let memuBarScaleToggles = 0.8
     static let physicalNetworkInterfacePrefix = "en"
     static let physicalNetworkInterfaceWiFi = "Wi-Fi"
     static let physicalNetworkInterfaceLan = "LAN"
@@ -62,6 +64,7 @@ struct Constants{
     static let windowIdSettings = "settings-view"
     static let windowIdKillProcessesConfirmationDialog = "kill-processess-confirmation-dialog-view"
     static let windowIdEnableNetworkDialog = "enable-network-dialog-view"
+    static let windowIdNoOneAllowedIpDialog = "no-one-allowed-ip-dialog-view"
     static let windowIdInfo = "info-view"
     
     // MARK: Elements names
@@ -76,6 +79,7 @@ struct Constants{
     static let delete = "Delete"
     static let enable = "Enable"
     static let cancel = "Cancel"
+    static let close = "Close"
     static let yes = "Yes"
     static let no = "No"
     static let ok = "OK"
@@ -121,14 +125,15 @@ struct Constants{
     static let settingsElementHiddenItems = "Hidden menu bar items"
     static let settingsElementAllowedIpAddresses = "Allowed IPs"
     static let settingsElementIpAddressApis = "IP APIs"
-    static let settingsElementAppsToClose = "Apps to close"
-    static let settingsElementApplicationsToClose = "Applications to close"
+    static let settingsElementClosingApps = "Closing apps"
+    static let settingsElementClosingApplications = "Closing applications"
     static let settingsElementKeepAppRunning = "Keep application running"
     static let settingsElementOnTopOfAllWindows = "Always on top of all windows"
     static let settingsElementDisableLocationServices = "Disable location services"
     static let settingsElementHigherProtection = "Higher protection"
     static let settingsElementPickyMode = "Picky mode"
     static let settingsElementPeriodicIpCheck = "Periodic IP address check"
+    static let settingsElementAutoCloseApps = "Automatically close applications"
     static let settingsElementConfirmationToCloseApps = "Confirmation to close applications"
     static let settingsElementIntervalBegin = "at intervals of"
     static let settingsElementIntervalEnd = "second(s)"
@@ -143,6 +148,7 @@ struct Constants{
     static let settingsKeyPeriodicIpCheck = "periodic-ip-check"
     static let settingsKeyIntervalBetweenChecks = "interval-between-checks"
     static let settingsKeyAppsToClose = "apps-to-close"
+    static let settingsKeyAutoCloseApps = "auto-close-apps"
     static let settingsKeyConfirmationApplicationsClose = "confirmation-apps-close"
     static let settingsKeyShownMenuBarItems = "shown-menubar-items"
     static let settingsKeyHiddenMenuBarItems = "hidden-menubar-items"
@@ -189,6 +195,11 @@ struct Constants{
     static let dialogBodyCloseApps = "Are you sure you want to close these applications?\nThis operation cannot be undone."
     static let dialogHeaderEnableNetwork = "Enable network"
     static let dialogBodyEnableNetwork = "Select a network interface to enable:\n"
+    static let dialogHeaderNoOneAllowedIp = "No allowed IP addresses are configured"
+    static let dialogBodyNoOneAllowedIpIfOffline = "Add one or more in the settings\n"
+    static let dialogBodyNoOneAllowedIpIfOnline = "Select a privacy type for the current IP address if you want to add it as an allowed one, or add one or more manually in the settings later\n"
+    static let dialogHeaderLastAllowedIpAddressDeleting = "Last allowed IP address deleting"
+    static let dialogBodyLastAllowedIpAddressDeleting = "IP address %1$@ is the last allowed one. The monitoring will be stopped. Are you sure you want to continue?"
     
     // MARK: Log messages
     static let logMonitoringHasBeenEnabled = "Monitoring has been enabled"
@@ -223,6 +234,7 @@ struct Constants{
     static let hintOnTopOfAllWindows = "Put application windows on top of all other windows."
     static let hintToggleLocationServices = "Toggle location services after restart. If the required state is critical, this can be done manually in Settings → Privacy & Security → Location Services without restarting."
     static let hintHigherProtection = "Disable the network when monitoring is enabled, if there is no reliable information about the current IP address. Also close all running monitored applications, if any."
+    static let hintAutoCloseApps = "Force close applications when monitoring is enabled and current IP address is unsafe. The confirmation dialog option when closing applications will be ignored."
     static let hintCloseApplicationConfirmation = "Confirmation dialog when closing applications. This option is ignored in higher protection mode."
     static let hintPickyMode = "Use extended information about current IP address, such as country. Does not allow the use of an IP address as an allowed one if there is no reliable information about it."
     static let hintPeriodicIpCheck = "Check the public IP address periodically when monitoring is enabled at the interval specified below."

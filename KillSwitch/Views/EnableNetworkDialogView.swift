@@ -98,6 +98,7 @@ struct EnableNetworkDialogView : View {
     private func closeDialog() {
         appState.views.isEnableNetworkDialogShown = false
         isPresented = false
+        AppHelper.activateView(viewId: Constants.windowIdMain)
     }
 }
 

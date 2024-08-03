@@ -16,7 +16,7 @@ struct ClosingApplicationsEditView : View {
     
     var body: some View {
         VStack{
-            Text(Constants.settingsElementApplicationsToClose)
+            Text(Constants.settingsElementClosingApplications)
                 .font(.title3)
                 .multilineTextAlignment(.center)
                 .padding(.top)

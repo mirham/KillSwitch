@@ -27,6 +27,7 @@ struct GeneralSettingsEditView: View {
     @State private var showOverHigherProtection = false
     @State private var showOverPickyMode = false
     @State private var showOverPeriodicIpCheck = false
+    @State private var showOverAutoCloseApps = false
     @State private var showOverConfirmationApplicationsClose = false
     
     var body: some View {
@@ -119,6 +120,24 @@ struct GeneralSettingsEditView: View {
                     .popover(isPresented: $showOverHigherProtection,
                              arrowEdge: .trailing,
                              content: { renderHelpHint(hint: Constants.hintHigherProtection) })
+            }
+            HStack {
+                Toggle(Constants.settingsElementAutoCloseApps, isOn: Binding(
+                    get: { appState.userData.autoCloseApps },
+                    set: {
+                        appState.userData.autoCloseApps = $0
+                    }
+                ))
+                .withSettingToggleStyle()
+                Spacer()
+                Image(systemName: Constants.iconQuestionMark)
+                    .asHelpIcon()
+                    .onHover(perform: { hovering in
+                        showOverAutoCloseApps = hovering && controlActiveState == .key
+                    })
+                    .popover(isPresented: $showOverAutoCloseApps,
+                             arrowEdge: .trailing,
+                             content: { renderHelpHint(hint: Constants.hintAutoCloseApps) })
             }
             HStack {
                 Toggle(Constants.settingsElementConfirmationToCloseApps, isOn: Binding(

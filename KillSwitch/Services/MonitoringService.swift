@@ -12,6 +12,7 @@ class MonitoringService: ServiceBase {
     
     private let addressesService = IpService.shared
     private let networkService = NetworkService.shared
+    private let processesService = ProcessesService.shared
     
     private var currentTimer: Timer? = nil
     private var monitoringTime: Int = 0
@@ -95,6 +96,10 @@ class MonitoringService: ServiceBase {
             disableActiveNetworkInterfaces()
             
             Log.write(message: message, type: LogEntryType.warning)
+            
+            if (appState.userData.autoCloseApps) {
+                processesService.killActiveProcesses()
+            }
         }
     }
     

@@ -10,6 +10,7 @@ import SwiftUI
 struct MonitoringStatusView : View {
     @EnvironmentObject var appState: AppState
     
+    @Environment(\.openWindow) private var openWindow
     @Environment(\.controlActiveState) private var controlActiveState
     
     @State private var showOverText = false
@@ -78,7 +79,19 @@ struct MonitoringStatusView : View {
             monitoringService.stopMonitoring()
         }
         else {
-            monitoringService.startMonitoring()
+            if (appState.userData.allowedIps.isEmpty) {
+                showNoOneAllowedIpDialog()
+            }
+            else {
+                monitoringService.startMonitoring()
+            }
+        }
+    }
+    
+    private func showNoOneAllowedIpDialog() {
+        if(!appState.views.isNoOneAllowedIpDialogShown){
+            openWindow(id: Constants.windowIdNoOneAllowedIpDialog)
+            appState.views.isNoOneAllowedIpDialogShown = true
         }
     }
     
