@@ -21,6 +21,7 @@
 		351F0C642C0F599400644C66 /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 351F0C632C0F599400644C66 /* Log.swift */; };
 		351F0C662C0F6D2A00644C66 /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 351F0C652C0F6D2A00644C66 /* NetworkService.swift */; };
 		353179312C29CD700030FDF1 /* ComputerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 353179302C29CD700030FDF1 /* ComputerService.swift */; };
+		3540323A2C5E30A9002624D2 /* NoOneAllowedIpDialogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 354032392C5E30A9002624D2 /* NoOneAllowedIpDialogView.swift */; };
 		35449FC32C563FAD00369CBC /* DropViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35449FC22C563FAD00369CBC /* DropViewDelegate.swift */; };
 		3568505A2C2B0ACF006E64B8 /* ProcessInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 356850592C2B0ACF006E64B8 /* ProcessInfo.swift */; };
 		3568505C2C2B1999006E64B8 /* ClosingApplicationsEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3568505B2C2B1999006E64B8 /* ClosingApplicationsEditView.swift */; };
@@ -91,6 +92,7 @@
 		351F0C632C0F599400644C66 /* Log.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Log.swift; sourceTree = "<group>"; };
 		351F0C652C0F6D2A00644C66 /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
 		353179302C29CD700030FDF1 /* ComputerService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComputerService.swift; sourceTree = "<group>"; };
+		354032392C5E30A9002624D2 /* NoOneAllowedIpDialogView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NoOneAllowedIpDialogView.swift; sourceTree = "<group>"; };
 		35449FC22C563FAD00369CBC /* DropViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropViewDelegate.swift; sourceTree = "<group>"; };
 		356850592C2B0ACF006E64B8 /* ProcessInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessInfo.swift; sourceTree = "<group>"; };
 		3568505B2C2B1999006E64B8 /* ClosingApplicationsEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClosingApplicationsEditView.swift; sourceTree = "<group>"; };
@@ -187,6 +189,7 @@
 				3568505F2C2B46FF006E64B8 /* ProcessesStatusView.swift */,
 				3505D94D2C2D5DD300E8FF61 /* KillProcessesConfirmationDialogView.swift */,
 				359EED4B2C52D0280094EFAF /* EnableNetworkDialogView.swift */,
+				354032392C5E30A9002624D2 /* NoOneAllowedIpDialogView.swift */,
 				3570E4812C249FC300CB5D42 /* GeneralSettingsEditView.swift */,
 				3568505B2C2B1999006E64B8 /* ClosingApplicationsEditView.swift */,
 				351E9CE82C10ADB300CEC15F /* AllowedIpsEditView.swift */,
@@ -462,6 +465,7 @@
 				3570E4892C258D1E00CB5D42 /* PointerOnHoverModifier.swift in Sources */,
 				3570E4822C249FC300CB5D42 /* GeneralSettingsEditView.swift in Sources */,
 				35DD1C4C2C0F96E1003AA3ED /* NetworkStatusView.swift in Sources */,
+				3540323A2C5E30A9002624D2 /* NoOneAllowedIpDialogView.swift in Sources */,
 				357154FD2C17422600A41AA4 /* IpInfo.swift in Sources */,
 				3572667A2C36A4110021978C /* AppState.swift in Sources */,
 				35449FC32C563FAD00369CBC /* DropViewDelegate.swift in Sources */,
@@ -647,7 +651,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 2.1;
+				MARKETING_VERSION = 2.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.MirHam.KillSwitch;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -679,7 +683,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 2.1;
+				MARKETING_VERSION = 2.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.MirHam.KillSwitch;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;

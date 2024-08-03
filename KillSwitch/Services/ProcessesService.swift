@@ -28,6 +28,7 @@ class ProcessesService : ServiceBase, ShellAccessible {
         
         for activeProcessToClose in appState.system.processesToKill {
             kill(activeProcessToClose.pid, SIGTERM)
+            
             Log.write(message: String(format: Constants.logProcessTerminated, activeProcessToClose.name))
         }
     }

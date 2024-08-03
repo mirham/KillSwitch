@@ -60,6 +60,13 @@ struct KillSwitchApp: App {
         })
         .windowResizability(.contentSize)
         
+        WindowGroup(id: Constants.windowIdNoOneAllowedIpDialog, content: {
+            NoOneAllowedIpDialogView()
+                .environmentObject(appState)
+                .hidden()
+        })
+        .windowResizability(.contentSize)
+        
         WindowGroup(id: Constants.windowIdInfo, content: {
             InfoView()
                 .environmentObject(appState)

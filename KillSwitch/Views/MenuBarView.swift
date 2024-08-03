@@ -22,16 +22,17 @@ struct MenuBarView : View {
         VStack{
             CurrentIpView()
                 .environmentObject(appState)
+                .scaleEffect(Constants.memuBarScaleCurrentIp)
             HStack{
                 MonitoringStatusView()
                     .environmentObject(appState)
-                    .padding()
+                    .scaleEffect(Constants.memuBarScaleToggles)
                 NetworkStatusView()
                     .environmentObject(appState)
-                    .padding()
+                    .scaleEffect(Constants.memuBarScaleToggles)
                 ProcessesStatusView()
                     .environmentObject(appState)
-                    .padding()
+                    .scaleEffect(Constants.memuBarScaleToggles)
             }
             Spacer()
                 .frame(height: 5)
@@ -68,11 +69,11 @@ struct MenuBarView : View {
     private func showButtonClickHandler(){
         if(!appState.views.isMainViewShown){
             openWindow(id: Constants.windowIdMain)
-            AppHelper.activateView(viewName: Constants.windowIdMain)
+            AppHelper.activateView(viewId: Constants.windowIdMain)
             appState.views.isMainViewShown = true
         }
         else {
-            AppHelper.activateView(viewName: Constants.windowIdMain, simple: false)
+            AppHelper.activateView(viewId: Constants.windowIdMain, simple: false)
         }
         dismiss()
     }

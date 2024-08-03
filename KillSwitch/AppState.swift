@@ -62,6 +62,7 @@ extension AppState {
         var isSettingsViewShown = false
         var isKillProcessesConfirmationDialogShown = false
         var isEnableNetworkDialogShown = false
+        var isNoOneAllowedIpDialogShown = false
         var isInfoViewShown = false
     }
 }
@@ -136,6 +137,9 @@ extension AppState {
         var periodicIpCheck: Bool = false {
             didSet { writeSetting(newValue: periodicIpCheck, key: Constants.settingsKeyPeriodicIpCheck) }
         }
+        var autoCloseApps: Bool = false {
+            didSet { writeSetting(newValue: autoCloseApps, key: Constants.settingsKeyAutoCloseApps) }
+        }
         var appsCloseConfirmation: Bool = false {
             didSet { writeSetting(newValue: appsCloseConfirmation, key: Constants.settingsKeyConfirmationApplicationsClose) }
         }
@@ -163,6 +167,7 @@ extension AppState {
             intervalBetweenChecks = readSetting(key: Constants.settingsKeyIntervalBetweenChecks) ?? Constants.defaultIntervalBetweenChecksInSeconds
             pickyMode = readSetting(key: Constants.settingsKeyUsePickyMode) ?? true
             periodicIpCheck = readSetting(key: Constants.settingsKeyPeriodicIpCheck) ?? true
+            autoCloseApps = readSetting(key: Constants.settingsKeyAutoCloseApps) ?? false
             appsCloseConfirmation = readSetting(key: Constants.settingsKeyConfirmationApplicationsClose) ?? true
             onTopOfAllWindows = readSetting(key: Constants.settingsKeyOnTopOfAllWindows) ?? false
             menuBarUseThemeColor = readSetting(key: Constants.settingsKeyMenuBarUseThemeColor) ?? false

@@ -17,8 +17,10 @@ struct AllowedIpsEditView : IpAddressContainerView {
     @State private var isNewIpValid = false
     @State private var newIpSafetyType: SafetyType = SafetyType.compete
     @State private var isNewIpInvalid: Bool = false
+    @State private var isLastIp: Bool = false
 
     private let ipService = IpService.shared
+    private let monitoringService = MonitoringService.shared
     
     var body: some View {
         VStack{
@@ -42,9 +44,17 @@ struct AllowedIpsEditView : IpAddressContainerView {
                                 .frame(width: 10, height: 10)
                         }
                         .contextMenu {
-                            Button(action: { appState.userData.allowedIps.removeAll(where: {$0 == ipAddress})}) {
+                            Button(action: { deleteAllowedIpAddressClickHandler(ipAddress: ipAddress) }) {
                                 Text(Constants.delete)
                             }
+                        }
+                        .alert(isPresented: $isLastIp) {
+                            Alert(title: Text(Constants.dialogHeaderLastAllowedIpAddressDeleting),
+                                  message: Text(String(format: Constants.dialogBodyLastAllowedIpAddressDeleting, ipAddress.ipAddress)),
+                                  primaryButton: .destructive(Text(Constants.delete)) {
+                                      lastAllowedIpAlertDeleteClickHandler(ipAddress: ipAddress)
+                                  },
+                                  secondaryButton: .cancel())
                         }
                     }
                 }
@@ -118,6 +128,23 @@ struct AllowedIpsEditView : IpAddressContainerView {
         isNewIpValid = false
         newIpSafetyType = SafetyType.compete
         isNewIpInvalid = false
+    }
+    
+    private func lastAllowedIpAlertDeleteClickHandler(ipAddress: IpInfo) {
+        monitoringService.stopMonitoring()
+        deleteAllowedIpAddress(ipAddress: ipAddress)
+    }
+    
+    private func deleteAllowedIpAddressClickHandler(ipAddress: IpInfo) {
+        isLastIp = appState.monitoring.isEnabled && appState.userData.allowedIps.count == 1
+        
+        if (!isLastIp) {
+            deleteAllowedIpAddress(ipAddress: ipAddress)
+        }
+    }
+    
+    private func deleteAllowedIpAddress(ipAddress: IpInfo) {
+        appState.userData.allowedIps.removeAll(where: {$0 == ipAddress})
     }
 }
 

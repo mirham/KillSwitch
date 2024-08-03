@@ -34,7 +34,7 @@ struct SettingsView : View {
                 }
             ClosingApplicationsEditView()
                 .tabItem {
-                    Text(Constants.settingsElementAppsToClose)
+                    Text(Constants.settingsElementClosingApps)
                 }
         }
         .onAppear(perform: {
