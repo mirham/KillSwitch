@@ -108,7 +108,6 @@ struct NetworkStatusView : View {
     private func showEnableNetworkDialog() {
         if(!appState.views.isEnableNetworkDialogShown){
             openWindow(id: Constants.windowIdEnableNetworkDialog)
-            appState.views.isEnableNetworkDialogShown = true
         }
     }
     

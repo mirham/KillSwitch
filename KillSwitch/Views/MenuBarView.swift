@@ -47,8 +47,7 @@ struct MenuBarView : View {
                 Spacer()
                     .frame(width: 20)
                 Button(Constants.quit, systemImage: Constants.iconQuit) {
-                    launchAgentService.apply()
-                    NSApplication.shared.terminate(nil)
+                    quitButtonClickHandler()
                 }
                 .withMenuBarButtonStyle(bold: overQuitText, color: overQuitText ? .red : .gray)
                 .onHover(perform: { hovering in
@@ -66,16 +65,17 @@ struct MenuBarView : View {
     
     // MARK: Private functions
     
-    private func showButtonClickHandler(){
+    private func showButtonClickHandler() {
         if(!appState.views.isMainViewShown){
             openWindow(id: Constants.windowIdMain)
-            AppHelper.activateView(viewId: Constants.windowIdMain)
-            appState.views.isMainViewShown = true
         }
-        else {
-            AppHelper.activateView(viewId: Constants.windowIdMain, simple: false)
-        }
+        AppHelper.activateView(viewId: Constants.windowIdMain, simple: false)
         dismiss()
+    }
+    
+    private func quitButtonClickHandler() {
+        launchAgentService.apply()
+        NSApplication.shared.terminate(nil)
     }
 }
 

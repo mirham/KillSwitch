@@ -73,7 +73,6 @@ struct ProcessesStatusView : View {
     private func showKillProcessesConfirmationDialog() {
         if(!appState.views.isKillProcessesConfirmationDialogShown){
             openWindow(id: Constants.windowIdKillProcessesConfirmationDialog)
-            appState.views.isKillProcessesConfirmationDialogShown = true
         }
     }
     

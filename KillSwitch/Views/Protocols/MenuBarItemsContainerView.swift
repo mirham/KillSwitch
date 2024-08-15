@@ -99,8 +99,7 @@ extension MenuBarItemsContainerView {
     // MARK: Private functions
     @MainActor
     private func renderMenuBarItemImage(view: some View) -> NSImage {
-        let renderer = ImageRenderer(content: view)
-        let result = renderer.nsImage ?? NSImage()
+        let result = view.renderAsImage() ?? NSImage()
         
         return result
     }
@@ -194,8 +193,8 @@ extension MenuBarItemsContainerView {
 private extension Text {
     func asPrimaryMenuBarItem(color: Color) -> Text {
         self.font(.system(size: 16.0))
-            .foregroundColor(color)
             .bold()
+            .foregroundColor(color)
     }
     
     func asOptionalMenuBarItem(color: Color) -> Text {

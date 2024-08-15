@@ -91,7 +91,6 @@ struct MonitoringStatusView : View {
     private func showNoOneAllowedIpDialog() {
         if(!appState.views.isNoOneAllowedIpDialogShown){
             openWindow(id: Constants.windowIdNoOneAllowedIpDialog)
-            appState.views.isNoOneAllowedIpDialogShown = true
         }
     }
     

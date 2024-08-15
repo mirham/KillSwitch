@@ -7,33 +7,6 @@
 
 import SwiftUI
 
-extension AsyncButton {
-    enum ActionOption: CaseIterable {
-        case disableButton
-        case showProgressView
-    }
-}
-
-extension AsyncButton where Label == Text {
-    init(_ label: String,
-         actionOptions: Set<ActionOption> = Set(ActionOption.allCases),
-         action: @escaping () async -> Void) {
-        self.init(action: action) {
-            Text(label)
-        }
-    }
-}
-
-extension AsyncButton where Label == Image {
-    init(systemImageName: String,
-         actionOptions: Set<ActionOption> = Set(ActionOption.allCases),
-         action: @escaping () async -> Void) {
-        self.init(action: action) {
-            Image(systemName: systemImageName)
-        }
-    }
-}
-
 struct AsyncButton<Label: View>: View {
     var action: () async -> Void
     var actionOptions = Set(ActionOption.allCases)
@@ -77,5 +50,32 @@ struct AsyncButton<Label: View>: View {
             }
         )
         .disabled(isDisabled)
+    }
+}
+
+extension AsyncButton {
+    enum ActionOption: CaseIterable {
+        case disableButton
+        case showProgressView
+    }
+}
+
+extension AsyncButton where Label == Text {
+    init(_ label: String,
+         actionOptions: Set<ActionOption> = Set(ActionOption.allCases),
+         action: @escaping () async -> Void) {
+        self.init(action: action) {
+            Text(label)
+        }
+    }
+}
+
+extension AsyncButton where Label == Image {
+    init(systemImageName: String,
+         actionOptions: Set<ActionOption> = Set(ActionOption.allCases),
+         action: @escaping () async -> Void) {
+        self.init(action: action) {
+            Image(systemName: systemImageName)
+        }
     }
 }

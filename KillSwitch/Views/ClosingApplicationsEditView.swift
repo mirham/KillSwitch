@@ -15,42 +15,52 @@ struct ClosingApplicationsEditView : View {
     @State private var errorMessage = String()
     
     var body: some View {
-        VStack{
-            Text(Constants.settingsElementClosingApplications)
-                .font(.title3)
-                .multilineTextAlignment(.center)
-                .padding(.top)
-            NavigationStack {
-                List {
-                    ForEach(appState.userData.appsToClose, id: \.id) { appInfo in
-                        HStack {
-                            Image(nsImage: NSWorkspace.shared.icon(forFile: appInfo.url))
-                            Text(appInfo.name)
-                        }
-                        .contextMenu {
-                            Button(action: {appState.userData.appsToClose.removeAll(where: {$0.id == appInfo.id}) }) {
-                                Text(Constants.delete)
+        VStack(alignment: .leading) {
+            HStack {
+                Image(systemName: Constants.iconInfoFill)
+                    .asInfoIcon()
+                Text(Constants.hintCloseApps)
+                    .padding(.top)
+                    .padding(.trailing)
+            }
+            Spacer()
+                .frame(height: 10)
+            VStack(alignment: .center) {
+                Text(Constants.settingsElementClosingApplications)
+                    .font(.title3)
+                    .multilineTextAlignment(.center)
+                NavigationStack {
+                    List {
+                        ForEach(appState.userData.appsToClose, id: \.id) { appInfo in
+                            HStack {
+                                Image(nsImage: NSWorkspace.shared.icon(forFile: appInfo.url))
+                                Text(appInfo.name)
+                            }
+                            .contextMenu {
+                                Button(action: {appState.userData.appsToClose.removeAll(where: {$0.id == appInfo.id}) }) {
+                                    Text(Constants.delete)
+                                }
                             }
                         }
                     }
                 }
+                Button(action: { showFileImporter = true }){
+                    Text(Constants.add)
+                }
+                .padding()
             }
-            Button(action: { showFileImporter = true }){
-                Text(Constants.add)
+            .fileImporter(isPresented: $showFileImporter, allowedContentTypes: [.application]) { result in
+                addAppsToCloseDialogResultHandler(dialogResult: result)
             }
-            .padding()
-        }
-        .fileImporter(isPresented: $showFileImporter, allowedContentTypes: [.application]) { result in
-            addAppsToCloseDialogResultHandler(dialogResult: result)
-        }
-        .fileDialogDefaultDirectory(.applicationDirectory)
-        .alert(isPresented: $isAppToCloseInvalid) {
-            Alert(title: Text(Constants.dialogHeaderCannotAddAppToClose),
-                  message: Text(String(format: Constants.dialogBodyCannotAddAppToClose, errorMessage)),
-                  dismissButton: .default(Text(Constants.ok), action: {
-                errorMessage = String()
-                isAppToCloseInvalid = false
-            }))
+            .fileDialogDefaultDirectory(.applicationDirectory)
+            .alert(isPresented: $isAppToCloseInvalid) {
+                Alert(title: Text(Constants.dialogHeaderCannotAddAppToClose),
+                      message: Text(String(format: Constants.dialogBodyCannotAddAppToClose, errorMessage)),
+                      dismissButton: .default(Text(Constants.ok), action: {
+                    errorMessage = String()
+                    isAppToCloseInvalid = false
+                }))
+            }
         }
     }
     

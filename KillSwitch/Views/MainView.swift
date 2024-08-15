@@ -43,18 +43,29 @@ struct MainView : View {
             }
             .navigationSplitViewColumnWidth(min: 600, ideal: 600)
         }.onAppear(perform: {
-            AppHelper.setUpView(
-                viewName: Constants.windowIdMain,
-                onTop: appState.userData.onTopOfAllWindows)
+            openView()
         })
         .onDisappear(perform: {
-            appState.views.isMainViewShown = false
+            closeView()
         })
         .frame(minHeight: 600)
         .toolbar(content: {
             ToolbarView()
                 .padding(.trailing)
         })
+    }
+    
+    // MARK: Private functions
+    
+    private func openView() {
+        appState.views.isMainViewShown = true
+        AppHelper.setUpView(
+            viewName: Constants.windowIdMain,
+            onTop: appState.userData.onTopOfAllWindows)
+    }
+    
+    private func closeView() {
+        appState.views.isMainViewShown = false
     }
 }
 
