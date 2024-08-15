@@ -26,10 +26,8 @@ struct KillSwitchApp: App {
             .padding(.bottom, 10)
             .background(.windowBackground)
         } label: {
-            HStack {
-                MenuBarStatusView()
-                    .environmentObject(appState)
-            }
+            MenuBarStatusView()
+                .environmentObject(appState)
         }
         .menuBarExtraStyle(.window)
         

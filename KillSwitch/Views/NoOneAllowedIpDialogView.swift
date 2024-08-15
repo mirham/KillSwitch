@@ -82,10 +82,7 @@ struct NoOneAllowedIpDialogView : View {
             .padding()
         })
         .onAppear(perform: {
-            AppHelper.setUpView(
-                viewName: Constants.windowIdEnableNetworkDialog,
-                onTop: true)
-            isPresented = true
+            openDialog()
         })
         .onDisappear(perform: {
             closeDialog()
@@ -112,6 +109,14 @@ struct NoOneAllowedIpDialogView : View {
     
     private func secondaryButtonClickHandler() {
         closeDialog()
+    }
+    
+    private func openDialog() {
+        appState.views.isNoOneAllowedIpDialogShown = true
+        AppHelper.setUpView(
+            viewName: Constants.windowIdEnableNetworkDialog,
+            onTop: true)
+        isPresented = true
     }
     
     private func closeDialog() {

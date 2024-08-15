@@ -129,8 +129,10 @@ class MonitoringService: ServiceBase {
     }
     
     private func disableActiveNetworkInterfaces() {
-        for activeInterface in appState.network.physicalNetworkInterfaces {
-            networkService.disableNetworkInterface(interfaceName: activeInterface.name)
+        if (appState.network.status != .off) {
+            for activeInterface in appState.network.physicalNetworkInterfaces {
+                networkService.disableNetworkInterface(interfaceName: activeInterface.name)
+            }
         }
     }
     

@@ -23,87 +23,97 @@ struct AllowedIpsEditView : IpAddressContainerView {
     private let monitoringService = MonitoringService.shared
     
     var body: some View {
-        VStack{
-            Text(Constants.settingsElementAllowedIpAddresses)
-                .font(.title3)
-                .multilineTextAlignment(.center)
-                .padding(.top)
-            NavigationStack() {
-                List {
-                    ForEach(appState.userData.allowedIps, id: \.ipAddress) { ipAddress in
-                        HStack {
-                            Text(ipAddress.ipAddress)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                            Spacer()
-                            Image(nsImage: getCountryFlag(countryCode: ipAddress.countryCode))
-                            Text(ipAddress.countryName)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                            Spacer()
-                            Circle()
-                                .fill(getSafetyColor(safetyType: ipAddress.safetyType, colorScheme: colorScheme))
-                                .frame(width: 10, height: 10)
-                        }
-                        .contextMenu {
-                            Button(action: { deleteAllowedIpAddressClickHandler(ipAddress: ipAddress) }) {
-                                Text(Constants.delete)
-                            }
-                        }
-                        .alert(isPresented: $isLastIp) {
-                            Alert(title: Text(Constants.dialogHeaderLastAllowedIpAddressDeleting),
-                                  message: Text(String(format: Constants.dialogBodyLastAllowedIpAddressDeleting, ipAddress.ipAddress)),
-                                  primaryButton: .destructive(Text(Constants.delete)) {
-                                      lastAllowedIpAlertDeleteClickHandler(ipAddress: ipAddress)
-                                  },
-                                  secondaryButton: .cancel())
-                        }
-                    }
-                }
+        VStack(alignment: .leading) {
+            HStack {
+                Image(systemName: Constants.iconInfoFill)
+                    .asInfoIcon()
+                Text(Constants.hintAllowedIps)
+                    .padding(.top)
+                    .padding(.trailing)
             }
-            .safeAreaInset(edge: .bottom) {
-                VStack {
-                    HStack {
-                        VStack(alignment: .leading, spacing: 12) {
-                            Text("\(Constants.ip):")
-                            Text("\(Constants.safety):")
-                        }
-                        VStack(alignment: .leading, spacing: 12) {
-                            TextField(Constants.hintNewVaildIpAddress, text: $newIp)
-                                .onChange(of: newIp) {
-                                    isNewIpValid = newIp.isValidIp()
-                                }
+            Spacer()
+                .frame(height: 10)
+            VStack(alignment: .center) {
+                Text(Constants.settingsElementAllowedIpAddresses)
+                    .font(.title3)
+                    .multilineTextAlignment(.center)
+                NavigationStack() {
+                    List {
+                        ForEach(appState.userData.allowedIps, id: \.ipAddress) { ipAddress in
                             HStack {
-                                RadioButton(
-                                    id: String(SafetyType.compete.rawValue),
-                                    label: SafetyType.compete.description,
-                                    size: 12,
-                                    color: Color.green,
-                                    textSize: 11,
-                                    isMarked: newIpSafetyType == SafetyType.compete,
-                                    callback: { _ in newIpSafetyType = SafetyType.compete }
-                                )
-                                RadioButton(
-                                    id: String(SafetyType.some.rawValue),
-                                    label: SafetyType.some.description,
-                                    size: 12,
-                                    color: Color.yellow,
-                                    textSize: 11,
-                                    isMarked: newIpSafetyType == SafetyType.some,
-                                    callback: { _ in newIpSafetyType = SafetyType.some }
-                                )
+                                Text(ipAddress.ipAddress)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                Spacer()
+                                Image(nsImage: getCountryFlag(countryCode: ipAddress.countryCode))
+                                Text(ipAddress.countryName)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                Spacer()
+                                Circle()
+                                    .fill(getSafetyColor(safetyType: ipAddress.safetyType, colorScheme: colorScheme))
+                                    .frame(width: 10, height: 10)
+                            }
+                            .contextMenu {
+                                Button(action: { deleteAllowedIpAddressClickHandler(ipAddress: ipAddress) }) {
+                                    Text(Constants.delete)
+                                }
+                            }
+                            .alert(isPresented: $isLastIp) {
+                                Alert(title: Text(Constants.dialogHeaderLastAllowedIpAddressDeleting),
+                                      message: Text(String(format: Constants.dialogBodyLastAllowedIpAddressDeleting, ipAddress.ipAddress)),
+                                      primaryButton: .destructive(Text(Constants.delete)) {
+                                    lastAllowedIpAlertDeleteClickHandler(ipAddress: ipAddress)
+                                },
+                                      secondaryButton: .cancel())
                             }
                         }
                     }
-                    AsyncButton(Constants.add, action: addAllowedIpAddressClickHandlerAsync)
-                    .disabled(!isNewIpValid)
-                    .alert(isPresented: $isNewIpInvalid) {
-                        Alert(title: Text(Constants.dialogHeaderIpAddressIsNotValid),
-                              message: Text(Constants.dialogBodyIpAddressIsNotValid),
-                              dismissButton: .default(Text(Constants.ok)))
-                    }
-                    .bold()
-                    .pointerOnHover()
                 }
-                .padding()
+                .safeAreaInset(edge: .bottom) {
+                    VStack {
+                        HStack {
+                            VStack(alignment: .leading, spacing: 12) {
+                                Text("\(Constants.ip):")
+                                Text("\(Constants.safety):")
+                            }
+                            VStack(alignment: .leading, spacing: 12) {
+                                TextField(Constants.hintNewVaildIpAddress, text: $newIp)
+                                    .onChange(of: newIp) {
+                                        isNewIpValid = newIp.isValidIp()
+                                    }
+                                HStack {
+                                    RadioButton(
+                                        id: String(SafetyType.compete.rawValue),
+                                        label: SafetyType.compete.description,
+                                        size: 12,
+                                        color: getSafetyColor(safetyType: .compete, colorScheme: colorScheme),
+                                        textSize: 11,
+                                        isMarked: newIpSafetyType == SafetyType.compete,
+                                        callback: { _ in newIpSafetyType = SafetyType.compete }
+                                    )
+                                    RadioButton(
+                                        id: String(SafetyType.some.rawValue),
+                                        label: SafetyType.some.description,
+                                        size: 12,
+                                        color: getSafetyColor(safetyType: .some, colorScheme: colorScheme),
+                                        textSize: 11,
+                                        isMarked: newIpSafetyType == SafetyType.some,
+                                        callback: { _ in newIpSafetyType = SafetyType.some }
+                                    )
+                                }
+                            }
+                        }
+                        AsyncButton(Constants.add, action: addAllowedIpAddressClickHandlerAsync)
+                            .disabled(!isNewIpValid)
+                            .alert(isPresented: $isNewIpInvalid) {
+                                Alert(title: Text(Constants.dialogHeaderIpAddressIsNotValid),
+                                      message: Text(Constants.dialogBodyIpAddressIsNotValid),
+                                      dismissButton: .default(Text(Constants.ok)))
+                            }
+                            .bold()
+                            .pointerOnHover()
+                    }
+                    .padding()
+                }
             }
         }
     }

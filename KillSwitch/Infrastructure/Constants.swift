@@ -95,7 +95,7 @@ struct Constants{
     static let activeConnections = "Active connections"
     static let safetyDescriprion = "%1$@ safety"
     static let disableLocationServices = "(disable location services)"
-    static let currentIp = "Current IP"
+    static let currentIp = "Public IP"
     static let enabled = "enabled"
     static let disabled = "disabled"
     static let physical = "physical"
@@ -122,7 +122,7 @@ struct Constants{
     static let settingsElementGeneral = "General"
     static let settingsElementMenubar = "Menu bar"
     static let settingsElementShownItems = "Shown menu bar items"
-    static let settingsElementHiddenItems = "Hidden menu bar items"
+    static let settingsElementAvailableItems = "Available menu bar items"
     static let settingsElementAllowedIpAddresses = "Allowed IPs"
     static let settingsElementIpAddressApis = "IP APIs"
     static let settingsElementClosingApps = "Closing apps"
@@ -204,9 +204,9 @@ struct Constants{
     // MARK: Log messages
     static let logMonitoringHasBeenEnabled = "Monitoring has been enabled"
     static let logMonitoringHasBeenDisabled = "Monitoring has been disabled"
-    static let logCurrentIp = "Current IP is %1$@"
-    static let logCurrentIpHasBeenUpdated = "Current IP has been updated to %1$@"
-    static let logCurrentIpHasBeenUpdatedWithNotFromWhitelist = "Current IP address has been changed to %1$@ which is not from allowed IPs, network disabled"
+    static let logCurrentIp = "Public IP is %1$@"
+    static let logCurrentIpHasBeenUpdated = "Public IP has been updated to %1$@"
+    static let logCurrentIpHasBeenUpdatedWithNotFromWhitelist = "Public IP address has been changed to %1$@ which is not from allowed IPs, network disabled"
     static let logNetworkInterfaceHasBeenEnabled = "Network interface '%1$@' has been enabled"
     static let logNetworkInterfaceHasBeenDisabled = "Network interface '%1$@' has been disabled"
     static let logCannotEnableNetworkInterface = "Cannot enable network interface '%1$@'"
@@ -222,8 +222,8 @@ struct Constants{
     static let logProcessTerminated = "%1$@ has been closed"
     
     // MARK: Hints
-    static let hintApiIsActive = "API is active and in use"
-    static let hintApiIsInactive = "API is not active and not in use"
+    static let hintApiIsActive = "API is in use"
+    static let hintApiIsInactive = "API not used"
     static let hintNewVaildIpAddress = "A new valid IP address"
     static let hintNewVaildApiUrl = "A new valid API URL"
     static let hintClickToEnableNetwork = "Click to enable network"
@@ -240,6 +240,9 @@ struct Constants{
     static let hintPeriodicIpCheck = "Check the public IP address periodically when monitoring is enabled at the interval specified below."
     static let hintInterval = "\(minTimeIntervalToCheck)..\(maxTimeIntervalToCheck)"
     static let hintMenuBarAdjustment = "Drag menu bar item icons between the sections below to arrange item as you want"
+    static let hintAllowedIps = "Add an allowed IP address with desired safety type\nRight click on the address to display the context menu"
+    static let hintIpApis = "Add an API that returns the public IP address in plain text\nRight click on the API to display the context menu\nIf API marked green, it works properly and in use"
+    static let hintCloseApps = "Add the application you want to close automatically or manually\nRight click on the application to display the context menu"
     
     // MARK: About
     static let aboutSupportMail = "bWlyaGFtQGFidi5iZw=="

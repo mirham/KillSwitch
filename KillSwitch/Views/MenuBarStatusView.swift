@@ -15,12 +15,12 @@ struct MenuBarStatusView : MenuBarItemsContainerView {
     
     @MainActor
     var body: some View {
-        HStack{
-            let renderer = ImageRenderer(content: MenuBarStatusRawView(
-                appState: appState,
-                colorScheme: colorScheme))
-            Image(renderer.cgImage!, scale: 1, label: Text(String()))
-        }
+        let image = MenuBarStatusRawView(
+            appState: appState,
+            colorScheme: colorScheme).renderAsImage()
+        Image(nsImage: image!)
+            .nonAntialiased()
+            .scaledToFit()
     }
 }
 
@@ -44,6 +44,7 @@ private struct MenuBarStatusRawView: MenuBarItemsContainerView {
         HStack(spacing: 5) {
             ForEach(shownItems, id: \.id) { item in
                 Image(nsImage: item.image)
+                    .nonAntialiased()
             }
         }
     }

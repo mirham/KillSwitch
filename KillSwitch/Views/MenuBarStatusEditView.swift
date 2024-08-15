@@ -50,7 +50,7 @@ struct MenuBarStatusEditView: MenuBarItemsContainerView {
                 .onChange(of: appState.monitoring, fillMenuBarElementItems)
                 .onChange(of: appState.network, fillMenuBarElementItems)
                 .onChange(of: appState.userData, fillMenuBarElementItems)
-                Text(Constants.settingsElementHiddenItems)
+                Text(Constants.settingsElementAvailableItems)
                     .asCenteredTitle()
                 LazyHStack(spacing: 5) {
                     ForEach(hiddenItems, id: \.id) { item in
@@ -144,16 +144,6 @@ private extension Text {
         self.font(.title3)
             .padding(.top)
             .padding(.bottom, 5)
-    }
-}
-
-private extension Image {
-    func asInfoIcon() -> some View {
-        self.resizable()
-            .frame(width: 20, height: 20)
-            .foregroundColor(/*@START_MENU_TOKEN@*/ .blue/*@END_MENU_TOKEN@*/)
-            .padding(.top)
-            .padding(.leading)
     }
 }
 

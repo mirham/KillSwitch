@@ -12,13 +12,14 @@ protocol IpAddressContainerView : View {}
 
 extension IpAddressContainerView {
     func getSafetyColor(safetyType: SafetyType, colorScheme: ColorScheme) -> Color {
-        let baseColor = colorScheme == .dark ? Color.white : Color.black
+        let isDarkTheme = colorScheme == .dark
+        let baseColor = isDarkTheme ? Color.white : Color.black
         
         switch safetyType {
             case .compete:
-                return Color.green
+                return isDarkTheme ? Color.green : Color(hex: "#369300")
             case .some:
-                return Color.yellow
+                return isDarkTheme ? Color.yellow : Color(hex: "#A7A200")
             case .unsafe:
                 return Color.red
             default:

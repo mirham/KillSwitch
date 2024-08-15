@@ -78,7 +78,6 @@ struct ToolbarView : View {
         if (!appState.views.isSettingsViewShown){
             openWindow(id: Constants.windowIdSettings)
             AppHelper.activateView(viewId: Constants.windowIdSettings)
-            appState.views.isSettingsViewShown = true
         }
         else {
             AppHelper.activateView(viewId: Constants.windowIdSettings)
@@ -89,7 +88,6 @@ struct ToolbarView : View {
         if (!appState.views.isInfoViewShown){
             openWindow(id: Constants.windowIdInfo)
             AppHelper.activateView(viewId: Constants.windowIdInfo)
-            appState.views.isInfoViewShown = true
         }
         else {
             AppHelper.activateView(viewId: Constants.windowIdInfo)

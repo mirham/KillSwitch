@@ -38,16 +38,27 @@ struct SettingsView : View {
                 }
         }
         .onAppear(perform: {
-            AppHelper.setUpView(
-                viewName: Constants.windowIdSettings,
-                onTop: appState.userData.onTopOfAllWindows)
+            openView()
         })
         .onDisappear(perform: {
-            appState.views.isSettingsViewShown = false
+            closeView()
         })
         .opacity(getViewOpacity(state: controlActiveState))
         .padding()
         .frame(maxWidth: 500, maxHeight: 500)
+    }
+    
+    // MARK: Private functions
+    
+    private func openView() {
+        appState.views.isSettingsViewShown = true
+        AppHelper.setUpView(
+            viewName: Constants.windowIdSettings,
+            onTop: appState.userData.onTopOfAllWindows)
+    }
+    
+    private func closeView() {
+        appState.views.isSettingsViewShown = false
     }
 }
 

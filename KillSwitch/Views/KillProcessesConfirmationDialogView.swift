@@ -61,10 +61,7 @@ struct KillProcessesConfirmationDialogView : View {
             .padding()
         })
         .onAppear(perform: {
-            AppHelper.setUpView(
-                viewName: Constants.windowIdKillProcessesConfirmationDialog,
-                onTop: true)
-            isPresented = true
+            openDialog()
         })
         .onDisappear(perform: {
             closeDialog()
@@ -80,6 +77,14 @@ struct KillProcessesConfirmationDialogView : View {
     
     private func secondaryButtonClickHandler() {
         closeDialog()
+    }
+    
+    private func openDialog() {
+        appState.views.isKillProcessesConfirmationDialogShown = true
+        AppHelper.setUpView(
+            viewName: Constants.windowIdKillProcessesConfirmationDialog,
+            onTop: true)
+        isPresented = true
     }
     
     private func closeDialog() {

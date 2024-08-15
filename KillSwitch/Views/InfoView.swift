@@ -38,14 +38,25 @@ struct InfoView: View {
                 .frame(minWidth: 360, maxWidth: 360, minHeight: 220, maxHeight: 220)
         }
         .onAppear(perform: {
-            AppHelper.setUpView(
-                viewName: Constants.windowIdInfo,
-                onTop: appState.userData.onTopOfAllWindows)
+            openDialog()
         })
         .onDisappear(perform: {
-            appState.views.isInfoViewShown = false
+            closeDialog()
         })
         .opacity(getViewOpacity(state: controlActiveState))
+    }
+    
+    // MARK: Private functions
+    
+    private func openDialog() {
+        appState.views.isInfoViewShown = true
+        AppHelper.setUpView(
+            viewName: Constants.windowIdInfo,
+            onTop: appState.userData.onTopOfAllWindows)
+    }
+    
+    private func closeDialog() {
+        appState.views.isInfoViewShown = false
     }
 }
 
