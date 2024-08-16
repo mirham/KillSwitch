@@ -5,7 +5,6 @@
 //  Created by UglyGeorge on 06.06.2024.
 //
 
-import Foundation
 import SwiftUI
 
 struct MenuBarStatusView : MenuBarItemsContainerView {

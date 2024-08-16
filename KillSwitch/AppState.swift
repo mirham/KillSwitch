@@ -155,6 +155,9 @@ extension AppState {
         var onTopOfAllWindows: Bool = false {
             didSet { writeSetting(newValue: onTopOfAllWindows, key: Constants.settingsKeyOnTopOfAllWindows) }
         }
+        var preventComputerSleep: Bool = false {
+            didSet { writeSetting(newValue: preventComputerSleep, key: Constants.settingsKeyPreventComputerSleep) }
+        }
         
         static func == (lhs: UserData, rhs: UserData) -> Bool {
             let result = lhs.menuBarUseThemeColor == rhs.menuBarUseThemeColor
@@ -170,6 +173,7 @@ extension AppState {
             autoCloseApps = readSetting(key: Constants.settingsKeyAutoCloseApps) ?? false
             appsCloseConfirmation = readSetting(key: Constants.settingsKeyConfirmationApplicationsClose) ?? true
             onTopOfAllWindows = readSetting(key: Constants.settingsKeyOnTopOfAllWindows) ?? false
+            preventComputerSleep = readSetting(key: Constants.settingsKeyPreventComputerSleep) ?? false
             menuBarUseThemeColor = readSetting(key: Constants.settingsKeyMenuBarUseThemeColor) ?? false
             
             let savedAllowedIps: [IpInfo]? = readSettingsArray(key: Constants.settingsKeyIps)

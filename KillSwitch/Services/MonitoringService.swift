@@ -13,6 +13,7 @@ class MonitoringService: ServiceBase {
     private let addressesService = IpService.shared
     private let networkService = NetworkService.shared
     private let processesService = ProcessesService.shared
+    private let computerService = ComputerService.shared
     
     private var currentTimer: Timer? = nil
     private var monitoringTime: Int = 0
@@ -31,6 +32,8 @@ class MonitoringService: ServiceBase {
         monitoringTime = 0
         
         Log.write(message: Constants.logMonitoringHasBeenEnabled)
+        
+        computerService.startSleepPreventing()
         
         currentTimer = Timer.scheduledTimer(withTimeInterval: TimeInterval(Constants.defaultMonitoringInterval), repeats: true) { 
             timer in
@@ -63,6 +66,9 @@ class MonitoringService: ServiceBase {
     func stopMonitoring() {
         updateStatus(isMonitoringEnabled: false)
         currentTimer?.invalidate()
+        
+        computerService.stopSleepPreventing()
+        
         Log.write(message: Constants.logMonitoringHasBeenDisabled, type: LogEntryType.warning)
     }
     

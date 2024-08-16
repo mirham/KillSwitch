@@ -32,6 +32,7 @@ struct Constants{
     static let physicalNetworkInterfaceWiFi = "Wi-Fi"
     static let physicalNetworkInterfaceLan = "LAN"
     static let physicalNetworkInterfaceExclusion = "Thunderbolt"
+    static let sleepPreventingReason = "Monitoring sleep preventing"
     
     // MARK: Regexes
     static let regexUrl = /(?<protocol>https?):\/\/(?:(?<username>[^:@\s\/\\]*)(?::(?<password>[^:@\s\/\\]*))?@)?(?<domain>[\w\d]+[\w\d.\-]+[\w\d]+|\[[a-f\d:]+\])(?::(?<port>\d+))?(?:(?<path>\/[^\?#\s]*)(?:\?(?<query>[^\?#\s]*))?(?:#(?<anchor>[^\?#\s]*))?)?/
@@ -130,6 +131,7 @@ struct Constants{
     static let settingsElementKeepAppRunning = "Keep application running"
     static let settingsElementOnTopOfAllWindows = "Always on top of all windows"
     static let settingsElementDisableLocationServices = "Disable location services"
+    static let settingsElementPreventComputerSleep = "Preventing the computer from going to sleep"
     static let settingsElementHigherProtection = "Higher protection"
     static let settingsElementPickyMode = "Picky mode"
     static let settingsElementPeriodicIpCheck = "Periodic IP address check"
@@ -154,6 +156,7 @@ struct Constants{
     static let settingsKeyHiddenMenuBarItems = "hidden-menubar-items"
     static let settingsKeyMenuBarUseThemeColor = "menubar-use-theme-color"
     static let settingsKeyOnTopOfAllWindows = "on-top-of-all-windows"
+    static let settingsKeyPreventComputerSleep = "prevent-computer-sleep"
     
     // MARK: Menubar item keys
     static let mbItemKeyShield = "shiled"
@@ -202,8 +205,8 @@ struct Constants{
     static let dialogBodyLastAllowedIpAddressDeleting = "IP address %1$@ is the last allowed one. The monitoring will be stopped. Are you sure you want to continue?"
     
     // MARK: Log messages
-    static let logMonitoringHasBeenEnabled = "Monitoring has been enabled"
-    static let logMonitoringHasBeenDisabled = "Monitoring has been disabled"
+    static let logMonitoringHasBeenEnabled = "Monitoring enabled"
+    static let logMonitoringHasBeenDisabled = "Monitoring disabled"
     static let logCurrentIp = "Public IP is %1$@"
     static let logCurrentIpHasBeenUpdated = "Public IP has been updated to %1$@"
     static let logCurrentIpHasBeenUpdatedWithNotFromWhitelist = "Public IP address has been changed to %1$@ which is not from allowed IPs, network disabled"
@@ -220,6 +223,8 @@ struct Constants{
     static let logRebooting = "Rebooting..."
     static let logCannotReboot = "Cannot reboot the computer: %1$@"
     static let logProcessTerminated = "%1$@ has been closed"
+    static let logPreventComputerSleepEnabled = "Preventing the computer from going to sleep is enabled"
+    static let logPreventComputerSleepDisabled = "Preventing the computer from going to sleep is disabled"
     
     // MARK: Hints
     static let hintApiIsActive = "API is in use"
@@ -233,6 +238,7 @@ struct Constants{
     static let hintKeepApplicationRunning = "The application will be opened after the system starts or if it was closed."
     static let hintOnTopOfAllWindows = "Put application windows on top of all other windows."
     static let hintToggleLocationServices = "Toggle location services after restart. If the required state is critical, this can be done manually in Settings → Privacy & Security → Location Services without restarting."
+    static let hintPreventComputerSleep = "Preventing the computer from going to sleep when monitoring is enabled."
     static let hintHigherProtection = "Disable the network when monitoring is enabled, if there is no reliable information about the current IP address. Also close all running monitored applications, if any."
     static let hintAutoCloseApps = "Force close applications when monitoring is enabled and current IP address is unsafe. The confirmation dialog option when closing applications will be ignored."
     static let hintCloseApplicationConfirmation = "Confirmation dialog when closing applications. This option is ignored in higher protection mode."
