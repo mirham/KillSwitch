@@ -24,6 +24,7 @@ struct GeneralSettingsEditView: View {
     @State private var showOverKeepApplicationRunning = false
     @State private var showOverOnTopOfAllWindows = false
     @State private var showOverDisableLocationServices = false
+    @State private var showOverPreventComputerSleep = false
     @State private var showOverHigherProtection = false
     @State private var showOverPickyMode = false
     @State private var showOverPeriodicIpCheck = false
@@ -102,6 +103,24 @@ struct GeneralSettingsEditView: View {
                     .popover(isPresented: $showOverDisableLocationServices,
                              arrowEdge: .trailing,
                              content: { renderHelpHint(hint: Constants.hintToggleLocationServices) })
+            }
+            HStack {
+                Toggle(Constants.settingsElementPreventComputerSleep, isOn: Binding(
+                    get: { appState.userData.preventComputerSleep },
+                    set: {
+                        appState.userData.preventComputerSleep = $0
+                    }
+                ))
+                .withSettingToggleStyle()
+                Spacer()
+                Image(systemName: Constants.iconQuestionMark)
+                    .asHelpIcon()
+                    .onHover(perform: { hovering in
+                        showOverPreventComputerSleep = hovering && controlActiveState == .key
+                    })
+                    .popover(isPresented: $showOverPreventComputerSleep,
+                             arrowEdge: .trailing,
+                             content: { renderHelpHint(hint: Constants.hintPreventComputerSleep) })
             }
             HStack {
                 Toggle(Constants.settingsElementHigherProtection, isOn: Binding(
