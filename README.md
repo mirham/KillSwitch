@@ -21,7 +21,7 @@ MirHam KillSwich is a macOS menu bar application designed to provide additional 
 - Easy to use
 - Adjustable and flexible
 - Operates continuously, even after computer restarts
-- Periodic IP checks at desired intervals
+- Periodic public IP checks at desired intervals
 - Automatically or manually close applications
 - Manage physical network connections
 - Preventing the computer from going to sleep (may not work without a power adapter connected on some Macs)
