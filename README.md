@@ -26,13 +26,11 @@ MirHam KillSwich is a macOS menu bar application designed to provide additional 
 - Manage physical network connections
 - Preventing the computer from going to sleep (may not work without a power adapter connected on some Macs)
 
-## Getting Started
-
-### Compatibility
+## Compatibility
 
 This application is compatible with macOS 14.0 and above.
 
-### Installation
+## Installation
 
 Download the DMG installer from the [releases](https://github.com/mirham/KillSwitch/releases), mount it, and drag and drop the application to the Applications folder. That's it! However, you will need to allow launching applications from unidentified developers to start the application, as I don't have an Apple developer license.
 
