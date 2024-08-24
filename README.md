@@ -11,7 +11,7 @@
   </a>
   <img alt="macOS" src="https://img.shields.io/badge/macOS-blue?logo=apple"/>
   <img alt="Swift" src="https://img.shields.io/badge/Swift-grey?logo=swift"/>
-  <img alt="Swift" src="https://img.shields.io/badge/Pet project-purple?logo=github"/>
+  <img alt="Pet project" src="https://img.shields.io/badge/Pet project-purple?logo=github"/>
 </p>
 
 ## Introduction
