@@ -100,6 +100,12 @@ class NetworkStatusService: ServiceBase, ApiCallable {
         lock.unlock()
     }
     
+    private func activateIpApis() {
+        for index in 0...self.appState.userData.ipApis.count - 1 {
+            self.appState.userData.ipApis[index].active = true
+        }
+    }
+    
     private func updateStatus(
         currentIpInfo: IpInfoBase? = nil,
         currentStatus: NetworkStatusType? = nil,
@@ -111,6 +117,7 @@ class NetworkStatusService: ServiceBase, ApiCallable {
         DispatchQueue.main.async {
             if (currentStatus != nil) {
                 self.appState.network.status = currentStatus!
+                self.activateIpApis()
             }
             
             if (currentIpInfo != nil || allowCurrentIpInfoNil) {
