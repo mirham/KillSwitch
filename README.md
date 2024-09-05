@@ -62,3 +62,5 @@ Download the DMG installer from the [releases](https://github.com/mirham/KillSwi
 ## Disclaimer
 > [!WARNING]
 > I'm not a professional Swift developer (though I am a professional .NET developer). All my macOS apps are made for personal use by myself and my family simply because I have the skills to create them (and for fun, of course 😊). If my application has caused any harm, I apologize for that, but please be aware that you use it at your own risk.
+
+<meta name="google-site-verification" content="7Z9otU81-JLxwrFlUFAZCMSFF8ixBbH6_yXhCEKptkg" />
