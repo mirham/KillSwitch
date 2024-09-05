@@ -1,3 +1,4 @@
+<meta name="google-site-verification" content="7Z9otU81-JLxwrFlUFAZCMSFF8ixBbH6_yXhCEKptkg" />
 <p align="center">
   <img src="https://github.com/mirham/KillSwitch/blob/main/Images/AppLogo.png" width="370"/>
 </p>
