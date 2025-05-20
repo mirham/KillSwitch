@@ -44,10 +44,12 @@ struct ClosingApplicationsEditView : View {
                         }
                     }
                 }
-                Button(action: { showFileImporter = true }){
-                    Text(Constants.add)
+                .padding(.bottom, 10)
+                .safeAreaInset(edge: .bottom) {
+                    Button(action: { showFileImporter = true }){
+                        Text(Constants.add)
+                    }
                 }
-                .padding()
             }
             .fileImporter(isPresented: $showFileImporter, allowedContentTypes: [.application]) { result in
                 addAppsToCloseDialogResultHandler(dialogResult: result)

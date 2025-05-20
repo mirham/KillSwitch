@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Factory
 
 struct MenuBarView : View {
     @EnvironmentObject var appState: AppState
@@ -13,7 +14,7 @@ struct MenuBarView : View {
     @Environment(\.openWindow) private var openWindow
     @Environment(\.dismiss) var dismiss
     
-    private var launchAgentService = LaunchAgentService.shared
+    @Injected(\.launchAgentService) private var launchAgentService
     
     @State private var overShowText = false
     @State private var overQuitText = false

@@ -6,21 +6,21 @@
 //
 
 import SwiftUI
+import Factory
 
 struct GeneralSettingsEditView: View {
     @EnvironmentObject var appState: AppState
     
     @Environment(\.controlActiveState) var controlActiveState
     
-    private let launchAgentService = LaunchAgentService.shared
-    private let monitoringService = MonitoringService.shared
-    private let locationService = LocationService.shared
-    private let computerService = ComputerService.shared
+    @Injected(\.monitoringService) private var monitoringService
+    @Injected(\.launchAgentService) private var launchAgentService
+    @Injected(\.locationService) private var locationService
+    @Injected(\.computerService) private var computerService
     
     @State private var isKeepRunningOn = false
     @State private var isLocationServicesToggled: Bool = false
     @State private var interval: Int = 0
-    
     @State private var showOverKeepApplicationRunning = false
     @State private var showOverOnTopOfAllWindows = false
     @State private var showOverDisableLocationServices = false
@@ -38,16 +38,16 @@ struct GeneralSettingsEditView: View {
                     get: { isKeepRunningOn },
                     set: { _, _ in if isKeepRunningOn {
                         isKeepRunningOn = !launchAgentService.delete()
-                        launchAgentService.isLaunchAgentInstalled = false
+                        launchAgentService.setState(isInstalled: false)
                     }
                     else {
                         isKeepRunningOn = launchAgentService.create()
-                        launchAgentService.isLaunchAgentInstalled = true
+                        launchAgentService.setState(isInstalled: true)
                     }
                     }))
                     .withSettingToggleStyle()
                     .onAppear {
-                        let initState = launchAgentService.isLaunchAgentInstalled
+                        let initState = launchAgentService.isInstalled
                         isKeepRunningOn = initState
                     }
                 Spacer()
@@ -63,9 +63,7 @@ struct GeneralSettingsEditView: View {
             HStack {
                 Toggle(Constants.settingsElementOnTopOfAllWindows, isOn: Binding(
                     get: { appState.userData.onTopOfAllWindows },
-                    set: {
-                        appState.userData.onTopOfAllWindows = $0
-                    }
+                    set: { appState.userData.onTopOfAllWindows = $0 }
                 ))
                 .withSettingToggleStyle()
                 Spacer()
@@ -107,9 +105,7 @@ struct GeneralSettingsEditView: View {
             HStack {
                 Toggle(Constants.settingsElementPreventComputerSleep, isOn: Binding(
                     get: { appState.userData.preventComputerSleep },
-                    set: {
-                        appState.userData.preventComputerSleep = $0
-                    }
+                    set: { appState.userData.preventComputerSleep = $0 }
                 ))
                 .withSettingToggleStyle()
                 Spacer()
@@ -125,9 +121,7 @@ struct GeneralSettingsEditView: View {
             HStack {
                 Toggle(Constants.settingsElementHigherProtection, isOn: Binding(
                     get: { appState.userData.useHigherProtection },
-                    set: {
-                        appState.userData.useHigherProtection = $0
-                    }
+                    set: { appState.userData.useHigherProtection = $0 }
                 ))
                 .withSettingToggleStyle()
                 Spacer()
@@ -143,9 +137,7 @@ struct GeneralSettingsEditView: View {
             HStack {
                 Toggle(Constants.settingsElementAutoCloseApps, isOn: Binding(
                     get: { appState.userData.autoCloseApps },
-                    set: {
-                        appState.userData.autoCloseApps = $0
-                    }
+                    set: { appState.userData.autoCloseApps = $0 }
                 ))
                 .withSettingToggleStyle()
                 Spacer()
@@ -161,9 +153,7 @@ struct GeneralSettingsEditView: View {
             HStack {
                 Toggle(Constants.settingsElementConfirmationToCloseApps, isOn: Binding(
                     get: { appState.userData.appsCloseConfirmation },
-                    set: {
-                        appState.userData.appsCloseConfirmation = $0
-                    }
+                    set: { appState.userData.appsCloseConfirmation = $0 }
                 ))
                 .withSettingToggleStyle()
                 Spacer()
@@ -179,9 +169,7 @@ struct GeneralSettingsEditView: View {
             HStack {
                 Toggle(Constants.settingsElementPickyMode, isOn: Binding(
                     get: { appState.userData.pickyMode },
-                    set: {
-                        appState.userData.pickyMode = $0
-                    }
+                    set: { appState.userData.pickyMode = $0 }
                 ))
                 .withSettingToggleStyle()
                 Spacer()
@@ -197,9 +185,7 @@ struct GeneralSettingsEditView: View {
             HStack {
                 Toggle(Constants.settingsElementPeriodicIpCheck, isOn: Binding(
                     get: { appState.userData.periodicIpCheck },
-                    set: {
-                        appState.userData.periodicIpCheck = $0
-                    }
+                    set: { appState.userData.periodicIpCheck = $0 }
                 ))
                 .withSettingToggleStyle()
                 Spacer()

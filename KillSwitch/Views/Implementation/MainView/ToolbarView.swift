@@ -6,12 +6,15 @@
 //
 
 import SwiftUI
+import Factory
 
 struct ToolbarView : View {
     @EnvironmentObject var appState: AppState
     
     @Environment(\.openWindow) private var openWindow
     @Environment(\.controlActiveState) private var controlActiveState
+    
+    @Injected(\.loggingService) private var loggingService
     
     @State private var showOverSettings = false
     @State private var showOverCopyLog = false
@@ -22,7 +25,7 @@ struct ToolbarView : View {
         Section {
             Spacer()
             Button(Constants.toolbarCopyLog, systemImage: Constants.iconCopyLog) {
-                Log.copy()
+                loggingService.copy()
             }
             .withToolbarButtonStyle(showOver: showOverCopyLog, activeState: controlActiveState)
             .popover(isPresented: $showOverCopyLog, content: {
@@ -32,7 +35,7 @@ struct ToolbarView : View {
                 showOverCopyLog = hovering && controlActiveState == .key
             })
             Button(Constants.toolbarClearLog, systemImage: Constants.iconClearLog) {
-                Log.clear()
+                loggingService.clear()
             }
             .withToolbarButtonStyle(showOver: showOverClearLog, activeState: controlActiveState)
             .popover(isPresented: $showOverClearLog, content: {

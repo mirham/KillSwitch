@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Factory
 
 struct NetworkStatusView : View {
     @EnvironmentObject var appState: AppState
@@ -13,7 +14,7 @@ struct NetworkStatusView : View {
     @Environment(\.openWindow) private var openWindow
     @Environment(\.controlActiveState) private var controlActiveState
     
-    private let networkService = NetworkService.shared
+    @Injected(\.networkService) private var networkService
     
     @State private var showOverText = false
 

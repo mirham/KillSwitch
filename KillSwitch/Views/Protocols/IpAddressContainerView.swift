@@ -17,9 +17,9 @@ extension IpAddressContainerView {
         
         switch safetyType {
             case .compete:
-                return isDarkTheme ? Color.green : Color(hex: "#369300")
+                return isDarkTheme ? Color.green : Color(hex: Constants.colorCompleteSafetyLightTheme)
             case .some:
-                return isDarkTheme ? Color.yellow : Color(hex: "#A7A200")
+                return isDarkTheme ? Color.yellow : Color(hex: Constants.colorSomeSafetyLightTheme)
             case .unsafe:
                 return Color.red
             default:

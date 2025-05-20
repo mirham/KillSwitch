@@ -6,14 +6,13 @@
 //
 
 import Foundation
+import Factory
 
-class MonitoringService: ServiceBase {
-    static let shared = MonitoringService()
-    
-    private let addressesService = IpService.shared
-    private let networkService = NetworkService.shared
-    private let processesService = ProcessesService.shared
-    private let computerService = ComputerService.shared
+class MonitoringService: ServiceBase, MonitoringServiceType {
+    @Injected(\.ipService) private var ipService
+    @Injected(\.networkService) private var networkService
+    @Injected(\.processService) private var processService
+    @Injected(\.computerService) private var computerService
     
     private var currentTimer: Timer? = nil
     private var monitoringTime: Int = 0
@@ -31,7 +30,9 @@ class MonitoringService: ServiceBase {
         
         monitoringTime = 0
         
-        Log.write(message: Constants.logMonitoringHasBeenEnabled)
+        loggingService.write(
+            message: Constants.logMonitoringHasBeenEnabled,
+            type: .info)
         
         computerService.startSleepPreventing()
         
@@ -48,7 +49,7 @@ class MonitoringService: ServiceBase {
                         && self.monitoringTime % self.appState.userData.intervalBetweenChecks == 0
                         
                         if (ipCheckNeeded) {
-                            let updatedIpAddressResult =  await self.addressesService.getCurrentIpAsync()
+                            let updatedIpAddressResult =  await self.ipService.getCurrentIpAsync(ipApiUrl: nil, withInfo: true)
                             self.handleUpdatedIpAddressResult(updatedIpAddressResult: updatedIpAddressResult)
                         }
                         
@@ -69,28 +70,36 @@ class MonitoringService: ServiceBase {
         
         computerService.stopSleepPreventing()
         
-        Log.write(message: Constants.logMonitoringHasBeenDisabled, type: LogEntryType.warning)
+        loggingService.write(message: Constants.logMonitoringHasBeenDisabled, type: LogEntryType.warning)
     }
     
     // MARK: Private functions
     
-    private func handleUpdatedIpAddressResult(updatedIpAddressResult : OperationResult<IpInfoBase>) {
+    private func handleUpdatedIpAddressResult(
+        updatedIpAddressResult : OperationResult<IpInfoBase>) {
         if (isUnsafeForHigherProtection(updatedIpAddressResult: updatedIpAddressResult)
             || noActiveIpApiFound(updatedIpAddressResult: updatedIpAddressResult)) {
             disableActiveNetworkInterfaces()
         }
         
         guard updatedIpAddressResult.result != nil else {
-            Log.write(message: updatedIpAddressResult.error ?? String(), type: .error)
+            loggingService.write(
+                message: updatedIpAddressResult.error ?? String(),
+                type: .error)
+            
             return
         }
         
         if (updatedIpAddressResult.result!.ipAddress != appState.network.currentIpInfo?.ipAddress) {
             updateStatus(currentIpInfo: updatedIpAddressResult.result)
-            Log.write(message: String(format: Constants.logCurrentIpHasBeenUpdated, updatedIpAddressResult.result!.ipAddress))
+            loggingService.write(
+                message: String(format: Constants.logCurrentIpHasBeenUpdated, updatedIpAddressResult.result!.ipAddress),
+                type: .info)
         }
         
-        Log.write(message: String(format: Constants.logCurrentIp, updatedIpAddressResult.result!.ipAddress))
+        loggingService.write(
+            message: String(format: Constants.logCurrentIp, updatedIpAddressResult.result!.ipAddress),
+            type: .info)
     }
     
     private func checkIfCurrentIpIsAllowed() {
@@ -101,10 +110,12 @@ class MonitoringService: ServiceBase {
             
             disableActiveNetworkInterfaces()
             
-            Log.write(message: message, type: LogEntryType.warning)
+            loggingService.write(
+                message: message,
+                type: LogEntryType.warning)
             
             if (appState.userData.autoCloseApps) {
-                processesService.killActiveProcesses()
+                processService.killActiveProcesses()
             }
         }
     }
@@ -115,7 +126,9 @@ class MonitoringService: ServiceBase {
             
             disableActiveNetworkInterfaces()
             
-            Log.write(message: message, type: LogEntryType.error)
+            loggingService.write(
+                message: message,
+                type: LogEntryType.error)
         }
     }
     

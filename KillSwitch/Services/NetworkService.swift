@@ -9,33 +9,7 @@ import Foundation
 import Network
 import SystemConfiguration
 
-class NetworkService : ServiceBase, ShellAccessible {
-    static let shared = NetworkService()
-    
-    func enableNetworkInterface(interfaceName: String){
-        do {
-            try safeShell(String(format: Constants.shCommandEnableNetworkIterface, interfaceName))
-            
-            Log.write(message: String(format: Constants.logNetworkInterfaceHasBeenEnabled, interfaceName))
-        }
-        catch {
-            Log.write(message: String(format: Constants.logCannotEnableNetworkInterface, interfaceName), type: .error)
-        }
-    }
-    
-    func disableNetworkInterface(interfaceName: String) {
-        do {
-            try safeShell(String(format: Constants.shCommandDisableNetworkIterface, interfaceName))
-            
-            Log.write(message: String(format: Constants.logNetworkInterfaceHasBeenDisabled, interfaceName))
-        }
-        catch {
-            Log.write(message: String(format: Constants.logCannotDisableNetworkInterface, interfaceName), type: .error)
-        }
-    }
-    
-    // MARK: Private functions
-    
+class NetworkService : ServiceBase, ShellAccessible, NetworkServiceType {
     func getPhysicalInterfaces() -> [NetworkInterface] {
         let interfaces = SCNetworkInterfaceCopyAll() as? Array<SCNetworkInterface> ?? []
         
@@ -44,7 +18,7 @@ class NetworkService : ServiceBase, ShellAccessible {
             guard let bsdName = SCNetworkInterfaceGetBSDName(interface) as? String else { return nil }
             
             if (bsdName.hasPrefix(Constants.physicalNetworkInterfacePrefix)
-               && interfaceName.range(of: Constants.physicalNetworkInterfaceExclusion, options: .caseInsensitive) == nil) {
+                && interfaceName.range(of: Constants.physicalNetworkInterfaceExclusion, options: .caseInsensitive) == nil) {
                 return NetworkInterface(
                     name: bsdName as String,
                     type: getNetworkInterfaceTypeByInterfaceName(interfaceName: interfaceName),
@@ -56,6 +30,38 @@ class NetworkService : ServiceBase, ShellAccessible {
         
         return result
     }
+    
+    func enableNetworkInterface(interfaceName: String) {
+        do {
+            try safeShell(String(format: Constants.shCommandEnableNetworkIterface, interfaceName))
+            
+            loggingService.write(
+                message: String(format: Constants.logNetworkInterfaceHasBeenEnabled, interfaceName),
+                type: .info)
+        }
+        catch {
+            loggingService.write(
+                message: String(format: Constants.logCannotEnableNetworkInterface, interfaceName),
+                type: .error)
+        }
+    }
+    
+    func disableNetworkInterface(interfaceName: String) {
+        do {
+            try safeShell(String(format: Constants.shCommandDisableNetworkIterface, interfaceName))
+            
+            loggingService.write(
+                message: String(format: Constants.logNetworkInterfaceHasBeenDisabled, interfaceName),
+                type: .info)
+        }
+        catch {
+            loggingService.write(
+                message: String(format: Constants.logCannotDisableNetworkInterface, interfaceName),
+                type: .error)
+        }
+    }
+    
+    // MARK: Private functions
     
     private func getNetworkInterfaceTypeByInterfaceName(interfaceName: String) -> NetworkInterfaceType {
         if (interfaceName.range(of: Constants.physicalNetworkInterfaceWiFi, options: .caseInsensitive) != nil) {

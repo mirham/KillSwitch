@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Factory
 
 struct ProcessesStatusView : View {
     @EnvironmentObject var appState: AppState
@@ -13,7 +14,7 @@ struct ProcessesStatusView : View {
     @Environment(\.openWindow) private var openWindow
     @Environment(\.controlActiveState) private var controlActiveState
     
-    private let processesService = ProcessesService.shared
+    @Injected(\.processService) private var processService
     
     @State private var showOverText = false
     
@@ -77,7 +78,7 @@ struct ProcessesStatusView : View {
     }
     
     private func closeApplications(){
-        processesService.killActiveProcesses()
+        self.processService.killActiveProcesses()
         showOverText = false
     }
 }

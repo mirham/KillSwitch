@@ -14,7 +14,7 @@ struct LogView : View {
     
     private let dateFormatter = DateFormatter()
     
-    init(){
+    init() {
         dateFormatter.dateFormat = Constants.logDateFormat
     }
     

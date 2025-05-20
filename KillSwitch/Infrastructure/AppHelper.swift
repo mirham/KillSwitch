@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-class AppHelper {    
+class AppHelper {
     static func setUpView(viewName: String, onTop: Bool) {
         for window in NSApplication.shared.windows {
             let windowId = String(window.identifier?.rawValue ?? String())

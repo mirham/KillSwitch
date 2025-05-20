@@ -6,7 +6,10 @@
 //
 
 import Foundation
+import Factory
 
 class ServiceBase {
     let appState = AppState.shared
+    
+    @LazyInjected(\.loggingService) var loggingService
 }

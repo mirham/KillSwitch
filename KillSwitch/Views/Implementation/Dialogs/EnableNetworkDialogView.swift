@@ -1,18 +1,21 @@
 //
-//  KillProcessesConfirmationDialogView.swift
+//  EnableNetworkDialogView.swift
 //  KillSwitch
 //
-//  Created by UglyGeorge on 27.06.2024.
+//  Created by UglyGeorge on 25.07.2024.
 //
 
 import SwiftUI
+import Factory
 
-struct KillProcessesConfirmationDialogView : View {
+struct EnableNetworkDialogView : View {
     @EnvironmentObject var appState: AppState
     
-    let processesService = ProcessesService.shared
+    @Injected(\.networkService) private var networkService
     
     @State var isPresented = false
+    
+    @State private var interfaceToEnable: String? = nil
     
     var body: some View {
         EmptyView()
@@ -24,35 +27,43 @@ struct KillProcessesConfirmationDialogView : View {
                     .frame(width: 60, height: 60)
                 Spacer()
                     .frame(height: 15)
-                Text(Constants.dialogHeaderCloseApps)
+                Text(Constants.dialogHeaderEnableNetwork)
                     .font(.title3)
                     .bold()
                 Spacer().frame(height: 10)
-                Text(Constants.dialogBodyCloseApps)
+                Text(Constants.dialogBodyEnableNetwork)
                     .multilineTextAlignment(.center)
                     .font(.system(size: 10))
                 Spacer().frame(height: 20)
                 VStack(alignment: .leading) {
-                    ForEach(appState.system.processesToKill, id: \.pid) { processInfo in
+                    ForEach(appState.network.physicalNetworkInterfaces, id: \.id) { networkInterface in
                         HStack {
-                            Image(nsImage: NSWorkspace.shared.icon(forFile: processInfo.url))
-                            Text(processInfo.name)
+                            RadioButton(
+                                id: networkInterface.name,
+                                label: networkInterface.localizedName ?? networkInterface.name,
+                                size: 12,
+                                color: Color.primary,
+                                textSize: 11,
+                                isMarked: interfaceToEnable == networkInterface.name,
+                                callback: { _ in interfaceToEnable = networkInterface.name }
+                            )
                         }
                     }
                 }
                 HStack {
                     Button(action: primaryButtonClickHandler) {
-                        Text(Constants.yes)
+                        Text(Constants.enable)
                             .frame(height: 25)
                             .frame(maxWidth: /*@START_MENU_TOKEN@*/.infinity/*@END_MENU_TOKEN@*/)
                             .background(
-                                RoundedRectangle(cornerRadius: 5, style: .continuous).fill(Color.red)
+                                RoundedRectangle(cornerRadius: 5, style: .continuous).fill(
+                                    interfaceToEnable == nil ? Color.gray : Color.green)
                             )
                     }.buttonStyle(.plain)
                     Spacer()
                         .frame(width: 20)
                     Button(action: secondaryButtonClickHandler) {
-                        Text(Constants.no)
+                        Text(Constants.cancel)
                             .frame(width: 100, height: 25)
                     }
                 }.padding()
@@ -71,8 +82,10 @@ struct KillProcessesConfirmationDialogView : View {
     // MARK: Private function
     
     private func primaryButtonClickHandler() {
-        processesService.killActiveProcesses()
-        closeDialog()
+        if (interfaceToEnable != nil) {
+            networkService.enableNetworkInterface(interfaceName: interfaceToEnable!)
+            closeDialog()
+        }
     }
     
     private func secondaryButtonClickHandler() {
@@ -80,19 +93,21 @@ struct KillProcessesConfirmationDialogView : View {
     }
     
     private func openDialog() {
-        appState.views.isKillProcessesConfirmationDialogShown = true
+        appState.views.isEnableNetworkDialogShown = true
+        interfaceToEnable = appState.current.mainNetworkInterface
         AppHelper.setUpView(
-            viewName: Constants.windowIdKillProcessesConfirmationDialog,
+            viewName: Constants.windowIdEnableNetworkDialog,
             onTop: true)
         isPresented = true
     }
     
     private func closeDialog() {
-        appState.views.isKillProcessesConfirmationDialogShown = false
+        appState.views.isEnableNetworkDialogShown = false
         isPresented = false
+        AppHelper.activateView(viewId: Constants.windowIdMain)
     }
 }
 
 #Preview {
-    KillProcessesConfirmationDialogView().environmentObject(AppState())
+    EnableNetworkDialogView().environmentObject(AppState())
 }

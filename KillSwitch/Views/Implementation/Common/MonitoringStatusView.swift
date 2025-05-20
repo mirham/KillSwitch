@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Factory
 
 struct MonitoringStatusView : View {
     @EnvironmentObject var appState: AppState
@@ -13,9 +14,9 @@ struct MonitoringStatusView : View {
     @Environment(\.openWindow) private var openWindow
     @Environment(\.controlActiveState) private var controlActiveState
     
-    @State private var showOverText = false
+    @Injected(\.monitoringService) private var monitoringService
     
-    private let monitoringService = MonitoringService.shared
+    @State private var showOverText = false
     
     var body: some View {
         Section() {

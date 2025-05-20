@@ -8,9 +8,7 @@
 import Foundation
 import Network
 
-class IpService : ServiceBase, ApiCallable {
-    static let shared = IpService()
-    
+class IpService : ServiceBase, ApiCallable, IpServiceType {    
     func getCurrentIpAsync(ipApiUrl: String? = nil, withInfo: Bool = true) async -> OperationResult<IpInfoBase> {
         var currentIpApiUrl = ipApiUrl
         

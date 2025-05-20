@@ -7,9 +7,7 @@
 
 import Foundation
 
-class ComputerService : ServiceBase, ShellAccessible {
-    static let shared = ComputerService()
-    
+class ComputerService : ServiceBase, ShellAccessible, ComputerServiceType {
     private var activity: NSObjectProtocol? = nil
     
     func startSleepPreventing() {
@@ -20,7 +18,9 @@ class ComputerService : ServiceBase, ShellAccessible {
                       Foundation.ProcessInfo.ActivityOptions.idleSystemSleepDisabled],
             reason: Constants.sleepPreventingReason)
         
-        Log.write(message: Constants.logPreventComputerSleepEnabled)
+        loggingService.write(
+            message: Constants.logPreventComputerSleepEnabled,
+            type: .info)
     }
     
     func stopSleepPreventing() {
@@ -28,19 +28,23 @@ class ComputerService : ServiceBase, ShellAccessible {
         
         Foundation.ProcessInfo.processInfo.endActivity(activity!)
         
-        Log.write(message: Constants.logPreventComputerSleepDisabled)
+        loggingService.write(
+            message: Constants.logPreventComputerSleepDisabled,
+            type: .info)
     }
     
-    func reboot(){
+    func reboot() {
         do {
             try rootShell(command: Constants.shCommandReboot)
             
-            Log.write(message: Constants.logRebooting)
+            loggingService.write(
+                message: Constants.logRebooting,
+                type: .info)
         }
-        catch{
-            Log.write(
+        catch {
+            loggingService.write(
                 message: String(format: Constants.logCannotReboot, error.localizedDescription),
-                type: LogEntryType.error)
+                type: .error)
         }
     }
 }
