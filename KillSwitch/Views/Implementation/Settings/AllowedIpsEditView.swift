@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Network
+import Factory
 
 struct AllowedIpsEditView : IpAddressContainerView {
     @EnvironmentObject var appState: AppState
@@ -18,9 +19,9 @@ struct AllowedIpsEditView : IpAddressContainerView {
     @State private var newIpSafetyType: SafetyType = SafetyType.compete
     @State private var isNewIpInvalid: Bool = false
     @State private var isLastIp: Bool = false
-
-    private let ipService = IpService.shared
-    private let monitoringService = MonitoringService.shared
+    
+    @Injected(\.ipService) private var ipService
+    @Injected(\.monitoringService) private var monitoringService
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -53,6 +54,9 @@ struct AllowedIpsEditView : IpAddressContainerView {
                                     .frame(width: 10, height: 10)
                             }
                             .contextMenu {
+                                Button(action: { String.copyToClipboard(input: ipAddress.ipAddress) } ) {
+                                    Text(Constants.copy)
+                                }
                                 Button(action: { deleteAllowedIpAddressClickHandler(ipAddress: ipAddress) }) {
                                     Text(Constants.delete)
                                 }
@@ -68,6 +72,7 @@ struct AllowedIpsEditView : IpAddressContainerView {
                         }
                     }
                 }
+                .padding(.bottom, 10)
                 .safeAreaInset(edge: .bottom) {
                     VStack {
                         HStack {
@@ -112,7 +117,6 @@ struct AllowedIpsEditView : IpAddressContainerView {
                             .bold()
                             .pointerOnHover()
                     }
-                    .padding()
                 }
             }
         }

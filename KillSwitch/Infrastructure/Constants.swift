@@ -60,6 +60,10 @@ struct Constants{
     static let iconCircle = "circle"
     static let iconMarkedCircle = "largecircle.fill.circle"
     
+    // MARK: Colors
+    static let colorCompleteSafetyLightTheme = "#369300"
+    static let colorSomeSafetyLightTheme = "#A7A200"
+    
     // MARK: Window IDs
     static let windowIdMain = "main-view"
     static let windowIdSettings = "settings-view"
@@ -77,6 +81,7 @@ struct Constants{
     static let on = "On"
     static let off = "Off"
     static let add = "Add"
+    static let copy = "Copy"
     static let delete = "Delete"
     static let enable = "Enable"
     static let cancel = "Cancel"
@@ -101,6 +106,8 @@ struct Constants{
     static let disabled = "disabled"
     static let physical = "physical"
     static let virtual = "virtual"
+    static let checked = "Checked"
+    static let unchecked = "Unchecked"
     
     // MARK: Symbols
     static let bullet = "•"
@@ -271,7 +278,13 @@ struct Constants{
         "https://checkip.amazonaws.com",
         "http://whatismyip.akamai.com",
         "https://api.seeip.org",
-        "https://ipapi.co/ip"
+        "https://ipapi.co/ip",
+        "https://4.ident.me/",
+        "https://www.myexternalip.com/raw",
+        "https://l2.io/ip",
+        "https://api.ip.sb/ip",
+        "https://ipv4.ddnspod.com/",
+        "https://api.ip.lk/"
     ]
     
     static let launchAgentXmlContent =

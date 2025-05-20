@@ -7,14 +7,14 @@
 
 import Foundation
 import Network
+import Factory
 
-class NetworkStatusService: ServiceBase, ApiCallable {    
-    private let ipService = IpService.shared
-    private let networkService = NetworkService.shared
+class NetworkStatusService: ServiceBase, ApiCallable, NetworkStatusServiceType {
+    @Injected(\.ipService) private var ipService
+    @Injected(\.networkService) private var networkService
     
     private let monitor = NWPathMonitor()
     private let queue = DispatchQueue(label: Constants.networkMonitorQueryLabel, qos: .background)
-    
     private let lock = NSLock()
     
     override init() {
@@ -81,20 +81,30 @@ class NetworkStatusService: ServiceBase, ApiCallable {
                 var ipNotObtained = true
                 
                 while ipNotObtained && self.appState.userData.ipApis.contains(where: {$0.isActive()}) {
-                    let updatedIpResult = await self.ipService.getCurrentIpAsync()
+                    let updatedIpResult = await self.ipService.getCurrentIpAsync(ipApiUrl: nil, withInfo: true)
                     
                     if (updatedIpResult.success) {
                         ipNotObtained = false
-                        await MainActor.run { updateStatus(currentIpInfo: updatedIpResult.result) }
-                        Log.write(message: String(format: Constants.logCurrentIp, updatedIpResult.result!.ipAddress))
+                        
+                        await MainActor.run {
+                            updateStatus(currentIpInfo: updatedIpResult.result)
+                        }
+                        
+                        loggingService.write(
+                            message: String(format: Constants.logCurrentIp, updatedIpResult.result!.ipAddress),
+                            type: .info)
                     }
                 }
                 
                 if (ipNotObtained) {
-                    await MainActor.run { updateStatus(currentIpInfo: nil, allowCurrentIpInfoNil: true) }
+                    await MainActor.run {
+                        updateStatus(currentIpInfo: nil, allowCurrentIpInfoNil: true)
+                    }
                 }
                 
-                await MainActor.run { updateStatus(obtainingIp: false) }
+                await MainActor.run {
+                    updateStatus(obtainingIp: false)
+                }
             }
         }
         lock.unlock()

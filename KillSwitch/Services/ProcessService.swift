@@ -8,9 +8,7 @@
 import Foundation
 import AppKit
 
-class ProcessesService : ServiceBase, ShellAccessible {
-    static let shared = ProcessesService()
-    
+class ProcessService : ServiceBase, ShellAccessible, ProcessServiceType {
     private var currentTimer: Timer? = nil
     
     override init() {
@@ -29,7 +27,9 @@ class ProcessesService : ServiceBase, ShellAccessible {
         for activeProcessToClose in appState.system.processesToKill {
             kill(activeProcessToClose.pid, SIGTERM)
             
-            Log.write(message: String(format: Constants.logProcessTerminated, activeProcessToClose.name))
+            loggingService.write(
+                message: String(format: Constants.logProcessTerminated, activeProcessToClose.name),
+                type: .info)
         }
     }
     

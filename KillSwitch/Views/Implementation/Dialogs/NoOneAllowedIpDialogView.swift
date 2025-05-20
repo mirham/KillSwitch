@@ -6,15 +6,16 @@
 //
 
 import SwiftUI
+import Factory
 
 struct NoOneAllowedIpDialogView : View {
     @EnvironmentObject var appState: AppState
     
+    @Injected(\.monitoringService) private var monitoringService
+    @Injected(\.ipService) private var ipService
+    
     @State private var newIpSafetyType: SafetyType = SafetyType.compete
     @State var isPresented = false
-    
-    var monitoringService = MonitoringService.shared
-    var ipService = IpService.shared
     
     var body: some View {
         EmptyView()
@@ -91,7 +92,7 @@ struct NoOneAllowedIpDialogView : View {
     
     // MARK: Private function
     private func addAllowedIpAddress(safetyType : SafetyType) {
-        ipService.addAllowedIp(
+        self.ipService.addAllowedIp(
             ip: appState.network.currentIpInfo!.ipAddress,
             ipInfo: appState.network.currentIpInfo,
             safetyType: safetyType)
@@ -103,7 +104,7 @@ struct NoOneAllowedIpDialogView : View {
     
     private func primaryButtonClickHandler() {
         addAllowedIpAddress(safetyType: newIpSafetyType)
-        monitoringService.startMonitoring()
+        self.monitoringService.startMonitoring()
         closeDialog()
     }
     

@@ -7,10 +7,8 @@
 
 import Foundation
 
-class LaunchAgentService : ServiceBase, ShellAccessible {
-    var isLaunchAgentInstalled = false
-    
-    static let shared = LaunchAgentService()
+class LaunchAgentService : ServiceBase, ShellAccessible, LaunchAgentServiceType {
+    var isInstalled = false
     
     override init() {
         super.init()
@@ -19,7 +17,7 @@ class LaunchAgentService : ServiceBase, ShellAccessible {
         let plistFilePath = getPlistFilePath()
         
         if(fileManager.fileExists(atPath: plistFilePath)) {
-            isLaunchAgentInstalled = true
+            isInstalled = true
         }
     }
     
@@ -32,14 +30,34 @@ class LaunchAgentService : ServiceBase, ShellAccessible {
         do {
             try xmlContent.write(toFile: plistFilePath, atomically: true, encoding: String.Encoding.utf8)
             
-            Log.write(message: String(format: Constants.logLaunchAgentAdded))
+            loggingService.write(
+                message: String(format: Constants.logLaunchAgentAdded),
+                type: .info)
             
             return true
         } catch {
-            Log.write(message: String(format: Constants.logCannotAddLaunchAgent, error.localizedDescription))
+            loggingService.write(
+                message: String(format: Constants.logCannotAddLaunchAgent, error.localizedDescription),
+                type: .error)
             
             return false
         }
+    }
+    
+    func setState(isInstalled: Bool) {
+        self.isInstalled = isInstalled
+    }
+    
+    func apply() {
+        do {
+            if(isInstalled){
+                try safeShell(String(format: Constants.shCommandLoadLaunchAgent, Constants.launchAgentsFolderPath, Constants.launchAgentPlistName))
+            }
+            else{
+                try safeShell(String(format: Constants.shCommandRemoveLaunchAgent, Constants.launchAgentName))
+            }
+        }
+        catch {}
     }
     
     func delete() -> Bool {
@@ -48,27 +66,19 @@ class LaunchAgentService : ServiceBase, ShellAccessible {
             let plistFilePath = getPlistFilePath()
             try fileManager.removeItem(atPath: plistFilePath)
             
-            Log.write(message: String(format: Constants.logLaunchAgentRemoved))
+            loggingService.write(
+                message: String(format: Constants.logLaunchAgentRemoved),
+                type: .info)
             
             return true
         }
         catch {
-            Log.write(message: String(format: Constants.logCannotRemoveLaunchAgent, error.localizedDescription))
+            loggingService.write(
+                message: String(format: Constants.logCannotRemoveLaunchAgent, error.localizedDescription),
+                type: .error)
             
             return false
         }
-    }
-    
-    func apply() {
-        do {
-            if(isLaunchAgentInstalled){
-                try safeShell(String(format: Constants.shCommandLoadLaunchAgent, Constants.launchAgentsFolderPath, Constants.launchAgentPlistName))
-            }
-            else{
-                try safeShell(String(format: Constants.shCommandRemoveLaunchAgent, Constants.launchAgentName))
-            }
-        }
-        catch {}
     }
     
     // MARK: Private functions

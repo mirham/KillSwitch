@@ -45,7 +45,7 @@ struct SettingsView : View {
         })
         .opacity(getViewOpacity(state: controlActiveState))
         .padding()
-        .frame(maxWidth: 500, maxHeight: 500)
+        .frame(maxWidth: 550, maxHeight: 500)
     }
     
     // MARK: Private functions

@@ -6,13 +6,14 @@
 //
 
 import SwiftUI
+import Factory
 
 struct CurrentIpView: IpAddressContainerView {
     @EnvironmentObject var appState: AppState
     
     @Environment(\.colorScheme) private var colorScheme
     
-    var ipService = IpService.shared
+    @Injected(\.ipService) private var ipService
     
     var body: some View {
         Section() {

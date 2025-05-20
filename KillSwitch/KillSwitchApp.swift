@@ -6,14 +6,15 @@
 //
 
 import SwiftUI
+import Factory
 
 @main
 struct KillSwitchApp: App {
     let appState = AppState.shared
     
     init() {
-        _ = NetworkStatusService()
-        _ = ProcessesService()
+        _ = Container.shared.networkStatusService()
+        _ = Container.shared.processService()
     }
     
     var body: some Scene {
@@ -41,7 +42,7 @@ struct KillSwitchApp: App {
             SettingsView()
                 .environmentObject(appState)
                 .navigationTitle(Constants.settings)
-                .frame(minWidth: 500, maxWidth: 500, minHeight: 500, maxHeight: 500)
+                .frame(minWidth: 550, maxWidth: 550, minHeight: 500, maxHeight: 500)
         }).windowResizability(.contentSize)
         
         WindowGroup(id: Constants.windowIdKillProcessesConfirmationDialog, content: {
