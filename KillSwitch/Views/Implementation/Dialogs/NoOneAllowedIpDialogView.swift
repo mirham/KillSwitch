@@ -92,9 +92,9 @@ struct NoOneAllowedIpDialogView : View {
     
     // MARK: Private function
     private func addAllowedIpAddress(safetyType : SafetyType) {
-        self.ipService.addAllowedIp(
-            ip: appState.network.currentIpInfo!.ipAddress,
-            ipInfo: appState.network.currentIpInfo,
+        self.ipService.addAllowedPublicIp(
+            ip: appState.network.publicIp!.ipAddress,
+            ipInfo: appState.network.publicIp,
             safetyType: safetyType)
     }
     

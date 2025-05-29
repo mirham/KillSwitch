@@ -11,7 +11,11 @@ struct Constants{
     // MARK: Default values
     static let defaultCountryCode = "US"
     static let defaultIpAddress = "1.1.1.1"
+    static let secondInNanoseconds: UInt64 = 1_000_000_000
     static let defaultMonitoringInterval: Int = 1
+    static let defaultMonitoringIntervalNanoseconds: UInt64 =  UInt64(defaultMonitoringInterval) * secondInNanoseconds
+    static let defaultProcessesMonitoringInterval: Int = 5
+    static let defaultProcessesMonitoringIntervalNanoseconds: UInt64 =  UInt64(defaultProcessesMonitoringInterval) * secondInNanoseconds
     static let minTimeIntervalToCheck: Int = 1
     static let maxTimeIntervalToCheck: Int = 300
     static let zshPath = "/bin/zsh"
@@ -229,7 +233,8 @@ struct Constants{
     static let logCannotToggleLocationServices = "Cannot toggle location services: %1$@"
     static let logRebooting = "Rebooting..."
     static let logCannotReboot = "Cannot reboot the computer: %1$@"
-    static let logProcessTerminated = "%1$@ has been closed"
+    static let logProcessTerminated = "%1$@ has been closed"   
+    static let logErrorHandlingProcesses = "Error when handling active processes: %1$@"
     static let logPreventComputerSleepEnabled = "Preventing the computer from going to sleep is enabled"
     static let logPreventComputerSleepDisabled = "Preventing the computer from going to sleep is disabled"
     

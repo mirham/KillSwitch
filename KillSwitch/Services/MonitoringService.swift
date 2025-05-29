@@ -14,8 +14,8 @@ class MonitoringService: ServiceBase, MonitoringServiceType {
     @Injected(\.processService) private var processService
     @Injected(\.computerService) private var computerService
     
-    private var currentTimer: Timer? = nil
     private var monitoringTime: Int = 0
+    private var monitoringTask: Task<Void, Never>?
     
     override init() {
         super.init()
@@ -25,9 +25,11 @@ class MonitoringService: ServiceBase, MonitoringServiceType {
         }
     }
     
+    deinit {
+        monitoringTask?.cancel()
+    }
+    
     func startMonitoring() {
-        updateStatus(isMonitoringEnabled: true)
-        
         monitoringTime = 0
         
         loggingService.write(
@@ -36,77 +38,91 @@ class MonitoringService: ServiceBase, MonitoringServiceType {
         
         computerService.startSleepPreventing()
         
-        currentTimer = Timer.scheduledTimer(withTimeInterval: TimeInterval(Constants.defaultMonitoringInterval), repeats: true) { 
-            timer in
-            if self.appState.monitoring.isEnabled {
-                Task {
-                    do {
-                        self.monitoringTime += Constants.defaultMonitoringInterval
-                        
-                        guard self.appState.network.status == .on else { return }
-                        
-                        let ipCheckNeeded = self.appState.userData.periodicIpCheck
-                        && self.monitoringTime % self.appState.userData.intervalBetweenChecks == 0
-                        
-                        if (ipCheckNeeded) {
-                            let updatedIpAddressResult =  await self.ipService.getCurrentIpAsync(ipApiUrl: nil, withInfo: true)
-                            self.handleUpdatedIpAddressResult(updatedIpAddressResult: updatedIpAddressResult)
-                        }
-                        
-                        self.checkIfCurrentIpIsAllowed()
-                        self.checkPossibilityOfObtaininigIp()
-                    }
+        monitoringTask = Task {
+            await updateStatusAsync(update: MonitoringStateUpdateBuilder()
+                .withIsMonitoringEnabled(true)
+                .build())
+            
+            while !Task.isCancelled && self.appState.monitoring.isEnabled {
+                try? await Task.sleep(nanoseconds:Constants.defaultMonitoringIntervalNanoseconds)
+                
+                self.monitoringTime += Constants.defaultMonitoringInterval
+                
+                guard self.appState.network.status == .on else { continue }
+                
+                let isIpCheckRequired = self.appState.userData.periodicIpCheck &&
+                    self.monitoringTime % self.appState.userData.intervalBetweenChecks == 0
+                
+                if isIpCheckRequired {
+                    let updatedIpAddressResult =  await self.ipService.getPublicIpAsync(ipApiUrl: nil, withInfo: true)
+                    await self.handleUpdatedPublicIpResultAsync(updatedPublicIpResult: updatedIpAddressResult)
                 }
-            }
-            else {
-                timer.invalidate()
+
+                self.isPublicIpObtainable()
+                self.isPublicIpAllowed()
             }
         }
     }
     
     func stopMonitoring() {
-        updateStatus(isMonitoringEnabled: false)
-        currentTimer?.invalidate()
+        Task {
+            await updateStatusAsync(update: MonitoringStateUpdateBuilder()
+                .withIsMonitoringEnabled(false)
+                .build())
+        }
         
+        monitoringTask?.cancel()
         computerService.stopSleepPreventing()
         
-        loggingService.write(message: Constants.logMonitoringHasBeenDisabled, type: LogEntryType.warning)
+        loggingService.write(
+            message: Constants.logMonitoringHasBeenDisabled,
+            type: LogEntryType.warning)
     }
     
     // MARK: Private functions
     
-    private func handleUpdatedIpAddressResult(
-        updatedIpAddressResult : OperationResult<IpInfoBase>) {
-        if (isUnsafeForHigherProtection(updatedIpAddressResult: updatedIpAddressResult)
-            || noActiveIpApiFound(updatedIpAddressResult: updatedIpAddressResult)) {
-            disableActiveNetworkInterfaces()
+    private func handleUpdatedPublicIpResultAsync (
+        updatedPublicIpResult : OperationResult<IpInfoBase>) async {
+        let isConnectionMustBeDisabled =
+            self.isUnsafeForHigherProtection(updatedIpAddressResult: updatedPublicIpResult) ||
+            self.noActiveIpApiFound(updatedIpAddressResult: updatedPublicIpResult)
+            
+        if (isConnectionMustBeDisabled) {
+            self.disableActiveNetworkInterfaces()
         }
         
-        guard updatedIpAddressResult.result != nil else {
-            loggingService.write(
-                message: updatedIpAddressResult.error ?? String(),
+        guard updatedPublicIpResult.result != nil else {
+            self.loggingService.write(
+                message: updatedPublicIpResult.error ?? String(),
                 type: .error)
             
             return
         }
         
-        if (updatedIpAddressResult.result!.ipAddress != appState.network.currentIpInfo?.ipAddress) {
-            updateStatus(currentIpInfo: updatedIpAddressResult.result)
-            loggingService.write(
-                message: String(format: Constants.logCurrentIpHasBeenUpdated, updatedIpAddressResult.result!.ipAddress),
+        if (updatedPublicIpResult.result!.ipAddress != appState.network.publicIp?.ipAddress) {
+            await updateStatusAsync(update: MonitoringStateUpdateBuilder()
+                .withPublicIp(updatedPublicIpResult.result)
+                .build())
+            
+            self.loggingService.write(
+                message: String(format: Constants.logCurrentIpHasBeenUpdated, updatedPublicIpResult.result!.ipAddress),
                 type: .info)
         }
         
-        loggingService.write(
-            message: String(format: Constants.logCurrentIp, updatedIpAddressResult.result!.ipAddress),
+        self.loggingService.write(
+            message: String(format: Constants.logCurrentIp, updatedPublicIpResult.result!.ipAddress),
             type: .info)
     }
     
-    private func checkIfCurrentIpIsAllowed() {
-        if (!appState.current.isCurrentIpAllowed && !appState.network.obtainingIp && appState.network.currentIpInfo != nil) {
+    private func isPublicIpAllowed() {
+        let isNotAllowedIp = !appState.current.isPublicIpAllowed &&
+            !appState.network.isObtainingIp &&
+            appState.network.publicIp != nil
+        
+        if isNotAllowedIp {
             let message = String(
                 format: Constants.logCurrentIpHasBeenUpdatedWithNotFromWhitelist,
-                appState.network.currentIpInfo!.ipAddress)
+                appState.network.publicIp!.ipAddress)
             
             disableActiveNetworkInterfaces()
             
@@ -120,8 +136,11 @@ class MonitoringService: ServiceBase, MonitoringServiceType {
         }
     }
     
-    private func checkPossibilityOfObtaininigIp() {
-        if (appState.network.currentIpInfo == nil && appState.userData.ipApis.allSatisfy({!$0.isActive()})) {
+    private func isPublicIpObtainable() {
+        let isNoActiveApis = appState.network.publicIp == nil
+            && !appState.userData.activeIpApisExist()
+        
+        if (isNoActiveApis) {
             let message = String(Constants.errorNoActiveIpApiFound)
             
             disableActiveNetworkInterfaces()
@@ -132,7 +151,8 @@ class MonitoringService: ServiceBase, MonitoringServiceType {
         }
     }
     
-    private func isUnsafeForHigherProtection(updatedIpAddressResult: OperationResult<IpInfoBase>) -> Bool {
+    private func isUnsafeForHigherProtection (
+        updatedIpAddressResult: OperationResult<IpInfoBase>) -> Bool {
         let result = appState.userData.useHigherProtection
                      && (appState.system.locationServicesEnabled 
                          || updatedIpAddressResult.result == nil)
@@ -140,7 +160,8 @@ class MonitoringService: ServiceBase, MonitoringServiceType {
         return result
     }
     
-    private func noActiveIpApiFound(updatedIpAddressResult: OperationResult<IpInfoBase>) -> Bool {
+    private func noActiveIpApiFound (
+        updatedIpAddressResult: OperationResult<IpInfoBase>) -> Bool {
         let result = updatedIpAddressResult.error != nil
                      && updatedIpAddressResult.error == Constants.errorNoActiveIpApiFound
         
@@ -155,19 +176,10 @@ class MonitoringService: ServiceBase, MonitoringServiceType {
         }
     }
     
-    private func updateStatus(
-        isMonitoringEnabled: Bool? = nil,
-        currentIpInfo: IpInfoBase? = nil) {
-        DispatchQueue.main.async {
-            if (isMonitoringEnabled != nil) {
-                self.appState.monitoring.isEnabled = isMonitoringEnabled!
-            }
-            
-            if (currentIpInfo != nil) {
-                self.appState.network.currentIpInfo = currentIpInfo
-            }
-            
-            self.appState.objectWillChange.send()
+    private func updateStatusAsync(update: MonitoringStateUpdate) async {
+        await MainActor.run {
+            appState.applyMonitoringUpdate(update)
+            appState.objectWillChange.send()
         }
     }
 }

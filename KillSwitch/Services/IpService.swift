@@ -8,12 +8,12 @@
 import Foundation
 import Network
 
-class IpService : ServiceBase, ApiCallable, IpServiceType {    
-    func getCurrentIpAsync(ipApiUrl: String? = nil, withInfo: Bool = true) async -> OperationResult<IpInfoBase> {
+class IpService : ServiceBase, ApiCallable, IpServiceType {
+    func getPublicIpAsync(ipApiUrl: String? = nil, withInfo: Bool = true) async -> OperationResult<IpInfoBase> {
         var currentIpApiUrl = ipApiUrl
         
         if (currentIpApiUrl == nil) {
-            let randomIpApi = getRandomActiveIpApi()
+            let randomIpApi = appState.userData.getRandomActiveIpApi()
             currentIpApiUrl = randomIpApi?.url
         }
         
@@ -23,8 +23,8 @@ class IpService : ServiceBase, ApiCallable, IpServiceType {
         let ipAddressString = ipAddressResult.result!.trimmingCharacters(in: .whitespacesAndNewlines)
         guard ipAddressString.isValidIp() else { return OperationResult(error: Constants.errorIpApiResponseIsInvalid) }
         
-        if (withInfo) {
-            let ipWithInfoResult = await getIpInfoAsync(ip: ipAddressString)
+        if withInfo {
+            let ipWithInfoResult = await getPublicIpInfoAsync(ip: ipAddressString)
             
             return OperationResult(result: ipWithInfoResult.result! , error: ipWithInfoResult.error)
         }
@@ -32,7 +32,7 @@ class IpService : ServiceBase, ApiCallable, IpServiceType {
         return OperationResult(result: IpInfoBase(ipAddress: ipAddressString))
     }
     
-    func getIpInfoAsync(ip : String) async -> OperationResult<IpInfoBase> {
+    func getPublicIpInfoAsync(ip : String) async -> OperationResult<IpInfoBase> {
         do {
             // TODO RUSS: Add to Settings, add JSON mapping
             let response = try await callGetApiAsync(apiUrl: "https://freeipapi.com/api/json/\(ip)")
@@ -58,7 +58,7 @@ class IpService : ServiceBase, ApiCallable, IpServiceType {
         }
     }
     
-    func addAllowedIp(ip : String, ipInfo: IpInfoBase?, safetyType: SafetyType) {
+    func addAllowedPublicIp(ip : String, ipInfo: IpInfoBase?, safetyType: SafetyType) {
             let newAllowedIp = IpInfo(ipAddress: ip, ipAddressInfo: ipInfo, safetyType: safetyType)
             
             if !appState.userData.allowedIps.contains(newAllowedIp) {
@@ -73,12 +73,6 @@ class IpService : ServiceBase, ApiCallable, IpServiceType {
         }
     
     // MARK: Private functions
-    
-    private func getRandomActiveIpApi() -> IpApiInfo? {
-        let result = self.appState.userData.ipApis.filter({$0.isActive()}).randomElement()
-        
-        return result
-    }
     
     private func callIpApiAsync(ipApiUrl : String) async -> OperationResult<String> {
         do {

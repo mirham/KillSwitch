@@ -125,7 +125,7 @@ struct AllowedIpsEditView : IpAddressContainerView {
     // MARK: Private functions
     
     private func addAllowedIpAddressClickHandlerAsync() async {
-        let ipInfoResult = await ipService.getIpInfoAsync(ip: newIp)
+        let ipInfoResult = await ipService.getPublicIpInfoAsync(ip: newIp)
         
         if (appState.userData.pickyMode && ipInfoResult.error != nil) {
             isNewIpInvalid = true
@@ -133,7 +133,7 @@ struct AllowedIpsEditView : IpAddressContainerView {
             return
         }
         
-        ipService.addAllowedIp(
+        ipService.addAllowedPublicIp(
             ip: newIp,
             ipInfo: ipInfoResult.result,
             safetyType: newIpSafetyType)

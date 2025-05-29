@@ -28,27 +28,69 @@ class AppState : ObservableObject, Equatable {
         return result
     }
     
+    func applyMonitoringUpdate(_ update: MonitoringStateUpdate) {
+        if update.isMonitoringEnabled != nil {
+            monitoring.isEnabled = update.isMonitoringEnabled!
+        }
+        
+        if update.publicIp != nil {
+            network.publicIp = update.publicIp
+        }
+    }
+    
+    func applyNetworkUpdate(_ update: NetworkStateUpdate) {
+        var updatedNetwork = Network()
+        
+        if update.status != nil {
+            updatedNetwork.status = update.status!
+            
+            if network.status != .on && update.status == .on {
+                reactivateIpApis()
+            }
+        }
+        else {
+            updatedNetwork.status = network.status
+        }
+        
+        updatedNetwork.publicIp = update.forceUpdatePublicIp ? update.publicIp : network.publicIp
+        updatedNetwork.activeNetworkInterfaces = update.activeNetworkInterfaces ?? network.activeNetworkInterfaces
+        updatedNetwork.physicalNetworkInterfaces = update.physicalNetworkInterfaces ?? network.physicalNetworkInterfaces
+        updatedNetwork.isObtainingIp = update.isObtainingIp ?? network.isObtainingIp
+        
+        if network != updatedNetwork {
+            network = updatedNetwork
+        }
+    }
+    
+    func applyProcessesStateUpdate (_ update: ProcessesStateUpdate) {
+        if update.processesToKill != nil {
+            system.processesToKill = update.processesToKill!
+        }
+    }
+    
+    // MARK: Private functions
+    
     private func setCurrentState() {
         current.safetyType = determineSafetyType()
-        current.isCurrentIpAllowed = getCurrentAllowedIp() != nil
-        current.highRisk = checkIfHighRisk()
-        current.countyDetected = checkIfCountryDetected()
-        current.mainNetworkInterface = determineMainNetworkInterface()
+        current.isPublicIpAllowed = getCurrentAllowedIp() != nil
+        current.isHighRisk = isHighRisk()
+        current.isCountryDetected = isCountryDetected()
+        current.mainNetworkInterface = findMainInterface()
     }
 }
 
 extension AppState {
     struct Current : Equatable {
         var safetyType = SafetyType.unknown
-        var isCurrentIpAllowed = false
-        var highRisk = false
-        var countyDetected = false
+        var isPublicIpAllowed = false
+        var isHighRisk = false
+        var isCountryDetected = false
         var mainNetworkInterface = String()
         
         static func == (lhs: Current, rhs: Current) -> Bool {
             let result = lhs.safetyType == rhs.safetyType
-            && lhs.highRisk == rhs.highRisk
-            && lhs.isCurrentIpAllowed == rhs.isCurrentIpAllowed
+            && lhs.isHighRisk == rhs.isHighRisk
+            && lhs.isPublicIpAllowed == rhs.isPublicIpAllowed
             
             return result
         }
@@ -97,19 +139,35 @@ extension AppState {
 extension AppState {
     struct Network : Equatable {
         var status: NetworkStatusType = NetworkStatusType.unknown
-        var obtainingIp = false
+        var isObtainingIp = false
         var activeNetworkInterfaces: [NetworkInterface] = [NetworkInterface]()
         var physicalNetworkInterfaces: [NetworkInterface] = [NetworkInterface]()
-        var previousIpInfo: IpInfoBase? = nil
-        var currentIpInfo: IpInfoBase? = nil {
-            willSet { previousIpInfo = currentIpInfo }
-        }
+        var publicIp: IpInfoBase? = nil
+        
+        func isConnectionChanged (
+            status: NetworkStatusType,
+            activeNetworkInterfaces: [NetworkInterface]) -> Bool {
+                let result = self.status != status || self.activeNetworkInterfaces != activeNetworkInterfaces
+                return result
+            }
         
         static func == (lhs: Network, rhs: Network) -> Bool {
             let result = lhs.status == rhs.status
-            && lhs.currentIpInfo == rhs.currentIpInfo
+            && lhs.publicIp == rhs.publicIp
+            && lhs.activeNetworkInterfaces == rhs.activeNetworkInterfaces
+            && lhs.physicalNetworkInterfaces == rhs.physicalNetworkInterfaces
             
             return result
+        }
+    }
+    
+    // MARK: Private functions
+    
+    private func reactivateIpApis() {
+        for index in 0..<userData.ipApis.count {
+            if !userData.ipApis[index].isActive() {
+                userData.ipApis[index].active = true
+            }
         }
     }
 }
@@ -208,12 +266,24 @@ extension AppState {
                 menuBarHiddenItems = savedMenuBarHiddenItems!
             }
         }
+        
+        func getRandomActiveIpApi() -> IpApiInfo? {
+            let result = ipApis.filter({$0.isActive()}).randomElement()
+            
+            return result
+        }
+        
+        func activeIpApisExist() -> Bool {
+            let result = ipApis.contains(where: { $0.isActive() })
+            
+            return result
+        }
     }
 }
 
 extension AppState {
     private func determineSafetyType() -> SafetyType {
-        if (monitoring.isEnabled && network.currentIpInfo != nil) {
+        if (monitoring.isEnabled && network.publicIp != nil) {
             let currentAllowedIp = getCurrentAllowedIp()
             
             if(currentAllowedIp != nil && !system.locationServicesEnabled) {
@@ -230,7 +300,7 @@ extension AppState {
         var result: IpInfo? = nil
         
         for allowedIp in userData.allowedIps {
-            if (network.currentIpInfo?.ipAddress == allowedIp.ipAddress) {
+            if (network.publicIp?.ipAddress == allowedIp.ipAddress) {
                 result = allowedIp
             }
         }
@@ -238,15 +308,15 @@ extension AppState {
         return result
     }
     
-    private func checkIfHighRisk() -> Bool {
+    private func isHighRisk() -> Bool {
         return monitoring.isEnabled && system.locationServicesEnabled
     }
     
-    private func checkIfCountryDetected() -> Bool {
-        return network.currentIpInfo != nil && !network.currentIpInfo!.countryName.isEmpty
+    private func isCountryDetected() -> Bool {
+        return network.publicIp != nil && !network.publicIp!.countryName.isEmpty
     }
     
-    private func determineMainNetworkInterface() -> String {
+    private func findMainInterface() -> String {
         for activeInterface in network.activeNetworkInterfaces {
             for physicalInterface in network.physicalNetworkInterfaces {
                 if (activeInterface.name == physicalInterface.name) {

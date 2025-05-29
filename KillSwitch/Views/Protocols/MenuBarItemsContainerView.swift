@@ -48,27 +48,27 @@ extension MenuBarItemsContainerView {
                     result.append(menuBarItem)
                 case Constants.mbItemKeyIpAddress:
                     let ipAddress = getIpAddressItem(
-                        ipAddress: appState.network.currentIpInfo == nil
+                        ipAddress: appState.network.publicIp == nil
                             ? Constants.none
-                            : appState.network.currentIpInfo!.ipAddress,
+                            : appState.network.publicIp!.ipAddress,
                         color: mainColor,
                         exampleAllowed: exampleAllowed)
                     let menuBarItem = MenuBarElement(image: renderMenuBarItemImage(view: ipAddress), key: key)
                     result.append(menuBarItem)
                 case Constants.mbItemKeyCountryCode:
                     let countryCode = getCountryCodeItem(
-                        countryCode: appState.network.currentIpInfo == nil
+                        countryCode: appState.network.publicIp == nil
                             ? String()
-                            : appState.network.currentIpInfo!.countryCode,
+                            : appState.network.publicIp!.countryCode,
                         color: mainColor,
                         exampleAllowed: exampleAllowed)
                     let menuBarItem = MenuBarElement(image: renderMenuBarItemImage(view: countryCode), key: key)
                     result.append(menuBarItem)
                 case Constants.mbItemKeyCountryFlag:
                     let countryFlag = getCountryFlagItem(
-                        countryCode: appState.network.currentIpInfo == nil
+                        countryCode: appState.network.publicIp == nil
                             ? String()
-                            : appState.network.currentIpInfo!.countryCode,
+                            : appState.network.publicIp!.countryCode,
                         exampleAllowed: exampleAllowed)
                     let menuBarItem = MenuBarElement(image: countryFlag, key: key)
                     result.append(menuBarItem)
