@@ -23,7 +23,7 @@ class LocationService : ServiceBase, ShellAccessible, LocationServiceType {
                 message: String(format: Constants.logLocationServicesHaveBeenToggled, isEnabled ? Constants.enabled : Constants.disabled),
                 type: LogEntryType.warning)
         }
-        catch{
+        catch {
             loggingService.write(
                 message: String(format: Constants.logCannotToggleLocationServices, error.localizedDescription),
                 type: LogEntryType.error)

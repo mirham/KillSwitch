@@ -18,23 +18,29 @@ struct CurrentIpView: IpAddressContainerView {
     var body: some View {
         Section() {
             VStack{
-                Text(Constants.currentIp.uppercased())
+                Text(Constants.publicIp)
+                    .textCase(.uppercase)
                     .font(.title3)
                     .multilineTextAlignment(.center)
-                Text(appState.network.currentIpInfo?.ipAddress.uppercased() ?? Constants.none.uppercased())
+                    .isHidden(hidden: appState.network.status == .off, remove: true)
+                Text(appState.network.publicIp?.ipAddress
+                     ?? (appState.network.status == NetworkStatusType.off
+                        ? Constants.offline
+                        : Constants.none))
+                    .textCase(.uppercase)
                     .font(.largeTitle)
                     .bold()
-                    .foregroundStyle(getIpAddressColor())
+                    .foregroundStyle(getIpColor())
                     .contextMenu {
-                        if(appState.network.currentIpInfo?.ipAddress != nil){
-                            Button(action: { AppHelper.copyTextToClipboard(text: appState.network.currentIpInfo!.ipAddress)}) {
+                        if(appState.network.publicIp?.ipAddress != nil){
+                            Button(action: { AppHelper.copyTextToClipboard(text: appState.network.publicIp!.ipAddress)}) {
                                 Text(Constants.menuItemCopy)
                             }
                             if (appState.current.safetyType == .unknown) {
-                                Button(action: { addAllowedIpAddress(safetyType: SafetyType.compete)}) {
+                                Button(action: { addAllowedIp(safetyType: SafetyType.compete)}) {
                                     Text(Constants.menuItemAddAsAllowedIpWithCompletePrivacy)
                                 }
-                                Button(action: { addAllowedIpAddress(safetyType: SafetyType.some)}) {
+                                Button(action: { addAllowedIp(safetyType: SafetyType.some)}) {
                                     Text(Constants.menuItemAddAsAllowedIpWithSomePrivacy)
                                 }
                             }
@@ -52,36 +58,38 @@ struct CurrentIpView: IpAddressContainerView {
                     .font(.system(size: 9))
                     .bold()
                     .foregroundStyle(getSafetyColor(safetyType: appState.current.safetyType, colorScheme: colorScheme))
-                    .isHidden(hidden: !appState.current.highRisk, remove: true)
+                    .isHidden(hidden: !appState.current.isHighRisk || appState.network.status == .off, remove: true)
                 HStack {
-                    let flag = getCountryFlag(countryCode: appState.network.currentIpInfo?.countryCode ?? String())
+                    let flag = getCountryFlag(countryCode: appState.network.publicIp?.countryCode ?? String())
                     Image(nsImage: flag)
                         .resizable()
                         .frame(width: flag.size.width, height: flag.size.height)
-                    Text(appState.network.currentIpInfo?.countryName.uppercased() ?? String())
+                    Text(appState.network.publicIp?.countryName.uppercased() ?? String())
                         .font(.system(size: 12))
                         .bold()
                 }
                 .opacity(0.7)
-                .isHidden(hidden: !appState.current.countyDetected, remove: true)
+                .isHidden(hidden: !appState.current.isCountryDetected, remove: true)
             }
         }
     }
     
     // MARK: Private functions
     
-    private func getIpAddressColor() -> Color {
+    private func getIpColor() -> Color {
         return appState.monitoring.isEnabled
             ? getSafetyColor(safetyType: appState.current.safetyType, colorScheme: colorScheme)
             : .primary
     }
     
-    private func addAllowedIpAddress(safetyType : SafetyType) {
-        ipService.addAllowedIp(
-            ip: appState.network.currentIpInfo!.ipAddress,
-            ipInfo: appState.network.currentIpInfo,
+    private func addAllowedIp(safetyType : SafetyType) {
+        let ip = IpInfo(
+            ipAddress: appState.network.publicIp!.ipAddress,
+            ipAddressInfo: appState.network.publicIp,
             safetyType: safetyType)
-    }    
+        
+        ipService.addAllowedPublicIp(ip: ip)
+    }
 }
 
 #Preview {

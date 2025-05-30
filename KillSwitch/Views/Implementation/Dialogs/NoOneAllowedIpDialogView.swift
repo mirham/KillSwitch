@@ -90,12 +90,15 @@ struct NoOneAllowedIpDialogView : View {
         })
     }
     
-    // MARK: Private function
+    // MARK: Private functions
+    
     private func addAllowedIpAddress(safetyType : SafetyType) {
-        self.ipService.addAllowedIp(
-            ip: appState.network.currentIpInfo!.ipAddress,
-            ipInfo: appState.network.currentIpInfo,
+        let ip = IpInfo(
+            ipAddress: appState.network.publicIp!.ipAddress,
+            ipAddressInfo: appState.network.publicIp,
             safetyType: safetyType)
+        
+        self.ipService.addAllowedPublicIp(ip: ip)
     }
     
     private func isOnline() -> Bool {

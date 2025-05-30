@@ -18,11 +18,15 @@ struct IpInfoBase: Codable, Equatable {
         return lhs.ipAddress == rhs.ipAddress
     }
     
-    init(ipAddress: String){
+    init(ipAddress: String) {
         self.ipVersion = (IPv4Address(ipAddress) != nil) ? Constants.ipV4 : Constants.ipV6
         self.ipAddress = ipAddress
         self.countryName = String()
         self.countryCode = String()
+    }
+    
+    func isConfirmed() -> Bool {
+        return !self.countryCode.isEmpty && !self.countryName.isEmpty
     }
     
     func hash(into hasher: inout Hasher) {

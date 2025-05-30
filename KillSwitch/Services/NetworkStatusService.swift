@@ -15,52 +15,11 @@ class NetworkStatusService: ServiceBase, ApiCallable, NetworkStatusServiceType {
     
     private let monitor = NWPathMonitor()
     private let queue = DispatchQueue(label: Constants.networkMonitorQueryLabel, qos: .background)
-    private let lock = NSLock()
     
     override init() {
         super.init()
         
-        monitor.pathUpdateHandler = { path in
-            var newStatus = NetworkStatusType.unknown
-            var newNetworkInterfaces = [NetworkInterface]()
-            
-            for networkInterface in path.availableInterfaces {
-                let networkInterfaceInfo = networkInterface.asNetworkInterface()
-                newNetworkInterfaces.append(networkInterfaceInfo)
-            }
-            
-            switch path.status {
-                case .satisfied:
-                    newStatus = newNetworkInterfaces.contains(where: {$0.isPhysical})
-                        ? NetworkStatusType.on
-                        : NetworkStatusType.wait
-                case .requiresConnection:
-                    newStatus = NetworkStatusType.wait
-                default:
-                    newStatus = NetworkStatusType.off
-            }
-            
-            if (self.appState.network.status != newStatus || self.appState.network.activeNetworkInterfaces != newNetworkInterfaces) {
-                let updatedStatus = newStatus
-                let updatedNetworkInterfaces = newNetworkInterfaces
-                
-                if (newStatus == .on) {
-                    self.getCurrentIp()
-                }
-                
-                Task {
-                    await MainActor.run {
-                        self.updateStatus(
-                            currentStatus: updatedStatus,
-                            activeNetworkInterfaces: updatedNetworkInterfaces,
-                            physicalNetworkInterfaces: self.networkService.getPhysicalInterfaces(),
-                            disconnected: updatedStatus != .on)
-                    }
-                }
-            }
-        }
-        
-        monitor.start(queue: queue)
+        startNetworkMonitoring()
     }
     
     deinit {
@@ -69,88 +28,104 @@ class NetworkStatusService: ServiceBase, ApiCallable, NetworkStatusServiceType {
     
     // MARK: Private functions
     
-    private func getCurrentIp() {
-        lock.lock()
-        Task {
-            do {
-                await MainActor.run { updateStatus(obtainingIp: true) }
+    private func startNetworkMonitoring() {
+        monitor.pathUpdateHandler = { path in
+            let networkInterfaces = self.determineNetworkInterfaces(path: path)
+            let physicalNetworkInterfaces = self.networkService.getPhysicalInterfaces()
+            let status = self.determineNetworkStatusType(path: path, networkInterfaces: networkInterfaces)
+            let isConnectionChanged = self.appState.network.isConnectionChanged (
+                status: status, activeNetworkInterfaces: networkInterfaces)
+            
+            if (isConnectionChanged) {
+                let updatedStatus = status
+                let updatedActiveNetworkInterfaces = networkInterfaces
+                let updatedPhysicalNetworkInterfaces = physicalNetworkInterfaces
                 
-                // Fixes SSL errors after network changes
-                try await Task.sleep(nanoseconds: Constants.defaultToleranceInNanoseconds)
-                
-                var ipNotObtained = true
-                
-                while ipNotObtained && self.appState.userData.ipApis.contains(where: {$0.isActive()}) {
-                    let updatedIpResult = await self.ipService.getCurrentIpAsync(ipApiUrl: nil, withInfo: true)
+                Task {
+                    await self.updateStatusAsync(update: NetworkStateUpdateBuilder()
+                        .withStatus(updatedStatus)
+                        .withActiveNetworkInterfaces(updatedActiveNetworkInterfaces)
+                        .withPhysicalNetworkInterfaces(updatedPhysicalNetworkInterfaces)
+                        .withIsDisconnected(updatedStatus != .on)
+                        .build())
                     
-                    if (updatedIpResult.success) {
-                        ipNotObtained = false
-                        
-                        await MainActor.run {
-                            updateStatus(currentIpInfo: updatedIpResult.result)
-                        }
-                        
-                        loggingService.write(
-                            message: String(format: Constants.logCurrentIp, updatedIpResult.result!.ipAddress),
-                            type: .info)
+                    if status == .on {
+                        try await Task.sleep(nanoseconds: Constants.defaultToleranceInNanoseconds)
+                        await self.refreshIpAddressAsync()
                     }
-                }
-                
-                if (ipNotObtained) {
-                    await MainActor.run {
-                        updateStatus(currentIpInfo: nil, allowCurrentIpInfoNil: true)
-                    }
-                }
-                
-                await MainActor.run {
-                    updateStatus(obtainingIp: false)
                 }
             }
         }
-        lock.unlock()
+        
+        monitor.start(queue: queue)
     }
     
-    private func activateIpApis() {
-        for index in 0...self.appState.userData.ipApis.count - 1 {
-            self.appState.userData.ipApis[index].active = true
-        }
+    private func refreshIpAddressAsync() async {
+        await updateStatusAsync(update: NetworkStateUpdateBuilder()
+            .withIsObtainingIp(true)
+            .build())
+        
+        let publicIp = await fetchPublicIpAsync()
+        
+        await updateStatusAsync(update: NetworkStateUpdateBuilder()
+            .withIsObtainingIp(false)
+            .withPublicIp(publicIp)
+            .build())
     }
     
-    private func updateStatus(
-        currentIpInfo: IpInfoBase? = nil,
-        currentStatus: NetworkStatusType? = nil,
-        activeNetworkInterfaces: [NetworkInterface]? = nil,
-        physicalNetworkInterfaces: [NetworkInterface]? = nil,
-        disconnected: Bool? = nil,
-        obtainingIp: Bool? = nil,
-        allowCurrentIpInfoNil: Bool = false) {
-        DispatchQueue.main.async {
-            if (currentStatus != nil) {
-                self.appState.network.status = currentStatus!
-                self.activateIpApis()
-            }
+    private func fetchPublicIpAsync() async -> IpInfoBase? {
+        var isPublicIpNotObtained = true
+        
+        while isPublicIpNotObtained && appState.userData.activeIpApisExist() && appState.network.status == .on {
+            let result = await ipService.getPublicIpAsync(ipApiUrl: nil, withInfo: true)
             
-            if (currentIpInfo != nil || allowCurrentIpInfoNil) {
-                self.appState.network.currentIpInfo = currentIpInfo ?? nil
-            }
+            if result.success {
+                isPublicIpNotObtained = false
                 
-            if (activeNetworkInterfaces != nil) {
-                self.appState.network.activeNetworkInterfaces = activeNetworkInterfaces!
+                loggingService.write(
+                    message: String(
+                        format: Constants.logPublicIp,
+                        result.result!.ipAddress,
+                        result.result!.countryName),
+                    type: .info)
+                
+                return result.result
             }
-            
-            if (physicalNetworkInterfaces != nil) {
-                self.appState.network.physicalNetworkInterfaces = physicalNetworkInterfaces!
+        }
+        
+        return nil
+    }
+    
+    private func determineNetworkStatusType(
+        path: NWPath,
+        networkInterfaces: [NetworkInterface]) -> NetworkStatusType {
+            switch path.status {
+                case .satisfied:
+                    return networkInterfaces.contains(where: {$0.isPhysical})
+                        ? NetworkStatusType.on
+                        : NetworkStatusType.wait
+                case .requiresConnection:
+                    return NetworkStatusType.wait
+                default:
+                    return NetworkStatusType.off
             }
-            
-            if (disconnected != nil && disconnected!) {
-                self.appState.network.currentIpInfo = nil
-            }
-            
-            if (obtainingIp != nil) {
-                self.appState.network.obtainingIp = obtainingIp!
-            }
-            
-            self.appState.objectWillChange.send()
+        }
+    
+    private func determineNetworkInterfaces(path: NWPath) -> [NetworkInterface] {
+        var result = [NetworkInterface]()
+        
+        for networkInterface in path.availableInterfaces {
+            let networkInterfaceInfo = networkInterface.asNetworkInterface()
+            result.append(networkInterfaceInfo)
+        }
+        
+        return result
+    }
+    
+    private func updateStatusAsync(update: NetworkStateUpdate) async {
+        await MainActor.run {
+            appState.applyNetworkUpdate(update)
+            appState.objectWillChange.send()
         }
     }
 }

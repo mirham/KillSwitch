@@ -24,10 +24,12 @@ extension Container {
     
     var ipService: Factory<IpServiceType> {
         Factory(self) { IpService() }
+            .singleton
     }
     
     var networkService: Factory<NetworkServiceType> {
         Factory(self) { NetworkService() }
+            .singleton
     }
     
     var launchAgentService: Factory<LaunchAgentServiceType> {
@@ -37,6 +39,7 @@ extension Container {
     
     var locationService: Factory<LocationServiceType> {
         Factory(self) { LocationService() }
+            .singleton
     }
     
     var computerService: Factory<ComputerServiceType> {

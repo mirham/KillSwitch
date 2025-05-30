@@ -23,6 +23,12 @@
 		353179312C29CD700030FDF1 /* ComputerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 353179302C29CD700030FDF1 /* ComputerService.swift */; };
 		3540323A2C5E30A9002624D2 /* NoOneAllowedIpDialogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 354032392C5E30A9002624D2 /* NoOneAllowedIpDialogView.swift */; };
 		35449FC32C563FAD00369CBC /* DropViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35449FC22C563FAD00369CBC /* DropViewDelegate.swift */; };
+		354BEEB22DE8971800EFD1B2 /* NetworkStateUpdateBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 354BEEB12DE8971800EFD1B2 /* NetworkStateUpdateBuilder.swift */; };
+		354BEEB42DE8974100EFD1B2 /* NetworkStateUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 354BEEB32DE8974100EFD1B2 /* NetworkStateUpdate.swift */; };
+		354BEEB62DE8AB6D00EFD1B2 /* MonitoringStateUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 354BEEB52DE8AB6D00EFD1B2 /* MonitoringStateUpdate.swift */; };
+		354BEEB82DE8B1E000EFD1B2 /* MonitoringStateUpdateBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 354BEEB72DE8B1E000EFD1B2 /* MonitoringStateUpdateBuilder.swift */; };
+		354BEEBA2DE8B5DE00EFD1B2 /* ProcessesStateUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 354BEEB92DE8B5DE00EFD1B2 /* ProcessesStateUpdate.swift */; };
+		354BEEBC2DE8B65400EFD1B2 /* ProcessesStateUpdateBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 354BEEBB2DE8B65400EFD1B2 /* ProcessesStateUpdateBuilder.swift */; };
 		3568505A2C2B0ACF006E64B8 /* ProcessInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 356850592C2B0ACF006E64B8 /* ProcessInfo.swift */; };
 		3568505C2C2B1999006E64B8 /* ClosingApplicationsEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3568505B2C2B1999006E64B8 /* ClosingApplicationsEditView.swift */; };
 		3568505E2C2B2415006E64B8 /* AppInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3568505D2C2B2415006E64B8 /* AppInfo.swift */; };
@@ -110,6 +116,12 @@
 		353179302C29CD700030FDF1 /* ComputerService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComputerService.swift; sourceTree = "<group>"; };
 		354032392C5E30A9002624D2 /* NoOneAllowedIpDialogView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NoOneAllowedIpDialogView.swift; sourceTree = "<group>"; };
 		35449FC22C563FAD00369CBC /* DropViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropViewDelegate.swift; sourceTree = "<group>"; };
+		354BEEB12DE8971800EFD1B2 /* NetworkStateUpdateBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkStateUpdateBuilder.swift; sourceTree = "<group>"; };
+		354BEEB32DE8974100EFD1B2 /* NetworkStateUpdate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkStateUpdate.swift; sourceTree = "<group>"; };
+		354BEEB52DE8AB6D00EFD1B2 /* MonitoringStateUpdate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonitoringStateUpdate.swift; sourceTree = "<group>"; };
+		354BEEB72DE8B1E000EFD1B2 /* MonitoringStateUpdateBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonitoringStateUpdateBuilder.swift; sourceTree = "<group>"; };
+		354BEEB92DE8B5DE00EFD1B2 /* ProcessesStateUpdate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessesStateUpdate.swift; sourceTree = "<group>"; };
+		354BEEBB2DE8B65400EFD1B2 /* ProcessesStateUpdateBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessesStateUpdateBuilder.swift; sourceTree = "<group>"; };
 		356850592C2B0ACF006E64B8 /* ProcessInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessInfo.swift; sourceTree = "<group>"; };
 		3568505B2C2B1999006E64B8 /* ClosingApplicationsEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClosingApplicationsEditView.swift; sourceTree = "<group>"; };
 		3568505D2C2B2415006E64B8 /* AppInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppInfo.swift; sourceTree = "<group>"; };
@@ -201,6 +213,9 @@
 				353179302C29CD700030FDF1 /* ComputerService.swift */,
 				357183352C2C0199008B2D83 /* ProcessService.swift */,
 				351F0C632C0F599400644C66 /* LoggingService.swift */,
+				354BEEB72DE8B1E000EFD1B2 /* MonitoringStateUpdateBuilder.swift */,
+				354BEEB12DE8971800EFD1B2 /* NetworkStateUpdateBuilder.swift */,
+				354BEEBB2DE8B65400EFD1B2 /* ProcessesStateUpdateBuilder.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -472,6 +487,9 @@
 				356850592C2B0ACF006E64B8 /* ProcessInfo.swift */,
 				3568505D2C2B2415006E64B8 /* AppInfo.swift */,
 				35DFC12C2C38338D001CAF43 /* OperationResult.swift */,
+				354BEEB32DE8974100EFD1B2 /* NetworkStateUpdate.swift */,
+				354BEEB52DE8AB6D00EFD1B2 /* MonitoringStateUpdate.swift */,
+				354BEEB92DE8B5DE00EFD1B2 /* ProcessesStateUpdate.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -591,6 +609,7 @@
 				35449FC32C563FAD00369CBC /* DropViewDelegate.swift in Sources */,
 				357154F92C1739C300A41AA4 /* ApiCallable.swift in Sources */,
 				35F12F402C15B8C200AFA738 /* ActiveConnectionsView.swift in Sources */,
+				354BEEB62DE8AB6D00EFD1B2 /* MonitoringStateUpdate.swift in Sources */,
 				3582BF612C59073F004E0B80 /* IpAddressContainerView.swift in Sources */,
 				3590333C2C396950006787AD /* ViewExtensions.swift in Sources */,
 				359C7C6D2C29605D00CA3CE1 /* LocationService.swift in Sources */,
@@ -599,9 +618,12 @@
 				3570E48E2C25B81400CB5D42 /* MenuBarElement.swift in Sources */,
 				35BD39C12DDC9CB60021CF49 /* StringExtensions.swift in Sources */,
 				351F0C482C0EFCF100644C66 /* KillSwitchApp.swift in Sources */,
+				354BEEB82DE8B1E000EFD1B2 /* MonitoringStateUpdateBuilder.swift in Sources */,
 				3570E4692C21CC1600CB5D42 /* IpApisEditView.swift in Sources */,
 				35DFC12D2C38338D001CAF43 /* OperationResult.swift in Sources */,
+				354BEEB22DE8971800EFD1B2 /* NetworkStateUpdateBuilder.swift in Sources */,
 				35BD39D02DDCA1570021CF49 /* IpServiceType.swift in Sources */,
+				354BEEBC2DE8B65400EFD1B2 /* ProcessesStateUpdateBuilder.swift in Sources */,
 				3582BF632C59345E004E0B80 /* InfoView.swift in Sources */,
 				351E9CE52C10A3BA00CEC15F /* MonitoringService.swift in Sources */,
 				35C218A82C6E0E1600964A7B /* NoInsetHostingView.swift in Sources */,
@@ -612,8 +634,10 @@
 				35BD39D62DDCA3F90021CF49 /* LocationServiceType.swift in Sources */,
 				35DA7E252C11E91800BFC680 /* LaunchAgentService.swift in Sources */,
 				356850602C2B46FF006E64B8 /* ProcessesStatusView.swift in Sources */,
+				354BEEB42DE8974100EFD1B2 /* NetworkStateUpdate.swift in Sources */,
 				353179312C29CD700030FDF1 /* ComputerService.swift in Sources */,
 				35F12F3B2C15B3BE00AFA738 /* NetworkInterfaceType.swift in Sources */,
+				354BEEBA2DE8B5DE00EFD1B2 /* ProcessesStateUpdate.swift in Sources */,
 				359EED4C2C52D0280094EFAF /* EnableNetworkDialogView.swift in Sources */,
 				3570E4732C22F95B00CB5D42 /* IpInfoBase.swift in Sources */,
 				35BD39C32DDC9CF80021CF49 /* TaskExtensions.swift in Sources */,

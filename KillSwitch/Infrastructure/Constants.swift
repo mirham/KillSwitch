@@ -11,7 +11,11 @@ struct Constants{
     // MARK: Default values
     static let defaultCountryCode = "US"
     static let defaultIpAddress = "1.1.1.1"
+    static let secondInNanoseconds: UInt64 = 1_000_000_000
     static let defaultMonitoringInterval: Int = 1
+    static let defaultMonitoringIntervalNanoseconds: UInt64 =  UInt64(defaultMonitoringInterval) * secondInNanoseconds
+    static let defaultProcessesMonitoringInterval: Int = 5
+    static let defaultProcessesMonitoringIntervalNanoseconds: UInt64 =  UInt64(defaultProcessesMonitoringInterval) * secondInNanoseconds
     static let minTimeIntervalToCheck: Int = 1
     static let maxTimeIntervalToCheck: Int = 300
     static let zshPath = "/bin/zsh"
@@ -78,14 +82,17 @@ struct Constants{
     static let show = "Show"
     static let quit = "Quit"
     static let none = "None"
+    static let offline = "Offline"
     static let on = "On"
     static let off = "Off"
     static let add = "Add"
     static let copy = "Copy"
+    static let edit = "Edit"
     static let delete = "Delete"
     static let enable = "Enable"
     static let cancel = "Cancel"
     static let close = "Close"
+    static let save = "Save"
     static let yes = "Yes"
     static let no = "No"
     static let ok = "OK"
@@ -101,7 +108,7 @@ struct Constants{
     static let activeConnections = "Active connections"
     static let safetyDescriprion = "%1$@ safety"
     static let disableLocationServices = "(disable location services)"
-    static let currentIp = "Public IP"
+    static let publicIp = "Public IP"
     static let enabled = "enabled"
     static let disabled = "disabled"
     static let physical = "physical"
@@ -214,9 +221,9 @@ struct Constants{
     // MARK: Log messages
     static let logMonitoringHasBeenEnabled = "Monitoring enabled"
     static let logMonitoringHasBeenDisabled = "Monitoring disabled"
-    static let logCurrentIp = "Public IP is %1$@"
-    static let logCurrentIpHasBeenUpdated = "Public IP has been updated to %1$@"
-    static let logCurrentIpHasBeenUpdatedWithNotFromWhitelist = "Public IP address has been changed to %1$@ which is not from allowed IPs, network disabled"
+    static let logPublicIp = "Public IP is %1$@ (location: %2$@)"
+    static let logPublicIpHasBeenUpdated = "Public IP has been updated to %1$@"
+    static let logPublicIpHasBeenUpdatedWithNotFromWhitelist = "Public IP address has been changed to %1$@ which is not from allowed IPs, network disabled"
     static let logNetworkInterfaceHasBeenEnabled = "Network interface '%1$@' has been enabled"
     static let logNetworkInterfaceHasBeenDisabled = "Network interface '%1$@' has been disabled"
     static let logCannotEnableNetworkInterface = "Cannot enable network interface '%1$@'"
@@ -229,7 +236,8 @@ struct Constants{
     static let logCannotToggleLocationServices = "Cannot toggle location services: %1$@"
     static let logRebooting = "Rebooting..."
     static let logCannotReboot = "Cannot reboot the computer: %1$@"
-    static let logProcessTerminated = "%1$@ has been closed"
+    static let logProcessTerminated = "%1$@ has been closed"   
+    static let logErrorHandlingProcesses = "Error when handling active processes: %1$@"
     static let logPreventComputerSleepEnabled = "Preventing the computer from going to sleep is enabled"
     static let logPreventComputerSleepDisabled = "Preventing the computer from going to sleep is disabled"
     

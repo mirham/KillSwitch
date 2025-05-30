@@ -48,27 +48,29 @@ extension MenuBarItemsContainerView {
                     result.append(menuBarItem)
                 case Constants.mbItemKeyIpAddress:
                     let ipAddress = getIpAddressItem(
-                        ipAddress: appState.network.currentIpInfo == nil
-                            ? Constants.none
-                            : appState.network.currentIpInfo!.ipAddress,
+                        ipAddress: appState.network.publicIp == nil
+                        ? appState.network.status == .off
+                            ? Constants.offline
+                            : Constants.none
+                        : appState.network.publicIp!.ipAddress,
                         color: mainColor,
                         exampleAllowed: exampleAllowed)
                     let menuBarItem = MenuBarElement(image: renderMenuBarItemImage(view: ipAddress), key: key)
                     result.append(menuBarItem)
                 case Constants.mbItemKeyCountryCode:
                     let countryCode = getCountryCodeItem(
-                        countryCode: appState.network.currentIpInfo == nil
+                        countryCode: appState.network.publicIp == nil
                             ? String()
-                            : appState.network.currentIpInfo!.countryCode,
+                            : appState.network.publicIp!.countryCode,
                         color: mainColor,
                         exampleAllowed: exampleAllowed)
                     let menuBarItem = MenuBarElement(image: renderMenuBarItemImage(view: countryCode), key: key)
                     result.append(menuBarItem)
                 case Constants.mbItemKeyCountryFlag:
                     let countryFlag = getCountryFlagItem(
-                        countryCode: appState.network.currentIpInfo == nil
+                        countryCode: appState.network.publicIp == nil
                             ? String()
-                            : appState.network.currentIpInfo!.countryCode,
+                            : appState.network.publicIp!.countryCode,
                         exampleAllowed: exampleAllowed)
                     let menuBarItem = MenuBarElement(image: countryFlag, key: key)
                     result.append(menuBarItem)
@@ -132,7 +134,8 @@ extension MenuBarItemsContainerView {
     }
     
     private func getIpAddressItem(ipAddress: String, color: Color, exampleAllowed: Bool) -> Text {
-        let effectiveIpAddress = (ipAddress.isEmpty || ipAddress == Constants.none) && exampleAllowed
+        let noIpAddress = ipAddress.isEmpty || ipAddress == Constants.none || ipAddress == Constants.offline
+        let effectiveIpAddress = noIpAddress && exampleAllowed
             ? Constants.defaultIpAddress
             : ipAddress
         

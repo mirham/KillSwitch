@@ -87,7 +87,7 @@ struct IpApisEditView : View {
     // MARK: Private functions
     
     private func addIpApiClickHandlerAsync() async {
-        let ipAddressResult = await self.ipService.getCurrentIpAsync(
+        let ipAddressResult = await self.ipService.getPublicIpAsync(
             ipApiUrl: newUrl, withInfo: true)
         
         guard ipAddressResult.success else {

@@ -14,6 +14,7 @@ struct AllowedIpsEditView : IpAddressContainerView {
     
     @Environment(\.colorScheme) private var colorScheme
     
+    @State private var ipId: UUID?
     @State private var newIp = String()
     @State private var isNewIpValid = false
     @State private var newIpSafetyType: SafetyType = SafetyType.compete
@@ -57,7 +58,10 @@ struct AllowedIpsEditView : IpAddressContainerView {
                                 Button(action: { String.copyToClipboard(input: ipAddress.ipAddress) } ) {
                                     Text(Constants.copy)
                                 }
-                                Button(action: { deleteAllowedIpAddressClickHandler(ipAddress: ipAddress) }) {
+                                Button(action: { editAllowedIpClickHandler(ipAddress: ipAddress) }) {
+                                    Text(Constants.edit)
+                                }
+                                Button(action: { deleteAllowedIpClickHandler(ipAddress: ipAddress) }) {
                                     Text(Constants.delete)
                                 }
                             }
@@ -107,7 +111,9 @@ struct AllowedIpsEditView : IpAddressContainerView {
                                 }
                             }
                         }
-                        AsyncButton(Constants.add, action: addAllowedIpAddressClickHandlerAsync)
+                        AsyncButton(
+                            ipId == nil ? Constants.add : Constants.save,
+                            action: upsertAllowedIpClickHandlerAsync)
                             .disabled(!isNewIpValid)
                             .alert(isPresented: $isNewIpInvalid) {
                                 Alert(title: Text(Constants.dialogHeaderIpAddressIsNotValid),
@@ -124,8 +130,8 @@ struct AllowedIpsEditView : IpAddressContainerView {
     
     // MARK: Private functions
     
-    private func addAllowedIpAddressClickHandlerAsync() async {
-        let ipInfoResult = await ipService.getIpInfoAsync(ip: newIp)
+    private func upsertAllowedIpClickHandlerAsync() async {
+        let ipInfoResult = await ipService.getPublicIpInfoAsync(ip: newIp)
         
         if (appState.userData.pickyMode && ipInfoResult.error != nil) {
             isNewIpInvalid = true
@@ -133,15 +139,37 @@ struct AllowedIpsEditView : IpAddressContainerView {
             return
         }
         
-        ipService.addAllowedIp(
-            ip: newIp,
-            ipInfo: ipInfoResult.result,
+        let ipInfo = IpInfo(
+            ipId ?? UUID(),
+            ipAddress: newIp,
+            ipAddressInfo: ipInfoResult.result,
             safetyType: newIpSafetyType)
         
+        if let currentIpIndex = appState.userData.allowedIps.firstIndex(
+            where: {$0.id == ipInfo.id || $0.ipAddress == ipInfo.ipAddress}) {
+            appState.userData.allowedIps[currentIpIndex] = ipInfo
+            
+            let matches = appState.userData.allowedIps.filter({$0.ipAddress == newIp})
+            
+            if(matches.count > 1) {
+                appState.userData.allowedIps.removeAll(where: {$0.id == matches.last!.id})
+            }
+        }
+        else {
+            ipService.addAllowedPublicIp(ip: ipInfo)
+        }
+        
+        ipId = nil
         newIp = String()
         isNewIpValid = false
         newIpSafetyType = SafetyType.compete
         isNewIpInvalid = false
+    }
+    
+    private func editAllowedIpClickHandler(ipAddress: IpInfo) {
+        ipId = ipAddress.id
+        newIp = ipAddress.ipAddress
+        newIpSafetyType = ipAddress.safetyType
     }
     
     private func lastAllowedIpAlertDeleteClickHandler(ipAddress: IpInfo) {
@@ -149,7 +177,7 @@ struct AllowedIpsEditView : IpAddressContainerView {
         deleteAllowedIpAddress(ipAddress: ipAddress)
     }
     
-    private func deleteAllowedIpAddressClickHandler(ipAddress: IpInfo) {
+    private func deleteAllowedIpClickHandler(ipAddress: IpInfo) {
         isLastIp = appState.monitoring.isEnabled && appState.userData.allowedIps.count == 1
         
         if (!isLastIp) {

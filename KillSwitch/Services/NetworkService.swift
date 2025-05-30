@@ -17,15 +17,15 @@ class NetworkService : ServiceBase, ShellAccessible, NetworkServiceType {
             guard let interfaceName = SCNetworkInterfaceGetLocalizedDisplayName(interface) as? String else { return nil }
             guard let bsdName = SCNetworkInterfaceGetBSDName(interface) as? String else { return nil }
             
-            if (bsdName.hasPrefix(Constants.physicalNetworkInterfacePrefix)
-                && interfaceName.range(of: Constants.physicalNetworkInterfaceExclusion, options: .caseInsensitive) == nil) {
-                return NetworkInterface(
-                    name: bsdName as String,
-                    type: getNetworkInterfaceTypeByInterfaceName(interfaceName: interfaceName),
-                    localizedName: interfaceName)
-            }
+            let isPhysicalInterface = bsdName.hasPrefix(Constants.physicalNetworkInterfacePrefix) &&
+                interfaceName.range(of: Constants.physicalNetworkInterfaceExclusion, options: .caseInsensitive) == nil
             
-            return nil
+            guard isPhysicalInterface else { return nil }
+            
+            return NetworkInterface(
+                name: bsdName as String,
+                type: getNetworkInterfaceTypeByInterfaceName(interfaceName: interfaceName),
+                localizedName: interfaceName)
         }
         
         return result

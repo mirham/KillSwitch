@@ -32,6 +32,7 @@ struct KillProcessesConfirmationDialogView : View {
                 Text(Constants.dialogBodyCloseApps)
                     .multilineTextAlignment(.center)
                     .font(.system(size: 10))
+                    .frame(minHeight: 30)
                 Spacer().frame(height: 20)
                 VStack(alignment: .leading) {
                     ForEach(appState.system.processesToKill, id: \.pid) { processInfo in
