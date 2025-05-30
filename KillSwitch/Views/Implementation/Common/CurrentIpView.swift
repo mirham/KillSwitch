@@ -18,10 +18,16 @@ struct CurrentIpView: IpAddressContainerView {
     var body: some View {
         Section() {
             VStack{
-                Text(Constants.currentIp.uppercased())
+                Text(Constants.publicIp)
+                    .textCase(.uppercase)
                     .font(.title3)
                     .multilineTextAlignment(.center)
-                Text(appState.network.publicIp?.ipAddress.uppercased() ?? Constants.none.uppercased())
+                    .isHidden(hidden: appState.network.status == .off, remove: true)
+                Text(appState.network.publicIp?.ipAddress
+                     ?? (appState.network.status == NetworkStatusType.off
+                        ? Constants.offline
+                        : Constants.none))
+                    .textCase(.uppercase)
                     .font(.largeTitle)
                     .bold()
                     .foregroundStyle(getIpColor())
@@ -52,7 +58,7 @@ struct CurrentIpView: IpAddressContainerView {
                     .font(.system(size: 9))
                     .bold()
                     .foregroundStyle(getSafetyColor(safetyType: appState.current.safetyType, colorScheme: colorScheme))
-                    .isHidden(hidden: !appState.current.isHighRisk, remove: true)
+                    .isHidden(hidden: !appState.current.isHighRisk || appState.network.status == .off, remove: true)
                 HStack {
                     let flag = getCountryFlag(countryCode: appState.network.publicIp?.countryCode ?? String())
                     Image(nsImage: flag)
@@ -77,11 +83,13 @@ struct CurrentIpView: IpAddressContainerView {
     }
     
     private func addAllowedIp(safetyType : SafetyType) {
-        ipService.addAllowedPublicIp(
-            ip: appState.network.publicIp!.ipAddress,
-            ipInfo: appState.network.publicIp,
+        let ip = IpInfo(
+            ipAddress: appState.network.publicIp!.ipAddress,
+            ipAddressInfo: appState.network.publicIp,
             safetyType: safetyType)
-    }    
+        
+        ipService.addAllowedPublicIp(ip: ip)
+    }
 }
 
 #Preview {

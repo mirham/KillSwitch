@@ -36,6 +36,12 @@ final class NetworkStateUpdateBuilder {
     @discardableResult
     func withIsDisconnected(_ isDisconnected: Bool) -> Self {
         update.isDisconnected = isDisconnected
+        
+        if isDisconnected {
+            update.publicIp = nil
+            update.forceUpdatePublicIp = true
+        }
+        
         return self
     }
     

@@ -49,8 +49,10 @@ extension MenuBarItemsContainerView {
                 case Constants.mbItemKeyIpAddress:
                     let ipAddress = getIpAddressItem(
                         ipAddress: appState.network.publicIp == nil
-                            ? Constants.none
-                            : appState.network.publicIp!.ipAddress,
+                        ? appState.network.status == .off
+                            ? Constants.offline
+                            : Constants.none
+                        : appState.network.publicIp!.ipAddress,
                         color: mainColor,
                         exampleAllowed: exampleAllowed)
                     let menuBarItem = MenuBarElement(image: renderMenuBarItemImage(view: ipAddress), key: key)
@@ -132,7 +134,8 @@ extension MenuBarItemsContainerView {
     }
     
     private func getIpAddressItem(ipAddress: String, color: Color, exampleAllowed: Bool) -> Text {
-        let effectiveIpAddress = (ipAddress.isEmpty || ipAddress == Constants.none) && exampleAllowed
+        let noIpAddress = ipAddress.isEmpty || ipAddress == Constants.none || ipAddress == Constants.offline
+        let effectiveIpAddress = noIpAddress && exampleAllowed
             ? Constants.defaultIpAddress
             : ipAddress
         

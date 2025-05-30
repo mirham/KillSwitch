@@ -32,7 +32,7 @@ class IpService : ServiceBase, ApiCallable, IpServiceType {
         return OperationResult(result: IpInfoBase(ipAddress: ipAddressString))
     }
     
-    func getPublicIpInfoAsync(ip : String) async -> OperationResult<IpInfoBase> {
+    func getPublicIpInfoAsync(ip: String) async -> OperationResult<IpInfoBase> {
         do {
             // TODO RUSS: Add to Settings, add JSON mapping
             let response = try await callGetApiAsync(apiUrl: "https://freeipapi.com/api/json/\(ip)")
@@ -58,23 +58,21 @@ class IpService : ServiceBase, ApiCallable, IpServiceType {
         }
     }
     
-    func addAllowedPublicIp(ip : String, ipInfo: IpInfoBase?, safetyType: SafetyType) {
-            let newAllowedIp = IpInfo(ipAddress: ip, ipAddressInfo: ipInfo, safetyType: safetyType)
-            
-            if !appState.userData.allowedIps.contains(newAllowedIp) {
-                appState.userData.allowedIps.append(newAllowedIp)
+    func addAllowedPublicIp(ip: IpInfo) {            
+            if !appState.userData.allowedIps.contains(ip) {
+                appState.userData.allowedIps.append(ip)
             }
             else {
-                if let currentAllowedIpIndex = appState.userData.allowedIps.firstIndex(
-                    where: {$0.ipAddress == ip && $0.safetyType != safetyType}) {
-                    appState.userData.allowedIps[currentAllowedIpIndex] = newAllowedIp
+                if let currentIpIndex = appState.userData.allowedIps.firstIndex(
+                    where: {$0.ipAddress == ip.ipAddress && $0.safetyType != ip.safetyType}) {
+                    appState.userData.allowedIps[currentIpIndex] = ip
                 }
             }
         }
     
     // MARK: Private functions
     
-    private func callIpApiAsync(ipApiUrl : String) async -> OperationResult<String> {
+    private func callIpApiAsync(ipApiUrl: String) async -> OperationResult<String> {
         do {
             let response = try await callGetApiAsync(apiUrl: ipApiUrl)
             

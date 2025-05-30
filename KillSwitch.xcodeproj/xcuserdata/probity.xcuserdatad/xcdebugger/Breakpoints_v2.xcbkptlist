@@ -791,8 +791,8 @@
             filePath = "KillSwitch/Views/Protocols/MenuBarItemsContainerView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "77"
-            endingLineNumber = "77"
+            startingLineNumber = "79"
+            endingLineNumber = "79"
             landmarkName = "getMenuBarElements(keys:appState:colorScheme:exampleAllowed:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -807,8 +807,8 @@
             filePath = "KillSwitch/Views/Protocols/MenuBarItemsContainerView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "81"
-            endingLineNumber = "81"
+            startingLineNumber = "83"
+            endingLineNumber = "83"
             landmarkName = "getMenuBarElements(keys:appState:colorScheme:exampleAllowed:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -903,8 +903,8 @@
             filePath = "KillSwitch/Services/MonitoringService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "122"
-            endingLineNumber = "122"
+            startingLineNumber = "125"
+            endingLineNumber = "125"
             landmarkName = "isPublicIpAllowed()"
             landmarkType = "7">
          </BreakpointContent>
@@ -919,8 +919,8 @@
             filePath = "KillSwitch/Services/MonitoringService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "172"
-            endingLineNumber = "172"
+            startingLineNumber = "175"
+            endingLineNumber = "175"
             landmarkName = "disableActiveNetworkInterfaces()"
             landmarkType = "7">
          </BreakpointContent>
@@ -935,8 +935,8 @@
             filePath = "KillSwitch/Services/MonitoringService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "173"
-            endingLineNumber = "173"
+            startingLineNumber = "176"
+            endingLineNumber = "176"
             landmarkName = "disableActiveNetworkInterfaces()"
             landmarkType = "7">
          </BreakpointContent>
@@ -1097,6 +1097,22 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "82"
             endingLineNumber = "82"
+            landmarkName = "fetchPublicIpAsync()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "1BDBFDF8-7385-4839-9F1F-AC21B306E9D4"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "KillSwitch/Services/NetworkStatusService.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "85"
+            endingLineNumber = "85"
             landmarkName = "fetchPublicIpAsync()"
             landmarkType = "7">
          </BreakpointContent>

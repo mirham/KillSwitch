@@ -105,12 +105,15 @@ class MonitoringService: ServiceBase, MonitoringServiceType {
                 .build())
             
             self.loggingService.write(
-                message: String(format: Constants.logCurrentIpHasBeenUpdated, updatedPublicIpResult.result!.ipAddress),
+                message: String(format: Constants.logPublicIpHasBeenUpdated, updatedPublicIpResult.result!.ipAddress),
                 type: .info)
         }
         
         self.loggingService.write(
-            message: String(format: Constants.logCurrentIp, updatedPublicIpResult.result!.ipAddress),
+            message: String(
+                format: Constants.logPublicIp,
+                updatedPublicIpResult.result!.ipAddress,
+                updatedPublicIpResult.result!.countryName),
             type: .info)
     }
     
@@ -121,7 +124,7 @@ class MonitoringService: ServiceBase, MonitoringServiceType {
         
         if isNotAllowedIp {
             let message = String(
-                format: Constants.logCurrentIpHasBeenUpdatedWithNotFromWhitelist,
+                format: Constants.logPublicIpHasBeenUpdatedWithNotFromWhitelist,
                 appState.network.publicIp!.ipAddress)
             
             disableActiveNetworkInterfaces()

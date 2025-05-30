@@ -83,7 +83,10 @@ class NetworkStatusService: ServiceBase, ApiCallable, NetworkStatusServiceType {
                 isPublicIpNotObtained = false
                 
                 loggingService.write(
-                    message: String(format: Constants.logCurrentIp, result.result!.ipAddress),
+                    message: String(
+                        format: Constants.logPublicIp,
+                        result.result!.ipAddress,
+                        result.result!.countryName),
                     type: .info)
                 
                 return result.result
