@@ -19,6 +19,7 @@ struct Constants{
     static let minTimeIntervalToCheck: Int = 1
     static let maxTimeIntervalToCheck: Int = 300
     static let zshPath = "/bin/zsh"
+    static let headHttpMethod = "HEAD"
     static let launchAgentName = "\(Bundle.main.bundleIdentifier!)"
     static let launchAgentPlistName = "\(Bundle.main.bundleIdentifier!).plist"
     static let launchAgents = "LaunchAgents"
@@ -30,6 +31,8 @@ struct Constants{
     static let defaultToleranceInNanoseconds: UInt64 = 100_000_000
     static let menuBarItemTimeToleranceInSeconds: Int = 1
     static let defaultIntervalBetweenChecksInSeconds: Int = 10
+    static let ipApiCallTimeoutInSeconds: Double = 1.0
+    static let ipInfoApiCallTimeoutInSeconds: Double = 2.0
     static let memuBarScaleCurrentIp = 0.9
     static let memuBarScaleToggles = 0.8
     static let physicalNetworkInterfacePrefix = "en"
@@ -37,9 +40,14 @@ struct Constants{
     static let physicalNetworkInterfaceLan = "LAN"
     static let physicalNetworkInterfaceExclusion = "Thunderbolt"
     static let sleepPreventingReason = "Monitoring sleep preventing"
+    static let defaultInternetCheckUrl = "https://google.com"
+    static let defaultIpInfoApiUrl = "http://ip-api.com/json/\(publicIpMask)"
     
     // MARK: Regexes
     static let regexUrl = /(?<protocol>https?):\/\/(?:(?<username>[^:@\s\/\\]*)(?::(?<password>[^:@\s\/\\]*))?@)?(?<domain>[\w\d]+[\w\d.\-]+[\w\d]+|\[[a-f\d:]+\])(?::(?<port>\d+))?(?:(?<path>\/[^\?#\s]*)(?:\?(?<query>[^\?#\s]*))?(?:#(?<anchor>[^\?#\s]*))?)?/
+    
+    // MARK: Masks
+    static let publicIpMask = "%IP%"
     
     // MARK: Icons
     static let iconApp = "AppIcon"
@@ -63,6 +71,7 @@ struct Constants{
     static let iconCheckmark = "checkmark.circle.fill"
     static let iconCircle = "circle"
     static let iconMarkedCircle = "largecircle.fill.circle"
+    static let iconNoActiveIpApi = "exclamationmark.triangle.fill"
     
     // MARK: Colors
     static let colorCompleteSafetyLightTheme = "#369300"
@@ -70,6 +79,7 @@ struct Constants{
     
     // MARK: Window IDs
     static let windowIdMain = "main-view"
+    static let windowIdMenuBar = "menubar-view"
     static let windowIdSettings = "settings-view"
     static let windowIdKillProcessesConfirmationDialog = "kill-processess-confirmation-dialog-view"
     static let windowIdEnableNetworkDialog = "enable-network-dialog-view"
@@ -115,6 +125,9 @@ struct Constants{
     static let virtual = "virtual"
     static let checked = "Checked"
     static let unchecked = "Unchecked"
+    static let ipInfoApiUrl = "IP info API address (use \(publicIpMask) for public IP address)"
+    static let mappings = "Mappings"
+    static let noActiveIpApi = "No active IP API"
     
     // MARK: Symbols
     static let bullet = "•"
@@ -140,6 +153,7 @@ struct Constants{
     static let settingsElementAvailableItems = "Available menu bar items"
     static let settingsElementAllowedIpAddresses = "Allowed IPs"
     static let settingsElementIpAddressApis = "IP APIs"
+    static let settingsElementIpInfoApi = "IP info API"
     static let settingsElementClosingApps = "Closing apps"
     static let settingsElementClosingApplications = "Closing applications"
     static let settingsElementKeepAppRunning = "Keep application running"
@@ -171,6 +185,8 @@ struct Constants{
     static let settingsKeyMenuBarUseThemeColor = "menubar-use-theme-color"
     static let settingsKeyOnTopOfAllWindows = "on-top-of-all-windows"
     static let settingsKeyPreventComputerSleep = "prevent-computer-sleep"
+    static let settingsKeyIpInfoApiUrl = "ip-info-api-url"
+    static let settingsKeyIpInfoMapping = "ip-info-api-matches"
     
     // MARK: Menubar item keys
     static let mbItemKeyShield = "shiled"
@@ -197,6 +213,8 @@ struct Constants{
     static let errorWhenCallingIpAddressApi = "Error when called IP address API '%1$@': '%2$@', API marked as inactive and will be skipped until next application run"
     static let errorIpApiResponseIsInvalid = "IP address API returned invalid IP address"
     static let errorWhenCallingIpInfoApi = "Error when called IP info API: %1$@"
+    static let errorTaskCancelled = "Task cancelled"
+    static let errorInvalidJson = "Invalid JSON"
     
     // MARK: Dialogs
     static let dialogHeaderIpAddressIsNotValid = "IP Address is not valid"
@@ -217,6 +235,10 @@ struct Constants{
     static let dialogBodyNoOneAllowedIpIfOnline = "Select a privacy type for the current IP address if you want to add it as an allowed one, or add one or more manually in the settings later\n"
     static let dialogHeaderLastAllowedIpAddressDeleting = "Last allowed IP address deleting"
     static let dialogBodyLastAllowedIpAddressDeleting = "IP address %1$@ is the last allowed one. The monitoring will be stopped. Are you sure you want to continue?"
+    static let dialogHeaderIpInfoApiIsNotValid = "API for getting information of public IP address is not valid"
+    static let dialogBodyIpInfoApiIsNotValid = "API doesn't return a JSON data and cannot be added."
+    static let dialogHeaderIpInfoApiMappingIsNotValid = "API for getting information of public IP address doesn't return required data."
+    static let dialogBodyIpInfoApiMappingIsNotValid = "The API does not return the country code or country name. Please double-check the API values and mapping for correctness."
     
     // MARK: Log messages
     static let logMonitoringHasBeenEnabled = "Monitoring enabled"
@@ -245,6 +267,7 @@ struct Constants{
     static let hintApiIsActive = "API is in use"
     static let hintApiIsInactive = "API not used"
     static let hintNewVaildIpAddress = "A new valid IP address"
+    static let hintNewVaildUrl = "A new valid URL"
     static let hintNewVaildApiUrl = "A new valid API URL"
     static let hintClickToEnableNetwork = "Click to enable network"
     static let hintClickToDisableNetwork = "Click to disable network"
@@ -264,6 +287,9 @@ struct Constants{
     static let hintAllowedIps = "Add an allowed IP address with desired safety type\nRight click on the address to display the context menu"
     static let hintIpApis = "Add an API that returns the public IP address in plain text\nRight click on the API to display the context menu\nIf API marked green, it works properly and in use"
     static let hintCloseApps = "Add the application you want to close automatically or manually\nRight click on the application to display the context menu"
+    static let hintIpInfoApi = "The IP info API is needed to get advanced information about a public IP address, such as its location. This allows you to display the country flag in the macOS menu bar, as well as show the address on a map. Typically, data from such APIs is in JSON format. Here, you can assign an API address and map the JSON data values to application values."
+    static let hintNotSet = "Not set yet"
+    static let hintJsonKey = "JSON data key"
     
     // MARK: About
     static let aboutSupportMail = "bWlyaGFtQGFidi5iZw=="
@@ -293,6 +319,18 @@ struct Constants{
         "https://api.ip.sb/ip",
         "https://ipv4.ddnspod.com/",
         "https://api.ip.lk/"
+    ]
+    
+    static let defaultIpInfoApiKeyMapping = [
+        "ipAddress" : "query",
+        "countryCode" : "countryCode",
+        "countryName" : "country",
+    ]
+    
+    static let readableIpInfoApiKeyMapping = [
+        "ipAddress" : "IP address",
+        "countryCode" : "Country code",
+        "countryName" : "Country name"
     ]
     
     static let launchAgentXmlContent =

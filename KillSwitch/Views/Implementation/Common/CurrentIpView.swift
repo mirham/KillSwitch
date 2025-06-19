@@ -88,7 +88,7 @@ struct CurrentIpView: IpAddressContainerView {
             ipAddressInfo: appState.network.publicIp,
             safetyType: safetyType)
         
-        ipService.addAllowedPublicIp(ip: ip)
+        ipService.addAllowedPublicIp(publicIp: ip)
     }
 }
 

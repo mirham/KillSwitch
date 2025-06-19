@@ -82,7 +82,7 @@ struct KillProcessesConfirmationDialogView : View {
     }
     
     private func openDialog() {
-        appState.views.isKillProcessesConfirmationDialogShown = true
+        appState.views.shownWindows.append(Constants.windowIdKillProcessesConfirmationDialog)
         AppHelper.setUpView(
             viewName: Constants.windowIdKillProcessesConfirmationDialog,
             onTop: true)
@@ -90,8 +90,12 @@ struct KillProcessesConfirmationDialogView : View {
     }
     
     private func closeDialog() {
-        appState.views.isKillProcessesConfirmationDialogShown = false
+        appState.views.shownWindows.removeAll(where: {$0 == Constants.windowIdKillProcessesConfirmationDialog})
         isPresented = false
+        
+        if appState.views.shownWindows.contains(where: {$0 == Constants.windowIdMain}) {
+            AppHelper.activateView(viewId: Constants.windowIdMain)
+        }
     }
 }
 

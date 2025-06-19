@@ -93,7 +93,7 @@ struct EnableNetworkDialogView : View {
     }
     
     private func openDialog() {
-        appState.views.isEnableNetworkDialogShown = true
+        appState.views.shownWindows.append(Constants.windowIdEnableNetworkDialog)
         interfaceToEnable = appState.current.mainNetworkInterface
         AppHelper.setUpView(
             viewName: Constants.windowIdEnableNetworkDialog,
@@ -102,7 +102,7 @@ struct EnableNetworkDialogView : View {
     }
     
     private func closeDialog() {
-        appState.views.isEnableNetworkDialogShown = false
+        appState.views.shownWindows.removeAll(where: {$0 == Constants.windowIdEnableNetworkDialog})
         isPresented = false
         AppHelper.activateView(viewId: Constants.windowIdMain)
     }

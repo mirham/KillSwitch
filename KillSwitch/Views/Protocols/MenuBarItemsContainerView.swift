@@ -101,7 +101,8 @@ extension MenuBarItemsContainerView {
     // MARK: Private functions
     @MainActor
     private func renderMenuBarItemImage(view: some View) -> NSImage {
-        let result = view.renderAsImage() ?? NSImage()
+        let renderer = ImageRenderer(content: view)
+        let result = renderer.nsImage ?? NSImage()
         
         return result
     }

@@ -78,7 +78,7 @@ struct ToolbarView : View {
     }
     
     private func showSettingsWindow() {
-        if (!appState.views.isSettingsViewShown){
+        if !appState.views.shownWindows.contains(where: {$0 == Constants.windowIdSettings}) {
             openWindow(id: Constants.windowIdSettings)
             AppHelper.activateView(viewId: Constants.windowIdSettings)
         }
@@ -88,7 +88,7 @@ struct ToolbarView : View {
     }
     
     private func showInfoWindow() {
-        if (!appState.views.isInfoViewShown){
+        if !appState.views.shownWindows.contains(where: {$0 == Constants.windowIdInfo}) {
             openWindow(id: Constants.windowIdInfo)
             AppHelper.activateView(viewId: Constants.windowIdInfo)
         }

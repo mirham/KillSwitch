@@ -8,11 +8,15 @@
 import Foundation
 
 protocol ApiCallable{
-    func callGetApiAsync(apiUrl : String) async throws -> String
+    func callGetApiAsync(apiUrl : String, timeoutInterval: Double) async throws -> String
 }
 
 extension ApiCallable {
-    func callGetApiAsync(apiUrl : String) async throws -> String {
+    func callGetApiAsync(apiUrl : String, timeoutInterval: Double) async throws -> String {
+        let defaultResponse = String()
+        
+        guard !Task.isCancelled else { return defaultResponse }
+        
         do {
             let url = URL(string: apiUrl)!
             let request = URLRequest(url: url)

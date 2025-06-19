@@ -98,7 +98,7 @@ struct NoOneAllowedIpDialogView : View {
             ipAddressInfo: appState.network.publicIp,
             safetyType: safetyType)
         
-        self.ipService.addAllowedPublicIp(ip: ip)
+        self.ipService.addAllowedPublicIp(publicIp: ip)
     }
     
     private func isOnline() -> Bool {
@@ -116,7 +116,7 @@ struct NoOneAllowedIpDialogView : View {
     }
     
     private func openDialog() {
-        appState.views.isNoOneAllowedIpDialogShown = true
+        appState.views.shownWindows.append(Constants.windowIdNoOneAllowedIpDialog)
         AppHelper.setUpView(
             viewName: Constants.windowIdEnableNetworkDialog,
             onTop: true)
@@ -124,7 +124,7 @@ struct NoOneAllowedIpDialogView : View {
     }
     
     private func closeDialog() {
-        appState.views.isNoOneAllowedIpDialogShown = false
+        appState.views.shownWindows.removeAll(where: {$0 == Constants.windowIdNoOneAllowedIpDialog})
         isPresented = false
         AppHelper.activateView(viewId: Constants.windowIdMain)
     }

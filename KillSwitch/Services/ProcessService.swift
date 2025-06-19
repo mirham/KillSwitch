@@ -75,7 +75,7 @@ class ProcessService : ServiceBase, ShellAccessible, ProcessServiceType {
                         && (self.appState.current.safetyType == SafetyType.unsafe
                             || (self.appState.userData.useHigherProtection
                                 && self.appState.network.publicIp != nil
-                                && !self.appState.network.publicIp!.isConfirmed()))
+                                && !self.appState.network.publicIp!.hasLocation()))
                     
                     if shouldKillProcesses {
                         self.killActiveProcesses()

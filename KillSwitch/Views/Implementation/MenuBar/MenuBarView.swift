@@ -57,17 +57,17 @@ struct MenuBarView : View {
             }
         }
         .onAppear(perform: {
-            appState.views.isStatusBarViewShown = true
+            appState.views.shownWindows.append(Constants.windowIdMenuBar)
         })
         .onDisappear(perform: {
-            appState.views.isStatusBarViewShown = false
+            appState.views.shownWindows.removeAll(where: {$0 == Constants.windowIdMenuBar})
         })
     }
     
     // MARK: Private functions
     
     private func showButtonClickHandler() {
-        if(!appState.views.isMainViewShown){
+        if(!appState.views.shownWindows.contains(where: {$0 == Constants.windowIdMain})){
             openWindow(id: Constants.windowIdMain)
         }
         AppHelper.activateView(viewId: Constants.windowIdMain, simple: false)

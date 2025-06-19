@@ -141,7 +141,7 @@ class MonitoringService: ServiceBase, MonitoringServiceType {
     
     private func isPublicIpObtainable() {
         let isNoActiveApis = appState.network.publicIp == nil
-            && !appState.userData.activeIpApisExist()
+            && !appState.userData.hasActiveIpApi()
         
         if (isNoActiveApis) {
             let message = String(Constants.errorNoActiveIpApiFound)

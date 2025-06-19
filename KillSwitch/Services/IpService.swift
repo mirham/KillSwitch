@@ -6,66 +6,88 @@
 //
 
 import Foundation
-import Network
+import Factory
 
 class IpService : ServiceBase, ApiCallable, IpServiceType {
+    @Injected(\.ipApiService) private var ipApiService
+    
     func getPublicIpAsync(ipApiUrl: String? = nil, withInfo: Bool = true) async -> OperationResult<IpInfoBase> {
-        var currentIpApiUrl = ipApiUrl
-        
-        if (currentIpApiUrl == nil) {
-            let randomIpApi = appState.userData.getRandomActiveIpApi()
-            currentIpApiUrl = randomIpApi?.url
+        guard !Task.isCancelled else {
+            return OperationResult(error: Constants.errorTaskCancelled)
         }
         
-        guard currentIpApiUrl != nil else { return OperationResult(error: Constants.errorNoActiveIpApiFound) }
-        let ipAddressResult = await callIpApiAsync(ipApiUrl: currentIpApiUrl!)
-        guard ipAddressResult.success else { return OperationResult(error: ipAddressResult.error!) }
-        let ipAddressString = ipAddressResult.result!.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard ipAddressString.isValidIp() else { return OperationResult(error: Constants.errorIpApiResponseIsInvalid) }
+        let currentIpApiUrl = ipApiUrl ?? ipApiService.getRandomActiveIpApi()?.url
+        
+        guard let currentIpApiUrl else {
+            return OperationResult(error: Constants.errorNoActiveIpApiFound)
+        }
+        
+        let ipAddressResult = await ipApiService.callIpApiAsync(ipApiUrl: currentIpApiUrl)
+        guard ipAddressResult.success, let ipAddress = ipAddressResult.result?.trimmingCharacters(in: .whitespacesAndNewlines) else {
+            return OperationResult(error: ipAddressResult.error ?? Constants.errorIpApiResponseIsInvalid)
+        }
+        
+        guard ipAddress.isValidIp() else {
+            return OperationResult(error: Constants.errorIpApiResponseIsInvalid)
+        }
         
         if withInfo {
-            let ipWithInfoResult = await getPublicIpInfoAsync(ip: ipAddressString)
+            let ipWithInfoResult = await getPublicIpInfoAsync(
+                publicIp: ipAddress,
+                keyMapping: appState.userData.ipInfoApiKeyMapping
+            )
             
-            return OperationResult(result: ipWithInfoResult.result! , error: ipWithInfoResult.error)
+            return ipWithInfoResult
         }
         
-        return OperationResult(result: IpInfoBase(ipAddress: ipAddressString))
+        return OperationResult(result: IpInfoBase(ipAddress: ipAddress))
     }
     
-    func getPublicIpInfoAsync(ip: String) async -> OperationResult<IpInfoBase> {
+    func getPublicIpInfoAsync(publicIp: String, keyMapping: [String:String]) async -> OperationResult<IpInfoBase> {
+        guard !Task.isCancelled else {
+            return OperationResult(error: Constants.errorTaskCancelled)
+        }
+        
+        guard !keyMapping.isEmpty,
+              let ipInfoUrl = ipApiService.prepareIpInfoApiUrl(
+                publicIp: publicIp,
+                ipInfoApiUrl: appState.userData.ipInfoApiUrl
+              ) else {
+            return OperationResult(result: IpInfoBase(ipAddress: publicIp))
+        }
+        
         do {
-            // TODO RUSS: Add to Settings, add JSON mapping
-            let response = try await callGetApiAsync(apiUrl: "https://freeipapi.com/api/json/\(ip)")
-            let jsonData = response.data(using: .utf8)!
-            let decoder = JSONDecoder()
-            decoder.keyDecodingStrategy = .useDefaultKeys
-            let info = try decoder.decode(IpInfoBase.self, from: jsonData)
+            let response = try await callGetApiAsync(
+                apiUrl: ipInfoUrl,
+                timeoutInterval: Constants.ipInfoApiCallTimeoutInSeconds)
+            
+            guard let jsonData = response.data(using: .utf8) else {
+                throw URLError(.cannotParseResponse)
+            }
+            
+            let preparedJsonData = try jsonData.remap(mapping: keyMapping)
+            let info = try JSONDecoder().decode(IpInfoBase.self, from: preparedJsonData)
             
             return OperationResult(result: info)
-        }
-        catch {
-            if let error = error as? URLError, case .notConnectedToInternet = error.code {
-                return OperationResult(result: IpInfoBase(ipAddress: ip))
+        } catch {
+            if let urlError = error as? URLError,
+               [.notConnectedToInternet, .networkConnectionLost].contains(urlError.code) {
+                return OperationResult(result: IpInfoBase(ipAddress: publicIp))
             }
             
-            if let error = error as? URLError, case .networkConnectionLost = error.code {
-                return OperationResult(result: IpInfoBase(ipAddress: ip))
-            }
-            
-            return OperationResult(
-                result: IpInfoBase(ipAddress: ip),
-                error: String(format: Constants.errorWhenCallingIpInfoApi, error.localizedDescription))
+            let errorMessage = String(format: Constants.errorWhenCallingIpInfoApi, error.localizedDescription)
+            return OperationResult(result: IpInfoBase(ipAddress: publicIp), error: errorMessage)
         }
     }
     
-    func addAllowedPublicIp(ip: IpInfo) {            
-            if !appState.userData.allowedIps.contains(ip) {
-                appState.userData.allowedIps.append(ip)
+    func addAllowedPublicIp(publicIp: IpInfo) {            
+            if !appState.userData.allowedIps.contains(publicIp) {
+                appState.userData.allowedIps.append(publicIp)
             }
             else {
                 if let currentIpIndex = appState.userData.allowedIps.firstIndex(
-                    where: {$0.ipAddress == ip.ipAddress && $0.safetyType != ip.safetyType}) {
-                    appState.userData.allowedIps[currentIpIndex] = ip
+                    where: {$0.ipAddress == publicIp.ipAddress && $0.safetyType != publicIp.safetyType}) {
+                    appState.userData.allowedIps[currentIpIndex] = publicIp
                 }
             }
         }
@@ -74,7 +96,9 @@ class IpService : ServiceBase, ApiCallable, IpServiceType {
     
     private func callIpApiAsync(ipApiUrl: String) async -> OperationResult<String> {
         do {
-            let response = try await callGetApiAsync(apiUrl: ipApiUrl)
+            let response = try await callGetApiAsync(
+                apiUrl: ipApiUrl,
+                timeoutInterval: Constants.ipInfoApiCallTimeoutInSeconds)
             
             return OperationResult(result: response)
         }

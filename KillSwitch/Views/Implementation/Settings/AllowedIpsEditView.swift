@@ -131,7 +131,9 @@ struct AllowedIpsEditView : IpAddressContainerView {
     // MARK: Private functions
     
     private func upsertAllowedIpClickHandlerAsync() async {
-        let ipInfoResult = await ipService.getPublicIpInfoAsync(ip: newIp)
+        let ipInfoResult = await ipService.getPublicIpInfoAsync(
+            publicIp: newIp,
+            keyMapping: appState.userData.ipInfoApiKeyMapping)
         
         if (appState.userData.pickyMode && ipInfoResult.error != nil) {
             isNewIpInvalid = true
@@ -156,7 +158,7 @@ struct AllowedIpsEditView : IpAddressContainerView {
             }
         }
         else {
-            ipService.addAllowedPublicIp(ip: ipInfo)
+            ipService.addAllowedPublicIp(publicIp: ipInfo)
         }
         
         ipId = nil

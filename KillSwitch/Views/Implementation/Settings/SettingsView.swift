@@ -32,11 +32,17 @@ struct SettingsView : View {
                 .tabItem {
                     Text(Constants.settingsElementIpAddressApis)
                 }
+            IpInfoApiEditView()
+                .environmentObject(appState)
+                .tabItem {
+                    Text(Constants.settingsElementIpInfoApi)
+                }
             ClosingApplicationsEditView()
                 .tabItem {
                     Text(Constants.settingsElementClosingApps)
                 }
         }
+        .tabViewStyle(.grouped)
         .onAppear(perform: {
             openView()
         })
@@ -51,14 +57,14 @@ struct SettingsView : View {
     // MARK: Private functions
     
     private func openView() {
-        appState.views.isSettingsViewShown = true
+        appState.views.shownWindows.append(Constants.windowIdSettings)
         AppHelper.setUpView(
             viewName: Constants.windowIdSettings,
             onTop: appState.userData.onTopOfAllWindows)
     }
     
     private func closeView() {
-        appState.views.isSettingsViewShown = false
+        appState.views.shownWindows.removeAll(where: {$0 == Constants.windowIdSettings})
     }
 }
 

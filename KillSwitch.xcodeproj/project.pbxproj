@@ -84,6 +84,10 @@
 		35C218A62C6DEB7100964A7B /* ImageExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35C218A52C6DEB7100964A7B /* ImageExtensions.swift */; };
 		35C218A82C6E0E1600964A7B /* NoInsetHostingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35C218A72C6E0E1600964A7B /* NoInsetHostingView.swift */; };
 		35C218AC2C6E21A600964A7B /* ColorExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35C218AB2C6E21A600964A7B /* ColorExtensions.swift */; };
+		35C8A9212E04353300C574A5 /* IpApiService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35C8A9202E04353300C574A5 /* IpApiService.swift */; };
+		35C8A9232E04393400C574A5 /* IpApiServiceType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35C8A9222E04393400C574A5 /* IpApiServiceType.swift */; };
+		35C8A9252E043E0B00C574A5 /* DataExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35C8A9242E043E0B00C574A5 /* DataExtensions.swift */; };
+		35C8A9272E04400600C574A5 /* IpInfoApiEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35C8A9262E04400600C574A5 /* IpInfoApiEditView.swift */; };
 		35DA7E252C11E91800BFC680 /* LaunchAgentService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35DA7E242C11E91800BFC680 /* LaunchAgentService.swift */; };
 		35DD1C4C2C0F96E1003AA3ED /* NetworkStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35DD1C4B2C0F96E1003AA3ED /* NetworkStatusView.swift */; };
 		35DD1C4E2C0FA9D2003AA3ED /* CheckToggleStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35DD1C4D2C0FA9D2003AA3ED /* CheckToggleStyle.swift */; };
@@ -175,6 +179,10 @@
 		35C218A52C6DEB7100964A7B /* ImageExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageExtensions.swift; sourceTree = "<group>"; };
 		35C218A72C6E0E1600964A7B /* NoInsetHostingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoInsetHostingView.swift; sourceTree = "<group>"; };
 		35C218AB2C6E21A600964A7B /* ColorExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorExtensions.swift; sourceTree = "<group>"; };
+		35C8A9202E04353300C574A5 /* IpApiService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IpApiService.swift; sourceTree = "<group>"; };
+		35C8A9222E04393400C574A5 /* IpApiServiceType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IpApiServiceType.swift; sourceTree = "<group>"; };
+		35C8A9242E043E0B00C574A5 /* DataExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataExtensions.swift; sourceTree = "<group>"; };
+		35C8A9262E04400600C574A5 /* IpInfoApiEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IpInfoApiEditView.swift; sourceTree = "<group>"; };
 		35DA7E242C11E91800BFC680 /* LaunchAgentService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchAgentService.swift; sourceTree = "<group>"; };
 		35DD1C4B2C0F96E1003AA3ED /* NetworkStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkStatusView.swift; sourceTree = "<group>"; };
 		35DD1C4D2C0FA9D2003AA3ED /* CheckToggleStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckToggleStyle.swift; sourceTree = "<group>"; };
@@ -206,8 +214,9 @@
 				357183392C2C05CC008B2D83 /* ServiceBase.swift */,
 				351E9CE42C10A3BA00CEC15F /* MonitoringService.swift */,
 				35E7DD4E2C13420000CC68F7 /* NetworkStatusService.swift */,
-				357154FA2C173E4C00A41AA4 /* IpService.swift */,
 				351F0C652C0F6D2A00644C66 /* NetworkService.swift */,
+				357154FA2C173E4C00A41AA4 /* IpService.swift */,
+				35C8A9202E04353300C574A5 /* IpApiService.swift */,
 				35DA7E242C11E91800BFC680 /* LaunchAgentService.swift */,
 				359C7C6C2C29605D00CA3CE1 /* LocationService.swift */,
 				353179302C29CD700030FDF1 /* ComputerService.swift */,
@@ -360,6 +369,7 @@
 				35BD39C22DDC9CF00021CF49 /* TaskExtensions.swift */,
 				35BD39C02DDC9CB00021CF49 /* StringExtensions.swift */,
 				35BD39BE2DDC9C840021CF49 /* KeyedContainerExtensions.swift */,
+				35C8A9242E043E0B00C574A5 /* DataExtensions.swift */,
 				359EED492C52A9350094EFAF /* NWInterfaceExtensions.swift */,
 			);
 			path = Extensions;
@@ -384,6 +394,7 @@
 				35BD39CB2DDCA0010021CF49 /* MonitoringServiceType.swift */,
 				35BD39CD2DDCA0B30021CF49 /* NetworkStatusServiceType.swift */,
 				35BD39CF2DDCA1540021CF49 /* IpServiceType.swift */,
+				35C8A9222E04393400C574A5 /* IpApiServiceType.swift */,
 				35BD39D12DDCA1F00021CF49 /* NetworkServiceType.swift */,
 				35BD39D32DDCA3550021CF49 /* LaunchAgentServiceType.swift */,
 				35BD39D52DDCA3F60021CF49 /* LocationServiceType.swift */,
@@ -402,6 +413,7 @@
 				3570E48B2C25B02600CB5D42 /* MenuBarStatusEditView.swift */,
 				351E9CE82C10ADB300CEC15F /* AllowedIpsEditView.swift */,
 				3570E4682C21CC1600CB5D42 /* IpApisEditView.swift */,
+				35C8A9262E04400600C574A5 /* IpInfoApiEditView.swift */,
 				3568505B2C2B1999006E64B8 /* ClosingApplicationsEditView.swift */,
 			);
 			path = Settings;
@@ -431,8 +443,8 @@
 		35BD39E12DDCBDB50021CF49 /* MenuBar */ = {
 			isa = PBXGroup;
 			children = (
-				359E44EE2C11BFED00BF6093 /* MenuBarView.swift */,
 				359E44EC2C11A6BD00BF6093 /* MenuBarStatusView.swift */,
+				359E44EE2C11BFED00BF6093 /* MenuBarView.swift */,
 			);
 			path = MenuBar;
 			sourceTree = "<group>";
@@ -585,7 +597,9 @@
 				35DD1C4E2C0FA9D2003AA3ED /* CheckToggleStyle.swift in Sources */,
 				3571833A2C2C05CC008B2D83 /* ServiceBase.swift in Sources */,
 				35BD39DC2DDCA5920021CF49 /* LoggingServiceType.swift in Sources */,
+				35C8A9212E04353300C574A5 /* IpApiService.swift in Sources */,
 				35EE63712C57983700D45D66 /* MenuBarItemsContainerView.swift in Sources */,
+				35C8A9252E043E0B00C574A5 /* DataExtensions.swift in Sources */,
 				3570E4852C258A0000CB5D42 /* IsHiddenModifier.swift in Sources */,
 				3572667D2C36EDC30021978C /* ShellAccessible.swift in Sources */,
 				3570E46D2C21CFEA00CB5D42 /* SafetyType.swift in Sources */,
@@ -618,6 +632,7 @@
 				3570E48E2C25B81400CB5D42 /* MenuBarElement.swift in Sources */,
 				35BD39C12DDC9CB60021CF49 /* StringExtensions.swift in Sources */,
 				351F0C482C0EFCF100644C66 /* KillSwitchApp.swift in Sources */,
+				35C8A9232E04393400C574A5 /* IpApiServiceType.swift in Sources */,
 				354BEEB82DE8B1E000EFD1B2 /* MonitoringStateUpdateBuilder.swift in Sources */,
 				3570E4692C21CC1600CB5D42 /* IpApisEditView.swift in Sources */,
 				35DFC12D2C38338D001CAF43 /* OperationResult.swift in Sources */,
@@ -647,6 +662,7 @@
 				35C218A62C6DEB7100964A7B /* ImageExtensions.swift in Sources */,
 				3570E46F2C21E70D00CB5D42 /* IpApiInfo.swift in Sources */,
 				357183362C2C0199008B2D83 /* ProcessService.swift in Sources */,
+				35C8A9272E04400600C574A5 /* IpInfoApiEditView.swift in Sources */,
 				3568505A2C2B0ACF006E64B8 /* ProcessInfo.swift in Sources */,
 				3568505E2C2B2415006E64B8 /* AppInfo.swift in Sources */,
 				359EED4A2C52A9350094EFAF /* NWInterfaceExtensions.swift in Sources */,
@@ -809,8 +825,8 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 2.6;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.MirHam.KillSwitch;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -842,8 +858,8 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 2.6;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.MirHam.KillSwitch;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
