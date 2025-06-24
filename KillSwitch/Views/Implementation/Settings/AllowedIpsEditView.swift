@@ -14,15 +14,16 @@ struct AllowedIpsEditView : IpAddressContainerView {
     
     @Environment(\.colorScheme) private var colorScheme
     
+    @Injected(\.ipService) private var ipService
+    @Injected(\.monitoringService) private var monitoringService
+    
     @State private var ipId: UUID?
     @State private var newIp = String()
     @State private var isNewIpValid = false
     @State private var newIpSafetyType: SafetyType = SafetyType.compete
-    @State private var isNewIpInvalid: Bool = false
     @State private var isLastIp: Bool = false
-    
-    @Injected(\.ipService) private var ipService
-    @Injected(\.monitoringService) private var monitoringService
+    @State private var alertType: AlertType? = nil
+    @State private var pendingAlert: AlertType? = nil
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -58,20 +59,12 @@ struct AllowedIpsEditView : IpAddressContainerView {
                                 Button(action: { String.copyToClipboard(input: ipAddress.ipAddress) } ) {
                                     Text(Constants.copy)
                                 }
-                                Button(action: { editAllowedIpClickHandler(ipAddress: ipAddress) }) {
+                                Button(action: { handleEditAllowedIpClick(ipAddress: ipAddress) }) {
                                     Text(Constants.edit)
                                 }
-                                Button(action: { deleteAllowedIpClickHandler(ipAddress: ipAddress) }) {
+                                Button(action: { handldeDeleteAllowedIpClick(ipAddress: ipAddress) }) {
                                     Text(Constants.delete)
                                 }
-                            }
-                            .alert(isPresented: $isLastIp) {
-                                Alert(title: Text(Constants.dialogHeaderLastAllowedIpAddressDeleting),
-                                      message: Text(String(format: Constants.dialogBodyLastAllowedIpAddressDeleting, ipAddress.ipAddress)),
-                                      primaryButton: .destructive(Text(Constants.delete)) {
-                                    lastAllowedIpAlertDeleteClickHandler(ipAddress: ipAddress)
-                                },
-                                      secondaryButton: .cancel())
                             }
                         }
                     }
@@ -113,30 +106,61 @@ struct AllowedIpsEditView : IpAddressContainerView {
                         }
                         AsyncButton(
                             ipId == nil ? Constants.add : Constants.save,
-                            action: upsertAllowedIpClickHandlerAsync)
+                            action: handleUpsertAllowedIpClickAsync)
                             .disabled(!isNewIpValid)
-                            .alert(isPresented: $isNewIpInvalid) {
-                                Alert(title: Text(Constants.dialogHeaderIpAddressIsNotValid),
-                                      message: Text(Constants.dialogBodyIpAddressIsNotValid),
-                                      dismissButton: .default(Text(Constants.ok)))
-                            }
                             .bold()
                             .pointerOnHover()
                     }
                 }
             }
         }
+        .alert(isPresented: Binding(
+            get: { alertType != nil },
+            set: { _ in
+                alertType = pendingAlert
+                pendingAlert = nil
+            }
+        )) {
+            if alertType!.alertContent.isDismissableAlert {
+                return Alert (
+                    title: Text(alertType?.alertContent.title ?? String()),
+                    message: Text(alertType?.alertContent.message ?? String()),
+                    dismissButton: .default(Text(Constants.ok)) {
+                        alertType = pendingAlert
+                        pendingAlert = nil
+                    }
+                )
+            }
+            else {
+                return Alert(
+                    title: Text(alertType?.alertContent.title ?? String()),
+                    message: Text(alertType?.alertContent.message ?? String()),
+                    primaryButton: .destructive(Text(Constants.delete)) {
+                        if let ipInfo = alertType?.alertContent.ipInfo,
+                           let action = alertType?.alertContent.ipInfoAction {
+                            action(ipInfo)
+                        }
+                    },
+                    secondaryButton: .cancel() {
+                        alertType = pendingAlert
+                        pendingAlert = nil
+                    })
+            }
+
+        }
     }
     
     // MARK: Private functions
     
-    private func upsertAllowedIpClickHandlerAsync() async {
+    private func handleUpsertAllowedIpClickAsync() async {
         let ipInfoResult = await ipService.getPublicIpInfoAsync(
+            apiUrl: appState.userData.ipInfoApiUrl,
             publicIp: newIp,
             keyMapping: appState.userData.ipInfoApiKeyMapping)
+        let isNewIpInvalid = appState.userData.pickyMode && ipInfoResult.error != nil
         
-        if (appState.userData.pickyMode && ipInfoResult.error != nil) {
-            isNewIpInvalid = true
+        if (isNewIpInvalid) {
+            showAlert(.newIpInvalid)
             
             return
         }
@@ -165,30 +189,100 @@ struct AllowedIpsEditView : IpAddressContainerView {
         newIp = String()
         isNewIpValid = false
         newIpSafetyType = SafetyType.compete
-        isNewIpInvalid = false
     }
     
-    private func editAllowedIpClickHandler(ipAddress: IpInfo) {
+    private func handleEditAllowedIpClick(ipAddress: IpInfo) {
         ipId = ipAddress.id
         newIp = ipAddress.ipAddress
         newIpSafetyType = ipAddress.safetyType
     }
     
-    private func lastAllowedIpAlertDeleteClickHandler(ipAddress: IpInfo) {
+    private func handleLastAllowedIpAlertDeleteClick(ipAddress: IpInfo) {
         monitoringService.stopMonitoring()
         deleteAllowedIpAddress(ipAddress: ipAddress)
     }
     
-    private func deleteAllowedIpClickHandler(ipAddress: IpInfo) {
+    private func handldeDeleteAllowedIpClick(ipAddress: IpInfo) {
         isLastIp = appState.monitoring.isEnabled && appState.userData.allowedIps.count == 1
         
-        if (!isLastIp) {
-            deleteAllowedIpAddress(ipAddress: ipAddress)
+        guard !isLastIp else {
+             showAlert(.lastAllowedIpDeleting(
+                ip: ipAddress,
+                ipInfoAction: { ipAddress in handleLastAllowedIpAlertDeleteClick(ipAddress: ipAddress) }))
+            
+            return
         }
+        
+        deleteAllowedIpAddress(ipAddress: ipAddress)
     }
     
     private func deleteAllowedIpAddress(ipAddress: IpInfo) {
         appState.userData.allowedIps.removeAll(where: {$0 == ipAddress})
+    }
+    
+    private func showAlert(_ type: AlertType) {
+        if alertType == nil {
+            alertType = type
+        } else {
+            pendingAlert = type
+        }
+    }
+    
+    // MARK: Inner types
+    
+    private enum AlertType: Identifiable {
+        case newIpInvalid
+        case lastAllowedIpDeleting(ip: IpInfo, ipInfoAction: ((_ ipAddress: IpInfo) -> Void))
+        
+        var id: Int {
+            switch self {
+                case .newIpInvalid: return 0
+                case .lastAllowedIpDeleting: return 1
+            }
+        }
+        
+        var alertContent: AlertContent {
+            switch self {
+                case .newIpInvalid:
+                    return AlertContent(
+                        title: Constants.dialogHeaderIpIsNotValid,
+                        message: Constants.dialogBodyIpIsNotValid)
+                case .lastAllowedIpDeleting(let ipInfo, let ipInfoAction):
+                    return AlertContent(
+                        title: Constants.dialogHeaderLastAllowedIpDeleting,
+                        message: String(format: Constants.dialogBodyLastAllowedIpDeleting, ipInfo.ipAddress),
+                        ipInfo: ipInfo,
+                        ipInfoAction: ipInfoAction)
+            }
+        }
+    }
+    
+    private struct AlertContent {
+        let title: String
+        let message: String
+        let isDismissableAlert: Bool
+        let ipInfo: IpInfo?
+        let ipInfoAction: ((_ input: IpInfo) -> Void)?
+        
+        init(title: String,
+             message: String) {
+            self.title = title
+            self.message = message
+            self.isDismissableAlert = true
+            self.ipInfo = nil
+            self.ipInfoAction = nil
+        }
+        
+        init(title: String,
+             message: String,
+             ipInfo: IpInfo,
+             ipInfoAction: @escaping ((_ input: IpInfo) -> Void)) {
+            self.title = title
+            self.message = message
+            self.isDismissableAlert = false
+            self.ipInfo = ipInfo
+            self.ipInfoAction = ipInfoAction
+        }
     }
 }
 

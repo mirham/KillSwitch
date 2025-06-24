@@ -150,6 +150,8 @@ extension AppState {
         static func == (lhs: Network, rhs: Network) -> Bool {
             let result = lhs.status == rhs.status
             && lhs.publicIp == rhs.publicIp
+            && lhs.publicIp?.hasLocation() == rhs.publicIp?.hasLocation()
+            && lhs.isObtainingIp == rhs.isObtainingIp
             && lhs.activeNetworkInterfaces == rhs.activeNetworkInterfaces
             && lhs.physicalNetworkInterfaces == rhs.physicalNetworkInterfaces
             

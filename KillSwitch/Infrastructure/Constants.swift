@@ -16,8 +16,13 @@ struct Constants{
     static let defaultMonitoringIntervalNanoseconds: UInt64 =  UInt64(defaultMonitoringInterval) * secondInNanoseconds
     static let defaultProcessesMonitoringInterval: Int = 5
     static let defaultProcessesMonitoringIntervalNanoseconds: UInt64 =  UInt64(defaultProcessesMonitoringInterval) * secondInNanoseconds
+    static let defaultCheckConnectionIntervalSeconds: Int = 5
+    static let defaultCheckConnectionIntervalNanoseconds: UInt64 = UInt64(defaultCheckConnectionIntervalSeconds * 1_000_000_000)
     static let minTimeIntervalToCheck: Int = 1
     static let maxTimeIntervalToCheck: Int = 300
+    static let callTimeoutIpApiInSeconds: Double = 1.0
+    static let callTimeoutIpApiTotalInSeconds: Double = 20.0
+    static let callTimeoutIpInfoApiInSeconds: Double = 2.0
     static let zshPath = "/bin/zsh"
     static let headHttpMethod = "HEAD"
     static let launchAgentName = "\(Bundle.main.bundleIdentifier!)"
@@ -28,6 +33,7 @@ struct Constants{
     static let networkMonitorQueryLabel = "KSNetworkMonitor"
     static let ipV4: Int = 4
     static let ipV6: Int = 6
+    static let minIpApiCount: Int = 1
     static let defaultToleranceInNanoseconds: UInt64 = 100_000_000
     static let menuBarItemTimeToleranceInSeconds: Int = 1
     static let defaultIntervalBetweenChecksInSeconds: Int = 10
@@ -128,6 +134,7 @@ struct Constants{
     static let ipInfoApiUrl = "IP info API address (use \(publicIpMask) for public IP address)"
     static let mappings = "Mappings"
     static let noActiveIpApi = "No active IP API"
+    static let obtainingIp = "Obtaining IP..."
     
     // MARK: Symbols
     static let bullet = "•"
@@ -217,8 +224,8 @@ struct Constants{
     static let errorInvalidJson = "Invalid JSON"
     
     // MARK: Dialogs
-    static let dialogHeaderIpAddressIsNotValid = "IP Address is not valid"
-    static let dialogBodyIpAddressIsNotValid = "IP Address seems to not be valid and cannot be added."
+    static let dialogHeaderIpIsNotValid = "IP Address is not valid"
+    static let dialogBodyIpIsNotValid = "IP Address seems to not be valid and cannot be added."
     static let dialogHeaderApiIsNotValid = "API for getting IP Address is not valid"
     static let dialogBodyApiIsNotValid = "API doesn't return a valid IP address as a plain text and cannot be added."
     static let dialogHeaderLocationServicesToggled = "Location services"
@@ -233,12 +240,14 @@ struct Constants{
     static let dialogHeaderNoOneAllowedIp = "No allowed IP addresses are configured"
     static let dialogBodyNoOneAllowedIpIfOffline = "Add one or more in the settings\n"
     static let dialogBodyNoOneAllowedIpIfOnline = "Select a privacy type for the current IP address if you want to add it as an allowed one, or add one or more manually in the settings later\n"
-    static let dialogHeaderLastAllowedIpAddressDeleting = "Last allowed IP address deleting"
-    static let dialogBodyLastAllowedIpAddressDeleting = "IP address %1$@ is the last allowed one. The monitoring will be stopped. Are you sure you want to continue?"
+    static let dialogHeaderLastAllowedIpDeleting = "Last allowed IP address deleting"
+    static let dialogBodyLastAllowedIpDeleting = "IP address %1$@ is the last allowed one. The monitoring will be stopped. Are you sure you want to continue?"
     static let dialogHeaderIpInfoApiIsNotValid = "API for getting information of public IP address is not valid"
     static let dialogBodyIpInfoApiIsNotValid = "API doesn't return a JSON data and cannot be added."
     static let dialogHeaderIpInfoApiMappingIsNotValid = "API for getting information of public IP address doesn't return required data."
     static let dialogBodyIpInfoApiMappingIsNotValid = "The API does not return the country code or country name. Please double-check the API values and mapping for correctness."
+    static let dialogHeaderLastIpApiCannotBeRemoved = "Cannot remove the last remaining IP API"
+    static let dialogBodyLastIpApiCannotBeRemoved = "You're trying to remove the last IP API, which will make the application stop working. To keep the app functional, please add more valid IP APIs (as many as possible) before deleting this one."
     
     // MARK: Log messages
     static let logMonitoringHasBeenEnabled = "Monitoring enabled"

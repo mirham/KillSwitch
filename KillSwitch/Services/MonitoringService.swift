@@ -20,7 +20,7 @@ class MonitoringService: ServiceBase, MonitoringServiceType {
     override init() {
         super.init()
         
-        if(appState.monitoring.isEnabled){
+        if appState.monitoring.isEnabled {
             startMonitoring()
         }
     }
@@ -54,8 +54,11 @@ class MonitoringService: ServiceBase, MonitoringServiceType {
                     self.monitoringTime % self.appState.userData.intervalBetweenChecks == 0
                 
                 if isIpCheckRequired {
-                    let updatedIpAddressResult =  await self.ipService.getPublicIpAsync(ipApiUrl: nil, withInfo: true)
-                    await self.handleUpdatedPublicIpResultAsync(updatedPublicIpResult: updatedIpAddressResult)
+                    let updatedIpAddressResult =  await self.ipService.getPublicIpAsync(
+                        ipApiUrl: nil,
+                        withInfo: true)
+                    await self.handleUpdatedPublicIpResultAsync(
+                        updatedPublicIpResult: updatedIpAddressResult)
                 }
 
                 self.isPublicIpObtainable()
@@ -157,7 +160,7 @@ class MonitoringService: ServiceBase, MonitoringServiceType {
     private func isUnsafeForHigherProtection (
         updatedIpAddressResult: OperationResult<IpInfoBase>) -> Bool {
         let result = appState.userData.useHigherProtection
-                     && (appState.system.locationServicesEnabled 
+                     && (appState.system.locationServicesEnabled
                          || updatedIpAddressResult.result == nil)
         
         return result

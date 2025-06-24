@@ -29,7 +29,7 @@ class IpApiService : ServiceBase, ApiCallable, IpApiServiceType {
         do {
             let response = try await callGetApiAsync(
                 apiUrl: ipApiUrl,
-                timeoutInterval: Constants.ipApiCallTimeoutInSeconds)
+                timeoutInterval: calculateCallTimeout())
             
             return OperationResult(result: response)
         }
@@ -59,5 +59,15 @@ class IpApiService : ServiceBase, ApiCallable, IpApiServiceType {
                 self.appState.userData.ipApis[inactiveApiIndex].active = false
             }
         }
+    }
+    
+    private func calculateCallTimeout() -> Double {
+        let activeApisCount = self.appState.userData.ipApis.count(where: {$0.isActive()})
+        
+        guard activeApisCount > 0 else { return Constants.callTimeoutIpApiInSeconds }
+        
+        let result = Constants.callTimeoutIpApiTotalInSeconds / Double(activeApisCount)
+        
+        return max(result, Constants.callTimeoutIpApiInSeconds)
     }
 }

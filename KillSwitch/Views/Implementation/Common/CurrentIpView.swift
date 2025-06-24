@@ -23,10 +23,11 @@ struct CurrentIpView: IpAddressContainerView {
                     .font(.title3)
                     .multilineTextAlignment(.center)
                     .isHidden(hidden: appState.network.status == .off, remove: true)
-                Text(appState.network.publicIp?.ipAddress
-                     ?? (appState.network.status == NetworkStatusType.off
-                        ? Constants.offline
-                        : Constants.none))
+                Text(appState.network.status == .off
+                     ? Constants.offline
+                     : appState.network.isObtainingIp
+                       ? Constants.obtainingIp
+                       : appState.network.publicIp?.ipAddress ?? Constants.none)
                     .textCase(.uppercase)
                     .font(.largeTitle)
                     .bold()

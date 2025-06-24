@@ -34,5 +34,6 @@ struct IpInfoBase: Codable, Equatable {
     
     func hash(into hasher: inout Hasher) {
         hasher.combine(ipAddress)
+        hasher.combine(countryCode)
     }
 }

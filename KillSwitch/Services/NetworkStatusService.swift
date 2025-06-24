@@ -14,17 +14,20 @@ class NetworkStatusService: ServiceBase, ApiCallable, NetworkStatusServiceType {
     
     private let monitor = NWPathMonitor()
     private let queue = DispatchQueue(label: Constants.networkMonitorQueryLabel, qos: .background)
-    private var publicIpRefreshingTask: Task<Void, Never>?
+    private var ipUpdateTask: Task<Void, Never>?
+    private var checkConnectionTask: Task<Void, Never>?
     
     override init() {
         super.init()
         
         startNetworkMonitoring()
+        startConnectionMonitoring()
     }
     
     deinit {
         monitor.cancel()
-        publicIpRefreshingTask?.cancel()
+        ipUpdateTask?.cancel()
+        checkConnectionTask?.cancel()
     }
     
     // MARK: Private functions
@@ -42,9 +45,9 @@ class NetworkStatusService: ServiceBase, ApiCallable, NetworkStatusServiceType {
                 let updatedActiveNetworkInterfaces = networkInterfaces
                 let updatedPhysicalNetworkInterfaces = physicalNetworkInterfaces
                 
-                self.publicIpRefreshingTask?.cancel()
+                self.ipUpdateTask?.cancel()
                 
-                self.publicIpRefreshingTask = Task {
+                self.ipUpdateTask = Task {
                     await self.updateStatusAsync(update: NetworkStateUpdateBuilder()
                         .withStatus(updatedStatus)
                         .withActiveNetworkInterfaces(updatedActiveNetworkInterfaces)
@@ -58,7 +61,7 @@ class NetworkStatusService: ServiceBase, ApiCallable, NetworkStatusServiceType {
                             await self.networkService.refreshPublicIpAsync()
                         }
                         catch {
-                            self.publicIpRefreshingTask?.cancel()
+                            self.ipUpdateTask?.cancel()
                         }
                     }
                 }
@@ -66,6 +69,19 @@ class NetworkStatusService: ServiceBase, ApiCallable, NetworkStatusServiceType {
         }
         
         monitor.start(queue: queue)
+    }
+    
+    private func startConnectionMonitoring() {
+        checkConnectionTask = Task {
+            while !Task.isCancelled {
+                try? await Task.sleep(nanoseconds: Constants.defaultCheckConnectionIntervalNanoseconds)
+                
+                guard shouldFetchPublicIp()
+                else { continue }
+                
+                await self.networkService.refreshPublicIpAsync()
+            }
+        }
     }
     
     private func determineNetworkStatusType(
@@ -92,6 +108,14 @@ class NetworkStatusService: ServiceBase, ApiCallable, NetworkStatusServiceType {
         }
         
         return result
+    }
+    
+    private func shouldFetchPublicIp() -> Bool {
+        return appState.network.status == .on
+        && !appState.network.isObtainingIp
+        && (appState.network.publicIp == nil
+            || (appState.network.publicIp != nil
+                && !appState.network.publicIp!.hasLocation()))
     }
     
     private func updateStatusAsync(update: NetworkStateUpdate) async {

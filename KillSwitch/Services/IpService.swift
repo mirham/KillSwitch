@@ -16,43 +16,38 @@ class IpService : ServiceBase, ApiCallable, IpServiceType {
             return OperationResult(error: Constants.errorTaskCancelled)
         }
         
-        let currentIpApiUrl = ipApiUrl ?? ipApiService.getRandomActiveIpApi()?.url
-        
-        guard let currentIpApiUrl else {
+        guard let apiUrl = ipApiUrl ?? ipApiService.getRandomActiveIpApi()?.url else {
             return OperationResult(error: Constants.errorNoActiveIpApiFound)
         }
         
-        let ipAddressResult = await ipApiService.callIpApiAsync(ipApiUrl: currentIpApiUrl)
-        guard ipAddressResult.success, let ipAddress = ipAddressResult.result?.trimmingCharacters(in: .whitespacesAndNewlines) else {
-            return OperationResult(error: ipAddressResult.error ?? Constants.errorIpApiResponseIsInvalid)
-        }
+        let ipAddress = try? await fetchIpAddressAsync(from: apiUrl)
         
-        guard ipAddress.isValidIp() else {
+        guard let ipAddress else {
             return OperationResult(error: Constants.errorIpApiResponseIsInvalid)
         }
         
         if withInfo {
-            let ipWithInfoResult = await getPublicIpInfoAsync(
+            return await getPublicIpInfoAsync(
+                apiUrl: appState.userData.ipInfoApiUrl,
                 publicIp: ipAddress,
                 keyMapping: appState.userData.ipInfoApiKeyMapping
             )
-            
-            return ipWithInfoResult
         }
         
         return OperationResult(result: IpInfoBase(ipAddress: ipAddress))
     }
     
-    func getPublicIpInfoAsync(publicIp: String, keyMapping: [String:String]) async -> OperationResult<IpInfoBase> {
+    func getPublicIpInfoAsync(
+        apiUrl: String,
+        publicIp: String,
+        keyMapping: [String:String]) async -> OperationResult<IpInfoBase> {
         guard !Task.isCancelled else {
             return OperationResult(error: Constants.errorTaskCancelled)
         }
         
-        guard !keyMapping.isEmpty,
-              let ipInfoUrl = ipApiService.prepareIpInfoApiUrl(
-                publicIp: publicIp,
-                ipInfoApiUrl: appState.userData.ipInfoApiUrl
-              ) else {
+        guard !keyMapping.isEmpty, let ipInfoUrl = ipApiService.prepareIpInfoApiUrl(
+            publicIp: publicIp, ipInfoApiUrl: apiUrl)
+        else {
             return OperationResult(result: IpInfoBase(ipAddress: publicIp))
         }
         
@@ -80,7 +75,7 @@ class IpService : ServiceBase, ApiCallable, IpServiceType {
         }
     }
     
-    func addAllowedPublicIp(publicIp: IpInfo) {            
+    func addAllowedPublicIp(publicIp: IpInfo) {
             if !appState.userData.allowedIps.contains(publicIp) {
                 appState.userData.allowedIps.append(publicIp)
             }
@@ -94,28 +89,17 @@ class IpService : ServiceBase, ApiCallable, IpServiceType {
     
     // MARK: Private functions
     
-    private func callIpApiAsync(ipApiUrl: String) async -> OperationResult<String> {
-        do {
-            let response = try await callGetApiAsync(
-                apiUrl: ipApiUrl,
-                timeoutInterval: Constants.ipInfoApiCallTimeoutInSeconds)
-            
-            return OperationResult(result: response)
+    private func fetchIpAddressAsync(from apiUrl: String) async throws -> String {
+        let result = await ipApiService.callIpApiAsync(ipApiUrl: apiUrl)
+        
+        guard result.success, let ipAddress = result.result?.trimmingCharacters(in: .whitespacesAndNewlines) else {
+            throw result.error ?? Constants.errorIpApiResponseIsInvalid
         }
-        catch {
-            if let error = error as? URLError, case .notConnectedToInternet = error.code {
-                return OperationResult(result: String())
-            }
-            
-            if let error = error as? URLError, case .networkConnectionLost = error.code {
-                return OperationResult(result: String())
-            }
-
-            if let inactiveApiIndex = self.appState.userData.ipApis.firstIndex(where: { $0.url == ipApiUrl }) {
-                self.appState.userData.ipApis[inactiveApiIndex].active = false
-            }
-                
-            return OperationResult(error: String(format: Constants.errorWhenCallingIpAddressApi, ipApiUrl, error.localizedDescription))
+        
+        guard ipAddress.isValidIp() else {
+            throw Constants.errorIpApiResponseIsInvalid
         }
+        
+        return ipAddress
     }
 }
