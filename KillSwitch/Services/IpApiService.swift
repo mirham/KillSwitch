@@ -26,6 +26,10 @@ class IpApiService : ServiceBase, ApiCallable, IpApiServiceType {
     }
     
     func callIpApiAsync(ipApiUrl : String) async -> OperationResult<String> {
+        guard !Task.isCancelled else {
+            return OperationResult(error: Constants.errorTaskCancelled)
+        }
+        
         do {
             let response = try await callGetApiAsync(
                 apiUrl: ipApiUrl,
@@ -51,6 +55,8 @@ class IpApiService : ServiceBase, ApiCallable, IpApiServiceType {
     // MARK: Private functions
     
     private func deactivateIpApiAsync(ipApiUrl: String) async {
+        guard !Task.isCancelled else { return }
+        
         guard self.appState.network.status == .on else { return }
         
         if let inactiveApiIndex = self.appState.userData.ipApis

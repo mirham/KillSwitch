@@ -149,8 +149,13 @@ extension MenuBarItemsContainerView {
         return result
     }
     
-    private func getCountryCodeItem(countryCode: String, color: Color, exampleAllowed: Bool) -> Text {
-        let effectiveCountryCode = countryCode.isEmpty && exampleAllowed ? Constants.defaultCountryCode : countryCode
+    private func getCountryCodeItem(
+        countryCode: String,
+        color: Color,
+        exampleAllowed: Bool) -> Text {
+        let effectiveCountryCode = countryCode.isEmpty && exampleAllowed
+            ? Constants.defaultCountryCode
+            : countryCode
         
         let result = Text(effectiveCountryCode.uppercased())
             .asOptionalMenuBarItem(color: color)

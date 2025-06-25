@@ -76,6 +76,7 @@ struct IpApisEditView : View {
                             .bold()
                     }
                 }
+                .padding(5)
             }
         }
         .alert(isPresented: Binding(
@@ -121,6 +122,7 @@ struct IpApisEditView : View {
     
     private func handleDeleteIpApiClick(ipApiUrl: String) {
         guard appState.userData.ipApis.count > Constants.minIpApiCount
+
         else {
             showAlert(.lastIpApi)
             

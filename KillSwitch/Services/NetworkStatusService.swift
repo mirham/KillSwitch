@@ -112,10 +112,10 @@ class NetworkStatusService: ServiceBase, ApiCallable, NetworkStatusServiceType {
     
     private func shouldFetchPublicIp() -> Bool {
         return appState.network.status == .on
-        && !appState.network.isObtainingIp
-        && (appState.network.publicIp == nil
-            || (appState.network.publicIp != nil
-                && !appState.network.publicIp!.hasLocation()))
+            && !appState.network.isObtainingIp
+            && (appState.network.publicIp == nil
+                || (appState.network.publicIp != nil
+                    && !appState.network.publicIp!.hasLocation()))
     }
     
     private func updateStatusAsync(update: NetworkStateUpdate) async {

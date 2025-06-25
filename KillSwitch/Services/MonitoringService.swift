@@ -85,7 +85,9 @@ class MonitoringService: ServiceBase, MonitoringServiceType {
     // MARK: Private functions
     
     private func handleUpdatedPublicIpResultAsync (
-        updatedPublicIpResult : OperationResult<IpInfoBase>) async {
+        updatedPublicIpResult: OperationResult<IpInfoBase>) async {
+        guard !Task.isCancelled else { return }
+            
         let isConnectionMustBeDisabled =
             self.isUnsafeForHigherProtection(updatedIpAddressResult: updatedPublicIpResult) ||
             self.noActiveIpApiFound(updatedIpAddressResult: updatedPublicIpResult)
@@ -146,7 +148,7 @@ class MonitoringService: ServiceBase, MonitoringServiceType {
         let isNoActiveApis = appState.network.publicIp == nil
             && !appState.userData.hasActiveIpApi()
         
-        if (isNoActiveApis) {
+        if isNoActiveApis {
             let message = String(Constants.errorNoActiveIpApiFound)
             
             disableActiveNetworkInterfaces()
@@ -157,7 +159,7 @@ class MonitoringService: ServiceBase, MonitoringServiceType {
         }
     }
     
-    private func isUnsafeForHigherProtection (
+    private func isUnsafeForHigherProtection(
         updatedIpAddressResult: OperationResult<IpInfoBase>) -> Bool {
         let result = appState.userData.useHigherProtection
                      && (appState.system.locationServicesEnabled
@@ -166,7 +168,7 @@ class MonitoringService: ServiceBase, MonitoringServiceType {
         return result
     }
     
-    private func noActiveIpApiFound (
+    private func noActiveIpApiFound(
         updatedIpAddressResult: OperationResult<IpInfoBase>) -> Bool {
         let result = updatedIpAddressResult.error != nil
                      && updatedIpAddressResult.error == Constants.errorNoActiveIpApiFound
@@ -183,6 +185,8 @@ class MonitoringService: ServiceBase, MonitoringServiceType {
     }
     
     private func updateStatusAsync(update: MonitoringStateUpdate) async {
+        guard !Task.isCancelled else { return }
+        
         await MainActor.run {
             appState.applyMonitoringUpdate(update)
             appState.objectWillChange.send()

@@ -90,10 +90,14 @@ class IpService : ServiceBase, ApiCallable, IpServiceType {
     // MARK: Private functions
     
     private func fetchIpAddressAsync(from apiUrl: String) async throws -> String {
-        let result = await ipApiService.callIpApiAsync(ipApiUrl: apiUrl)
+        guard !Task.isCancelled else {
+            throw Constants.errorTaskCancelled
+        }
         
-        guard result.success, let ipAddress = result.result?.trimmingCharacters(in: .whitespacesAndNewlines) else {
-            throw result.error ?? Constants.errorIpApiResponseIsInvalid
+        let apiResponse = await ipApiService.callIpApiAsync(ipApiUrl: apiUrl)
+        
+        guard apiResponse.success, let ipAddress = apiResponse.result?.trimmingCharacters(in: .whitespacesAndNewlines) else {
+            throw apiResponse.error ?? Constants.errorIpApiResponseIsInvalid
         }
         
         guard ipAddress.isValidIp() else {

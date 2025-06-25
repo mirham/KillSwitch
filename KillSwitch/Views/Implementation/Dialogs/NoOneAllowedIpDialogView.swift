@@ -59,7 +59,7 @@ struct NoOneAllowedIpDialogView : View {
                 }
                 .isHidden(hidden: !isOnline(), remove: true)
                 HStack {
-                    Button(action: primaryButtonClickHandler) {
+                    Button(action: handlePrimaryButtonClick) {
                         Text(Constants.add)
                             .frame(height: 25)
                             .frame(maxWidth: /*@START_MENU_TOKEN@*/.infinity/*@END_MENU_TOKEN@*/)
@@ -73,7 +73,7 @@ struct NoOneAllowedIpDialogView : View {
                     Spacer()
                         .frame(width: 20)
                         .isHidden(hidden: !isOnline(), remove: true)
-                    Button(action: secondaryButtonClickHandler) {
+                    Button(action: handleSecondaryButtonClick) {
                         Text(Constants.close)
                             .frame(width: 100, height: 25)
                     }
@@ -105,27 +105,33 @@ struct NoOneAllowedIpDialogView : View {
         return appState.network.status == .on
     }
     
-    private func primaryButtonClickHandler() {
+    private func handlePrimaryButtonClick() {
         addAllowedIpAddress(safetyType: newIpSafetyType)
         self.monitoringService.startMonitoring()
         closeDialog()
     }
     
-    private func secondaryButtonClickHandler() {
+    private func handleSecondaryButtonClick() {
         closeDialog()
     }
     
     private func openDialog() {
-        appState.views.shownWindows.append(Constants.windowIdNoOneAllowedIpDialog)
+        appState.views.shownWindows
+            .append(Constants.windowIdNoOneAllowedIpDialog)
+        
         AppHelper.setUpView(
             viewName: Constants.windowIdEnableNetworkDialog,
             onTop: true)
+        
         isPresented = true
     }
     
     private func closeDialog() {
-        appState.views.shownWindows.removeAll(where: {$0 == Constants.windowIdNoOneAllowedIpDialog})
+        appState.views.shownWindows
+            .removeAll(where: {$0 == Constants.windowIdNoOneAllowedIpDialog})
+        
         isPresented = false
+        
         AppHelper.activateView(viewId: Constants.windowIdMain)
     }
 }

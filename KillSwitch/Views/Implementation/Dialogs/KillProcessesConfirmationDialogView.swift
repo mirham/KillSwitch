@@ -43,7 +43,7 @@ struct KillProcessesConfirmationDialogView : View {
                     }
                 }
                 HStack {
-                    Button(action: primaryButtonClickHandler) {
+                    Button(action: handlePrimaryButtonClick) {
                         Text(Constants.yes)
                             .frame(height: 25)
                             .frame(maxWidth: /*@START_MENU_TOKEN@*/.infinity/*@END_MENU_TOKEN@*/)
@@ -53,7 +53,7 @@ struct KillProcessesConfirmationDialogView : View {
                     }.buttonStyle(.plain)
                     Spacer()
                         .frame(width: 20)
-                    Button(action: secondaryButtonClickHandler) {
+                    Button(action: handleSecondaryButtonClick) {
                         Text(Constants.no)
                             .frame(width: 100, height: 25)
                     }
@@ -72,12 +72,12 @@ struct KillProcessesConfirmationDialogView : View {
     
     // MARK: Private function
     
-    private func primaryButtonClickHandler() {
+    private func handlePrimaryButtonClick() {
         self.processService.killActiveProcesses()
         closeDialog()
     }
     
-    private func secondaryButtonClickHandler() {
+    private func handleSecondaryButtonClick() {
         closeDialog()
     }
     

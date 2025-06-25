@@ -14,6 +14,10 @@ class NetworkService : ServiceBase, ShellAccessible, NetworkServiceType {
     @Injected(\.ipService) private var ipService
     
     func isUrlReachableAsync(url : String) async throws -> Bool {
+        guard !Task.isCancelled else {
+            throw Constants.errorTaskCancelled
+        }
+        
         do {
             let url = URL(string: url)!
             var request = URLRequest(url: url)

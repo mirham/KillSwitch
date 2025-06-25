@@ -90,6 +90,8 @@ class ProcessService : ServiceBase, ShellAccessible, ProcessServiceType {
     }
     
     private func updateStatusAsync(update: ProcessesStateUpdate) async {
+        guard !Task.isCancelled else { return }
+        
         await MainActor.run {
             appState.applyProcessesStateUpdate(update)
             appState.objectWillChange.send()

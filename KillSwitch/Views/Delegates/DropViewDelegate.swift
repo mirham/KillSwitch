@@ -32,22 +32,26 @@ struct DropViewDelegate: DropDelegate {
             return
         }
         
-        let from = sourceItems.firstIndex(of: draggedItem) != nil ? sourceItems.firstIndex(of: draggedItem) : nil
-        let to = sourceItems.firstIndex(of: item) != nil ? sourceItems.firstIndex(of: item)! : start
+        let from = sourceItems.firstIndex(of: draggedItem) != nil
+            ? sourceItems.firstIndex(of: draggedItem)
+            : nil
+        let to = sourceItems.firstIndex(of: item) != nil
+            ? sourceItems.firstIndex(of: item)!
+            : start
         
         withAnimation(.default) {
-            if(from != nil) {
+            if from != nil {
                 sourceItems.move(
                     fromOffsets: IndexSet(integer: from!),
                     toOffset: to > from! ? to == start ? to : to + step : to)
             }
             else {
-                if (keepLastItem) {
-                    if (destinationItems.count == step) {
+                if keepLastItem {
+                    if destinationItems.count == step {
                         return
                     }
                     else {
-                        if (!draggedItem.isSeparator) {
+                        if !draggedItem.isSeparator {
                             sourceItems.insert(draggedItem, at: to == start ? to : to + step)
                         }
                         
@@ -55,8 +59,8 @@ struct DropViewDelegate: DropDelegate {
                     }
                 }
                 else {
-                    if (!sourceItems.contains(where: {Int(Date().timeIntervalSince($0.dateCreated))
-                        < Constants.menuBarItemTimeToleranceInSeconds })) {
+                    if !sourceItems.contains(where: {Int(Date().timeIntervalSince($0.dateCreated))
+                        < Constants.menuBarItemTimeToleranceInSeconds }) {
                         let item = draggedItem.isSeparator ? draggedItem.clone() : draggedItem
                         sourceItems.insert(item, at: to == start ? to : to + step)
                         destinationItems.removeAll(where: {$0.id == item.id})

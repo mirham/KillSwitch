@@ -32,8 +32,9 @@ struct ProcessesStatusView : View {
                         .font(.system(size: 18))
                         .bold()
                         .clipShape(Circle())
-                        .overlay(content: { Circle().stroke(.blue, lineWidth: showOverText ? 2 : 0) })
-                        .onTapGesture(perform: closeAllpicationsButtonClickHandler)
+                        .overlay(content: { Circle()
+                            .stroke(.blue, lineWidth: showOverText ? 2 : 0) })
+                        .onTapGesture(perform: handleCloseAllpicationsButtonClick)
                         .pointerOnHover()
                 }
                 .onHover(perform: { hovering in
@@ -62,7 +63,7 @@ struct ProcessesStatusView : View {
     
     // MARK: Private functions
     
-    private func closeAllpicationsButtonClickHandler(){
+    private func handleCloseAllpicationsButtonClick() {
         if (appState.userData.appsCloseConfirmation) {
             showKillProcessesConfirmationDialog()
         }
@@ -72,7 +73,10 @@ struct ProcessesStatusView : View {
     }
     
     private func showKillProcessesConfirmationDialog() {
-        if(!appState.views.shownWindows.contains(where: {$0 == Constants.windowIdKillProcessesConfirmationDialog})){
+        let showDialog = !appState.views.shownWindows
+            .contains(where: {$0 == Constants.windowIdKillProcessesConfirmationDialog})
+        
+        if showDialog {
             openWindow(id: Constants.windowIdKillProcessesConfirmationDialog)
         }
     }

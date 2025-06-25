@@ -104,7 +104,7 @@ struct IpInfoApiEditView: View {
     
     private func hasChanges() -> Bool {
         let result = appState.userData.ipInfoApiUrl != newUrl
-        || appState.userData.ipInfoApiKeyMapping != keyMapping
+            || appState.userData.ipInfoApiKeyMapping != keyMapping
         
         return result
     }
@@ -122,12 +122,16 @@ struct IpInfoApiEditView: View {
     private func validateAndTestSettings() async throws -> IpInfoBase {
         // Prepare URL
         guard let publicIp = appState.network.publicIp?.ipAddress,
-              let checkUrl = ipApiService.prepareIpInfoApiUrl(publicIp: publicIp, ipInfoApiUrl: newUrl) else {
+              let checkUrl = ipApiService.prepareIpInfoApiUrl(
+                publicIp: publicIp,
+                ipInfoApiUrl: newUrl)
+        else {
             throw IpInfoApiSettingsError.invalidUrl
         }
         
         // Check URL reachability
-        guard try await networkService.isUrlReachableAsync(url: checkUrl) else {
+        guard try await networkService.isUrlReachableAsync(url: checkUrl)
+        else {
             throw IpInfoApiSettingsError.urlUnreachable
         }
         
@@ -137,12 +141,14 @@ struct IpInfoApiEditView: View {
             publicIp: publicIp,
             keyMapping: keyMapping)
         
-        guard testResponse.success, let ipInfo = testResponse.result else {
+        guard testResponse.success, let ipInfo = testResponse.result
+        else {
             throw IpInfoApiSettingsError.invalidApiResponse
         }
         
         // Verify location data
-        guard ipInfo.hasLocation() else {
+        guard ipInfo.hasLocation()
+        else {
             throw IpInfoApiSettingsError.missingLocationData
         }
         

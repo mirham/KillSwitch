@@ -20,6 +20,7 @@ struct IpInfoBase: Codable, Equatable {
     
     static func == (lhs: IpInfoBase, rhs: IpInfoBase) -> Bool {
         return lhs.ipAddress == rhs.ipAddress
+            && lhs.countryCode == rhs.countryCode
     }
     
     init(ipAddress: String) {

@@ -112,6 +112,7 @@ struct AllowedIpsEditView : IpAddressContainerView {
                             .pointerOnHover()
                     }
                 }
+                .padding(5)
             }
         }
         .alert(isPresented: Binding(
@@ -159,7 +160,7 @@ struct AllowedIpsEditView : IpAddressContainerView {
             keyMapping: appState.userData.ipInfoApiKeyMapping)
         let isNewIpInvalid = appState.userData.pickyMode && ipInfoResult.error != nil
         
-        if (isNewIpInvalid) {
+        if isNewIpInvalid {
             showAlert(.newIpInvalid)
             
             return
@@ -177,7 +178,7 @@ struct AllowedIpsEditView : IpAddressContainerView {
             
             let matches = appState.userData.allowedIps.filter({$0.ipAddress == newIp})
             
-            if(matches.count > 1) {
+            if matches.count > 1 {
                 appState.userData.allowedIps.removeAll(where: {$0.id == matches.last!.id})
             }
         }

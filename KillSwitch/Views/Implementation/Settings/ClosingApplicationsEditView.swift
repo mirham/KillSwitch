@@ -50,9 +50,10 @@ struct ClosingApplicationsEditView : View {
                         Text(Constants.add)
                     }
                 }
+                .padding(5)
             }
             .fileImporter(isPresented: $showFileImporter, allowedContentTypes: [.application]) { result in
-                addAppsToCloseDialogResultHandler(dialogResult: result)
+                handleAddAppsToCloseDialogResult(dialogResult: result)
             }
             .fileDialogDefaultDirectory(.applicationDirectory)
             .alert(isPresented: $isAppToCloseInvalid) {
@@ -68,7 +69,7 @@ struct ClosingApplicationsEditView : View {
     
     // MARK: Private functions
     
-    private func addAppsToCloseDialogResultHandler(dialogResult: Result<URL, any Error>) {
+    private func handleAddAppsToCloseDialogResult(dialogResult: Result<URL, any Error>) {
         switch dialogResult {
             case .success(let url):
                 let appName = url.deletingPathExtension().lastPathComponent

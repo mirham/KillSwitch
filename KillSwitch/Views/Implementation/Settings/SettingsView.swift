@@ -58,6 +58,7 @@ struct SettingsView : View {
     
     private func openView() {
         appState.views.shownWindows.append(Constants.windowIdSettings)
+        
         AppHelper.setUpView(
             viewName: Constants.windowIdSettings,
             onTop: appState.userData.onTopOfAllWindows)

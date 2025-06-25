@@ -78,23 +78,25 @@ struct ToolbarView : View {
     }
     
     private func showSettingsWindow() {
-        if !appState.views.shownWindows.contains(where: {$0 == Constants.windowIdSettings}) {
+        let requireOpenWindow = !appState.views.shownWindows
+            .contains(where: {$0 == Constants.windowIdSettings})
+        
+        if requireOpenWindow {
             openWindow(id: Constants.windowIdSettings)
-            AppHelper.activateView(viewId: Constants.windowIdSettings)
         }
-        else {
-            AppHelper.activateView(viewId: Constants.windowIdSettings)
-        }
+        
+        AppHelper.activateView(viewId: Constants.windowIdSettings)
     }
     
     private func showInfoWindow() {
-        if !appState.views.shownWindows.contains(where: {$0 == Constants.windowIdInfo}) {
+        let requireOpenWindow = !appState.views.shownWindows
+            .contains(where: {$0 == Constants.windowIdInfo})
+        
+        if requireOpenWindow {
             openWindow(id: Constants.windowIdInfo)
-            AppHelper.activateView(viewId: Constants.windowIdInfo)
         }
-        else {
-            AppHelper.activateView(viewId: Constants.windowIdInfo)
-        }
+        
+        AppHelper.activateView(viewId: Constants.windowIdInfo)
     }
 }
 
