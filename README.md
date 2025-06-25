@@ -20,6 +20,7 @@ MirHam KillSwich is a macOS menu bar application designed to provide additional 
 ## Features
 - Easy to use
 - Adjustable and flexible
+- Customizable menu bar items and used APIs
 - Operates continuously, even after computer restarts
 - Periodic public IP checks at desired intervals
 - Automatically or manually close applications
@@ -28,7 +29,7 @@ MirHam KillSwich is a macOS menu bar application designed to provide additional 
 
 ## Compatibility
 
-This application is compatible with macOS 14.0 and above.
+This application is compatible with macOS 15.0 and above. All versions below 3.0 are compatible with macOS 14.0. Version [2.6](https://github.com/mirham/KillSwitch/releases/tag/2.6) is the last compatible version for macOS 14.0 and will only be upgraded by request.
 
 ## Installation
 
