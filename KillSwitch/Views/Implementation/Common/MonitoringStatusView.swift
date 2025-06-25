@@ -90,9 +90,13 @@ struct MonitoringStatusView : View {
     }
     
     private func showNoOneAllowedIpDialog() {
-        if(!appState.views.isNoOneAllowedIpDialogShown){
+        let showDialog = !appState.views.shownWindows
+            .contains(where: {$0 == Constants.windowIdNoOneAllowedIpDialog})
+        
+        if showDialog {
             openWindow(id: Constants.windowIdNoOneAllowedIpDialog)
         }
+
     }
     
     // MARK: Inner types

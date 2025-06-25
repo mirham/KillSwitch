@@ -10,20 +10,24 @@ import Network
 import Factory
 
 class NetworkStatusService: ServiceBase, ApiCallable, NetworkStatusServiceType {
-    @Injected(\.ipService) private var ipService
     @Injected(\.networkService) private var networkService
     
     private let monitor = NWPathMonitor()
     private let queue = DispatchQueue(label: Constants.networkMonitorQueryLabel, qos: .background)
+    private var ipUpdateTask: Task<Void, Never>?
+    private var checkConnectionTask: Task<Void, Never>?
     
     override init() {
         super.init()
         
         startNetworkMonitoring()
+        startConnectionMonitoring()
     }
     
     deinit {
         monitor.cancel()
+        ipUpdateTask?.cancel()
+        checkConnectionTask?.cancel()
     }
     
     // MARK: Private functions
@@ -41,7 +45,9 @@ class NetworkStatusService: ServiceBase, ApiCallable, NetworkStatusServiceType {
                 let updatedActiveNetworkInterfaces = networkInterfaces
                 let updatedPhysicalNetworkInterfaces = physicalNetworkInterfaces
                 
-                Task {
+                self.ipUpdateTask?.cancel()
+                
+                self.ipUpdateTask = Task {
                     await self.updateStatusAsync(update: NetworkStateUpdateBuilder()
                         .withStatus(updatedStatus)
                         .withActiveNetworkInterfaces(updatedActiveNetworkInterfaces)
@@ -50,8 +56,13 @@ class NetworkStatusService: ServiceBase, ApiCallable, NetworkStatusServiceType {
                         .build())
                     
                     if status == .on {
-                        try await Task.sleep(nanoseconds: Constants.defaultToleranceInNanoseconds)
-                        await self.refreshIpAddressAsync()
+                        do {
+                            try await Task.sleep(nanoseconds: Constants.defaultToleranceInNanoseconds)
+                            await self.networkService.refreshPublicIpAsync()
+                        }
+                        catch {
+                            self.ipUpdateTask?.cancel()
+                        }
                     }
                 }
             }
@@ -60,40 +71,17 @@ class NetworkStatusService: ServiceBase, ApiCallable, NetworkStatusServiceType {
         monitor.start(queue: queue)
     }
     
-    private func refreshIpAddressAsync() async {
-        await updateStatusAsync(update: NetworkStateUpdateBuilder()
-            .withIsObtainingIp(true)
-            .build())
-        
-        let publicIp = await fetchPublicIpAsync()
-        
-        await updateStatusAsync(update: NetworkStateUpdateBuilder()
-            .withIsObtainingIp(false)
-            .withPublicIp(publicIp)
-            .build())
-    }
-    
-    private func fetchPublicIpAsync() async -> IpInfoBase? {
-        var isPublicIpNotObtained = true
-        
-        while isPublicIpNotObtained && appState.userData.activeIpApisExist() && appState.network.status == .on {
-            let result = await ipService.getPublicIpAsync(ipApiUrl: nil, withInfo: true)
-            
-            if result.success {
-                isPublicIpNotObtained = false
+    private func startConnectionMonitoring() {
+        checkConnectionTask = Task {
+            while !Task.isCancelled {
+                try? await Task.sleep(nanoseconds: Constants.defaultCheckConnectionIntervalNanoseconds)
                 
-                loggingService.write(
-                    message: String(
-                        format: Constants.logPublicIp,
-                        result.result!.ipAddress,
-                        result.result!.countryName),
-                    type: .info)
+                guard shouldFetchPublicIp()
+                else { continue }
                 
-                return result.result
+                await self.networkService.refreshPublicIpAsync()
             }
         }
-        
-        return nil
     }
     
     private func determineNetworkStatusType(
@@ -122,7 +110,17 @@ class NetworkStatusService: ServiceBase, ApiCallable, NetworkStatusServiceType {
         return result
     }
     
+    private func shouldFetchPublicIp() -> Bool {
+        return appState.network.status == .on
+            && !appState.network.isObtainingIp
+            && (appState.network.publicIp == nil
+                || (appState.network.publicIp != nil
+                    && !appState.network.publicIp!.hasLocation()))
+    }
+    
     private func updateStatusAsync(update: NetworkStateUpdate) async {
+        guard !Task.isCancelled else { return }
+        
         await MainActor.run {
             appState.applyNetworkUpdate(update)
             appState.objectWillChange.send()

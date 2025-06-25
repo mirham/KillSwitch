@@ -5,14 +5,14 @@
 //  Created by UglyGeorge on 04.07.2024.
 //
 
-import Foundation
+import SwiftUI
 import CoreLocation
 
 class AppState : ObservableObject, Equatable {
     @Published var log = [LogEntry]()
     
     @Published var current = Current()
-    @Published var views = Views()
+    @Published var views = Views(shownWindows: [String()])
     @Published var monitoring = Monitoring() { didSet { setCurrentState() } }
     @Published var system = System() { didSet { setCurrentState() } }
     @Published var network = Network() { didSet { setCurrentState() } }
@@ -86,6 +86,7 @@ extension AppState {
         var isHighRisk = false
         var isCountryDetected = false
         var mainNetworkInterface = String()
+        var colorScheme: ColorScheme = .light
         
         static func == (lhs: Current, rhs: Current) -> Bool {
             let result = lhs.safetyType == rhs.safetyType
@@ -99,13 +100,7 @@ extension AppState {
 
 extension AppState {
     struct Views {
-        var isMainViewShown = false
-        var isStatusBarViewShown = false
-        var isSettingsViewShown = false
-        var isKillProcessesConfirmationDialogShown = false
-        var isEnableNetworkDialogShown = false
-        var isNoOneAllowedIpDialogShown = false
-        var isInfoViewShown = false
+        var shownWindows: [String]
     }
 }
 
@@ -142,6 +137,7 @@ extension AppState {
         var isObtainingIp = false
         var activeNetworkInterfaces: [NetworkInterface] = [NetworkInterface]()
         var physicalNetworkInterfaces: [NetworkInterface] = [NetworkInterface]()
+        var prevPublicIp: IpInfoBase? = nil
         var publicIp: IpInfoBase? = nil
         
         func isConnectionChanged (
@@ -154,6 +150,8 @@ extension AppState {
         static func == (lhs: Network, rhs: Network) -> Bool {
             let result = lhs.status == rhs.status
             && lhs.publicIp == rhs.publicIp
+            && lhs.publicIp?.hasLocation() == rhs.publicIp?.hasLocation()
+            && lhs.isObtainingIp == rhs.isObtainingIp
             && lhs.activeNetworkInterfaces == rhs.activeNetworkInterfaces
             && lhs.physicalNetworkInterfaces == rhs.physicalNetworkInterfaces
             
@@ -216,6 +214,12 @@ extension AppState {
         var preventComputerSleep: Bool = false {
             didSet { writeSetting(newValue: preventComputerSleep, key: Constants.settingsKeyPreventComputerSleep) }
         }
+        var ipInfoApiUrl: String = Constants.defaultIpInfoApiUrl {
+            didSet { writeSetting(newValue: ipInfoApiUrl, key: Constants.settingsKeyIpInfoApiUrl) }
+        }
+        var ipInfoApiKeyMapping: [String:String] = Constants.defaultIpInfoApiKeyMapping {
+            didSet { writeSettingsDictionary(newValues: ipInfoApiKeyMapping, key: Constants.settingsKeyIpInfoMapping) }
+        }
         
         static func == (lhs: UserData, rhs: UserData) -> Bool {
             let result = lhs.menuBarUseThemeColor == rhs.menuBarUseThemeColor
@@ -234,36 +238,30 @@ extension AppState {
             preventComputerSleep = readSetting(key: Constants.settingsKeyPreventComputerSleep) ?? false
             menuBarUseThemeColor = readSetting(key: Constants.settingsKeyMenuBarUseThemeColor) ?? false
             
-            let savedAllowedIps: [IpInfo]? = readSettingsArray(key: Constants.settingsKeyIps)
-            let savedIpApis: [IpApiInfo]? = readSettingsArray(key: Constants.settingsKeyApis)
-            let savedAppsToClose: [AppInfo]? = readSettingsArray(key: Constants.settingsKeyAppsToClose)
-            let savedMenuBarShownItems: [String]? = readSettingsArray(key: Constants.settingsKeyShownMenuBarItems)
-            let savedMenuBarHiddenItems: [String]? = readSettingsArray(key: Constants.settingsKeyHiddenMenuBarItems)
-            
-            if (savedAllowedIps != nil) {
-                allowedIps = savedAllowedIps!
+            if let savedAllowedIps: [IpInfo] = readSettingsArray(key: Constants.settingsKeyIps) {
+                allowedIps = savedAllowedIps
             }
             
-            if (savedIpApis == nil) {
+            if let savedIpApis: [IpApiInfo] = readSettingsArray(key: Constants.settingsKeyApis) {
+                ipApis = savedIpApis
+            }
+            else {
                 for ipApiUrl in Constants.ipApiUrls {
                     let apiInfo = IpApiInfo(url: ipApiUrl, active: true)
                     ipApis.append(apiInfo)
                 }
             }
-            else {
-                ipApis = savedIpApis!
+            
+            if let savedAppsToClose:[AppInfo] = readSettingsArray(key: Constants.settingsKeyAppsToClose) {
+                appsToClose = savedAppsToClose
             }
             
-            if (savedAppsToClose != nil) {
-                appsToClose = savedAppsToClose!
+            if let savedMenuBarShownItems:[String] = readSettingsArray(key: Constants.settingsKeyShownMenuBarItems) {
+                menuBarShownItems = savedMenuBarShownItems
             }
             
-            if (savedMenuBarShownItems != nil) {
-                menuBarShownItems = savedMenuBarShownItems!
-            }
-            
-            if (savedMenuBarHiddenItems != nil) {
-                menuBarHiddenItems = savedMenuBarHiddenItems!
+            if let savedMenuBarHiddenItems: [String] = readSettingsArray(key: Constants.settingsKeyHiddenMenuBarItems) {
+                menuBarHiddenItems = savedMenuBarHiddenItems
             }
         }
         
@@ -273,10 +271,8 @@ extension AppState {
             return result
         }
         
-        func activeIpApisExist() -> Bool {
-            let result = ipApis.contains(where: { $0.isActive() })
-            
-            return result
+        func hasActiveIpApi() -> Bool {
+            return !ipApis.isEmpty && ipApis.contains(where: {$0.isActive()})
         }
     }
 }

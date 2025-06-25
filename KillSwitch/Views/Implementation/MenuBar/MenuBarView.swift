@@ -39,7 +39,7 @@ struct MenuBarView : View {
                 .frame(height: 5)
             HStack {
                 Button(Constants.show, systemImage: Constants.iconWindow) {
-                    showButtonClickHandler()
+                    handleShowButtonClick()
                 }
                 .withMenuBarButtonStyle(bold: overShowText, color: overShowText ? .blue : .gray)
                 .onHover(perform: { hovering in
@@ -48,7 +48,7 @@ struct MenuBarView : View {
                 Spacer()
                     .frame(width: 20)
                 Button(Constants.quit, systemImage: Constants.iconQuit) {
-                    quitButtonClickHandler()
+                    handleQuitButtonClick()
                 }
                 .withMenuBarButtonStyle(bold: overQuitText, color: overQuitText ? .red : .gray)
                 .onHover(perform: { hovering in
@@ -57,24 +57,28 @@ struct MenuBarView : View {
             }
         }
         .onAppear(perform: {
-            appState.views.isStatusBarViewShown = true
+            appState.views.shownWindows.append(Constants.windowIdMenuBar)
         })
         .onDisappear(perform: {
-            appState.views.isStatusBarViewShown = false
+            appState.views.shownWindows.removeAll(where: {$0 == Constants.windowIdMenuBar})
         })
     }
     
     // MARK: Private functions
     
-    private func showButtonClickHandler() {
-        if(!appState.views.isMainViewShown){
+    private func handleShowButtonClick() {
+        let requireOpenWindow = !appState.views.shownWindows
+            .contains(where: {$0 == Constants.windowIdMain})
+        
+        if requireOpenWindow {
             openWindow(id: Constants.windowIdMain)
         }
+        
         AppHelper.activateView(viewId: Constants.windowIdMain, simple: false)
         dismiss()
     }
     
-    private func quitButtonClickHandler() {
+    private func handleQuitButtonClick() {
         launchAgentService.apply()
         NSApplication.shared.terminate(nil)
     }

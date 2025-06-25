@@ -20,7 +20,7 @@ class MonitoringService: ServiceBase, MonitoringServiceType {
     override init() {
         super.init()
         
-        if(appState.monitoring.isEnabled){
+        if appState.monitoring.isEnabled {
             startMonitoring()
         }
     }
@@ -54,8 +54,11 @@ class MonitoringService: ServiceBase, MonitoringServiceType {
                     self.monitoringTime % self.appState.userData.intervalBetweenChecks == 0
                 
                 if isIpCheckRequired {
-                    let updatedIpAddressResult =  await self.ipService.getPublicIpAsync(ipApiUrl: nil, withInfo: true)
-                    await self.handleUpdatedPublicIpResultAsync(updatedPublicIpResult: updatedIpAddressResult)
+                    let updatedIpAddressResult =  await self.ipService.getPublicIpAsync(
+                        ipApiUrl: nil,
+                        withInfo: true)
+                    await self.handleUpdatedPublicIpResultAsync(
+                        updatedPublicIpResult: updatedIpAddressResult)
                 }
 
                 self.isPublicIpObtainable()
@@ -82,7 +85,9 @@ class MonitoringService: ServiceBase, MonitoringServiceType {
     // MARK: Private functions
     
     private func handleUpdatedPublicIpResultAsync (
-        updatedPublicIpResult : OperationResult<IpInfoBase>) async {
+        updatedPublicIpResult: OperationResult<IpInfoBase>) async {
+        guard !Task.isCancelled else { return }
+            
         let isConnectionMustBeDisabled =
             self.isUnsafeForHigherProtection(updatedIpAddressResult: updatedPublicIpResult) ||
             self.noActiveIpApiFound(updatedIpAddressResult: updatedPublicIpResult)
@@ -141,9 +146,9 @@ class MonitoringService: ServiceBase, MonitoringServiceType {
     
     private func isPublicIpObtainable() {
         let isNoActiveApis = appState.network.publicIp == nil
-            && !appState.userData.activeIpApisExist()
+            && !appState.userData.hasActiveIpApi()
         
-        if (isNoActiveApis) {
+        if isNoActiveApis {
             let message = String(Constants.errorNoActiveIpApiFound)
             
             disableActiveNetworkInterfaces()
@@ -154,16 +159,16 @@ class MonitoringService: ServiceBase, MonitoringServiceType {
         }
     }
     
-    private func isUnsafeForHigherProtection (
+    private func isUnsafeForHigherProtection(
         updatedIpAddressResult: OperationResult<IpInfoBase>) -> Bool {
         let result = appState.userData.useHigherProtection
-                     && (appState.system.locationServicesEnabled 
+                     && (appState.system.locationServicesEnabled
                          || updatedIpAddressResult.result == nil)
         
         return result
     }
     
-    private func noActiveIpApiFound (
+    private func noActiveIpApiFound(
         updatedIpAddressResult: OperationResult<IpInfoBase>) -> Bool {
         let result = updatedIpAddressResult.error != nil
                      && updatedIpAddressResult.error == Constants.errorNoActiveIpApiFound
@@ -180,6 +185,8 @@ class MonitoringService: ServiceBase, MonitoringServiceType {
     }
     
     private func updateStatusAsync(update: MonitoringStateUpdate) async {
+        guard !Task.isCancelled else { return }
+        
         await MainActor.run {
             appState.applyMonitoringUpdate(update)
             appState.objectWillChange.send()

@@ -48,11 +48,11 @@ extension MenuBarItemsContainerView {
                     result.append(menuBarItem)
                 case Constants.mbItemKeyIpAddress:
                     let ipAddress = getIpAddressItem(
-                        ipAddress: appState.network.publicIp == nil
-                        ? appState.network.status == .off
+                        ipAddress: appState.network.status == .off
                             ? Constants.offline
-                            : Constants.none
-                        : appState.network.publicIp!.ipAddress,
+                            : appState.network.isObtainingIp
+                                ? Constants.obtainingIp
+                                : appState.network.publicIp?.ipAddress ?? Constants.none,
                         color: mainColor,
                         exampleAllowed: exampleAllowed)
                     let menuBarItem = MenuBarElement(image: renderMenuBarItemImage(view: ipAddress), key: key)
@@ -101,7 +101,8 @@ extension MenuBarItemsContainerView {
     // MARK: Private functions
     @MainActor
     private func renderMenuBarItemImage(view: some View) -> NSImage {
-        let result = view.renderAsImage() ?? NSImage()
+        let renderer = ImageRenderer(content: view)
+        let result = renderer.nsImage ?? NSImage()
         
         return result
     }
@@ -134,7 +135,10 @@ extension MenuBarItemsContainerView {
     }
     
     private func getIpAddressItem(ipAddress: String, color: Color, exampleAllowed: Bool) -> Text {
-        let noIpAddress = ipAddress.isEmpty || ipAddress == Constants.none || ipAddress == Constants.offline
+        let noIpAddress = ipAddress.isEmpty
+            || ipAddress == Constants.none
+            || ipAddress == Constants.offline
+            || ipAddress == Constants.obtainingIp
         let effectiveIpAddress = noIpAddress && exampleAllowed
             ? Constants.defaultIpAddress
             : ipAddress
@@ -145,8 +149,13 @@ extension MenuBarItemsContainerView {
         return result
     }
     
-    private func getCountryCodeItem(countryCode: String, color: Color, exampleAllowed: Bool) -> Text {
-        let effectiveCountryCode = countryCode.isEmpty && exampleAllowed ? Constants.defaultCountryCode : countryCode
+    private func getCountryCodeItem(
+        countryCode: String,
+        color: Color,
+        exampleAllowed: Bool) -> Text {
+        let effectiveCountryCode = countryCode.isEmpty && exampleAllowed
+            ? Constants.defaultCountryCode
+            : countryCode
         
         let result = Text(effectiveCountryCode.uppercased())
             .asOptionalMenuBarItem(color: color)

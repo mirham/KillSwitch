@@ -6,30 +6,35 @@
 //
 
 import Foundation
-import Network
 
 struct IpInfoBase: Codable, Equatable {
-    var ipVersion: Int
     var ipAddress: String
     var countryName: String
     var countryCode: String
     
+    enum CodingKeys: String, CodingKey {
+        case ipAddress
+        case countryCode
+        case countryName
+    }
+    
     static func == (lhs: IpInfoBase, rhs: IpInfoBase) -> Bool {
         return lhs.ipAddress == rhs.ipAddress
+            && lhs.countryCode == rhs.countryCode
     }
     
     init(ipAddress: String) {
-        self.ipVersion = (IPv4Address(ipAddress) != nil) ? Constants.ipV4 : Constants.ipV6
         self.ipAddress = ipAddress
         self.countryName = String()
         self.countryCode = String()
     }
     
-    func isConfirmed() -> Bool {
+    func hasLocation() -> Bool {
         return !self.countryCode.isEmpty && !self.countryName.isEmpty
     }
     
     func hash(into hasher: inout Hasher) {
         hasher.combine(ipAddress)
+        hasher.combine(countryCode)
     }
 }

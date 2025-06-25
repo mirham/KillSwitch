@@ -17,9 +17,13 @@ extension IpAddressContainerView {
         
         switch safetyType {
             case .compete:
-                return isDarkTheme ? Color.green : Color(hex: Constants.colorCompleteSafetyLightTheme)
+                return isDarkTheme
+                    ? Color.green
+                    : Color(hex: Constants.colorCompleteSafetyLightTheme)
             case .some:
-                return isDarkTheme ? Color.yellow : Color(hex: Constants.colorSomeSafetyLightTheme)
+                return isDarkTheme
+                    ? Color.yellow
+                    : Color(hex: Constants.colorSomeSafetyLightTheme)
             case .unsafe:
                 return Color.red
             default:
@@ -29,7 +33,7 @@ extension IpAddressContainerView {
     
     func getCountryFlag(countryCode: String) -> NSImage {
         return countryCode.isEmpty
-        ? NSImage()
-        : Flag(countryCode: countryCode)?.originalImage ?? NSImage()
+            ? NSImage()
+            : Flag(countryCode: countryCode)?.originalImage ?? NSImage()
     }
 }

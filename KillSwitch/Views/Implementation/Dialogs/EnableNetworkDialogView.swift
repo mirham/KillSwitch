@@ -51,7 +51,7 @@ struct EnableNetworkDialogView : View {
                     }
                 }
                 HStack {
-                    Button(action: primaryButtonClickHandler) {
+                    Button(action: handlePrimaryButtonClick) {
                         Text(Constants.enable)
                             .frame(height: 25)
                             .frame(maxWidth: /*@START_MENU_TOKEN@*/.infinity/*@END_MENU_TOKEN@*/)
@@ -62,7 +62,7 @@ struct EnableNetworkDialogView : View {
                     }.buttonStyle(.plain)
                     Spacer()
                         .frame(width: 20)
-                    Button(action: secondaryButtonClickHandler) {
+                    Button(action: hanldeSecondaryButtonClick) {
                         Text(Constants.cancel)
                             .frame(width: 100, height: 25)
                     }
@@ -81,19 +81,19 @@ struct EnableNetworkDialogView : View {
     
     // MARK: Private function
     
-    private func primaryButtonClickHandler() {
-        if (interfaceToEnable != nil) {
+    private func handlePrimaryButtonClick() {
+        if interfaceToEnable != nil {
             networkService.enableNetworkInterface(interfaceName: interfaceToEnable!)
             closeDialog()
         }
     }
     
-    private func secondaryButtonClickHandler() {
+    private func hanldeSecondaryButtonClick() {
         closeDialog()
     }
     
     private func openDialog() {
-        appState.views.isEnableNetworkDialogShown = true
+        appState.views.shownWindows.append(Constants.windowIdEnableNetworkDialog)
         interfaceToEnable = appState.current.mainNetworkInterface
         AppHelper.setUpView(
             viewName: Constants.windowIdEnableNetworkDialog,
@@ -102,7 +102,7 @@ struct EnableNetworkDialogView : View {
     }
     
     private func closeDialog() {
-        appState.views.isEnableNetworkDialogShown = false
+        appState.views.shownWindows.removeAll(where: {$0 == Constants.windowIdEnableNetworkDialog})
         isPresented = false
         AppHelper.activateView(viewId: Constants.windowIdMain)
     }

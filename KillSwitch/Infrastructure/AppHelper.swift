@@ -24,8 +24,8 @@ class AppHelper {
         for window in NSApplication.shared.windows {
             let windowId = String(window.identifier?.rawValue ?? String())
             
-            if(windowId.starts(with: viewId)) {
-                if (simple) {
+            if windowId.starts(with: viewId) {
+                if simple {
                     window.makeKeyAndOrderFront(window)
                 }
                 else {
@@ -44,7 +44,7 @@ class AppHelper {
         for window in NSApplication.shared.windows {
             let windowId = String(window.identifier?.rawValue ?? String())
             
-            if(windowId.starts(with: viewName)) {
+            if windowId.starts(with: viewName) {
                 window.close()
             }
         }

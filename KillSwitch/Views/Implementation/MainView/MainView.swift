@@ -58,14 +58,14 @@ struct MainView : View {
     // MARK: Private functions
     
     private func openView() {
-        appState.views.isMainViewShown = true
+        appState.views.shownWindows.append(Constants.windowIdMain)
         AppHelper.setUpView(
             viewName: Constants.windowIdMain,
             onTop: appState.userData.onTopOfAllWindows)
     }
     
     private func closeView() {
-        appState.views.isMainViewShown = false
+        appState.views.shownWindows.removeAll(where: {$0 == Constants.windowIdMain})
     }
 }
 

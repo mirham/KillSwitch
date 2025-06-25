@@ -8,8 +8,44 @@
 import Foundation
 import Network
 import SystemConfiguration
+import Factory
 
 class NetworkService : ServiceBase, ShellAccessible, NetworkServiceType {
+    @Injected(\.ipService) private var ipService
+    
+    func isUrlReachableAsync(url : String) async throws -> Bool {
+        guard !Task.isCancelled else {
+            throw Constants.errorTaskCancelled
+        }
+        
+        do {
+            let url = URL(string: url)!
+            var request = URLRequest(url: url)
+            request.httpMethod = Constants.headHttpMethod
+            
+            let (_, response) = try await URLSession.shared.data(for: request)
+            let parsedResponse = (response as? HTTPURLResponse)!
+            let result = parsedResponse.statusCode == 200
+            
+            return result
+        }
+    }
+    
+    func refreshPublicIpAsync() async {
+        guard !Task.isCancelled else { return }
+        
+        await updateStatusAsync(update: NetworkStateUpdateBuilder()
+            .withIsObtainingIp(true)
+            .build())
+        
+        let publicIp = await fetchPublicIpAsync()
+        
+        await updateStatusAsync(update: NetworkStateUpdateBuilder()
+            .withIsObtainingIp(false)
+            .withPublicIp(publicIp)
+            .build())
+    }
+    
     func getPhysicalInterfaces() -> [NetworkInterface] {
         let interfaces = SCNetworkInterfaceCopyAll() as? Array<SCNetworkInterface> ?? []
         
@@ -73,5 +109,41 @@ class NetworkService : ServiceBase, ShellAccessible, NetworkServiceType {
         }
         
         return NetworkInterfaceType.other
+    }
+    
+    private func fetchPublicIpAsync() async -> IpInfoBase? {
+        var isPublicIpNotObtained = true
+        let shouldFetchPublicIp = isPublicIpNotObtained
+        && !Task.isCancelled
+        && appState.userData.hasActiveIpApi()
+        && appState.network.status == .on
+        
+        while shouldFetchPublicIp {
+            let result = await ipService.getPublicIpAsync(ipApiUrl: nil, withInfo: true)
+            
+            if result.success {
+                isPublicIpNotObtained = false
+                
+                loggingService.write(
+                    message: String(
+                        format: Constants.logPublicIp,
+                        result.result!.ipAddress,
+                        result.result!.countryName),
+                    type: .info)
+                
+                return result.result
+            }
+        }
+        
+        return nil
+    }
+    
+    private func updateStatusAsync(update: NetworkStateUpdate) async {
+        guard !Task.isCancelled else { return }
+        
+        await MainActor.run {
+            appState.applyNetworkUpdate(update)
+            appState.objectWillChange.send()
+        }
     }
 }

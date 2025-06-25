@@ -9,7 +9,6 @@ import Foundation
 
 struct IpInfo: Codable, Identifiable, Equatable {
     var id: UUID
-    var ipVersion: Int
     var ipAddress: String
     var countryName: String
     var countryCode: String
@@ -22,7 +21,6 @@ struct IpInfo: Codable, Identifiable, Equatable {
         let info = ipAddressInfo ?? IpInfoBase(ipAddress: ipAddress)
         
         self.id = id
-        self.ipVersion = info.ipVersion
         self.ipAddress = info.ipAddress
         self.countryName = info.countryName
         self.countryCode = info.countryCode

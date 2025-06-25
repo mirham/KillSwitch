@@ -43,7 +43,7 @@ struct KillProcessesConfirmationDialogView : View {
                     }
                 }
                 HStack {
-                    Button(action: primaryButtonClickHandler) {
+                    Button(action: handlePrimaryButtonClick) {
                         Text(Constants.yes)
                             .frame(height: 25)
                             .frame(maxWidth: /*@START_MENU_TOKEN@*/.infinity/*@END_MENU_TOKEN@*/)
@@ -53,7 +53,7 @@ struct KillProcessesConfirmationDialogView : View {
                     }.buttonStyle(.plain)
                     Spacer()
                         .frame(width: 20)
-                    Button(action: secondaryButtonClickHandler) {
+                    Button(action: handleSecondaryButtonClick) {
                         Text(Constants.no)
                             .frame(width: 100, height: 25)
                     }
@@ -72,17 +72,17 @@ struct KillProcessesConfirmationDialogView : View {
     
     // MARK: Private function
     
-    private func primaryButtonClickHandler() {
+    private func handlePrimaryButtonClick() {
         self.processService.killActiveProcesses()
         closeDialog()
     }
     
-    private func secondaryButtonClickHandler() {
+    private func handleSecondaryButtonClick() {
         closeDialog()
     }
     
     private func openDialog() {
-        appState.views.isKillProcessesConfirmationDialogShown = true
+        appState.views.shownWindows.append(Constants.windowIdKillProcessesConfirmationDialog)
         AppHelper.setUpView(
             viewName: Constants.windowIdKillProcessesConfirmationDialog,
             onTop: true)
@@ -90,8 +90,12 @@ struct KillProcessesConfirmationDialogView : View {
     }
     
     private func closeDialog() {
-        appState.views.isKillProcessesConfirmationDialogShown = false
+        appState.views.shownWindows.removeAll(where: {$0 == Constants.windowIdKillProcessesConfirmationDialog})
         isPresented = false
+        
+        if appState.views.shownWindows.contains(where: {$0 == Constants.windowIdMain}) {
+            AppHelper.activateView(viewId: Constants.windowIdMain)
+        }
     }
 }
 

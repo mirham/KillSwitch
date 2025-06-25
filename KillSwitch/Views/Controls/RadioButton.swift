@@ -40,7 +40,9 @@ struct RadioButton: View {
             self.callback(self.id)
         }) {
             HStack(alignment: .center, spacing: 10) {
-                Image(systemName: self.isMarked ? Constants.iconMarkedCircle : Constants.iconCircle)
+                Image(systemName: self.isMarked
+                      ? Constants.iconMarkedCircle
+                      : Constants.iconCircle)
                     .renderingMode(.original)
                     .resizable()
                     .aspectRatio(contentMode: .fit)

@@ -49,14 +49,14 @@ struct InfoView: View {
     // MARK: Private functions
     
     private func openDialog() {
-        appState.views.isInfoViewShown = true
+        appState.views.shownWindows.append(Constants.windowIdInfo)
         AppHelper.setUpView(
             viewName: Constants.windowIdInfo,
             onTop: appState.userData.onTopOfAllWindows)
     }
     
     private func closeDialog() {
-        appState.views.isInfoViewShown = false
+        appState.views.shownWindows.removeAll(where: {$0 == Constants.windowIdInfo})
     }
 }
 

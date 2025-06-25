@@ -14,12 +14,20 @@ struct MenuBarStatusView : MenuBarItemsContainerView {
     
     @MainActor
     var body: some View {
-        let image = MenuBarStatusRawView(
-            appState: appState,
-            colorScheme: colorScheme).renderAsImage()
-        Image(nsImage: image!)
-            .nonAntialiased()
-            .scaledToFit()
+        HStack{
+            let image = MenuBarStatusRawView(
+                appState: appState,
+                colorScheme: colorScheme).renderAsImage()
+            Image(nsImage: image!)
+                .nonAntialiased()
+                .scaledToFit()
+        }
+        .onAppear(){
+            appState.current.colorScheme = colorScheme
+        }
+        .onChange(of: colorScheme) {
+            appState.current.colorScheme = colorScheme
+        }
     }
 }
 
@@ -35,18 +43,40 @@ private struct MenuBarStatusRawView: MenuBarItemsContainerView {
     }
     
     var body: some View {
-        let shownItems = getMenuBarElements(
-            keys: appState.userData.menuBarShownItems,
-            appState: appState,
-            colorScheme: colorScheme)
-        
-        HStack(spacing: 5) {
-            ForEach(shownItems, id: \.id) { item in
-                Image(nsImage: item.image)
-                    .nonAntialiased()
-            }
+        if !appState.userData.hasActiveIpApi() {
+            makeNoActiveIpApiView()
+        }
+        else {
+            makeDefaultView(appState: appState, colorScheme: colorScheme)
         }
     }
+    
+    // MARK: Private functions
+    
+    private func makeNoActiveIpApiView() -> some View {
+        HStack {
+            Image(systemName: Constants.iconNoActiveIpApi)
+            Text(Constants.noActiveIpApi.uppercased())
+        }
+        .foregroundStyle(.orange)
+    }
+    
+    @MainActor
+    private func makeDefaultView(
+        appState: AppState,
+        colorScheme: ColorScheme) -> some View {
+            let shownItems = getMenuBarElements(
+                keys: appState.userData.menuBarShownItems,
+                appState: appState,
+                colorScheme: colorScheme)
+            
+            return HStack(spacing: 5) {
+                ForEach(shownItems, id: \.id) { item in
+                    Image(nsImage: item.image)
+                        .nonAntialiased()
+                }
+            }
+        }
 }
 
 #Preview {

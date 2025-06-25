@@ -15,7 +15,8 @@ struct IpApisEditView : View {
     
     @State private var newUrl = String()
     @State private var isNewUrlValid = false
-    @State private var isNewUrlInvalid: Bool = false
+    @State private var alertType: AlertType? = nil
+    @State private var pendingAlert: AlertType? = nil
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -48,7 +49,7 @@ struct IpApisEditView : View {
                                 Button(action: { String.copyToClipboard(input: api.url) } ) {
                                     Text(Constants.copy)
                                 }
-                                Button(action: { appState.userData.ipApis.removeAll(where: {$0 == api})}) {
+                                Button(action: { handleDeleteIpApiClick(ipApiUrl: api.url) }) {
                                     Text(Constants.delete)
                                 }
                             }
@@ -69,30 +70,45 @@ struct IpApisEditView : View {
                                     }
                             }
                         }
-                        AsyncButton(Constants.add, action: addIpApiClickHandlerAsync)
+                        AsyncButton(Constants.add, action: handleAddIpApiClickAsync)
                             .disabled(!isNewUrlValid)
-                            .alert(isPresented: $isNewUrlInvalid) {
-                                Alert(title: Text(Constants.dialogHeaderApiIsNotValid),
-                                      message: Text(Constants.dialogBodyApiIsNotValid),
-                                      dismissButton: .default(Text(Constants.ok)))
-                            }
                             .pointerOnHover()
                             .bold()
                     }
                 }
+                .padding(5)
             }
+        }
+        .alert(isPresented: Binding(
+            get: { alertType != nil },
+            set: { _ in
+                alertType = pendingAlert
+                pendingAlert = nil
+            }
+        )) {
+            Alert (
+                title: Text(alertType?.alertContent.title ?? String()),
+                message: Text(alertType?.alertContent.message ?? String()),
+                dismissButton: .default(Text(Constants.ok)) {
+                    alertType = pendingAlert
+                    pendingAlert = nil
+                }
+            )
         }
     }
     
     // MARK: Private functions
     
-    private func addIpApiClickHandlerAsync() async {
-        let ipAddressResult = await self.ipService.getPublicIpAsync(
-            ipApiUrl: newUrl, withInfo: true)
+    private func handleAddIpApiClickAsync() async {
+        let ipAddressResult = await ipService.getPublicIpAsync(ipApiUrl: newUrl, withInfo: true)
         
         guard ipAddressResult.success else {
-            isNewUrlInvalid = true
+            showAlert(.ipApiInvalid)
             
+            return
+        }
+        
+        guard !appState.userData.ipApis.contains(where: {$0.url == newUrl}) else {
             return
         }
         
@@ -102,7 +118,53 @@ struct IpApisEditView : View {
         
         newUrl = String()
         isNewUrlValid = false
-        isNewUrlInvalid = false
+    }
+    
+    private func handleDeleteIpApiClick(ipApiUrl: String) {
+        guard appState.userData.ipApis.count > Constants.minIpApiCount
+
+        else {
+            showAlert(.lastIpApi)
+            
+            return
+        }
+        
+        appState.userData.ipApis.removeAll(where: {$0.url == ipApiUrl})
+    }
+    
+    private func showAlert(_ type: AlertType) {
+        if alertType == nil {
+            alertType = type
+        } else {
+            pendingAlert = type
+        }
+    }
+    
+    // MARK: Inner types
+    
+    private enum AlertType: Identifiable {
+        case ipApiInvalid
+        case lastIpApi
+        
+        var id: Int {
+            switch self {
+                case .ipApiInvalid: return 0
+                case .lastIpApi: return 1
+            }
+        }
+        
+        var alertContent: (title: String, message: String) {
+            switch self {
+                case .ipApiInvalid:
+                    return (
+                        title: Constants.dialogHeaderApiIsNotValid,
+                        message: Constants.dialogBodyApiIsNotValid)
+                case .lastIpApi:
+                    return (
+                        title: Constants.dialogHeaderLastIpApiCannotBeRemoved,
+                        message: Constants.dialogBodyLastIpApiCannotBeRemoved)
+            }
+        }
     }
 }
 
