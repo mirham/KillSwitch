@@ -137,7 +137,6 @@ extension AppState {
         var isObtainingIp = false
         var activeNetworkInterfaces: [NetworkInterface] = [NetworkInterface]()
         var physicalNetworkInterfaces: [NetworkInterface] = [NetworkInterface]()
-        var prevPublicIp: IpInfoBase? = nil
         var publicIp: IpInfoBase? = nil
         
         func isConnectionChanged (
