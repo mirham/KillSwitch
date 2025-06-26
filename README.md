@@ -68,6 +68,8 @@ I can recommend two free services:
  - ```http://ip-api.com/json/%IP%``` – This one is used by default.
  - ```https://free.freeipapi.com/api/json/%IP%``` – This one is less accurate.
 
+`%IP%` here - is your public IP. 
+
 The mapping for the last service is as follows:
 
   - City name -> ```cityName```
