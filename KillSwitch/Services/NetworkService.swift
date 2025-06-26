@@ -119,7 +119,9 @@ class NetworkService : ServiceBase, ShellAccessible, NetworkServiceType {
         && appState.network.status == .on
         
         while shouldFetchPublicIp {
-            let result = await ipService.getPublicIpAsync(ipApiUrl: nil, withInfo: true)
+            let result = await ipService.getPublicIpAsync(
+                ipApiUrl: nil,
+                withInfo: true)
             
             if result.success {
                 isPublicIpNotObtained = false

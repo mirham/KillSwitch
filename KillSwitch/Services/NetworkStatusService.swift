@@ -40,7 +40,7 @@ class NetworkStatusService: ServiceBase, ApiCallable, NetworkStatusServiceType {
             let isConnectionChanged = self.appState.network.isConnectionChanged (
                 status: status, activeNetworkInterfaces: networkInterfaces)
             
-            if (isConnectionChanged) {
+            if isConnectionChanged {
                 let updatedStatus = status
                 let updatedActiveNetworkInterfaces = networkInterfaces
                 let updatedPhysicalNetworkInterfaces = physicalNetworkInterfaces
