@@ -71,15 +71,9 @@ I can recommend two free services:
 `%IP%` here - is your public IP. 
 
 The mapping for the last service is as follows:
-
-  - City name -> ```cityName```
   - Country code -> ```countryCode```
   - Country name -> ```countryName```
   - IP address -> ```ipAddress```
-  - Latitude -> ```latitude```
-  - Longitude -> ```longitude```
-  - Region name -> ```regionName```
-  - Zip code -> leave blank
 ### The app dispalys "Obtaining IP..." for a long time
 This could happen if some public IP APIs are unreachable from your current connection location. The app skips these, but this process takes time. Furthermore, after updating the public IP, the app attempts to use them again. I recommend checking public IP APIs in your browser. If an API no more rapidly return an IP address as plain text, you should remove that API from the app. This will solve the problem. Additionally, you can find new free APIs online, if they work well, feel free to add them to the app.
 ### The app dispalys "No active IP API"
