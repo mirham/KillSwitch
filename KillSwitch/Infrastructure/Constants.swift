@@ -218,7 +218,7 @@ struct Constants{
     // MARK: Error messages
     static let errorNoActiveIpApiFound = "Not possible to obtain IP, try to add a new IP API in the Settings to proceed work or check DNS availability"
     static let errorWhenCallingIpAddressApi = "Error when called IP address API '%1$@': '%2$@', API marked as inactive and will be skipped until next application run"
-    static let errorIpApiResponseIsInvalid = "IP address API returned invalid IP address"
+    static let errorIpApiResponseIsInvalid = "IP address API returned invalid IP address (IP info API: %1$@)"
     static let errorWhenCallingIpInfoApi = "Error when called IP info API: %1$@"
     static let errorTaskCancelled = "Task cancelled"
     static let errorInvalidJson = "Invalid JSON"
@@ -252,7 +252,7 @@ struct Constants{
     // MARK: Log messages
     static let logMonitoringHasBeenEnabled = "Monitoring enabled"
     static let logMonitoringHasBeenDisabled = "Monitoring disabled"
-    static let logPublicIp = "Public IP is %1$@ (location: %2$@)"
+    static let logPublicIp = "Public IP is %1$@ (location: %2$@, fetched from API: %3$@)"
     static let logPublicIpHasBeenUpdated = "Public IP has been updated to %1$@"
     static let logPublicIpHasBeenUpdatedWithNotFromWhitelist = "Public IP address has been changed to %1$@ which is not from allowed IPs, network disabled"
     static let logNetworkInterfaceHasBeenEnabled = "Network interface '%1$@' has been enabled"

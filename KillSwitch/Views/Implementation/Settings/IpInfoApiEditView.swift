@@ -139,7 +139,8 @@ struct IpInfoApiEditView: View {
         let testResponse = await ipService.getPublicIpInfoAsync(
             apiUrl: newUrl,
             publicIp: publicIp,
-            keyMapping: keyMapping)
+            keyMapping: keyMapping,
+            fetchedFromApi: nil)
         
         guard testResponse.success, let ipInfo = testResponse.result
         else {

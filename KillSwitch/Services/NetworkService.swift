@@ -130,7 +130,8 @@ class NetworkService : ServiceBase, ShellAccessible, NetworkServiceType {
                     message: String(
                         format: Constants.logPublicIp,
                         result.result!.ipAddress,
-                        result.result!.countryName),
+                        result.result!.countryName,
+                        result.result!.fetchedFromApi ?? String()),
                     type: .info)
                 
                 return result.result

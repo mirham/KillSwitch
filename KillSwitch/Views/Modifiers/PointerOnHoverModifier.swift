@@ -9,12 +9,15 @@ import SwiftUI
 
 struct PointerOnHoverModifier: ViewModifier {
     func body(content: Content) -> some View {
-         content.onHover(perform: { hovering in
-            if hovering {
-                NSCursor.pointingHand.push()
-            } else {
-                NSCursor.pop()
+        content
+            .onHover { isHovering in
+                DispatchQueue.main.async {
+                    if isHovering {
+                        NSCursor.pointingHand.push()
+                    } else {
+                        NSCursor.pop()
+                    }
+                }
             }
-        })
     }
 }

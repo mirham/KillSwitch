@@ -23,24 +23,26 @@ class IpService : ServiceBase, ApiCallable, IpServiceType {
         let ipAddress = try? await fetchIpAddressAsync(from: apiUrl)
         
         guard let ipAddress else {
-            return OperationResult(error: Constants.errorIpApiResponseIsInvalid)
+            return OperationResult(error: String(format:Constants.errorIpApiResponseIsInvalid, apiUrl))
         }
         
         if withInfo {
             return await getPublicIpInfoAsync(
                 apiUrl: appState.userData.ipInfoApiUrl,
                 publicIp: ipAddress,
-                keyMapping: appState.userData.ipInfoApiKeyMapping
+                keyMapping: appState.userData.ipInfoApiKeyMapping,
+                fetchedFromApi: apiUrl
             )
         }
         
-        return OperationResult(result: IpInfoBase(ipAddress: ipAddress))
+        return OperationResult(result: IpInfoBase(ipAddress: ipAddress, fetchedFromApi: apiUrl))
     }
     
     func getPublicIpInfoAsync(
         apiUrl: String,
         publicIp: String,
-        keyMapping: [String:String]) async -> OperationResult<IpInfoBase> {
+        keyMapping: [String:String],
+        fetchedFromApi: String?) async -> OperationResult<IpInfoBase> {
         guard !Task.isCancelled else {
             return OperationResult(error: Constants.errorTaskCancelled)
         }
@@ -48,7 +50,7 @@ class IpService : ServiceBase, ApiCallable, IpServiceType {
         guard !keyMapping.isEmpty, let ipInfoUrl = ipApiService.prepareIpInfoApiUrl(
             publicIp: publicIp, ipInfoApiUrl: apiUrl)
         else {
-            return OperationResult(result: IpInfoBase(ipAddress: publicIp))
+            return OperationResult(result: IpInfoBase(ipAddress: publicIp, fetchedFromApi: fetchedFromApi))
         }
         
         do {
@@ -61,17 +63,18 @@ class IpService : ServiceBase, ApiCallable, IpServiceType {
             }
             
             let preparedJsonData = try jsonData.remap(mapping: keyMapping)
-            let info = try JSONDecoder().decode(IpInfoBase.self, from: preparedJsonData)
+            var info = try JSONDecoder().decode(IpInfoBase.self, from: preparedJsonData)
+            info.fetchedFromApi = fetchedFromApi
             
             return OperationResult(result: info)
         } catch {
             if let urlError = error as? URLError,
                [.notConnectedToInternet, .networkConnectionLost].contains(urlError.code) {
-                return OperationResult(result: IpInfoBase(ipAddress: publicIp))
+                return OperationResult(result: IpInfoBase(ipAddress: publicIp, fetchedFromApi: fetchedFromApi))
             }
             
             let errorMessage = String(format: Constants.errorWhenCallingIpInfoApi, error.localizedDescription)
-            return OperationResult(result: IpInfoBase(ipAddress: publicIp), error: errorMessage)
+            return OperationResult(result: IpInfoBase(ipAddress: publicIp, fetchedFromApi: fetchedFromApi), error: errorMessage)
         }
     }
     
@@ -97,11 +100,11 @@ class IpService : ServiceBase, ApiCallable, IpServiceType {
         let apiResponse = await ipApiService.callIpApiAsync(ipApiUrl: apiUrl)
         
         guard apiResponse.success, let ipAddress = apiResponse.result?.trimmingCharacters(in: .whitespacesAndNewlines) else {
-            throw apiResponse.error ?? Constants.errorIpApiResponseIsInvalid
+            throw apiResponse.error ?? String(format:Constants.errorIpApiResponseIsInvalid, apiUrl)
         }
         
         guard ipAddress.isValidIp() else {
-            throw Constants.errorIpApiResponseIsInvalid
+            throw String(format:Constants.errorIpApiResponseIsInvalid, apiUrl)
         }
         
         return ipAddress

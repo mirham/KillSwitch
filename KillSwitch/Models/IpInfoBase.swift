@@ -11,11 +11,13 @@ struct IpInfoBase: Codable, Equatable {
     var ipAddress: String
     var countryName: String
     var countryCode: String
+    var fetchedFromApi: String?
     
     enum CodingKeys: String, CodingKey {
         case ipAddress
         case countryCode
         case countryName
+        case fetchedFromApi
     }
     
     static func == (lhs: IpInfoBase, rhs: IpInfoBase) -> Bool {
@@ -27,10 +29,22 @@ struct IpInfoBase: Codable, Equatable {
         self.ipAddress = ipAddress
         self.countryName = String()
         self.countryCode = String()
+        self.fetchedFromApi = nil
+    }
+    
+    init(ipAddress: String, fetchedFromApi: String?) {
+        self.ipAddress = ipAddress
+        self.countryName = String()
+        self.countryCode = String()
+        self.fetchedFromApi = fetchedFromApi
     }
     
     func hasLocation() -> Bool {
         return !self.countryCode.isEmpty && !self.countryName.isEmpty
+    }
+    
+    func hasFetchedFromApi() -> Bool {
+        return self.fetchedFromApi != nil && !self.fetchedFromApi!.isEmpty
     }
     
     func hash(into hasher: inout Hasher) {

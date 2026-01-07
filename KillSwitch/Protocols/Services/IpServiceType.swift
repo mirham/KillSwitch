@@ -10,6 +10,7 @@ protocol IpServiceType {
     func getPublicIpInfoAsync(
         apiUrl: String,
         publicIp: String,
-        keyMapping: [String:String]) async -> OperationResult<IpInfoBase>
+        keyMapping: [String:String],
+        fetchedFromApi: String?) async -> OperationResult<IpInfoBase>
     func addAllowedPublicIp(publicIp: IpInfo)
 }
