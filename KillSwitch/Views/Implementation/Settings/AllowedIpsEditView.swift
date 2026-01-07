@@ -157,7 +157,8 @@ struct AllowedIpsEditView : IpAddressContainerView {
         let ipInfoResult = await ipService.getPublicIpInfoAsync(
             apiUrl: appState.userData.ipInfoApiUrl,
             publicIp: newIp,
-            keyMapping: appState.userData.ipInfoApiKeyMapping)
+            keyMapping: appState.userData.ipInfoApiKeyMapping,
+            fetchedFromApi: nil)
         let isNewIpInvalid = appState.userData.pickyMode && ipInfoResult.error != nil
         
         if isNewIpInvalid {
