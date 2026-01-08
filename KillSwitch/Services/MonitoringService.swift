@@ -118,7 +118,8 @@ class MonitoringService: ServiceBase, MonitoringServiceType {
             message: String(
                 format: Constants.logPublicIp,
                 updatedPublicIpResult.result!.ipAddress,
-                updatedPublicIpResult.result!.countryName),
+                updatedPublicIpResult.result!.countryName,
+                updatedPublicIpResult.result!.fetchedFromApi ?? String()),
             type: .info)
     }
     
