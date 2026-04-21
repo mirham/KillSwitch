@@ -69,40 +69,40 @@ struct AllowedIpsEditView : IpAddressContainerView {
                         }
                     }
                 }
-                .padding(.bottom, 10)
+                .padding(10)
                 .safeAreaInset(edge: .bottom) {
                     VStack {
                         HStack {
-                            VStack(alignment: .leading, spacing: 12) {
-                                Text("\(Constants.ip):")
-                                Text("\(Constants.safety):")
-                            }
-                            VStack(alignment: .leading, spacing: 12) {
-                                TextField(Constants.hintNewVaildIpAddress, text: $newIp)
-                                    .onChange(of: newIp) {
-                                        isNewIpValid = newIp.isValidIp()
-                                    }
-                                HStack {
-                                    RadioButton(
-                                        id: String(SafetyType.compete.rawValue),
-                                        label: SafetyType.compete.description,
-                                        size: 12,
-                                        color: getSafetyColor(safetyType: .compete, colorScheme: colorScheme),
-                                        textSize: 11,
-                                        isMarked: newIpSafetyType == SafetyType.compete,
-                                        callback: { _ in newIpSafetyType = SafetyType.compete }
-                                    )
-                                    RadioButton(
-                                        id: String(SafetyType.some.rawValue),
-                                        label: SafetyType.some.description,
-                                        size: 12,
-                                        color: getSafetyColor(safetyType: .some, colorScheme: colorScheme),
-                                        textSize: 11,
-                                        isMarked: newIpSafetyType == SafetyType.some,
-                                        callback: { _ in newIpSafetyType = SafetyType.some }
-                                    )
+                            Text("\(Constants.ip):")
+                                .frame(width: 80, alignment: .leading)
+                            TextField(Constants.hintNewVaildIpAddress, text: $newIp)
+                                .onChange(of: newIp) {
+                                    isNewIpValid = newIp.isValidIp()
                                 }
-                            }
+                        }
+                        HStack {
+                            Text("\(Constants.safety):")
+                                .frame(width: 80, alignment: .leading)
+                            RadioButton(
+                                id: String(SafetyType.compete.rawValue),
+                                label: SafetyType.compete.description,
+                                size: 12,
+                                color: getSafetyColor(safetyType: .compete, colorScheme: colorScheme),
+                                textSize: 11,
+                                isMarked: newIpSafetyType == SafetyType.compete,
+                                callback: { _ in newIpSafetyType = SafetyType.compete }
+                            )
+                            Spacer()
+                                .frame(width: 5)
+                            RadioButton(
+                                id: String(SafetyType.some.rawValue),
+                                label: SafetyType.some.description,
+                                size: 12,
+                                color: getSafetyColor(safetyType: .some, colorScheme: colorScheme),
+                                textSize: 11,
+                                isMarked: newIpSafetyType == SafetyType.some,
+                                callback: { _ in newIpSafetyType = SafetyType.some }
+                            )
                         }
                         AsyncButton(
                             ipId == nil ? Constants.add : Constants.save,
@@ -111,8 +111,8 @@ struct AllowedIpsEditView : IpAddressContainerView {
                             .bold()
                             .pointerOnHover()
                     }
+                    .padding(10)
                 }
-                .padding(5)
             }
         }
         .alert(isPresented: Binding(

@@ -13,45 +13,65 @@ struct SettingsView : View {
     @Environment(\.controlActiveState) var controlActiveState
 
     var body: some View {
-        TabView {
-            GeneralSettingsEditView()
-                .tabItem {
-                    Text(Constants.settingsElementGeneral)
+        VStack {
+            HStack {
+                Spacer()
+                    .frame(width: 30)
+                Text(Constants.settings)
+                    .font(.headline)
+                Spacer()
+            }
+            .offset(y: -25)
+            FixedSidebarTabView {
+                FixedSidebarTabView.TabItem(
+                    title: Constants.settingsElementGeneral,
+                    icon: Constants.iconGear
+                ) {
+                    GeneralSettingsEditView()
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
-            MenuBarStatusEditView()
-                 .tabItem {
-                     Text(Constants.settingsElementMenubar)
-                 }
-            AllowedIpsEditView()
-                .tabItem {
-                    Text(Constants.settingsElementAllowedIpAddresses)
+                FixedSidebarTabView.TabItem(
+                    title: Constants.settingsElementMenubar,
+                    icon: Constants.iconMenubar
+                ) {
+                    MenuBarStatusEditView()
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
-                .navigationSplitViewColumnWidth(250)
-            IpApisEditView()
-                .environmentObject(appState)
-                .tabItem {
-                    Text(Constants.settingsElementIpAddressApis)
+                FixedSidebarTabView.TabItem(
+                    title: Constants.settingsElementAllowedIpAddresses,
+                    icon: Constants.iconNetwork
+                ) {
+                    AllowedIpsEditView()
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
-            IpInfoApiEditView()
-                .environmentObject(appState)
-                .tabItem {
-                    Text(Constants.settingsElementIpInfoApi)
+                FixedSidebarTabView.TabItem(
+                    title: Constants.settingsElementIpAddressApis,
+                    icon: Constants.iconBulletRectangle
+                ) {
+                    IpApisEditView()
+                        .environmentObject(appState)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
-            ClosingApplicationsEditView()
-                .tabItem {
-                    Text(Constants.settingsElementClosingApps)
+                FixedSidebarTabView.TabItem(
+                    title: Constants.settingsElementIpInfoApi,
+                    icon: Constants.iconBulletRectangle
+                ) {
+                    IpInfoApiEditView()
+                        .environmentObject(appState)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
+                FixedSidebarTabView.TabItem(
+                    title: Constants.settingsElementClosingApps,
+                    icon: Constants.iconClosingApps
+                ) {
+                    ClosingAppsEditView()
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
+            }
         }
-        .tabViewStyle(.grouped)
-        .onAppear(perform: {
-            openView()
-        })
-        .onDisappear(perform: {
-            closeView()
-        })
+        .onAppear { openView() }
+        .onDisappear { closeView() }
         .opacity(getViewOpacity(state: controlActiveState))
-        .padding()
-        .frame(maxWidth: 550, maxHeight: 500)
     }
     
     // MARK: Private functions

@@ -55,28 +55,24 @@ struct IpApisEditView : View {
                             }
                         }
                     }
+                    .padding(10)
                 }
-                .padding(.bottom, 10)
                 .safeAreaInset(edge: .bottom) {
                     VStack {
                         HStack {
-                            VStack(alignment: .leading, spacing: 12) {
-                                Text("\(Constants.apiUrl):")
-                            }
-                            VStack(alignment: .leading, spacing: 12) {
-                                TextField(Constants.hintNewVaildApiUrl, text: $newUrl)
-                                    .onChange(of: newUrl) {
-                                        isNewUrlValid = newUrl.isValidUrl()
-                                    }
-                            }
+                            Text("\(Constants.apiUrl):")
+                            TextField(Constants.hintNewVaildApiUrl, text: $newUrl)
+                                .onChange(of: newUrl) {
+                                    isNewUrlValid = newUrl.isValidUrl()
+                                }
                         }
                         AsyncButton(Constants.add, action: handleAddIpApiClickAsync)
                             .disabled(!isNewUrlValid)
                             .pointerOnHover()
                             .bold()
                     }
+                    .padding(10)
                 }
-                .padding(5)
             }
         }
         .alert(isPresented: Binding(

@@ -78,6 +78,12 @@ struct Constants{
     static let iconCircle = "circle"
     static let iconMarkedCircle = "largecircle.fill.circle"
     static let iconNoActiveIpApi = "exclamationmark.triangle.fill"
+    static let iconFolder = "folder"
+    static let iconGear = "gear"
+    static let iconMenubar = "menubar.rectangle"
+    static let iconNetwork = "network"
+    static let iconBulletRectangle = "list.bullet.rectangle"
+    static let iconClosingApps = "xmark.circle"
     
     // MARK: Colors
     static let colorCompleteSafetyLightTheme = "#369300"

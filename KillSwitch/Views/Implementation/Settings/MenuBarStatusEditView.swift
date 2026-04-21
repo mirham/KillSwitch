@@ -15,6 +15,7 @@ struct MenuBarStatusEditView: MenuBarItemsContainerView {
     @State private var shownItems = [MenuBarElement]()
     @State private var hiddenItems = [MenuBarElement]()
     @State private var draggedItem: MenuBarElement?
+    @State private var separatorInsertedDuringDrag: Bool = false
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -35,12 +36,14 @@ struct MenuBarStatusEditView: MenuBarItemsContainerView {
                         item
                             .onDrag({
                                 self.draggedItem = item
+                                self.separatorInsertedDuringDrag = false
                                 return NSItemProvider(object: item.image)
                             })
                             .onDrop(of: [.image], delegate: DropViewDelegate(
                                 draggedItem: $draggedItem,
                                 sourceItems: $shownItems,
                                 destinationItems: $hiddenItems,
+                                separatorInsertedDuringDrag: $separatorInsertedDuringDrag,
                                 item: item,
                                 keepLastItem: false))
                     }
@@ -57,12 +60,14 @@ struct MenuBarStatusEditView: MenuBarItemsContainerView {
                         item
                             .onDrag({
                                 self.draggedItem = item
+                                self.separatorInsertedDuringDrag = false
                                 return NSItemProvider(object: item.image)
                             })
                             .onDrop(of: [.image], delegate: DropViewDelegate(
                                 draggedItem: $draggedItem,
                                 sourceItems: $hiddenItems,
                                 destinationItems: $shownItems,
+                                separatorInsertedDuringDrag: $separatorInsertedDuringDrag,
                                 item: item,
                                 keepLastItem: true))
                     }

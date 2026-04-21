@@ -38,12 +38,15 @@ struct KillSwitchApp: App {
         })
         .windowToolbarStyle(UnifiedCompactWindowToolbarStyle())
         
-        WindowGroup(id:Constants.windowIdSettings, makeContent: {
+        WindowGroup(id: Constants.windowIdSettings) {
             SettingsView()
                 .environmentObject(appState)
                 .navigationTitle(Constants.settings)
-                .frame(minWidth: 550, maxWidth: 550, minHeight: 500, maxHeight: 500)
-        }).windowResizability(.contentSize)
+                .safeGlassEffect()
+                .frame(minWidth: 650, maxWidth: 650, minHeight: 520, maxHeight: 520)
+        }
+        .windowResizability(.contentSize)
+        .windowStyle(.hiddenTitleBar)
         
         WindowGroup(id: Constants.windowIdKillProcessesConfirmationDialog, makeContent: {
             KillProcessesConfirmationDialogView()

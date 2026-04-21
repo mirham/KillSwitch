@@ -217,7 +217,6 @@ struct GeneralSettingsEditView: View {
             
             Spacer()
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
         .onAppear {
             interval = appState.userData.intervalBetweenChecks
         }

@@ -39,7 +39,6 @@ struct IpInfoApiEditView: View {
                             .textFieldStyle(RoundedBorderTextFieldStyle())
                     }
                 }
-                .padding()
                 VStack {
                     Text(Constants.mappings)
                         .font(.title3)
@@ -60,8 +59,8 @@ struct IpInfoApiEditView: View {
                         }
                     }
                 }
-                .padding(.bottom, 5)
             }
+            .padding(10)
         }
         .safeAreaInset(edge: .bottom) {
             VStack {
@@ -70,6 +69,7 @@ struct IpInfoApiEditView: View {
                     .pointerOnHover()
                     .bold()
             }
+            .padding(10)
         }
         .alert(isPresented: Binding(
             get: {
