@@ -29,12 +29,14 @@ struct KillSwitchApp: App {
         } label: {
             MenuBarStatusView()
                 .environmentObject(appState)
+                .safeGlassEffect()
         }
         .menuBarExtraStyle(.window)
         
         WindowGroup(id:Constants.windowIdMain, makeContent: {
             MainView()
                 .environmentObject(appState)
+                .safeGlassEffect()
         })
         .windowToolbarStyle(UnifiedCompactWindowToolbarStyle())
         
@@ -73,8 +75,10 @@ struct KillSwitchApp: App {
             InfoView()
                 .environmentObject(appState)
                 .navigationTitle(Constants.info)
-                .frame(minWidth: 360, maxWidth: 360, minHeight: 220, maxHeight: 220)
+                .safeGlassEffect()
+                .frame(minWidth: 360, maxWidth: 360, minHeight: 190, maxHeight: 190)
         })
         .windowResizability(.contentSize)
+        .windowStyle(.hiddenTitleBar)
     }
 }
