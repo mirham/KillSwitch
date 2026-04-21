@@ -6,13 +6,14 @@
 //
 
 import Foundation
+import Factory
 
-class LaunchAgentService : ServiceBase, ShellAccessible, LaunchAgentServiceType {
+class LaunchAgentService : ShellAccessible, LaunchAgentServiceType {
+    @LazyInjected(\.loggingService) private var loggingService
+    
     var isInstalled = false
     
-    override init() {
-        super.init()
-        
+    init() {
         let fileManager = FileManager.default
         let plistFilePath = getPlistFilePath()
         

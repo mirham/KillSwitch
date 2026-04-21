@@ -6,8 +6,12 @@
 //
 
 import Foundation
+import Factory
 
-class ComputerService : ServiceBase, ShellAccessible, ComputerServiceType {
+class ComputerService : ShellAccessible, ComputerServiceType {
+    @Injected(\.appState) private var appState
+    @LazyInjected(\.loggingService) private var loggingService
+    
     private var activity: NSObjectProtocol? = nil
     
     func startSleepPreventing() {

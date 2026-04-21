@@ -52,7 +52,6 @@
 		357154FB2C173E4C00A41AA4 /* IpService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 357154FA2C173E4C00A41AA4 /* IpService.swift */; };
 		357154FD2C17422600A41AA4 /* IpInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 357154FC2C17422600A41AA4 /* IpInfo.swift */; };
 		357183362C2C0199008B2D83 /* ProcessService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 357183352C2C0199008B2D83 /* ProcessService.swift */; };
-		3571833A2C2C05CC008B2D83 /* ServiceBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 357183392C2C05CC008B2D83 /* ServiceBase.swift */; };
 		3571833C2C2C0A79008B2D83 /* Settable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3571833B2C2C0A79008B2D83 /* Settable.swift */; };
 		357183482C2C7A9C008B2D83 /* FlagKit in Frameworks */ = {isa = PBXBuildFile; productRef = 357183472C2C7A9C008B2D83 /* FlagKit */; };
 		3572667A2C36A4110021978C /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 357266792C36A4110021978C /* AppState.swift */; };
@@ -149,7 +148,6 @@
 		357154FA2C173E4C00A41AA4 /* IpService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IpService.swift; sourceTree = "<group>"; };
 		357154FC2C17422600A41AA4 /* IpInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IpInfo.swift; sourceTree = "<group>"; };
 		357183352C2C0199008B2D83 /* ProcessService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessService.swift; sourceTree = "<group>"; };
-		357183392C2C05CC008B2D83 /* ServiceBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceBase.swift; sourceTree = "<group>"; };
 		3571833B2C2C0A79008B2D83 /* Settable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settable.swift; sourceTree = "<group>"; };
 		357266792C36A4110021978C /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		3572667C2C36EDC30021978C /* ShellAccessible.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShellAccessible.swift; sourceTree = "<group>"; };
@@ -211,7 +209,6 @@
 		351E9CEA2C10B19600CEC15F /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				357183392C2C05CC008B2D83 /* ServiceBase.swift */,
 				351E9CE42C10A3BA00CEC15F /* MonitoringService.swift */,
 				35E7DD4E2C13420000CC68F7 /* NetworkStatusService.swift */,
 				351F0C652C0F6D2A00644C66 /* NetworkService.swift */,
@@ -595,7 +592,6 @@
 				351F0C662C0F6D2A00644C66 /* NetworkService.swift in Sources */,
 				35E7DD4F2C13420000CC68F7 /* NetworkStatusService.swift in Sources */,
 				35DD1C4E2C0FA9D2003AA3ED /* CheckToggleStyle.swift in Sources */,
-				3571833A2C2C05CC008B2D83 /* ServiceBase.swift in Sources */,
 				35BD39DC2DDCA5920021CF49 /* LoggingServiceType.swift in Sources */,
 				35C8A9212E04353300C574A5 /* IpApiService.swift in Sources */,
 				35EE63712C57983700D45D66 /* MenuBarItemsContainerView.swift in Sources */,

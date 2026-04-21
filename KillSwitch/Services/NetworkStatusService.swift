@@ -9,7 +9,8 @@ import Foundation
 import Network
 import Factory
 
-class NetworkStatusService: ServiceBase, ApiCallable, NetworkStatusServiceType {
+class NetworkStatusService: ApiCallable, NetworkStatusServiceType {
+    @Injected(\.appState) private var appState
     @Injected(\.networkService) private var networkService
     
     private let monitor = NWPathMonitor()
@@ -17,9 +18,7 @@ class NetworkStatusService: ServiceBase, ApiCallable, NetworkStatusServiceType {
     private var ipUpdateTask: Task<Void, Never>?
     private var checkConnectionTask: Task<Void, Never>?
     
-    override init() {
-        super.init()
-        
+    init() {
         startNetworkMonitoring()
         startConnectionMonitoring()
     }

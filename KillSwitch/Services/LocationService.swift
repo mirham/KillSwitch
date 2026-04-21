@@ -7,8 +7,11 @@
 
 import Foundation
 import CoreLocation
+import Factory
 
-class LocationService : ServiceBase, ShellAccessible, LocationServiceType {
+class LocationService : ShellAccessible, LocationServiceType {
+    @LazyInjected(\.loggingService) private var loggingService
+    
     func isLocationServicesEnabled() -> Bool {
         let result = CLLocationManager.locationServicesEnabled()
         

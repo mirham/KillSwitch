@@ -10,8 +10,10 @@ import Network
 import SystemConfiguration
 import Factory
 
-class NetworkService : ServiceBase, ShellAccessible, NetworkServiceType {
+class NetworkService : ShellAccessible, NetworkServiceType {
+    @Injected(\.appState) private var appState
     @Injected(\.ipService) private var ipService
+    @LazyInjected(\.loggingService) private var loggingService
     
     func isUrlReachableAsync(url : String) async throws -> Bool {
         guard !Task.isCancelled else {

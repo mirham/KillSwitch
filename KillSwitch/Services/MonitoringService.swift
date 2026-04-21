@@ -8,18 +8,18 @@
 import Foundation
 import Factory
 
-class MonitoringService: ServiceBase, MonitoringServiceType {
+class MonitoringService: MonitoringServiceType {
+    @Injected(\.appState) private var appState
     @Injected(\.ipService) private var ipService
     @Injected(\.networkService) private var networkService
     @Injected(\.processService) private var processService
     @Injected(\.computerService) private var computerService
+    @LazyInjected(\.loggingService) private var loggingService
     
     private var monitoringTime: Int = 0
     private var monitoringTask: Task<Void, Never>?
     
-    override init() {
-        super.init()
-        
+    init() {
         if appState.monitoring.isEnabled {
             startMonitoring()
         }

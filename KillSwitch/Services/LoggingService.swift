@@ -6,11 +6,15 @@
 //
 
 import Foundation
+import Factory
 
-class LoggingService : ServiceBase, LoggingServiceType {
+class LoggingService : LoggingServiceType {
+    @Injected(\.appState) private var appState
+    
     func write(message: String, type: LogEntryType = .info) {
         DispatchQueue.main.async {
             let logEntry = LogEntry(message: message, type: type)
+            
             self.write(logEntry: logEntry)
         }
     }

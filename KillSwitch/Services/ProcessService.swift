@@ -7,13 +7,15 @@
 
 import Foundation
 import AppKit
+import Factory
 
-class ProcessService : ServiceBase, ShellAccessible, ProcessServiceType {
+class ProcessService : ShellAccessible, ProcessServiceType {
+    @Injected(\.appState) private var appState
+    @LazyInjected(\.loggingService) private var loggingService
+    
     private var monitoringTask: Task<Void, Never>?
     
-    override init() {
-        super.init()
-
+    init() {
         startProcessesMonitoring()
     }
     
