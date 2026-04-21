@@ -327,7 +327,19 @@ struct Constants{
         "https://l2.io/ip",
         "https://api.ip.sb/ip",
         "https://ipv4.ddnspod.com/",
-        "https://api.ip.lk/"
+        "https://api.ip.lk/",
+        "https://realip.cc/simple",
+        "https://cdid.c-ctrip.com/model-poc2/h",
+        "https://ipv4.gdt.qq.com/get_client_ip",
+        "https://ifconfig.es/",
+        "https://eth0.me",
+        "http://ipaddr.site",
+        "https://ipaddress.sh",
+        "https://wgetip.com",
+        "https://ip.tyk.nu",
+        "https://curlmyip.net",
+        "https://ipcalf.com",
+        "https://getip.cc"
     ]
     
     static let defaultIpInfoApiKeyMapping = [
