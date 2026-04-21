@@ -241,14 +241,13 @@ extension AppState {
                 allowedIps = savedAllowedIps
             }
             
+            let defaultIpApis = getDefaultIpApis()
+            
             if let savedIpApis: [IpApiInfo] = readSettingsArray(key: Constants.settingsKeyApis) {
-                ipApis = savedIpApis
+                ipApis = savedIpApis.syncWithDefaults(defaultIpApis)
             }
             else {
-                for ipApiUrl in Constants.ipApiUrls {
-                    let apiInfo = IpApiInfo(url: ipApiUrl, active: true)
-                    ipApis.append(apiInfo)
-                }
+                ipApis = defaultIpApis
             }
             
             if let savedAppsToClose:[AppInfo] = readSettingsArray(key: Constants.settingsKeyAppsToClose) {
@@ -272,6 +271,17 @@ extension AppState {
         
         func hasActiveIpApi() -> Bool {
             return !ipApis.isEmpty && ipApis.contains(where: {$0.isActive()})
+        }
+        
+        func getDefaultIpApis() -> [IpApiInfo] {
+            var result = [IpApiInfo]()
+            
+            for ipApiUrl in Constants.ipApiUrls {
+                let apiInfo = IpApiInfo(url: ipApiUrl, active: true)
+                result.append(apiInfo)
+            }
+            
+            return result
         }
     }
 }

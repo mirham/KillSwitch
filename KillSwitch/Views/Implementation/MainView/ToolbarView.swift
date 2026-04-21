@@ -16,54 +16,56 @@ struct ToolbarView : View {
     
     @Injected(\.loggingService) private var loggingService
     
-    @State private var showOverSettings = false
-    @State private var showOverCopyLog = false
-    @State private var showOverClearLog = false
-    @State private var showOverInfo = false
+    @State private var hoveredButton: ToolbarButtonType? = nil
 
     var body: some View {
-        Section {
+        Group {
             Spacer()
-            Button(Constants.toolbarCopyLog, systemImage: Constants.iconCopyLog) {
+            ToolbarButton(
+                title: Constants.toolbarCopyLog,
+                systemImage: Constants.iconCopyLog,
+                isHovered: hoveredButton == .copy,
+                activeState: controlActiveState
+            ) {
                 loggingService.copy()
             }
-            .withToolbarButtonStyle(showOver: showOverCopyLog, activeState: controlActiveState)
-            .popover(isPresented: $showOverCopyLog, content: {
-                renderHint(hint: Constants.toolbarCopyLog)
-            })
-            .onHover(perform: { hovering in
-                showOverCopyLog = hovering && controlActiveState == .key
-            })
-            Button(Constants.toolbarClearLog, systemImage: Constants.iconClearLog) {
+            .onHover { hoveredButton = $0 ? .copy : nil }
+            .help(Constants.toolbarCopyLog)
+            .padding(.leading, 10)
+            
+            ToolbarButton(
+                title: Constants.toolbarClearLog,
+                systemImage: Constants.iconClearLog,
+                isHovered: hoveredButton == .clear,
+                activeState: controlActiveState
+            ) {
                 loggingService.clear()
             }
-            .withToolbarButtonStyle(showOver: showOverClearLog, activeState: controlActiveState)
-            .popover(isPresented: $showOverClearLog, content: {
-                renderHint(hint: Constants.toolbarClearLog)
-            })
-            .onHover(perform: { hovering in
-                showOverClearLog = hovering && controlActiveState == .key
-            })
-            Button(Constants.toolbarSettings, systemImage: Constants.iconSettings) {
+            .onHover { hoveredButton = $0 ? .clear : nil }
+            .help(Constants.toolbarClearLog)
+            
+            ToolbarButton(
+                title: Constants.toolbarSettings,
+                systemImage: Constants.iconSettings,
+                isHovered: hoveredButton == .settings,
+                activeState: controlActiveState
+            ) {
                 showSettingsWindow()
             }
-            .withToolbarButtonStyle(showOver: showOverSettings, activeState: controlActiveState)
-            .popover(isPresented: $showOverSettings, content: {
-                renderHint(hint: Constants.toolbarSettings)
-            })
-            .onHover(perform: { hovering in
-                showOverSettings = hovering && controlActiveState == .key
-            })
-            Button(Constants.toolbarInfo, systemImage: Constants.iconInfo) {
+            .onHover { hoveredButton = $0 ? .settings : nil }
+            .help(Constants.toolbarSettings)
+            
+            ToolbarButton(
+                title: Constants.toolbarInfo,
+                systemImage: Constants.iconInfo,
+                isHovered: hoveredButton == .info,
+                activeState: controlActiveState
+            ) {
                 showInfoWindow()
             }
-            .withToolbarButtonStyle(showOver: showOverInfo, activeState: controlActiveState)
-            .popover(isPresented: $showOverInfo, content: {
-                renderHint(hint: Constants.toolbarInfo)
-            })
-            .onHover(perform: { hovering in
-                showOverInfo = hovering && controlActiveState == .key
-            })
+            .onHover { hoveredButton = $0 ? .info : nil }
+            .help(Constants.toolbarInfo)
+            .padding(.trailing, -10)
         }
     }
     
@@ -98,18 +100,10 @@ struct ToolbarView : View {
         
         AppHelper.activateView(viewId: Constants.windowIdInfo)
     }
-}
-
-private extension Button {
-    func withToolbarButtonStyle(showOver: Bool, activeState: ControlActiveState) -> some View {
-        self.buttonStyle(.plain)
-            .foregroundColor(showOver && activeState == .key ? .blue : .gray)
-            .bold(showOver)
-            .focusEffectDisabled()
-            .font(.system(size: 17))
-            .opacity(getViewOpacity(state: activeState))
-            .pointerOnHover()
-    }
+    
+    // MARK: Inner types
+    
+    private enum ToolbarButtonType { case copy, clear, settings, info }
 }
 
 #Preview {

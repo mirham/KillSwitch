@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct IpApiInfo: Codable, Identifiable, Equatable {
+struct IpApiInfo: Codable, Identifiable, Equatable, Hashable {
     var id = UUID()
     var url: String
     

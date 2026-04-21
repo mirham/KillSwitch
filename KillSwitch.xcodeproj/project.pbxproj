@@ -66,6 +66,8 @@
 		359E44F32C11C37E00BF6093 /* CurrentIpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 359E44F22C11C37D00BF6093 /* CurrentIpView.swift */; };
 		359EED4A2C52A9350094EFAF /* NWInterfaceExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 359EED492C52A9350094EFAF /* NWInterfaceExtensions.swift */; };
 		359EED4C2C52D0280094EFAF /* EnableNetworkDialogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 359EED4B2C52D0280094EFAF /* EnableNetworkDialogView.swift */; };
+		35A6E41E2F976BFD00731FF3 /* ArrayExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35A6E41D2F976BFA00731FF3 /* ArrayExtensions.swift */; };
+		35A6E4202F9777CF00731FF3 /* ToolbarButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35A6E41F2F9777CB00731FF3 /* ToolbarButton.swift */; };
 		35BD39BF2DDC9C930021CF49 /* KeyedContainerExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35BD39BE2DDC9C840021CF49 /* KeyedContainerExtensions.swift */; };
 		35BD39C12DDC9CB60021CF49 /* StringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35BD39C02DDC9CB00021CF49 /* StringExtensions.swift */; };
 		35BD39C32DDC9CF80021CF49 /* TaskExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35BD39C22DDC9CF00021CF49 /* TaskExtensions.swift */; };
@@ -161,6 +163,8 @@
 		359E44F22C11C37D00BF6093 /* CurrentIpView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CurrentIpView.swift; sourceTree = "<group>"; };
 		359EED492C52A9350094EFAF /* NWInterfaceExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NWInterfaceExtensions.swift; sourceTree = "<group>"; };
 		359EED4B2C52D0280094EFAF /* EnableNetworkDialogView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnableNetworkDialogView.swift; sourceTree = "<group>"; };
+		35A6E41D2F976BFA00731FF3 /* ArrayExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArrayExtensions.swift; sourceTree = "<group>"; };
+		35A6E41F2F9777CB00731FF3 /* ToolbarButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolbarButton.swift; sourceTree = "<group>"; };
 		35BD39BE2DDC9C840021CF49 /* KeyedContainerExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyedContainerExtensions.swift; sourceTree = "<group>"; };
 		35BD39C02DDC9CB00021CF49 /* StringExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringExtensions.swift; sourceTree = "<group>"; };
 		35BD39C22DDC9CF00021CF49 /* TaskExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskExtensions.swift; sourceTree = "<group>"; };
@@ -256,6 +260,7 @@
 				351F0C5E2C0F3B4500644C66 /* AsyncButton.swift */,
 				3570E46A2C21CF7C00CB5D42 /* RadioButton.swift */,
 				3570E48D2C25B81400CB5D42 /* MenuBarElement.swift */,
+				35A6E41F2F9777CB00731FF3 /* ToolbarButton.swift */,
 				35C218A72C6E0E1600964A7B /* NoInsetHostingView.swift */,
 			);
 			path = Controls;
@@ -362,6 +367,7 @@
 		35BD39BD2DDC9C3C0021CF49 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				35A6E41D2F976BFA00731FF3 /* ArrayExtensions.swift */,
 				35BD39C82DDC9F410021CF49 /* ContainerExtensions.swift */,
 				35BD39C22DDC9CF00021CF49 /* TaskExtensions.swift */,
 				35BD39C02DDC9CB00021CF49 /* StringExtensions.swift */,
@@ -610,6 +616,7 @@
 				351E9CF02C10C03700CEC15F /* MonitoringStatusView.swift in Sources */,
 				359E44F32C11C37E00BF6093 /* CurrentIpView.swift in Sources */,
 				3570E4892C258D1E00CB5D42 /* PointerOnHoverModifier.swift in Sources */,
+				35A6E4202F9777CF00731FF3 /* ToolbarButton.swift in Sources */,
 				3570E4822C249FC300CB5D42 /* GeneralSettingsEditView.swift in Sources */,
 				35DD1C4C2C0F96E1003AA3ED /* NetworkStatusView.swift in Sources */,
 				3540323A2C5E30A9002624D2 /* NoOneAllowedIpDialogView.swift in Sources */,
@@ -654,6 +661,7 @@
 				35BD39C32DDC9CF80021CF49 /* TaskExtensions.swift in Sources */,
 				35BD39CC2DDCA0050021CF49 /* MonitoringServiceType.swift in Sources */,
 				351F0C622C0F593A00644C66 /* LogEntry.swift in Sources */,
+				35A6E41E2F976BFD00731FF3 /* ArrayExtensions.swift in Sources */,
 				3570E4712C22E04600CB5D42 /* CodableIgnored.swift in Sources */,
 				35C218A62C6DEB7100964A7B /* ImageExtensions.swift in Sources */,
 				3570E46F2C21E70D00CB5D42 /* IpApiInfo.swift in Sources */,

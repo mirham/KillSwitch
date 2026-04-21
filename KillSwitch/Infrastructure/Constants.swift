@@ -40,7 +40,7 @@ struct Constants{
     static let ipApiCallTimeoutInSeconds: Double = 1.0
     static let ipInfoApiCallTimeoutInSeconds: Double = 2.0
     static let memuBarScaleCurrentIp = 0.9
-    static let memuBarScaleToggles = 0.8
+    static let memuBarScaleToggles = 0.75
     static let physicalNetworkInterfacePrefix = "en"
     static let physicalNetworkInterfaceWiFi = "Wi-Fi"
     static let physicalNetworkInterfaceLan = "LAN"
