@@ -36,7 +36,7 @@ struct EnableNetworkDialogView : View {
                     .font(.system(size: 10))
                 Spacer().frame(height: 20)
                 VStack(alignment: .leading) {
-                    ForEach(appState.network.physicalNetworkInterfaces, id: \.id) { networkInterface in
+                    ForEach(appState.network.physicalNetworkInterfaces, id: \.name) { networkInterface in
                         HStack {
                             RadioButton(
                                 id: networkInterface.name,

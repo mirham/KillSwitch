@@ -69,6 +69,10 @@
 		35A6E41E2F976BFD00731FF3 /* ArrayExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35A6E41D2F976BFA00731FF3 /* ArrayExtensions.swift */; };
 		35A6E4202F9777CF00731FF3 /* ToolbarButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35A6E41F2F9777CB00731FF3 /* ToolbarButton.swift */; };
 		35A6E4222F9791AA00731FF3 /* FixedSidebarTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35A6E4212F9791A700731FF3 /* FixedSidebarTabView.swift */; };
+		35A6E4262F97B50500731FF3 /* NetworkInterfaceInfoServiceType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35A6E4252F97B4FC00731FF3 /* NetworkInterfaceInfoServiceType.swift */; };
+		35A6E4282F97B61E00731FF3 /* NetworkInterfaceInfoService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35A6E4272F97B61800731FF3 /* NetworkInterfaceInfoService.swift */; };
+		35A6E42A2F98004D00731FF3 /* ConnectionItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35A6E4292F98004900731FF3 /* ConnectionItem.swift */; };
+		35A6E42C2F980CB300731FF3 /* BadgeModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35A6E42B2F980CAE00731FF3 /* BadgeModifier.swift */; };
 		35BD39BF2DDC9C930021CF49 /* KeyedContainerExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35BD39BE2DDC9C840021CF49 /* KeyedContainerExtensions.swift */; };
 		35BD39C12DDC9CB60021CF49 /* StringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35BD39C02DDC9CB00021CF49 /* StringExtensions.swift */; };
 		35BD39C32DDC9CF80021CF49 /* TaskExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35BD39C22DDC9CF00021CF49 /* TaskExtensions.swift */; };
@@ -167,6 +171,10 @@
 		35A6E41D2F976BFA00731FF3 /* ArrayExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArrayExtensions.swift; sourceTree = "<group>"; };
 		35A6E41F2F9777CB00731FF3 /* ToolbarButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolbarButton.swift; sourceTree = "<group>"; };
 		35A6E4212F9791A700731FF3 /* FixedSidebarTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FixedSidebarTabView.swift; sourceTree = "<group>"; };
+		35A6E4252F97B4FC00731FF3 /* NetworkInterfaceInfoServiceType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkInterfaceInfoServiceType.swift; sourceTree = "<group>"; };
+		35A6E4272F97B61800731FF3 /* NetworkInterfaceInfoService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkInterfaceInfoService.swift; sourceTree = "<group>"; };
+		35A6E4292F98004900731FF3 /* ConnectionItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionItem.swift; sourceTree = "<group>"; };
+		35A6E42B2F980CAE00731FF3 /* BadgeModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeModifier.swift; sourceTree = "<group>"; };
 		35BD39BE2DDC9C840021CF49 /* KeyedContainerExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyedContainerExtensions.swift; sourceTree = "<group>"; };
 		35BD39C02DDC9CB00021CF49 /* StringExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringExtensions.swift; sourceTree = "<group>"; };
 		35BD39C22DDC9CF00021CF49 /* TaskExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskExtensions.swift; sourceTree = "<group>"; };
@@ -217,6 +225,7 @@
 			children = (
 				351E9CE42C10A3BA00CEC15F /* MonitoringService.swift */,
 				35E7DD4E2C13420000CC68F7 /* NetworkStatusService.swift */,
+				35A6E4272F97B61800731FF3 /* NetworkInterfaceInfoService.swift */,
 				351F0C652C0F6D2A00644C66 /* NetworkService.swift */,
 				357154FA2C173E4C00A41AA4 /* IpService.swift */,
 				35C8A9202E04353300C574A5 /* IpApiService.swift */,
@@ -249,9 +258,9 @@
 		351E9CED2C10B28400CEC15F /* Infrastructure */ = {
 			isa = PBXGroup;
 			children = (
-				3570E4742C23058200CB5D42 /* Constants.swift */,
 				357266792C36A4110021978C /* AppState.swift */,
 				357266812C36FE710021978C /* AppHelper.swift */,
+				3570E4742C23058200CB5D42 /* Constants.swift */,
 			);
 			path = Infrastructure;
 			sourceTree = "<group>";
@@ -264,6 +273,7 @@
 				3570E48D2C25B81400CB5D42 /* MenuBarElement.swift */,
 				35A6E41F2F9777CB00731FF3 /* ToolbarButton.swift */,
 				35A6E4212F9791A700731FF3 /* FixedSidebarTabView.swift */,
+				35A6E4292F98004900731FF3 /* ConnectionItem.swift */,
 				35C218A72C6E0E1600964A7B /* NoInsetHostingView.swift */,
 			);
 			path = Controls;
@@ -342,6 +352,7 @@
 			children = (
 				3570E4842C258A0000CB5D42 /* IsHiddenModifier.swift */,
 				3570E4882C258D1E00CB5D42 /* PointerOnHoverModifier.swift */,
+				35A6E42B2F980CAE00731FF3 /* BadgeModifier.swift */,
 			);
 			path = Modifiers;
 			sourceTree = "<group>";
@@ -370,8 +381,8 @@
 		35BD39BD2DDC9C3C0021CF49 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
-				35A6E41D2F976BFA00731FF3 /* ArrayExtensions.swift */,
 				35BD39C82DDC9F410021CF49 /* ContainerExtensions.swift */,
+				35A6E41D2F976BFA00731FF3 /* ArrayExtensions.swift */,
 				35BD39C22DDC9CF00021CF49 /* TaskExtensions.swift */,
 				35BD39C02DDC9CB00021CF49 /* StringExtensions.swift */,
 				35BD39BE2DDC9C840021CF49 /* KeyedContainerExtensions.swift */,
@@ -402,6 +413,7 @@
 				35BD39CF2DDCA1540021CF49 /* IpServiceType.swift */,
 				35C8A9222E04393400C574A5 /* IpApiServiceType.swift */,
 				35BD39D12DDCA1F00021CF49 /* NetworkServiceType.swift */,
+				35A6E4252F97B4FC00731FF3 /* NetworkInterfaceInfoServiceType.swift */,
 				35BD39D32DDCA3550021CF49 /* LaunchAgentServiceType.swift */,
 				35BD39D52DDCA3F60021CF49 /* LocationServiceType.swift */,
 				35BD39D72DDCA4720021CF49 /* ComputerServiceType.swift */,
@@ -605,6 +617,7 @@
 				35C8A9212E04353300C574A5 /* IpApiService.swift in Sources */,
 				35EE63712C57983700D45D66 /* MenuBarItemsContainerView.swift in Sources */,
 				35C8A9252E043E0B00C574A5 /* DataExtensions.swift in Sources */,
+				35A6E42A2F98004D00731FF3 /* ConnectionItem.swift in Sources */,
 				3570E4852C258A0000CB5D42 /* IsHiddenModifier.swift in Sources */,
 				3572667D2C36EDC30021978C /* ShellAccessible.swift in Sources */,
 				3570E46D2C21CFEA00CB5D42 /* SafetyType.swift in Sources */,
@@ -643,6 +656,7 @@
 				3570E4692C21CC1600CB5D42 /* IpApisEditView.swift in Sources */,
 				35DFC12D2C38338D001CAF43 /* OperationResult.swift in Sources */,
 				354BEEB22DE8971800EFD1B2 /* NetworkStateUpdateBuilder.swift in Sources */,
+				35A6E42C2F980CB300731FF3 /* BadgeModifier.swift in Sources */,
 				35BD39D02DDCA1570021CF49 /* IpServiceType.swift in Sources */,
 				354BEEBC2DE8B65400EFD1B2 /* ProcessesStateUpdateBuilder.swift in Sources */,
 				3582BF632C59345E004E0B80 /* InfoView.swift in Sources */,
@@ -660,6 +674,7 @@
 				35F12F3B2C15B3BE00AFA738 /* NetworkInterfaceType.swift in Sources */,
 				354BEEBA2DE8B5DE00EFD1B2 /* ProcessesStateUpdate.swift in Sources */,
 				359EED4C2C52D0280094EFAF /* EnableNetworkDialogView.swift in Sources */,
+				35A6E4282F97B61E00731FF3 /* NetworkInterfaceInfoService.swift in Sources */,
 				35A6E4222F9791AA00731FF3 /* FixedSidebarTabView.swift in Sources */,
 				3570E4732C22F95B00CB5D42 /* IpInfoBase.swift in Sources */,
 				35BD39C32DDC9CF80021CF49 /* TaskExtensions.swift in Sources */,
@@ -678,6 +693,7 @@
 				3570E4752C23058200CB5D42 /* Constants.swift in Sources */,
 				3570E48C2C25B02600CB5D42 /* MenuBarStatusEditView.swift in Sources */,
 				357154FB2C173E4C00A41AA4 /* IpService.swift in Sources */,
+				35A6E4262F97B50500731FF3 /* NetworkInterfaceInfoServiceType.swift in Sources */,
 				3571833C2C2C0A79008B2D83 /* Settable.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

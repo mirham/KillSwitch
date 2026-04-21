@@ -16,6 +16,10 @@ extension View {
         modifier(PointerOnHoverModifier())
     }
     
+    func badge(color: Color) -> some View {
+        modifier(BadgeModifier(color: color))
+    }
+    
     func getViewOpacity(state: ControlActiveState) -> Double {
         return state == .key ? 1 : 0.6
     }

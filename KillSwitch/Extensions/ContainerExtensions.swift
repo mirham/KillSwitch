@@ -29,6 +29,11 @@ extension Container {
             .singleton
     }
     
+    var networkInterfaceInfoService: Factory<NetworkInterfaceInfoServiceType> {
+        Factory(self) { NetworkInterfaceInfoService() }
+            .singleton
+    }
+    
     var ipService: Factory<IpServiceType> {
         Factory(self) { IpService() }
             .singleton

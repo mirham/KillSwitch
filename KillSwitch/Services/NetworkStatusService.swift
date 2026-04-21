@@ -12,9 +12,13 @@ import Factory
 class NetworkStatusService: ApiCallable, NetworkStatusServiceType {
     @Injected(\.appState) private var appState
     @Injected(\.networkService) private var networkService
+    @Injected(\.networkInterfaceInfoService) private var networkInterfaceInfoService
     
     private let monitor = NWPathMonitor()
-    private let queue = DispatchQueue(label: Constants.networkMonitorQueryLabel, qos: .background)
+    private let monitorQueue = DispatchQueue(
+        label: Constants.networkMonitorQueryLabel,
+        qos: .background
+    )
     private var ipUpdateTask: Task<Void, Never>?
     private var checkConnectionTask: Task<Void, Never>?
     
@@ -32,97 +36,129 @@ class NetworkStatusService: ApiCallable, NetworkStatusServiceType {
     // MARK: Private functions
     
     private func startNetworkMonitoring() {
-        monitor.pathUpdateHandler = { path in
-            let networkInterfaces = self.determineNetworkInterfaces(path: path)
-            let physicalNetworkInterfaces = self.networkService.getPhysicalInterfaces()
-            let status = self.determineNetworkStatusType(path: path, networkInterfaces: networkInterfaces)
-            let isConnectionChanged = self.appState.network.isConnectionChanged (
-                status: status, activeNetworkInterfaces: networkInterfaces)
+        monitor.pathUpdateHandler = { [weak self] path in
+            guard let self
+            else { return }
             
-            if isConnectionChanged {
-                let updatedStatus = status
-                let updatedActiveNetworkInterfaces = networkInterfaces
-                let updatedPhysicalNetworkInterfaces = physicalNetworkInterfaces
+            let quickStatus = determineNetworkStatus(
+                path: path,
+                activeInterfaces: path.availableInterfaces
+                    .map { $0.asNetworkInterface() }
+            )
+            
+            guard appState.network.isConnectionChanged(
+                status: quickStatus,
+                activeNetworkInterfaces: path.availableInterfaces.map { $0.asNetworkInterface() }
+            )
+            else { return }
+            
+            ipUpdateTask?.cancel()
+            
+            ipUpdateTask = Task { [weak self] in
+                guard let self else { return }
                 
-                self.ipUpdateTask?.cancel()
+                let activeInterfaces = await determineNetworkInterfacesAsync(path: path)
+                let physicalInterfaces = networkService.getPhysicalInterfaces()
+                let status = determineNetworkStatus(path: path, activeInterfaces: activeInterfaces)
                 
-                self.ipUpdateTask = Task {
-                    await self.updateStatusAsync(update: NetworkStateUpdateBuilder()
-                        .withStatus(updatedStatus)
-                        .withActiveNetworkInterfaces(updatedActiveNetworkInterfaces)
-                        .withPhysicalNetworkInterfaces(updatedPhysicalNetworkInterfaces)
-                        .withIsDisconnected(updatedStatus != .on)
-                        .build())
-                    
-                    if status == .on {
-                        do {
-                            try await Task.sleep(nanoseconds: Constants.defaultToleranceInNanoseconds)
-                            await self.networkService.refreshPublicIpAsync()
-                        }
-                        catch {
-                            self.ipUpdateTask?.cancel()
-                        }
-                    }
+                guard appState.network.isConnectionChanged(
+                    status: status,
+                    activeNetworkInterfaces: activeInterfaces
+                ) else { return }
+                
+                await updateStatusAsync {
+                    $0.withStatus(status)
+                        .withActiveNetworkInterfaces(activeInterfaces)
+                        .withPhysicalNetworkInterfaces(physicalInterfaces)
+                        .withIsDisconnected(status != .on)
+                }
+                
+                guard status == .on, !Task.isCancelled
+                else { return }
+                
+                do {
+                    try await Task.sleep(nanoseconds: Constants.defaultToleranceInNanoseconds)
+                    await networkService.refreshPublicIpAsync()
+                } catch {
+                    // Sleep was cancelled externally — task exits cleanly
                 }
             }
         }
         
-        monitor.start(queue: queue)
+        monitor.start(queue: monitorQueue)
     }
     
     private func startConnectionMonitoring() {
-        checkConnectionTask = Task {
+        checkConnectionTask = Task { [weak self] in
+            guard let self
+            else { return }
+            
             while !Task.isCancelled {
-                try? await Task.sleep(nanoseconds: Constants.defaultCheckConnectionIntervalNanoseconds)
+                try? await Task.sleep(
+                    nanoseconds: Constants.defaultCheckConnectionIntervalNanoseconds
+                )
                 
                 guard shouldFetchPublicIp()
                 else { continue }
                 
-                await self.networkService.refreshPublicIpAsync()
+                await networkService.refreshPublicIpAsync()
             }
         }
     }
     
-    private func determineNetworkStatusType(
-        path: NWPath,
-        networkInterfaces: [NetworkInterface]) -> NetworkStatusType {
-            switch path.status {
-                case .satisfied:
-                    return networkInterfaces.contains(where: {$0.isPhysical})
-                        ? NetworkStatusType.on
-                        : NetworkStatusType.wait
-                case .requiresConnection:
-                    return NetworkStatusType.wait
-                default:
-                    return NetworkStatusType.off
-            }
-        }
+    // MARK: - Pure Helpers
     
-    private func determineNetworkInterfaces(path: NWPath) -> [NetworkInterface] {
+    private func determineNetworkStatus(
+        path: NWPath,
+        activeInterfaces: [NetworkInterface]
+    ) -> NetworkStatusType {
+        switch path.status {
+            case .satisfied:
+                return activeInterfaces.contains(where: \.isPhysical) ? .on : .wait
+            case .requiresConnection:
+                return .wait
+            default:
+                return .off
+        }
+    }
+    
+    private func determineNetworkInterfacesAsync(path: NWPath) async -> [NetworkInterface] {
+        var seen = Set<String>()
+        
+        let interfaces: [NetworkInterface] = path.availableInterfaces.compactMap {
+            let interface = $0.asNetworkInterface()
+            return seen.insert(interface.name).inserted ? interface : nil
+        }
+        
         var result = [NetworkInterface]()
         
-        for networkInterface in path.availableInterfaces {
-            let networkInterfaceInfo = networkInterface.asNetworkInterface()
-            result.append(networkInterfaceInfo)
+        for var interface in interfaces {
+            interface.friendlyName = await networkInterfaceInfoService
+                .getFriendlyNameAsync(for: interface)
+            result.append(interface)
         }
         
         return result
     }
     
     private func shouldFetchPublicIp() -> Bool {
-        return appState.network.status == .on
-            && !appState.network.isObtainingIp
-            && (appState.network.publicIp == nil
-                || (appState.network.publicIp != nil
-                    && !appState.network.publicIp!.hasLocation()))
+        guard appState.network.status == .on,
+              !appState.network.isObtainingIp
+        else { return false }
+        
+        return appState.network.publicIp?.hasLocation() != true
     }
     
-    private func updateStatusAsync(update: NetworkStateUpdate) async {
-        guard !Task.isCancelled else { return }
+    private func updateStatusAsync(
+        _ configure: (NetworkStateUpdateBuilder) -> NetworkStateUpdateBuilder
+    ) async {
+        guard !Task.isCancelled
+        else { return }
+        
+        let update = configure(NetworkStateUpdateBuilder()).build()
         
         await MainActor.run {
             appState.applyNetworkUpdate(update)
-            appState.objectWillChange.send()
         }
     }
 }

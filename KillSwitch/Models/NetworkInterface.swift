@@ -9,9 +9,9 @@ import Foundation
 
 
 struct NetworkInterface: Hashable, Equatable {
-    let id: UUID
     let name: String
     let localizedName: String?
+    var friendlyName: String?
     var type: NetworkInterfaceType
     var isPhysical: Bool {
         get {
@@ -23,7 +23,6 @@ struct NetworkInterface: Hashable, Equatable {
     init(name: String,
          type: NetworkInterfaceType,
          localizedName: String? = nil) {
-        self.id = UUID()
         self.name = name
         self.type = type
         self.localizedName = localizedName
@@ -36,5 +35,6 @@ struct NetworkInterface: Hashable, Equatable {
     func hash(into hasher: inout Hasher) {
         hasher.combine(name)
         hasher.combine(type)
+        hasher.combine(friendlyName)
     }
 }

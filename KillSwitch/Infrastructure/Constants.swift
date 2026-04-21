@@ -147,6 +147,7 @@ struct Constants{
     static let pipe = "|"
     static let leftBracket = "("
     static let rightBracket = ")"
+    static let slash = "/"
     
     // MARK: Toolbar
     static let toolbarSettings = "Settings"
@@ -211,6 +212,19 @@ struct Constants{
     static let mbItemKeySeparatorPipe = "separator-pipe"
     static let mbItemKeySeparatorLeftBracket = "separator-left-bracket"
     static let mbItemKeySeparatorRightBracket = "separator-right-bracket"
+    
+    // MARK: Network interfaces info
+    static let niiActiveServiceIPv4 = "State:/Network/Service/.*/IPv4"
+    static let niiInterfaceStateIPv4 = "State:/Network/Interface/%@/IPv4"
+    static let niiServiceSetup = "Setup:/Network/Service/%@"
+    static let niiPPPSetup = "Setup:/Network/Service/.*/PPP"
+    
+    static let niiInterfaceNameKey = "InterfaceName"
+    static let niiServiceKey = "Service"
+    static let niiUserDefinedNameKey = "UserDefinedName"
+    
+    static let niiService = "Service"
+    static let niiSessionName = "VPNLookup"
     
     // MARK: Shell commands
     static let shCommandEnableNetworkIterface = "networksetup -setairportpower %1$@ on"
