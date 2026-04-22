@@ -8,7 +8,7 @@
 import Foundation
 import Factory
 
-class MonitoringService: MonitoringServiceType {
+final class MonitoringService: MonitoringServiceType {
     @Injected(\.appState) private var appState
     @Injected(\.ipService) private var ipService
     @Injected(\.networkService) private var networkService

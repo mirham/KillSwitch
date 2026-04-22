@@ -22,7 +22,8 @@ struct ProcessesStatusView : View {
         Section() {
             VStack{
                 Text(Constants.applications.uppercased())
-                    .font(.title3)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
                 Section {
                     Text(appState.system.processesToKill.count.description)
@@ -57,7 +58,7 @@ struct ProcessesStatusView : View {
                 })
             }
         }
-        .frame(width: 110, height: 90)
+        //.frame(width: 110, height: 90)
         .isHidden(hidden:appState.system.processesToKill.isEmpty, remove: true)
     }
     

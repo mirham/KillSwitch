@@ -74,6 +74,13 @@
 		35A6E42A2F98004D00731FF3 /* ConnectionItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35A6E4292F98004900731FF3 /* ConnectionItem.swift */; };
 		35A6E42C2F980CB300731FF3 /* BadgeModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35A6E42B2F980CAE00731FF3 /* BadgeModifier.swift */; };
 		35A6E42E2F98F8B200731FF3 /* SafetyBadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35A6E42D2F98F8AD00731FF3 /* SafetyBadgeView.swift */; };
+		35A6E4312F994D4F00731FF3 /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35A6E4302F994D4900731FF3 /* NetworkError.swift */; };
+		35A6E4332F99535D00731FF3 /* IpError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35A6E4322F99535800731FF3 /* IpError.swift */; };
+		35A6E4352F9957DB00731FF3 /* IpApiError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35A6E4342F9957D600731FF3 /* IpApiError.swift */; };
+		35A6E4372F995B5500731FF3 /* LaunchAgentError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35A6E4362F995B5000731FF3 /* LaunchAgentError.swift */; };
+		35A6E43B2F995EB000731FF3 /* LocationError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35A6E43A2F995EB000731FF3 /* LocationError.swift */; };
+		35A6E43D2F995F6500731FF3 /* ComputerError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35A6E43C2F995F5F00731FF3 /* ComputerError.swift */; };
+		35A6E43F2F99644900731FF3 /* ProcessError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35A6E43E2F99644400731FF3 /* ProcessError.swift */; };
 		35BD39BF2DDC9C930021CF49 /* KeyedContainerExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35BD39BE2DDC9C840021CF49 /* KeyedContainerExtensions.swift */; };
 		35BD39C12DDC9CB60021CF49 /* StringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35BD39C02DDC9CB00021CF49 /* StringExtensions.swift */; };
 		35BD39C32DDC9CF80021CF49 /* TaskExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35BD39C22DDC9CF00021CF49 /* TaskExtensions.swift */; };
@@ -177,6 +184,13 @@
 		35A6E4292F98004900731FF3 /* ConnectionItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionItem.swift; sourceTree = "<group>"; };
 		35A6E42B2F980CAE00731FF3 /* BadgeModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeModifier.swift; sourceTree = "<group>"; };
 		35A6E42D2F98F8AD00731FF3 /* SafetyBadgeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafetyBadgeView.swift; sourceTree = "<group>"; };
+		35A6E4302F994D4900731FF3 /* NetworkError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkError.swift; sourceTree = "<group>"; };
+		35A6E4322F99535800731FF3 /* IpError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IpError.swift; sourceTree = "<group>"; };
+		35A6E4342F9957D600731FF3 /* IpApiError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IpApiError.swift; sourceTree = "<group>"; };
+		35A6E4362F995B5000731FF3 /* LaunchAgentError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchAgentError.swift; sourceTree = "<group>"; };
+		35A6E43A2F995EB000731FF3 /* LocationError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationError.swift; sourceTree = "<group>"; };
+		35A6E43C2F995F5F00731FF3 /* ComputerError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComputerError.swift; sourceTree = "<group>"; };
+		35A6E43E2F99644400731FF3 /* ProcessError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessError.swift; sourceTree = "<group>"; };
 		35BD39BE2DDC9C840021CF49 /* KeyedContainerExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyedContainerExtensions.swift; sourceTree = "<group>"; };
 		35BD39C02DDC9CB00021CF49 /* StringExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringExtensions.swift; sourceTree = "<group>"; };
 		35BD39C22DDC9CF00021CF49 /* TaskExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskExtensions.swift; sourceTree = "<group>"; };
@@ -309,6 +323,7 @@
 				3540326C2C5E68F0002624D2 /* Attributes */,
 				35BD39BD2DDC9C3C0021CF49 /* Extensions */,
 				35F12F372C15AC9900AFA738 /* Enums */,
+				35A6E42F2F994D1700731FF3 /* Errors */,
 				35F12F3C2C15B4A300AFA738 /* Models */,
 				351E9CEA2C10B19600CEC15F /* Services */,
 				351E9CEC2C10B20900CEC15F /* Views */,
@@ -378,6 +393,20 @@
 				35C218AB2C6E21A600964A7B /* ColorExtensions.swift */,
 			);
 			path = Extensions;
+			sourceTree = "<group>";
+		};
+		35A6E42F2F994D1700731FF3 /* Errors */ = {
+			isa = PBXGroup;
+			children = (
+				35A6E4302F994D4900731FF3 /* NetworkError.swift */,
+				35A6E4322F99535800731FF3 /* IpError.swift */,
+				35A6E4342F9957D600731FF3 /* IpApiError.swift */,
+				35A6E4362F995B5000731FF3 /* LaunchAgentError.swift */,
+				35A6E43A2F995EB000731FF3 /* LocationError.swift */,
+				35A6E43C2F995F5F00731FF3 /* ComputerError.swift */,
+				35A6E43E2F99644400731FF3 /* ProcessError.swift */,
+			);
+			path = Errors;
 			sourceTree = "<group>";
 		};
 		35BD39BD2DDC9C3C0021CF49 /* Extensions */ = {
@@ -614,7 +643,9 @@
 				351F0C642C0F599400644C66 /* LoggingService.swift in Sources */,
 				3570E4792C23396E00CB5D42 /* ToolbarView.swift in Sources */,
 				351F0C662C0F6D2A00644C66 /* NetworkService.swift in Sources */,
+				35A6E4372F995B5500731FF3 /* LaunchAgentError.swift in Sources */,
 				35E7DD4F2C13420000CC68F7 /* NetworkStatusService.swift in Sources */,
+				35A6E43D2F995F6500731FF3 /* ComputerError.swift in Sources */,
 				35DD1C4E2C0FA9D2003AA3ED /* CheckToggleStyle.swift in Sources */,
 				35BD39DC2DDCA5920021CF49 /* LoggingServiceType.swift in Sources */,
 				35C8A9212E04353300C574A5 /* IpApiService.swift in Sources */,
@@ -622,12 +653,14 @@
 				35C8A9252E043E0B00C574A5 /* DataExtensions.swift in Sources */,
 				35A6E42A2F98004D00731FF3 /* ConnectionItem.swift in Sources */,
 				3570E4852C258A0000CB5D42 /* IsHiddenModifier.swift in Sources */,
+				35A6E43F2F99644900731FF3 /* ProcessError.swift in Sources */,
 				3572667D2C36EDC30021978C /* ShellAccessible.swift in Sources */,
 				3570E46D2C21CFEA00CB5D42 /* SafetyType.swift in Sources */,
 				359E44EF2C11BFED00BF6093 /* MenuBarView.swift in Sources */,
 				3570E4772C2317E800CB5D42 /* LogEntryType.swift in Sources */,
 				35BD39D82DDCA4750021CF49 /* ComputerServiceType.swift in Sources */,
 				35F12F3E2C15B4E100AFA738 /* NetworkInterface.swift in Sources */,
+				35A6E43B2F995EB000731FF3 /* LocationError.swift in Sources */,
 				35BD39D42DDCA3570021CF49 /* LaunchAgentServiceType.swift in Sources */,
 				351F0C4A2C0EFCF100644C66 /* MainView.swift in Sources */,
 				35F12F392C15ACB900AFA738 /* NetworkStatusType.swift in Sources */,
@@ -648,6 +681,7 @@
 				354BEEB62DE8AB6D00EFD1B2 /* MonitoringStateUpdate.swift in Sources */,
 				3582BF612C59073F004E0B80 /* IpAddressContainerView.swift in Sources */,
 				3590333C2C396950006787AD /* ViewExtensions.swift in Sources */,
+				35A6E4332F99535D00731FF3 /* IpError.swift in Sources */,
 				359C7C6D2C29605D00CA3CE1 /* LocationService.swift in Sources */,
 				3505D94E2C2D5DD300E8FF61 /* KillProcessesConfirmationDialogView.swift in Sources */,
 				3568505C2C2B1999006E64B8 /* ClosingAppsEditView.swift in Sources */,
@@ -685,6 +719,7 @@
 				35BD39CC2DDCA0050021CF49 /* MonitoringServiceType.swift in Sources */,
 				351F0C622C0F593A00644C66 /* LogEntry.swift in Sources */,
 				35A6E41E2F976BFD00731FF3 /* ArrayExtensions.swift in Sources */,
+				35A6E4352F9957DB00731FF3 /* IpApiError.swift in Sources */,
 				3570E4712C22E04600CB5D42 /* CodableIgnored.swift in Sources */,
 				35C218A62C6DEB7100964A7B /* ImageExtensions.swift in Sources */,
 				3570E46F2C21E70D00CB5D42 /* IpApiInfo.swift in Sources */,
@@ -699,6 +734,7 @@
 				357154FB2C173E4C00A41AA4 /* IpService.swift in Sources */,
 				35A6E4262F97B50500731FF3 /* NetworkInterfaceInfoServiceType.swift in Sources */,
 				3571833C2C2C0A79008B2D83 /* Settable.swift in Sources */,
+				35A6E4312F994D4F00731FF3 /* NetworkError.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

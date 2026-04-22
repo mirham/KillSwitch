@@ -8,37 +8,79 @@
 import Foundation
 import Factory
 
-class LaunchAgentService : ShellAccessible, LaunchAgentServiceType {
+final class LaunchAgentService: ShellAccessible, LaunchAgentServiceType {
     @LazyInjected(\.loggingService) private var loggingService
     
-    var isInstalled = false
+    private let fileManager = FileManager.default
+    private(set) var isInstalled: Bool
+    
+    // MARK: - Lifecycle
     
     init() {
-        let fileManager = FileManager.default
-        let plistFilePath = getPlistFilePath()
-        
-        if(fileManager.fileExists(atPath: plistFilePath)) {
-            isInstalled = true
-        }
+        isInstalled = (try? LaunchAgentService.plistFilePath())
+            .map { FileManager.default.fileExists(atPath: $0) } ?? false
     }
     
     func create() -> Bool {
-        let appPath = Bundle.main.executablePath
-        let plistFilePath = getPlistFilePath()
+        guard let appPath = Bundle.main.executablePath
+        else {
+            loggingService.write(
+                message: LaunchAgentError.executablePathNotFound.errorDescription ?? String(),
+                type: .error)
+            
+            return false
+        }
         
-        let xmlContent = String(format: Constants.launchAgentXmlContent, appPath!)
+        guard let plistFilePath = try? LaunchAgentService.plistFilePath()
+        else {
+            loggingService.write(
+                message: LaunchAgentError.libraryDirectoryNotFound.errorDescription ?? String(),
+                type: .error)
+            
+            return false
+        }
         
         do {
-            try xmlContent.write(toFile: plistFilePath, atomically: true, encoding: String.Encoding.utf8)
+            try String(format: Constants.launchAgentXmlContent, appPath)
+                .write(toFile: plistFilePath, atomically: true, encoding: .utf8)
             
             loggingService.write(
-                message: String(format: Constants.logLaunchAgentAdded),
+                message: Constants.logLaunchAgentAdded,
                 type: .info)
             
             return true
         } catch {
             loggingService.write(
-                message: String(format: Constants.logCannotAddLaunchAgent, error.localizedDescription),
+                message: LaunchAgentError.createFailed(
+                    reason: error.localizedDescription).errorDescription ?? String(),
+                type: .error)
+            
+            return false
+        }
+    }
+    
+    func delete() -> Bool {
+        guard let plistFilePath = try? LaunchAgentService.plistFilePath()
+        else {
+            loggingService.write(
+                message: LaunchAgentError.libraryDirectoryNotFound.errorDescription ?? String(),
+                type: .error)
+            
+            return false
+        }
+        
+        do {
+            try fileManager.removeItem(atPath: plistFilePath)
+            
+            loggingService.write(
+                message: Constants.logLaunchAgentRemoved,
+                type: .info)
+            
+            return true
+        } catch {
+            loggingService.write(
+                message: LaunchAgentError.deleteFailed(
+                    reason: error.localizedDescription).errorDescription ?? String(),
                 type: .error)
             
             return false
@@ -50,52 +92,45 @@ class LaunchAgentService : ShellAccessible, LaunchAgentServiceType {
     }
     
     func apply() {
-        do {
-            if(isInstalled){
-                try safeShell(String(format: Constants.shCommandLoadLaunchAgent, Constants.launchAgentsFolderPath, Constants.launchAgentPlistName))
+        Task.detached(priority: .userInitiated) { [weak self] in
+            guard let self
+            else { return }
+            
+            do {
+                if isInstalled {
+                    try safeShell(String(
+                        format: Constants.shCommandLoadLaunchAgent,
+                        Constants.launchAgentsFolderPath,
+                        Constants.launchAgentPlistName
+                    ))
+                } else {
+                    try safeShell(String(
+                        format: Constants.shCommandRemoveLaunchAgent,
+                        Constants.launchAgentName
+                    ))
+                }
+            } catch {
+                loggingService.write(
+                    message: LaunchAgentError.applyFailed(
+                        reason: error.localizedDescription).errorDescription ?? String(),
+                    type: .error)
             }
-            else{
-                try safeShell(String(format: Constants.shCommandRemoveLaunchAgent, Constants.launchAgentName))
-            }
-        }
-        catch {}
-    }
-    
-    func delete() -> Bool {
-        do {
-            let fileManager = FileManager.default
-            let plistFilePath = getPlistFilePath()
-            try fileManager.removeItem(atPath: plistFilePath)
-            
-            loggingService.write(
-                message: String(format: Constants.logLaunchAgentRemoved),
-                type: .info)
-            
-            return true
-        }
-        catch {
-            loggingService.write(
-                message: String(format: Constants.logCannotRemoveLaunchAgent, error.localizedDescription),
-                type: .error)
-            
-            return false
         }
     }
     
-    // MARK: Private functions
+    // MARK: - Private Helpers
     
-    private func getPlistFilePath() -> String {
-        let userDirectory = try! FileManager.default.url(
+    private static func plistFilePath() throws -> String {
+        guard let libraryUrl = FileManager.default.urls(
             for: .libraryDirectory,
-            in: .userDomainMask,
-            appropriateFor:.libraryDirectory,
-            create: false)
-        let launchAgentsFolder = userDirectory
+            in: .userDomainMask
+        ).first else {
+            throw LaunchAgentError.libraryDirectoryNotFound
+        }
+        
+        return libraryUrl
             .appendingPathComponent(Constants.launchAgents)
             .appendingPathComponent(Constants.launchAgentPlistName)
-        let filename = URL(fileURLWithPath: launchAgentsFolder.path(), isDirectory: false)
-        let result = filename.path()
-        
-        return result
+            .path()
     }
 }

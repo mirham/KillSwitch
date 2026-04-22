@@ -22,11 +22,12 @@ struct NetworkStatusView : View {
         Section {
             VStack {
                 Text(Constants.network.uppercased())
-                    .font(.title3)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
                 renderNetworkStatusControl()
             }
         }
-        .frame(width: 110, height: 90)
+        //.frame(width: 110, height: 90)
     }
     
     // MARK: Private functions

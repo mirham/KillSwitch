@@ -10,145 +10,179 @@ import Network
 import SystemConfiguration
 import Factory
 
-class NetworkService : ShellAccessible, NetworkServiceType {
+final class NetworkService: ShellAccessible, NetworkServiceType {
     @Injected(\.appState) private var appState
     @Injected(\.ipService) private var ipService
     @LazyInjected(\.loggingService) private var loggingService
     
-    func isUrlReachableAsync(url : String) async throws -> Bool {
-        guard !Task.isCancelled else {
-            throw Constants.errorTaskCancelled
-        }
+    func isUrlReachableAsync(url: String) async throws -> Bool {
+        guard !Task.isCancelled
+        else { throw NetworkError.taskCancelled }
         
-        do {
-            let url = URL(string: url)!
-            var request = URLRequest(url: url)
-            request.httpMethod = Constants.headHttpMethod
-            
-            let (_, response) = try await URLSession.shared.data(for: request)
-            let parsedResponse = (response as? HTTPURLResponse)!
-            let result = parsedResponse.statusCode == 200
-            
-            return result
-        }
+        guard let parsedUrl = URL(string: url)
+        else { throw NetworkError.invalidUrl(url) }
+        
+        var request = URLRequest(url: parsedUrl)
+        request.httpMethod = Constants.headHttpMethod
+        
+        let (_, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse
+        else { throw NetworkError.invalidResponse }
+        
+        return httpResponse.statusCode == 200
     }
     
     func refreshPublicIpAsync() async {
-        guard !Task.isCancelled else { return }
+        guard !Task.isCancelled
+        else { return }
         
-        await updateStatusAsync(update: NetworkStateUpdateBuilder()
-            .withIsObtainingIp(true)
-            .build())
+        await updateStatusAsync { $0.withIsObtainingIp(true) }
         
         let publicIp = await fetchPublicIpAsync()
         
-        await updateStatusAsync(update: NetworkStateUpdateBuilder()
-            .withIsObtainingIp(false)
-            .withPublicIp(publicIp)
-            .build())
+        await updateStatusAsync {
+            $0.withIsObtainingIp(false)
+                .withPublicIp(publicIp)
+        }
     }
     
     func getPhysicalInterfaces() -> [NetworkInterface] {
-        let interfaces = SCNetworkInterfaceCopyAll() as? Array<SCNetworkInterface> ?? []
+        let interfaces = SCNetworkInterfaceCopyAll() as? [SCNetworkInterface] ?? []
         
-        let result = interfaces.compactMap { interface -> NetworkInterface? in
-            guard let interfaceName = SCNetworkInterfaceGetLocalizedDisplayName(interface) as? String else { return nil }
-            guard let bsdName = SCNetworkInterfaceGetBSDName(interface) as? String else { return nil }
-            
-            let isPhysicalInterface = bsdName.hasPrefix(Constants.physicalNetworkInterfacePrefix) &&
-                interfaceName.range(of: Constants.physicalNetworkInterfaceExclusion, options: .caseInsensitive) == nil
-            
-            guard isPhysicalInterface else { return nil }
+        return interfaces.compactMap { interface in
+            guard
+                let name    = SCNetworkInterfaceGetLocalizedDisplayName(interface) as String?,
+                let bsdName = SCNetworkInterfaceGetBSDName(interface) as String?,
+                isPhysical(bsdName: bsdName, displayName: name)
+            else { return nil }
             
             return NetworkInterface(
-                name: bsdName as String,
-                type: getNetworkInterfaceTypeByInterfaceName(interfaceName: interfaceName),
-                localizedName: interfaceName)
+                name: bsdName,
+                type: interfaceType(for: name),
+                localizedName: name
+            )
         }
-        
-        return result
     }
     
     func enableNetworkInterface(interfaceName: String) {
-        do {
-            try safeShell(String(format: Constants.shCommandEnableNetworkIterface, interfaceName))
+        Task.detached(priority: .userInitiated) { [weak self] in
+            guard let self
+            else { return }
             
-            loggingService.write(
-                message: String(format: Constants.logNetworkInterfaceHasBeenEnabled, interfaceName),
-                type: .info)
-        }
-        catch {
-            loggingService.write(
-                message: String(format: Constants.logCannotEnableNetworkInterface, interfaceName),
-                type: .error)
+            do {
+                try safeShell(String(
+                    format: Constants.shCommandEnableNetworkIterface,
+                    interfaceName))
+                
+                loggingService.write(
+                    message: String(
+                        format: Constants.logNetworkInterfaceHasBeenEnabled,
+                        interfaceName),
+                    type: .info)
+            } catch {
+                let networkError = NetworkError.interfaceCommandFailed(
+                    interfaceName: interfaceName,
+                    action: .enable
+                )
+                
+                loggingService.write(
+                    message: networkError.errorDescription ?? networkError.localizedDescription,
+                    type: .error)
+            }
         }
     }
     
     func disableNetworkInterface(interfaceName: String) {
-        do {
-            try safeShell(String(format: Constants.shCommandDisableNetworkIterface, interfaceName))
+        Task.detached(priority: .userInitiated) { [weak self] in
+            guard let self
+            else { return }
             
-            loggingService.write(
-                message: String(format: Constants.logNetworkInterfaceHasBeenDisabled, interfaceName),
-                type: .info)
-        }
-        catch {
-            loggingService.write(
-                message: String(format: Constants.logCannotDisableNetworkInterface, interfaceName),
-                type: .error)
+            do {
+                try safeShell(String(
+                    format: Constants.shCommandDisableNetworkIterface,
+                    interfaceName))
+                
+                loggingService.write(
+                    message: String(
+                        format: Constants.logNetworkInterfaceHasBeenDisabled,
+                        interfaceName),
+                    type: .info)
+            } catch {
+                let networkError = NetworkError.interfaceCommandFailed(
+                    interfaceName: interfaceName,
+                    action: .disable
+                )
+                
+                loggingService.write(
+                    message: networkError.errorDescription ?? networkError.localizedDescription,
+                    type: .error)
+            }
         }
     }
     
     // MARK: Private functions
     
-    private func getNetworkInterfaceTypeByInterfaceName(interfaceName: String) -> NetworkInterfaceType {
-        if (interfaceName.range(of: Constants.physicalNetworkInterfaceWiFi, options: .caseInsensitive) != nil) {
-            return NetworkInterfaceType.wifi
-        }
-        
-        if (interfaceName.range(of: Constants.physicalNetworkInterfaceLan, options: .caseInsensitive) != nil) {
-            return NetworkInterfaceType.wired
-        }
-        
-        return NetworkInterfaceType.other
-    }
-    
     private func fetchPublicIpAsync() async -> IpInfoBase? {
-        var isPublicIpNotObtained = true
-        let shouldFetchPublicIp = isPublicIpNotObtained
-        && !Task.isCancelled
-        && appState.userData.hasActiveIpApi()
-        && appState.network.status == .on
-        
-        while shouldFetchPublicIp {
-            let result = await ipService.getPublicIpAsync(
-                ipApiUrl: nil,
-                withInfo: true)
-            
-            if result.success {
-                isPublicIpNotObtained = false
-                
-                loggingService.write(
-                    message: String(
-                        format: Constants.logPublicIp,
-                        result.result!.ipAddress,
-                        result.result!.countryName,
-                        result.result!.fetchedFromApi ?? String()),
-                    type: .info)
-                
-                return result.result
-            }
+        let snapshot = await MainActor.run {
+            (
+                hasActiveApi: appState.userData.hasActiveIpApi(),
+                status: appState.network.status
+            )
         }
         
-        return nil
+        guard !Task.isCancelled, snapshot.hasActiveApi, snapshot.status == .on
+        else { return nil }
+        
+        let publicIpResult = await ipService.getPublicIpAsync(
+            ipApiUrl: nil,
+            withInfo: true)
+        
+        guard let result = publicIpResult.result
+        else { return nil }
+        
+        loggingService.write(
+            message: String(
+                format: Constants.logPublicIp,
+                result.ipAddress,
+                result.countryName,
+                result.fetchedFromApi ?? String()
+            ),
+            type: .info)
+        
+        return result
     }
     
-    private func updateStatusAsync(update: NetworkStateUpdate) async {
-        guard !Task.isCancelled else { return }
+    private func isPhysical(bsdName: String, displayName: String) -> Bool {
+        bsdName.hasPrefix(Constants.physicalNetworkInterfacePrefix)
+        && !displayName.localizedCaseInsensitiveContains(
+            Constants.physicalNetworkInterfaceExclusion)
+    }
+    
+    private func interfaceType(for displayName: String) -> NetworkInterfaceType {
+        if displayName.localizedCaseInsensitiveContains(
+            Constants.physicalNetworkInterfaceWiFi) {
+            return .wifi
+        }
+        
+        if displayName.localizedCaseInsensitiveContains(
+            Constants.physicalNetworkInterfaceLan) {
+            return .wired
+        }
+        
+        return .other
+    }
+    
+    private func updateStatusAsync(
+        _ configure: (NetworkStateUpdateBuilder) -> NetworkStateUpdateBuilder
+    ) async {
+        guard !Task.isCancelled
+        else { return }
+        
+        let update = configure(NetworkStateUpdateBuilder()).build()
         
         await MainActor.run {
             appState.applyNetworkUpdate(update)
-            appState.objectWillChange.send()
         }
     }
 }

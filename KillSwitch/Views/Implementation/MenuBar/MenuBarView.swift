@@ -20,11 +20,11 @@ struct MenuBarView : View {
     @State private var overQuitText = false
     
     var body: some View {
-        VStack{
+        VStack {
             CurrentIpView()
                 .environmentObject(appState)
                 .scaleEffect(Constants.memuBarScaleCurrentIp)
-            HStack{
+            HStack(spacing: 10) {
                 MonitoringStatusView()
                     .environmentObject(appState)
                     .scaleEffect(Constants.memuBarScaleToggles)

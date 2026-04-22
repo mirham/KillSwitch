@@ -10,7 +10,7 @@ import CoreWLAN
 import CoreLocation
 import SystemConfiguration
 
-class NetworkInterfaceInfoService : NSObject, NetworkInterfaceInfoServiceType, CLLocationManagerDelegate {
+final class NetworkInterfaceInfoService : NSObject, NetworkInterfaceInfoServiceType, CLLocationManagerDelegate {
     private let locationManager = CLLocationManager()
     private var ssidContinuation: CheckedContinuation<String?, Never>?
     

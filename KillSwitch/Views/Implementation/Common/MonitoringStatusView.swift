@@ -22,12 +22,13 @@ struct MonitoringStatusView : View {
         Section() {
             VStack{
                 Text(Constants.monitoring.uppercased())
-                    .font(.title3)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
                 renderMonitoringStatusControl()
             }
         }
-        .frame(width: 110, height: 90)
+        //.frame(width: 110, height: 90)
     }
     
     // MARK: Private functions

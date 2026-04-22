@@ -9,7 +9,7 @@ import Foundation
 import Network
 import Factory
 
-class NetworkStatusService: ApiCallable, NetworkStatusServiceType {
+final class NetworkStatusService: ApiCallable, NetworkStatusServiceType {
     @Injected(\.appState) private var appState
     @Injected(\.networkService) private var networkService
     @Injected(\.networkInterfaceInfoService) private var networkInterfaceInfoService
