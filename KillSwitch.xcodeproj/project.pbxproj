@@ -73,6 +73,7 @@
 		35A6E4282F97B61E00731FF3 /* NetworkInterfaceInfoService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35A6E4272F97B61800731FF3 /* NetworkInterfaceInfoService.swift */; };
 		35A6E42A2F98004D00731FF3 /* ConnectionItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35A6E4292F98004900731FF3 /* ConnectionItem.swift */; };
 		35A6E42C2F980CB300731FF3 /* BadgeModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35A6E42B2F980CAE00731FF3 /* BadgeModifier.swift */; };
+		35A6E42E2F98F8B200731FF3 /* SafetyBadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35A6E42D2F98F8AD00731FF3 /* SafetyBadgeView.swift */; };
 		35BD39BF2DDC9C930021CF49 /* KeyedContainerExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35BD39BE2DDC9C840021CF49 /* KeyedContainerExtensions.swift */; };
 		35BD39C12DDC9CB60021CF49 /* StringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35BD39C02DDC9CB00021CF49 /* StringExtensions.swift */; };
 		35BD39C32DDC9CF80021CF49 /* TaskExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35BD39C22DDC9CF00021CF49 /* TaskExtensions.swift */; };
@@ -175,6 +176,7 @@
 		35A6E4272F97B61800731FF3 /* NetworkInterfaceInfoService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkInterfaceInfoService.swift; sourceTree = "<group>"; };
 		35A6E4292F98004900731FF3 /* ConnectionItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionItem.swift; sourceTree = "<group>"; };
 		35A6E42B2F980CAE00731FF3 /* BadgeModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeModifier.swift; sourceTree = "<group>"; };
+		35A6E42D2F98F8AD00731FF3 /* SafetyBadgeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafetyBadgeView.swift; sourceTree = "<group>"; };
 		35BD39BE2DDC9C840021CF49 /* KeyedContainerExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyedContainerExtensions.swift; sourceTree = "<group>"; };
 		35BD39C02DDC9CB00021CF49 /* StringExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringExtensions.swift; sourceTree = "<group>"; };
 		35BD39C22DDC9CF00021CF49 /* TaskExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskExtensions.swift; sourceTree = "<group>"; };
@@ -471,6 +473,7 @@
 			isa = PBXGroup;
 			children = (
 				359E44F22C11C37D00BF6093 /* CurrentIpView.swift */,
+				35A6E42D2F98F8AD00731FF3 /* SafetyBadgeView.swift */,
 				3568505F2C2B46FF006E64B8 /* ProcessesStatusView.swift */,
 				35DD1C4B2C0F96E1003AA3ED /* NetworkStatusView.swift */,
 				351E9CEF2C10C03700CEC15F /* MonitoringStatusView.swift */,
@@ -672,6 +675,7 @@
 				354BEEB42DE8974100EFD1B2 /* NetworkStateUpdate.swift in Sources */,
 				353179312C29CD700030FDF1 /* ComputerService.swift in Sources */,
 				35F12F3B2C15B3BE00AFA738 /* NetworkInterfaceType.swift in Sources */,
+				35A6E42E2F98F8B200731FF3 /* SafetyBadgeView.swift in Sources */,
 				354BEEBA2DE8B5DE00EFD1B2 /* ProcessesStateUpdate.swift in Sources */,
 				359EED4C2C52D0280094EFAF /* EnableNetworkDialogView.swift in Sources */,
 				35A6E4282F97B61E00731FF3 /* NetworkInterfaceInfoService.swift in Sources */,

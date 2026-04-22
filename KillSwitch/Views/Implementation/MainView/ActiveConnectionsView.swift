@@ -16,7 +16,6 @@ struct ActiveConnectionsView : View {
                 Text(Constants.activeConnections.uppercased())
                     .font(.caption2)
                     .foregroundStyle(.secondary)
-                
                 ForEach(appState.network.activeNetworkInterfaces.sorted(by: { $0.name < $1.name }), id: \.name) { interface in
                     ConnectionItem(interface: interface)
                 }
