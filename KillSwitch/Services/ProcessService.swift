@@ -35,7 +35,7 @@ final class ProcessService: ShellAccessible, ProcessServiceType {
                 kill(process.pid, SIGTERM)
                 loggingService.write(
                     message: String(format: Constants.logProcessTerminated, process.name),
-                    type: .info)
+                    type: .success)
             }
         }
     }

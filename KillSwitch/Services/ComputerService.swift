@@ -28,7 +28,7 @@ final class ComputerService: ShellAccessible, ComputerServiceType {
             
             loggingService.write(
                 message: Constants.logPreventComputerSleepEnabled,
-                type: .info)
+                type: .success)
         }
     }
     
@@ -41,7 +41,7 @@ final class ComputerService: ShellAccessible, ComputerServiceType {
         
         loggingService.write(
             message: Constants.logPreventComputerSleepDisabled,
-            type: .info)
+            type: .success)
     }
     
     func reboot() {
@@ -53,7 +53,7 @@ final class ComputerService: ShellAccessible, ComputerServiceType {
                 try rootShell(command: Constants.shCommandReboot)
                 loggingService.write(
                     message: Constants.logRebooting,
-                    type: .info)
+                    type: .success)
             } catch {
                 loggingService.write(
                     message: ComputerError.rebootFailed(

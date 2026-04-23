@@ -33,11 +33,11 @@ struct KillSwitchApp: App {
         }
         .menuBarExtraStyle(.window)
         
-        WindowGroup(id:Constants.windowIdMain, makeContent: {
+        WindowGroup(id:Constants.windowIdMain) {
             MainView()
                 .environmentObject(appState)
                 .safeGlassEffect()
-        })
+        }
         .windowToolbarStyle(UnifiedCompactWindowToolbarStyle())
         
         WindowGroup(id: Constants.windowIdSettings) {
@@ -50,34 +50,37 @@ struct KillSwitchApp: App {
         .windowResizability(.contentSize)
         .windowStyle(.hiddenTitleBar)
         
-        WindowGroup(id: Constants.windowIdKillProcessesConfirmationDialog, makeContent: {
+        WindowGroup(id: Constants.windowIdKillProcessesConfirmationDialog) {
             KillProcessesConfirmationDialogView()
                 .environmentObject(appState)
+                .safeGlassEffect()
                 .hidden()
-        })
+        }
         .windowResizability(.contentSize)
         
-        WindowGroup(id: Constants.windowIdEnableNetworkDialog, makeContent: {
+        WindowGroup(id: Constants.windowIdEnableNetworkDialog) {
             EnableNetworkDialogView()
                 .environmentObject(appState)
+                .safeGlassEffect()
                 .hidden()
-        })
+        }
         .windowResizability(.contentSize)
         
-        WindowGroup(id: Constants.windowIdNoOneAllowedIpDialog, makeContent: {
+        WindowGroup(id: Constants.windowIdNoOneAllowedIpDialog) {
             NoOneAllowedIpDialogView()
                 .environmentObject(appState)
+                .safeGlassEffect()
                 .hidden()
-        })
+        }
         .windowResizability(.contentSize)
         
-        WindowGroup(id: Constants.windowIdInfo, makeContent: {
+        WindowGroup(id: Constants.windowIdInfo) {
             InfoView()
                 .environmentObject(appState)
                 .navigationTitle(Constants.info)
                 .safeGlassEffect()
                 .frame(minWidth: 360, maxWidth: 360, minHeight: 190, maxHeight: 190)
-        })
+        }
         .windowResizability(.contentSize)
         .windowStyle(.hiddenTitleBar)
     }

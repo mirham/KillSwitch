@@ -19,7 +19,7 @@ struct MainView : View {
                     .environmentObject(appState)
                     .padding(.top)
                 Spacer()
-                    .frame(height: 25)
+                    .frame(height: 15)
                 MonitoringStatusView()
                     .environmentObject(appState)
                     .padding(.top)
@@ -53,6 +53,7 @@ struct MainView : View {
             ToolbarView()
                 .padding(.trailing)
         })
+        .safeToolbarGlassEffect()
     }
     
     // MARK: Private functions

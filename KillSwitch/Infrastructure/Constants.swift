@@ -29,7 +29,6 @@ struct Constants{
     static let launchAgentPlistName = "\(Bundle.main.bundleIdentifier!).plist"
     static let launchAgents = "LaunchAgents"
     static let launchAgentsFolderPath = "~/Library/LaunchAgents/"
-    static let logDateFormat = "dd.MM.yyyy HH:mm:ss"
     static let networkMonitorQueryLabel = "KSNetworkMonitor"
     static let ipV4: Int = 4
     static let ipV6: Int = 6
@@ -84,6 +83,7 @@ struct Constants{
     static let iconNetwork = "network"
     static let iconBulletRectangle = "list.bullet.rectangle"
     static let iconClosingApps = "xmark.circle"
+    static let iconEmptyLog = "text.alignleft"
     
     // MARK: Colors
     static let colorCompleteSafetyLightTheme = "#369300"
@@ -141,6 +141,7 @@ struct Constants{
     static let mappings = "Mappings"
     static let noActiveIpApi = "No active IP API"
     static let obtainingIp = "Obtaining IP..."
+    static let all = "All"
     
     // MARK: Symbols
     static let bullet = "•"
@@ -154,11 +155,13 @@ struct Constants{
     static let toolbarCopyLog = "Copy log"
     static let toolbarClearLog = "Clear log"
     static let toolbarInfo = "Info"
+    static let toolbarLogEntrty = "%lld entry"
+    static let toolbarLogEntries = "%lld entries"
     
     // MARK: Menu items
     static let menuItemCopy = "Copy"
-    static let menuItemAddAsAllowedIpWithCompletePrivacy = "Add as allowed IP with complete privacy"
-    static let menuItemAddAsAllowedIpWithSomePrivacy = "Add as allowed IP with some privacy"
+    static let menuItemAddAsAllowedIpWithCompletePrivacy = "Add as allowed IP with complete safety"
+    static let menuItemAddAsAllowedIpWithSomePrivacy = "Add as allowed IP with some safety"
     
     // MARK: Settings elements names
     static let settingsElementGeneral = "General"
@@ -319,6 +322,7 @@ struct Constants{
     static let hintIpInfoApi = "The IP info API is needed to get advanced information about a public IP address, such as its location. This allows you to display the country flag in the macOS menu bar, as well as show the address on a map. Typically, data from such APIs is in JSON format. Here, you can assign an API address and map the JSON data values to application values."
     static let hintNotSet = "Not set yet"
     static let hintJsonKey = "JSON data key"
+    static let hintNoLogEntries = "No log entries"
     
     // MARK: About
     static let aboutSupportMail = "bWlyaGFtQGFidi5iZw=="

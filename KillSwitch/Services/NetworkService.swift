@@ -79,7 +79,7 @@ final class NetworkService: ShellAccessible, NetworkServiceType {
                     message: String(
                         format: Constants.logNetworkInterfaceHasBeenEnabled,
                         interfaceName),
-                    type: .info)
+                    type: .success)
             } catch {
                 let networkError = NetworkError.interfaceCommandFailed(
                     interfaceName: interfaceName,
@@ -107,7 +107,7 @@ final class NetworkService: ShellAccessible, NetworkServiceType {
                     message: String(
                         format: Constants.logNetworkInterfaceHasBeenDisabled,
                         interfaceName),
-                    type: .info)
+                    type: .success)
             } catch {
                 let networkError = NetworkError.interfaceCommandFailed(
                     interfaceName: interfaceName,

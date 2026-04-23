@@ -31,7 +31,9 @@ final class MonitoringService: MonitoringServiceType {
     
     func startMonitoring() {
         monitoringTime = 0
-        loggingService.write(message: Constants.logMonitoringHasBeenEnabled, type: .info)
+        loggingService.write(
+            message: Constants.logMonitoringHasBeenEnabled,
+            type: .success)
         computerService.startSleepPreventing()
         
         monitoringTask = Task { [weak self] in
@@ -63,7 +65,7 @@ final class MonitoringService: MonitoringServiceType {
         computerService.stopSleepPreventing()
         loggingService.write(
             message: Constants.logMonitoringHasBeenDisabled,
-            type: .warning)
+            type: .success)
         
         Task { @MainActor [weak self] in
             guard let self

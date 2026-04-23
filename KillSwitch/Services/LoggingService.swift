@@ -13,7 +13,8 @@ final class LoggingService: LoggingServiceType {
     
     private let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.dateFormat = Constants.logDateFormat
+        formatter.dateStyle = .short
+        formatter.timeStyle = .medium
         return formatter
     }()
     

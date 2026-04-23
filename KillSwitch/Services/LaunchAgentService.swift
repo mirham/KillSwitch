@@ -46,7 +46,7 @@ final class LaunchAgentService: ShellAccessible, LaunchAgentServiceType {
             
             loggingService.write(
                 message: Constants.logLaunchAgentAdded,
-                type: .info)
+                type: .success)
             
             return true
         } catch {
@@ -74,7 +74,7 @@ final class LaunchAgentService: ShellAccessible, LaunchAgentServiceType {
             
             loggingService.write(
                 message: Constants.logLaunchAgentRemoved,
-                type: .info)
+                type: .success)
             
             return true
         } catch {
