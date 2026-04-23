@@ -59,6 +59,8 @@ struct MenuBarView: View {
                 .onHover { isQuitButtonHovering = $0 }
             }
         }
+        .padding(.top, 10)
+        .padding(.bottom, 10)
         .onAppear {
             appState.views.shownWindows
                 .append(Constants.windowIdMenuBar)
