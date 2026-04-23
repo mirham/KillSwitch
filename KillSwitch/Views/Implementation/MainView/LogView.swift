@@ -94,7 +94,6 @@ struct LogView: View {
                         ForEach(filteredEntries) { entry in
                             LogEntryRow(entry: entry, dateFormatter: dateFormatter)
                                 .id(entry.id)
-                            
                             Divider()
                                 .opacity(0.4)
                         }

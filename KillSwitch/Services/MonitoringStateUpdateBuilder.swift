@@ -11,12 +11,14 @@ final class MonitoringStateUpdateBuilder {
     @discardableResult
     func withIsMonitoringEnabled (_ isMonitoringEnabled: Bool) -> Self {
         update.isMonitoringEnabled = isMonitoringEnabled
+        
         return self
     }
     
     @discardableResult
     func withPublicIp(_ publicIp: IpInfoBase?) -> Self {
         update.publicIp = publicIp
+        
         return self
     }
     

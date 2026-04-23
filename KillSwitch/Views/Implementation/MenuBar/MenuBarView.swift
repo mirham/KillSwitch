@@ -8,32 +8,33 @@
 import SwiftUI
 import Factory
 
-struct MenuBarView : View {
+struct MenuBarView: View {
     @EnvironmentObject var appState: AppState
     
     @Environment(\.openWindow) private var openWindow
-    @Environment(\.dismiss) var dismiss
+    @Environment(\.dismiss) private var dismiss
     
     @Injected(\.launchAgentService) private var launchAgentService
     
-    @State private var overShowText = false
-    @State private var overQuitText = false
+    @State private var isShowButtonHovering = false
+    @State private var isQuitButtonHovering = false
     
     var body: some View {
         VStack {
             CurrentIpView()
                 .environmentObject(appState)
-                .scaleEffect(Constants.memuBarScaleCurrentIp)
+                .scaleEffect(Constants.menuBarScaleCurrentIp)
+            
             HStack(spacing: 10) {
                 MonitoringStatusView()
                     .environmentObject(appState)
-                    .scaleEffect(Constants.memuBarScaleToggles)
+                    .scaleEffect(Constants.menuBarScaleToggles)
                 NetworkStatusView()
                     .environmentObject(appState)
-                    .scaleEffect(Constants.memuBarScaleToggles)
+                    .scaleEffect(Constants.menuBarScaleToggles)
                 ProcessesStatusView()
                     .environmentObject(appState)
-                    .scaleEffect(Constants.memuBarScaleToggles)
+                    .scaleEffect(Constants.menuBarScaleToggles)
             }
             Spacer()
                 .frame(height: 5)
@@ -41,40 +42,47 @@ struct MenuBarView : View {
                 Button(Constants.show, systemImage: Constants.iconWindow) {
                     handleShowButtonClick()
                 }
-                .withMenuBarButtonStyle(bold: overShowText, color: overShowText ? .blue : .gray)
-                .onHover(perform: { hovering in
-                    overShowText = hovering
-                })
+                .withMenuBarButtonStyle(
+                    isHovering: isShowButtonHovering,
+                    color: isShowButtonHovering ? .blue : .gray
+                )
+                .onHover { isShowButtonHovering = $0 }
                 Spacer()
                     .frame(width: 20)
                 Button(Constants.quit, systemImage: Constants.iconQuit) {
                     handleQuitButtonClick()
                 }
-                .withMenuBarButtonStyle(bold: overQuitText, color: overQuitText ? .red : .gray)
-                .onHover(perform: { hovering in
-                    overQuitText = hovering
-                })
+                .withMenuBarButtonStyle(
+                    isHovering: isQuitButtonHovering,
+                    color: isQuitButtonHovering ? .red : .gray
+                )
+                .onHover { isQuitButtonHovering = $0 }
             }
         }
-        .onAppear(perform: {
-            appState.views.shownWindows.append(Constants.windowIdMenuBar)
-        })
-        .onDisappear(perform: {
-            appState.views.shownWindows.removeAll(where: {$0 == Constants.windowIdMenuBar})
-        })
+        .onAppear {
+            appState.views.shownWindows
+                .append(Constants.windowIdMenuBar)
+        }
+        .onDisappear {
+            appState.views.shownWindows
+                .removeAll { $0 == Constants.windowIdMenuBar }
+        }
     }
     
     // MARK: Private functions
     
     private func handleShowButtonClick() {
-        let requireOpenWindow = !appState.views.shownWindows
-            .contains(where: {$0 == Constants.windowIdMain})
+        let mainWindowNotShown = !appState.views.shownWindows
+            .contains(where: { $0 == Constants.windowIdMain })
         
-        if requireOpenWindow {
+        if mainWindowNotShown {
             openWindow(id: Constants.windowIdMain)
         }
         
-        AppHelper.activateView(viewId: Constants.windowIdMain, simple: false)
+        AppHelper.activateView(
+            viewId: Constants.windowIdMain,
+            simple: false)
+        
         dismiss()
     }
     
@@ -85,11 +93,12 @@ struct MenuBarView : View {
 }
 
 private extension Button {
-    func withMenuBarButtonStyle(bold: Bool, color: Color) -> some View {
+    func withMenuBarButtonStyle(
+        isHovering: Bool,
+        color: Color) -> some View {
         self.buttonStyle(.plain)
             .focusEffectDisabled()
             .foregroundColor(color)
-            .bold(bold)
     }
 }
 

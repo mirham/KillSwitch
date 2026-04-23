@@ -15,212 +15,197 @@ struct IpInfoApiEditView: View {
     @Injected(\.ipApiService) private var ipApiService
     @Injected(\.networkService) private var networkService
     
-    @State private var newUrl: String = .init()
-    @State private var keyMapping: [String: String] = .init()
-    @State private var alertType: AlertType? = nil
-    @State private var pendingAlert: AlertType? = nil
+    @State private var apiUrl = String()
+    @State private var keyMapping: [String: String] = [:]
+    @State private var alertState: AlertState?
+    @State private var isSaving = false
     
     var body: some View {
         VStack(alignment: .leading) {
-            HStack {
-                Image(systemName: Constants.iconInfo)
-                    .asInfoIcon()
-                Text(Constants.hintIpInfoApi)
-                    .padding(.top)
-                    .padding(.trailing)
-            }
+            infoHeader
             Spacer()
                 .frame(height: 10)
-            VStack(alignment: .center) {
-                VStack(alignment: .leading) {
-                    Text("\(Constants.ipInfoApiUrl):")
-                    HStack {
-                        TextField(Constants.hintNewVaildApiUrl, text: $newUrl)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                    }
-                }
-                VStack {
-                    Text(Constants.mappings)
-                        .font(.title3)
-                    List {
-                        ForEach(Array(keyMapping.keys.sorted()), id: \.self) { key in
-                            HStack {
-                                Text(Constants.readableIpInfoApiKeyMapping[key] ?? String())
-                                    .frame(width: 100, alignment: .leading)
-                                    .foregroundColor(.primary)
-                                
-                                TextField(Constants.hintJsonKey, text: Binding(
-                                    get: { keyMapping[key] ?? String() },
-                                    set: { keyMapping[key] = $0 }
-                                ))
-                                .textFieldStyle(.roundedBorder)
-                            }
-                            .padding(.vertical, 2)
-                        }
-                    }
-                }
-            }
-            .padding(10)
+            settingsForm
         }
         .safeAreaInset(edge: .bottom) {
-            VStack {
-                AsyncButton(Constants.save, action: saveChangesAsync)
-                    .disabled(!hasChanges())
-                    .pointerOnHover()
-                    .bold()
-            }
-            .padding(10)
-        }
-        .alert(isPresented: Binding(
-            get: {
-                alertType != nil
-            },
-            set: { newValue in
-                if !newValue {
-                    alertType = pendingAlert
-                    pendingAlert = nil
-                }
-            }
-        )) {
-            Alert (
-                title: Text(alertType?.alertContent.title ?? String()),
-                message: Text(alertType?.alertContent.message ?? String()),
-                dismissButton: .default(Text(Constants.ok)) {
-                    alertType = pendingAlert
-                    pendingAlert = nil
-                }
-            )
+            saveButton
         }
         .padding(5)
-        .onAppear(perform: initValues)
+        .onAppear(perform: loadSettings)
+        .alert(item: $alertState) { state in
+            Alert(
+                title: Text(state.title),
+                message: Text(state.message),
+                dismissButton: .default(Text(Constants.ok))
+            )
+        }
+    }
+    
+    // MARK: View sections
+    
+    @ViewBuilder
+    private var infoHeader: some View {
+        HStack {
+            Image(systemName: Constants.iconInfoFill)
+                .asInfoIcon()
+            Text(Constants.hintIpInfoApi)
+                .padding(.top)
+                .padding(.trailing)
+        }
+    }
+    
+    @ViewBuilder
+    private var settingsForm: some View {
+        VStack(alignment: .center) {
+            VStack(alignment: .leading) {
+                Text("\(Constants.ipInfoApiUrl):")
+                TextField(Constants.hintNewVaildApiUrl, text: $apiUrl)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+            }
+            VStack {
+                Text(Constants.mappings)
+                    .font(.title3)
+                List {
+                    ForEach(Array(keyMapping.keys.sorted()), id: \.self) { key in
+                        keyMappingRow(for: key)
+                    }
+                }
+            }
+        }
+        .padding(10)
+    }
+    
+    @ViewBuilder
+    private func keyMappingRow(for key: String) -> some View {
+        HStack {
+            Text(Constants.readableIpInfoApiKeyMapping[key] ?? String())
+                .frame(width: 100, alignment: .leading)
+                .foregroundColor(.primary)
+            TextField(
+                Constants.hintJsonKey,
+                text: Binding(
+                    get: { keyMapping[key] ?? String() },
+                    set: { keyMapping[key] = $0 }
+                )
+            )
+            .textFieldStyle(.roundedBorder)
+        }
+        .padding(.vertical, 2)
+    }
+    
+    @ViewBuilder
+    private var saveButton: some View {
+        VStack {
+            AsyncButton(Constants.save, action: saveSettings)
+                .disabled(!hasChanges || isSaving)
+                .pointerOnHover()
+                .bold()
+        }
+        .padding(10)
     }
     
     // MARK: Private functions
     
-    private func initValues() {
-        self.newUrl = appState.userData.ipInfoApiUrl
-        self.keyMapping = appState.userData.ipInfoApiKeyMapping
+    private func loadSettings() {
+        apiUrl = appState.userData.ipInfoApiUrl
+        keyMapping = appState.userData.ipInfoApiKeyMapping
     }
     
-    private func hasChanges() -> Bool {
-        let result = appState.userData.ipInfoApiUrl != newUrl
-            || appState.userData.ipInfoApiKeyMapping != keyMapping
+    private var hasChanges: Bool {
+        appState.userData.ipInfoApiUrl != apiUrl ||
+        appState.userData.ipInfoApiKeyMapping != keyMapping
+    }
+    
+    private func saveSettings() async {
+        isSaving = true
         
-        return result
-    }
-    
-    private func saveChangesAsync() async {
+        defer { isSaving = false }
+        
         do {
             let ipInfo = try await validateAndTestSettings()
-            
-            await updateAppState(with: ipInfo)
+            await applySettings(ipInfo)
+        } catch let error as IpInfoApiError {
+            await MainActor.run {
+                alertState = getAlertStateByApiError(for: error)
+            }
         } catch {
-            await handleError(error)
+            await MainActor.run {
+                alertState = .validationFailed
+            }
         }
     }
     
     private func validateAndTestSettings() async throws -> IpInfoBase {
-        // Prepare URL
-        guard let publicIp = appState.network.publicIp?.ipAddress,
-              let checkUrl = ipApiService.prepareIpInfoApiUrl(
-                publicIp: publicIp,
-                ipInfoApiUrl: newUrl)
-        else {
-            throw IpInfoApiSettingsError.invalidUrl
-        }
+        guard let publicIp = appState.network.publicIp?.ipAddress
+        else { throw IpInfoApiError.noPublicIp }
         
-        // Check URL reachability
-        guard try await networkService.isUrlReachableAsync(url: checkUrl)
-        else {
-            throw IpInfoApiSettingsError.urlUnreachable
-        }
+        guard let testUrl = ipApiService.prepareIpInfoApiUrl(
+            publicIp: publicIp,
+            ipInfoApiUrl: apiUrl
+        ) else { throw IpInfoApiError.invalidUrl }
         
-        // Test API response
+        let isReachable = try await networkService.isUrlReachableAsync(url: testUrl)
+        
+        guard isReachable
+        else { throw IpInfoApiError.urlUnreachable }
+        
         let testResponse = await ipService.getPublicIpInfoAsync(
-            apiUrl: newUrl,
+            apiUrl: apiUrl,
             publicIp: publicIp,
             keyMapping: keyMapping,
-            fetchedFromApi: nil)
+            fetchedFromApi: nil
+        )
         
         guard testResponse.success, let ipInfo = testResponse.result
-        else {
-            throw IpInfoApiSettingsError.invalidApiResponse
-        }
+        else { throw IpInfoApiError.invalidApiResponse }
         
-        // Verify location data
         guard ipInfo.hasLocation()
-        else {
-            throw IpInfoApiSettingsError.missingLocationData
-        }
+        else { throw IpInfoApiError.missingLocationData }
         
         return ipInfo
     }
     
-    private func updateAppState(with ipInfo: IpInfoBase) async {
+    private func applySettings(_ ipInfo: IpInfoBase) async {
         await MainActor.run {
-            appState.userData.ipInfoApiUrl = newUrl
+            appState.userData.ipInfoApiUrl = apiUrl
             appState.userData.ipInfoApiKeyMapping = keyMapping
         }
         
         await networkService.refreshPublicIpAsync()
     }
     
-    private func handleError(_ error: Error) async {
-        await MainActor.run {
-            switch error {
-                case IpInfoApiSettingsError.invalidUrl, IpInfoApiSettingsError.urlUnreachable:
-                    showAlert(.newUrlInvalid)
-                case IpInfoApiSettingsError.missingLocationData:
-                    showAlert(.keyMappingInvalid)
-                default:
-                    showAlert(.newUrlInvalid)
-            }
-        }
-    }
-    
-    func setNewSettings(url: String, keyMapping: [String: String]) {
-        self.newUrl = url
-        self.keyMapping = keyMapping
-    }
-    
-    private func showAlert(_ type: AlertType) {
-        if alertType == nil {
-            alertType = type
-        } else {
-            pendingAlert = type
+    private func getAlertStateByApiError(for error: IpInfoApiError) -> AlertState {
+        switch error {
+            case .noPublicIp, .invalidUrl, .urlUnreachable, .invalidApiResponse:
+                return .validationFailed
+            case .missingLocationData:
+                return .missingLocationData
         }
     }
     
     // MARK: Inner types
     
-    private enum IpInfoApiSettingsError: Error {
-        case invalidUrl
-        case urlUnreachable
-        case invalidApiResponse
+    private enum AlertState: Identifiable {
+        case validationFailed
         case missingLocationData
-    }
-    
-    private enum AlertType: Identifiable {
-        case newUrlInvalid
-        case keyMappingInvalid
         
-        var id: Int {
+        var id: Self { self }
+        
+        var title: String {
             switch self {
-                case .newUrlInvalid: return 0
-                case .keyMappingInvalid: return 1
+                case .validationFailed:
+                    return Constants.dialogHeaderIpInfoApiIsNotValid
+                case .missingLocationData:
+                    return Constants.dialogHeaderIpInfoApiMappingIsNotValid
             }
         }
         
-        var alertContent: (title: String, message: String) {
+        var message: String {
             switch self {
-                case .newUrlInvalid:
-                    return (
-                        title: Constants.dialogHeaderIpInfoApiIsNotValid,
-                        message: Constants.dialogBodyIpInfoApiIsNotValid)
-                case .keyMappingInvalid:
-                    return (
-                        title: Constants.dialogHeaderIpInfoApiMappingIsNotValid,
-                        message: Constants.dialogBodyIpInfoApiMappingIsNotValid)
+                case .validationFailed:
+                    return Constants.dialogBodyIpInfoApiIsNotValid
+                case .missingLocationData:
+                    return Constants.dialogBodyIpInfoApiMappingIsNotValid
             }
         }
     }

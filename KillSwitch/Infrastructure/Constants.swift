@@ -38,8 +38,8 @@ struct Constants{
     static let defaultIntervalBetweenChecksInSeconds: Int = 10
     static let ipApiCallTimeoutInSeconds: Double = 1.0
     static let ipInfoApiCallTimeoutInSeconds: Double = 2.0
-    static let memuBarScaleCurrentIp = 0.95
-    static let memuBarScaleToggles = 0.8
+    static let menuBarScaleCurrentIp = 0.95
+    static let menuBarScaleToggles = 0.8
     static let physicalNetworkInterfacePrefix = "en"
     static let physicalNetworkInterfaceWiFi = "Wi-Fi"
     static let physicalNetworkInterfaceLan = "LAN"
@@ -47,6 +47,9 @@ struct Constants{
     static let sleepPreventingReason = "Monitoring sleep preventing"
     static let defaultInternetCheckUrl = "https://google.com"
     static let defaultIpInfoApiUrl = "http://ip-api.com/json/\(publicIpMask)"
+    
+    // MARK: HTTP methods
+    static let httpMethodGet = "GET"
     
     // MARK: Regexes
     static let regexUrl = /(?<protocol>https?):\/\/(?:(?<username>[^:@\s\/\\]*)(?::(?<password>[^:@\s\/\\]*))?@)?(?<domain>[\w\d]+[\w\d.\-]+[\w\d]+|\[[a-f\d:]+\])(?::(?<port>\d+))?(?:(?<path>\/[^\?#\s]*)(?:\?(?<query>[^\?#\s]*))?(?:#(?<anchor>[^\?#\s]*))?)?/
@@ -177,8 +180,8 @@ struct Constants{
     static let settingsElementOnTopOfAllWindows = "Always on top of all windows"
     static let settingsElementDisableLocationServices = "Disable location services"
     static let settingsElementPreventComputerSleep = "Preventing the computer from going to sleep"
-    static let settingsElementHigherProtection = "Higher protection"
-    static let settingsElementPickyMode = "Picky mode"
+    static let settingsElementHigherProtection = "Extended protection"
+    static let settingsElementPickyMode = "Extended IP address information required"
     static let settingsElementPeriodicIpCheck = "Periodic IP address check"
     static let settingsElementAutoCloseApps = "Automatically close applications"
     static let settingsElementConfirmationToCloseApps = "Confirmation to close applications"
@@ -241,8 +244,6 @@ struct Constants{
     // MARK: Error messages
     static let errorNoActiveIpApiFound = "Not possible to obtain IP, try to add a new IP API in the Settings to proceed work or check DNS availability"
     static let errorWhenCallingIpAddressApi = "Error when called IP address API '%1$@': '%2$@', API marked as inactive and will be skipped until next application run"
-    static let errorIpApiResponseIsInvalid = "IP address API returned invalid IP address (IP info API: %1$@)"
-    static let errorWhenCallingIpInfoApi = "Error when called IP info API: %1$@"
     static let errorTaskCancelled = "Task cancelled"
     static let errorInvalidJson = "Invalid JSON"
     
@@ -284,14 +285,9 @@ struct Constants{
     static let logCannotDisableNetworkInterface = "Cannot disable network interface '%1$@'"
     static let logLaunchAgentAdded = "Launch agent added, the application will be always running"
     static let logLaunchAgentRemoved = "Launch agent removed, the application won't be always running"
-    static let logCannotAddLaunchAgent = "Cannot add Launch agent: %1$@"
-    static let logCannotRemoveLaunchAgent = "Cannot remove Launch agent: %1$@"
     static let logLocationServicesHaveBeenToggled = "Location services have been %1$@, needs to restart to take effect"
-    static let logCannotToggleLocationServices = "Cannot toggle location services: %1$@"
     static let logRebooting = "Rebooting..."
-    static let logCannotReboot = "Cannot reboot the computer: %1$@"
-    static let logProcessTerminated = "%1$@ has been closed"   
-    static let logErrorHandlingProcesses = "Error when handling active processes: %1$@"
+    static let logProcessTerminated = "%1$@ has been closed"
     static let logPreventComputerSleepEnabled = "Preventing the computer from going to sleep is enabled"
     static let logPreventComputerSleepDisabled = "Preventing the computer from going to sleep is disabled"
     

@@ -48,7 +48,8 @@ final class NetworkStatusService: ApiCallable, NetworkStatusServiceType {
             
             guard appState.network.isConnectionChanged(
                 status: quickStatus,
-                activeNetworkInterfaces: path.availableInterfaces.map { $0.asNetworkInterface() }
+                activeNetworkInterfaces: path.availableInterfaces
+                    .map { $0.asNetworkInterface() }
             )
             else { return }
             
@@ -59,7 +60,9 @@ final class NetworkStatusService: ApiCallable, NetworkStatusServiceType {
                 
                 let activeInterfaces = await determineNetworkInterfacesAsync(path: path)
                 let physicalInterfaces = networkService.getPhysicalInterfaces()
-                let status = determineNetworkStatus(path: path, activeInterfaces: activeInterfaces)
+                let status = determineNetworkStatus(
+                    path: path,
+                    activeInterfaces: activeInterfaces)
                 
                 guard appState.network.isConnectionChanged(
                     status: status,
@@ -114,7 +117,9 @@ final class NetworkStatusService: ApiCallable, NetworkStatusServiceType {
     ) -> NetworkStatusType {
         switch path.status {
             case .satisfied:
-                return activeInterfaces.contains(where: \.isPhysical) ? .on : .wait
+                return activeInterfaces.contains(where: \.isPhysical)
+                    ? .on
+                    : .wait
             case .requiresConnection:
                 return .wait
             default:
@@ -150,12 +155,13 @@ final class NetworkStatusService: ApiCallable, NetworkStatusServiceType {
     }
     
     private func updateStatusAsync(
-        _ configure: (NetworkStateUpdateBuilder) -> NetworkStateUpdateBuilder
-    ) async {
+        _ configure: (NetworkStateUpdateBuilder) ->
+        NetworkStateUpdateBuilder) async {
         guard !Task.isCancelled
         else { return }
         
-        let update = configure(NetworkStateUpdateBuilder()).build()
+        let update = configure(NetworkStateUpdateBuilder())
+                .build()
         
         await MainActor.run {
             appState.applyNetworkUpdate(update)

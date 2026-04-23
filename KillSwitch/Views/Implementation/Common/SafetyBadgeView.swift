@@ -14,6 +14,13 @@ struct SafetyBadgeView: View {
     
     @Binding var isRisky: Bool
     
+    private var riskWarningTransition: AnyTransition {
+        .asymmetric(
+            insertion: .opacity.combined(with: .move(edge: .top)),
+            removal: .opacity.combined(with: .move(edge: .top))
+        )
+    }
+    
     var body: some View {
         VStack(spacing: 5) {
             safetyHeader
@@ -66,12 +73,7 @@ struct SafetyBadgeView: View {
         Capsule().stroke(safetyColor.opacity(0.4), lineWidth: 1)
     }
     
-    private var riskWarningTransition: AnyTransition {
-        .asymmetric(
-            insertion: .opacity.combined(with: .move(edge: .top)),
-            removal: .opacity.combined(with: .move(edge: .top))
-        )
-    }
+    // MARK: Private functions
     
     private func handleHover(_ hovering: Bool) {
         DispatchQueue.main.async {

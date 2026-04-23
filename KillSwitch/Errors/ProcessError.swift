@@ -13,7 +13,7 @@ enum ProcessError: LocalizedError {
     var errorDescription: String? {
         switch self {
             case .invalidRegex(let bundleId):
-                return String(format: Constants.logErrorHandlingProcesses, "Invalid regex for \(bundleId)")
+                return "Error when handling active processes: Invalid regex for \(bundleId)"
         }
     }
 }

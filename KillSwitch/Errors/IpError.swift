@@ -21,11 +21,11 @@ enum IpError: LocalizedError {
             case .noActiveApi:
                 return Constants.errorNoActiveIpApiFound
             case .invalidResponse(let url):
-                return String(format: Constants.errorIpApiResponseIsInvalid, url)
+                return "IP API \(url) returned invalid IP response."
             case .invalidIpAddress(let url):
-                return String(format: Constants.errorIpApiResponseIsInvalid, url)
+                return "IP API \(url) returned invalid IP."
             case .ipInfoCallFailed(let reason):
-                return String(format: Constants.errorWhenCallingIpInfoApi, reason)
+                return "Error when called IP info API: \(reason)"
         }
     }
 }

@@ -8,7 +8,7 @@
 import SwiftUI
 import Factory
 
-struct ToolbarView : View {
+struct ToolbarView: View {
     @EnvironmentObject var appState: AppState
     
     @Environment(\.openWindow) private var openWindow
@@ -16,96 +16,88 @@ struct ToolbarView : View {
     
     @Injected(\.loggingService) private var loggingService
     
-    @State private var hoveredButton: ToolbarButtonType? = nil
-
+    @State private var hoveredButton: ToolbarButtonType?
+    
     var body: some View {
         Group {
             Spacer()
-            ToolbarButton(
+            toolbarButton(
+                for: .copy,
                 title: Constants.toolbarCopyLog,
-                systemImage: Constants.iconCopyLog,
-                isHovered: hoveredButton == .copy,
-                activeState: controlActiveState
-            ) {
-                loggingService.copy()
-            }
-            .onHover { hoveredButton = $0 ? .copy : nil }
-            .help(Constants.toolbarCopyLog)
+                icon: Constants.iconCopyLog,
+                action: { loggingService.copy() }
+            )
             .padding(.leading, 10)
-            
-            ToolbarButton(
+            toolbarButton(
+                for: .clear,
                 title: Constants.toolbarClearLog,
-                systemImage: Constants.iconClearLog,
-                isHovered: hoveredButton == .clear,
-                activeState: controlActiveState
-            ) {
-                loggingService.clear()
-            }
-            .onHover { hoveredButton = $0 ? .clear : nil }
-            .help(Constants.toolbarClearLog)
-            
-            ToolbarButton(
+                icon: Constants.iconClearLog,
+                action: { loggingService.clear() }
+            )
+            toolbarButton(
+                for: .settings,
                 title: Constants.toolbarSettings,
-                systemImage: Constants.iconSettings,
-                isHovered: hoveredButton == .settings,
-                activeState: controlActiveState
-            ) {
-                showSettingsWindow()
-            }
-            .onHover { hoveredButton = $0 ? .settings : nil }
-            .help(Constants.toolbarSettings)
-            
-            ToolbarButton(
+                icon: Constants.iconSettings,
+                action: showSettingsWindow
+            )
+            toolbarButton(
+                for: .info,
                 title: Constants.toolbarInfo,
-                systemImage: Constants.iconInfo,
-                isHovered: hoveredButton == .info,
-                activeState: controlActiveState
-            ) {
-                showInfoWindow()
-            }
-            .onHover { hoveredButton = $0 ? .info : nil }
-            .help(Constants.toolbarInfo)
+                icon: Constants.iconInfo,
+                action: showInfoWindow
+            )
             .padding(.trailing, -10)
         }
     }
     
-    // MARK: Private functions
+    // MARK: View sections
     
-    private func renderHint(hint: String) -> some View {
-        let result = Text(hint)
-            .padding()
-            .interactiveDismissDisabled()
-        
-        return result
+    @ViewBuilder
+    private func toolbarButton(
+        for type: ToolbarButtonType,
+        title: String,
+        icon: String,
+        action: @escaping () -> Void
+    ) -> some View {
+        ToolbarButton(
+            title: title,
+            systemImage: icon,
+            isHovered: hoveredButton == type,
+            activeState: controlActiveState,
+            action: action
+        )
+        .onHover { hoveredButton = $0 ? type : nil }
+        .help(title)
     }
     
+    // MARK: Private functions
+    
     private func showSettingsWindow() {
-        let requireOpenWindow = !appState.views.shownWindows
-            .contains(where: {$0 == Constants.windowIdSettings})
-        
-        if requireOpenWindow {
-            openWindow(id: Constants.windowIdSettings)
-        }
-        
+        openWindowIfNeeded(id: Constants.windowIdSettings)
         AppHelper.activateView(viewId: Constants.windowIdSettings)
     }
     
     private func showInfoWindow() {
-        let requireOpenWindow = !appState.views.shownWindows
-            .contains(where: {$0 == Constants.windowIdInfo})
-        
-        if requireOpenWindow {
-            openWindow(id: Constants.windowIdInfo)
-        }
-        
+        openWindowIfNeeded(id: Constants.windowIdInfo)
         AppHelper.activateView(viewId: Constants.windowIdInfo)
+    }
+    
+    private func openWindowIfNeeded(id: String) {
+        let windowAlreadyShown = appState.views.shownWindows
+            .contains(where: { $0 == id })
+        
+        guard !windowAlreadyShown
+        else { return }
+        
+        openWindow(id: id)
     }
     
     // MARK: Inner types
     
-    private enum ToolbarButtonType { case copy, clear, settings, info }
+    private enum ToolbarButtonType {
+        case copy, clear, settings, info
+    }
 }
-
 #Preview {
     ToolbarView().environmentObject(AppState())
 }

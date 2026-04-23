@@ -14,8 +14,6 @@ final class LaunchAgentService: ShellAccessible, LaunchAgentServiceType {
     private let fileManager = FileManager.default
     private(set) var isInstalled: Bool
     
-    // MARK: - Lifecycle
-    
     init() {
         isInstalled = (try? LaunchAgentService.plistFilePath())
             .map { FileManager.default.fileExists(atPath: $0) } ?? false
@@ -118,7 +116,7 @@ final class LaunchAgentService: ShellAccessible, LaunchAgentServiceType {
         }
     }
     
-    // MARK: - Private Helpers
+    // MARK: Private functions
     
     private static func plistFilePath() throws -> String {
         guard let libraryUrl = FileManager.default.urls(

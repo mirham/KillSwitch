@@ -13,7 +13,7 @@ enum LocationError: LocalizedError {
     var errorDescription: String? {
         switch self {
             case .toggleFailed(let reason):
-                return String(format: Constants.logCannotToggleLocationServices, reason)
+                return "Cannot toggle location services: \(reason)"
         }
     }
 }

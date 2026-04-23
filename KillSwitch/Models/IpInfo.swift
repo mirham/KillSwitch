@@ -17,7 +17,7 @@ struct IpInfo: Codable, Identifiable, Equatable {
     init(_ id: UUID = UUID(),
          ipAddress: String,
          ipAddressInfo: IpInfoBase?,
-         safetyType: SafetyType = .unknown){
+         safetyType: SafetyType = .unknown) {
         let info = ipAddressInfo ?? IpInfoBase(ipAddress: ipAddress)
         
         self.id = id

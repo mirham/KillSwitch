@@ -9,281 +9,261 @@ import SwiftUI
 import Network
 import Factory
 
-struct AllowedIpsEditView : IpAddressContainerView {
+struct AllowedIpsEditView: IpAddressContainerView {
     @EnvironmentObject var appState: AppState
-    
     @Environment(\.colorScheme) private var colorScheme
     
     @Injected(\.ipService) private var ipService
     @Injected(\.monitoringService) private var monitoringService
     
-    @State private var ipId: UUID?
-    @State private var newIp = String()
+    @State private var editingIpId: UUID?
+    @State private var newIpAddress = String()
     @State private var isNewIpValid = false
-    @State private var newIpSafetyType: SafetyType = SafetyType.compete
-    @State private var isLastIp: Bool = false
-    @State private var alertType: AlertType? = nil
-    @State private var pendingAlert: AlertType? = nil
+    @State private var newIpSafetyType: SafetyType = .compete
+    @State private var alertState: AlertState?
     
     var body: some View {
         VStack(alignment: .leading) {
-            HStack {
-                Image(systemName: Constants.iconInfoFill)
-                    .asInfoIcon()
-                Text(Constants.hintAllowedIps)
-                    .padding(.top)
-                    .padding(.trailing)
-            }
+            infoHeader
             Spacer()
                 .frame(height: 10)
-            VStack(alignment: .center) {
-                Text(Constants.settingsElementAllowedIpAddresses)
-                    .font(.title3)
-                    .multilineTextAlignment(.center)
-                NavigationStack() {
-                    List {
-                        ForEach(appState.userData.allowedIps, id: \.ipAddress) { ipAddress in
-                            HStack {
-                                Text(ipAddress.ipAddress)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                Spacer()
-                                Image(nsImage: getCountryFlag(countryCode: ipAddress.countryCode))
-                                Text(ipAddress.countryName)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                Spacer()
-                                Circle()
-                                    .fill(getSafetyColor(safetyType: ipAddress.safetyType, colorScheme: colorScheme))
-                                    .frame(width: 10, height: 10)
-                            }
+            allowedIpsList
+        }
+        .alert(item: $alertState) { state in
+            alert(for: state)
+        }
+    }
+    
+    // MARK: View sections
+    
+    @ViewBuilder
+    private var infoHeader: some View {
+        HStack {
+            Image(systemName: Constants.iconInfoFill)
+                .asInfoIcon()
+            Text(Constants.hintAllowedIps)
+                .padding(.top)
+                .padding(.trailing)
+        }
+    }
+    
+    @ViewBuilder
+    private var allowedIpsList: some View {
+        VStack(alignment: .center) {
+            Text(Constants.settingsElementAllowedIpAddresses)
+                .font(.title3)
+                .multilineTextAlignment(.center)
+            NavigationStack {
+                List {
+                    ForEach(appState.userData.allowedIps, id: \.ipAddress) { ipAddress in
+                        ipAddressRow(for: ipAddress)
                             .contextMenu {
-                                Button(action: { String.copyToClipboard(input: ipAddress.ipAddress) } ) {
+                                Button(action: { String.copyToClipboard(input: ipAddress.ipAddress) }) {
                                     Text(Constants.copy)
                                 }
-                                Button(action: { handleEditAllowedIpClick(ipAddress: ipAddress) }) {
+                                Button(action: { startEditing(ipAddress) }) {
                                     Text(Constants.edit)
                                 }
-                                Button(action: { handldeDeleteAllowedIpClick(ipAddress: ipAddress) }) {
+                                Button(action: { confirmDelete(ipAddress) }) {
                                     Text(Constants.delete)
                                 }
                             }
-                        }
                     }
                 }
-                .padding(10)
-                .safeAreaInset(edge: .bottom) {
-                    VStack {
-                        HStack {
-                            Text("\(Constants.ip):")
-                                .frame(width: 80, alignment: .leading)
-                            TextField(Constants.hintNewVaildIpAddress, text: $newIp)
-                                .onChange(of: newIp) {
-                                    isNewIpValid = newIp.isValidIp()
-                                }
-                        }
-                        HStack {
-                            Text("\(Constants.safety):")
-                                .frame(width: 80, alignment: .leading)
-                            RadioButton(
-                                id: String(SafetyType.compete.rawValue),
-                                label: SafetyType.compete.description,
-                                size: 12,
-                                color: getSafetyColor(safetyType: .compete, colorScheme: colorScheme),
-                                textSize: 11,
-                                isMarked: newIpSafetyType == SafetyType.compete,
-                                callback: { _ in newIpSafetyType = SafetyType.compete }
-                            )
-                            Spacer()
-                                .frame(width: 5)
-                            RadioButton(
-                                id: String(SafetyType.some.rawValue),
-                                label: SafetyType.some.description,
-                                size: 12,
-                                color: getSafetyColor(safetyType: .some, colorScheme: colorScheme),
-                                textSize: 11,
-                                isMarked: newIpSafetyType == SafetyType.some,
-                                callback: { _ in newIpSafetyType = SafetyType.some }
-                            )
-                        }
-                        AsyncButton(
-                            ipId == nil ? Constants.add : Constants.save,
-                            action: handleUpsertAllowedIpClickAsync)
-                            .disabled(!isNewIpValid)
-                            .bold()
-                            .pointerOnHover()
-                    }
-                    .padding(10)
-                }
+            }
+            .padding(10)
+            .safeAreaInset(edge: .bottom) {
+                addEditIpForm
             }
         }
-        .alert(isPresented: Binding(
-            get: { alertType != nil },
-            set: { _ in
-                alertType = pendingAlert
-                pendingAlert = nil
-            }
-        )) {
-            if alertType!.alertContent.isDismissableAlert {
-                return Alert (
-                    title: Text(alertType?.alertContent.title ?? String()),
-                    message: Text(alertType?.alertContent.message ?? String()),
-                    dismissButton: .default(Text(Constants.ok)) {
-                        alertType = pendingAlert
-                        pendingAlert = nil
+    }
+    
+    @ViewBuilder
+    private func ipAddressRow(for ipAddress: IpInfo) -> some View {
+        HStack {
+            Text(ipAddress.ipAddress)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            
+            Spacer()
+            
+            Image(nsImage: getCountryFlag(countryCode: ipAddress.countryCode))
+            
+            Text(ipAddress.countryName)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            
+            Spacer()
+            
+            Circle()
+                .fill(getSafetyColor(safetyType: ipAddress.safetyType, colorScheme: colorScheme))
+                .frame(width: 10, height: 10)
+        }
+    }
+    
+    @ViewBuilder
+    private var addEditIpForm: some View {
+        VStack {
+            HStack {
+                Text("\(Constants.ip):")
+                    .frame(width: 80, alignment: .leading)
+                TextField(Constants.hintNewVaildIpAddress, text: $newIpAddress)
+                    .onChange(of: newIpAddress) { _, newValue in
+                        isNewIpValid = newValue.isValidIp()
                     }
+            }
+            HStack {
+                Text("\(Constants.safety):")
+                    .frame(width: 80, alignment: .leading)
+                
+                RadioButton(
+                    id: String(SafetyType.compete.rawValue),
+                    label: SafetyType.compete.description,
+                    size: 12,
+                    color: getSafetyColor(safetyType: .compete, colorScheme: colorScheme),
+                    textSize: 11,
+                    isMarked: newIpSafetyType == .compete,
+                    callback: { _ in newIpSafetyType = .compete }
+                )
+                Spacer()
+                    .frame(width: 5)
+                RadioButton(
+                    id: String(SafetyType.some.rawValue),
+                    label: SafetyType.some.description,
+                    size: 12,
+                    color: getSafetyColor(safetyType: .some, colorScheme: colorScheme),
+                    textSize: 11,
+                    isMarked: newIpSafetyType == .some,
+                    callback: { _ in newIpSafetyType = .some }
                 )
             }
-            else {
-                return Alert(
-                    title: Text(alertType?.alertContent.title ?? String()),
-                    message: Text(alertType?.alertContent.message ?? String()),
-                    primaryButton: .destructive(Text(Constants.delete)) {
-                        if let ipInfo = alertType?.alertContent.ipInfo,
-                           let action = alertType?.alertContent.ipInfoAction {
-                            action(ipInfo)
-                        }
-                    },
-                    secondaryButton: .cancel() {
-                        alertType = pendingAlert
-                        pendingAlert = nil
-                    })
-            }
-
+            AsyncButton(
+                editingIpId == nil ? Constants.add : Constants.save,
+                action: upsertAllowedIpAsync
+            )
+            .disabled(!isNewIpValid)
+            .bold()
+            .pointerOnHover()
         }
+        .padding(10)
     }
     
     // MARK: Private functions
     
-    private func handleUpsertAllowedIpClickAsync() async {
+    private func upsertAllowedIpAsync() async {
         let ipInfoResult = await ipService.getPublicIpInfoAsync(
             apiUrl: appState.userData.ipInfoApiUrl,
-            publicIp: newIp,
+            publicIp: newIpAddress,
             keyMapping: appState.userData.ipInfoApiKeyMapping,
-            fetchedFromApi: nil)
-        let isNewIpInvalid = appState.userData.pickyMode && ipInfoResult.error != nil
+            fetchedFromApi: nil
+        )
         
-        if isNewIpInvalid {
-            showAlert(.newIpInvalid)
+        let isInvalidInPickyMode = appState.userData.pickyMode
+            && ipInfoResult.error != nil
+        
+        guard !isInvalidInPickyMode else {
+            alertState = .newIpInvalid
             
             return
         }
         
         let ipInfo = IpInfo(
-            ipId ?? UUID(),
-            ipAddress: newIp,
+            editingIpId ?? UUID(),
+            ipAddress: newIpAddress,
             ipAddressInfo: ipInfoResult.result,
-            safetyType: newIpSafetyType)
+            safetyType: newIpSafetyType
+        )
         
-        if let currentIpIndex = appState.userData.allowedIps.firstIndex(
-            where: {$0.id == ipInfo.id || $0.ipAddress == ipInfo.ipAddress}) {
-            appState.userData.allowedIps[currentIpIndex] = ipInfo
+        if let existingIndex = appState.userData.allowedIps
+            .firstIndex(where: {
+                $0.id == ipInfo.id || $0.ipAddress == ipInfo.ipAddress
+            }) {
+            appState.userData.allowedIps[existingIndex] = ipInfo
             
-            let matches = appState.userData.allowedIps.filter({$0.ipAddress == newIp})
+            let duplicates = appState.userData.allowedIps
+                .filter { $0.ipAddress == newIpAddress }
             
-            if matches.count > 1 {
-                appState.userData.allowedIps.removeAll(where: {$0.id == matches.last!.id})
+            if duplicates.count > 1, let lastDuplicate = duplicates.last {
+                appState.userData.allowedIps
+                    .removeAll { $0.id == lastDuplicate.id }
             }
-        }
-        else {
+        } else {
             ipService.addAllowedPublicIp(publicIp: ipInfo)
         }
         
-        ipId = nil
-        newIp = String()
-        isNewIpValid = false
-        newIpSafetyType = SafetyType.compete
+        resetForm()
     }
     
-    private func handleEditAllowedIpClick(ipAddress: IpInfo) {
-        ipId = ipAddress.id
-        newIp = ipAddress.ipAddress
+    private func startEditing(_ ipAddress: IpInfo) {
+        editingIpId = ipAddress.id
+        newIpAddress = ipAddress.ipAddress
         newIpSafetyType = ipAddress.safetyType
+        isNewIpValid = true
     }
     
-    private func handleLastAllowedIpAlertDeleteClick(ipAddress: IpInfo) {
-        monitoringService.stopMonitoring()
-        deleteAllowedIpAddress(ipAddress: ipAddress)
-    }
-    
-    private func handldeDeleteAllowedIpClick(ipAddress: IpInfo) {
-        isLastIp = appState.monitoring.isEnabled && appState.userData.allowedIps.count == 1
+    private func confirmDelete(_ ipAddress: IpInfo) {
+        let isLastActiveIp = appState.monitoring.isEnabled && appState.userData.allowedIps.count == 1
         
-        guard !isLastIp else {
-             showAlert(.lastAllowedIpDeleting(
-                ip: ipAddress,
-                ipInfoAction: { ipAddress in handleLastAllowedIpAlertDeleteClick(ipAddress: ipAddress) }))
-            
-            return
-        }
-        
-        deleteAllowedIpAddress(ipAddress: ipAddress)
-    }
-    
-    private func deleteAllowedIpAddress(ipAddress: IpInfo) {
-        appState.userData.allowedIps.removeAll(where: {$0 == ipAddress})
-    }
-    
-    private func showAlert(_ type: AlertType) {
-        if alertType == nil {
-            alertType = type
+        if isLastActiveIp {
+            alertState = .lastAllowedIpDeleting(ip: ipAddress)
         } else {
-            pendingAlert = type
+            deleteAllowedIp(ipAddress)
+        }
+    }
+    
+    private func deleteAllowedIp(_ ipAddress: IpInfo) {
+        appState.userData.allowedIps
+            .removeAll { $0 == ipAddress }
+    }
+    
+    private func deleteAllowedIpAndStopMonitoring(_ ipAddress: IpInfo) {
+        monitoringService.stopMonitoring()
+        deleteAllowedIp(ipAddress)
+    }
+    
+    private func resetForm() {
+        editingIpId = nil
+        newIpAddress = String()
+        isNewIpValid = false
+        newIpSafetyType = .compete
+    }
+    
+    private func alert(for state: AlertState) -> Alert {
+        switch state {
+            case .newIpInvalid:
+                return Alert(
+                    title: Text(Constants.dialogHeaderIpIsNotValid),
+                    message: Text(Constants.dialogBodyIpIsNotValid),
+                    dismissButton: .default(Text(Constants.ok)) {
+                        alertState = nil
+                    }
+                )
+            case .lastAllowedIpDeleting(let ip):
+                return Alert(
+                    title: Text(Constants.dialogHeaderLastAllowedIpDeleting),
+                    message: Text(String(format: Constants.dialogBodyLastAllowedIpDeleting, ip.ipAddress)),
+                    primaryButton: .destructive(Text(Constants.delete)) {
+                        deleteAllowedIpAndStopMonitoring(ip)
+                        alertState = nil
+                    },
+                    secondaryButton: .cancel {
+                        alertState = nil
+                    }
+                )
         }
     }
     
     // MARK: Inner types
     
-    private enum AlertType: Identifiable {
+    private enum AlertState: Identifiable {
         case newIpInvalid
-        case lastAllowedIpDeleting(ip: IpInfo, ipInfoAction: ((_ ipAddress: IpInfo) -> Void))
+        case lastAllowedIpDeleting(ip: IpInfo)
         
-        var id: Int {
-            switch self {
-                case .newIpInvalid: return 0
-                case .lastAllowedIpDeleting: return 1
-            }
-        }
-        
-        var alertContent: AlertContent {
+        var id: String {
             switch self {
                 case .newIpInvalid:
-                    return AlertContent(
-                        title: Constants.dialogHeaderIpIsNotValid,
-                        message: Constants.dialogBodyIpIsNotValid)
-                case .lastAllowedIpDeleting(let ipInfo, let ipInfoAction):
-                    return AlertContent(
-                        title: Constants.dialogHeaderLastAllowedIpDeleting,
-                        message: String(format: Constants.dialogBodyLastAllowedIpDeleting, ipInfo.ipAddress),
-                        ipInfo: ipInfo,
-                        ipInfoAction: ipInfoAction)
+                    return "newIpInvalid"
+                case .lastAllowedIpDeleting(let ip):
+                    return "lastAllowedIpDeleting_\(ip.id.uuidString)"
             }
-        }
-    }
-    
-    private struct AlertContent {
-        let title: String
-        let message: String
-        let isDismissableAlert: Bool
-        let ipInfo: IpInfo?
-        let ipInfoAction: ((_ input: IpInfo) -> Void)?
-        
-        init(title: String,
-             message: String) {
-            self.title = title
-            self.message = message
-            self.isDismissableAlert = true
-            self.ipInfo = nil
-            self.ipInfoAction = nil
-        }
-        
-        init(title: String,
-             message: String,
-             ipInfo: IpInfo,
-             ipInfoAction: @escaping ((_ input: IpInfo) -> Void)) {
-            self.title = title
-            self.message = message
-            self.isDismissableAlert = false
-            self.ipInfo = ipInfo
-            self.ipInfoAction = ipInfoAction
         }
     }
 }

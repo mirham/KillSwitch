@@ -7,16 +7,18 @@
 
 import Foundation
 
-
 struct NetworkInterface: Hashable, Equatable {
     let name: String
     let localizedName: String?
     var friendlyName: String?
-    var type: NetworkInterfaceType
+    let type: NetworkInterfaceType
+    
     var isPhysical: Bool {
-        get {
-            let result = (type == .wired || type == .wifi || type == .cellular)
-            return result
+        switch type {
+            case .wired, .wifi, .cellular:
+                return true
+            default:
+                return false
         }
     }
     

@@ -75,9 +75,9 @@ final class ProcessService: ShellAccessible, ProcessServiceType {
                 }
                 
                 let shouldKill = !processesToKill.isEmpty
-                && snapshot.isMonitoringEnabled
-                && (snapshot.safetyType == .unsafe
-                    || (snapshot.useHigherProtection
+                    && snapshot.isMonitoringEnabled
+                    && (snapshot.safetyType == .unsafe
+                        || (snapshot.useHigherProtection
                         && snapshot.publicIp?.hasLocation() == false))
                 
                 if shouldKill {
@@ -102,6 +102,7 @@ final class ProcessService: ShellAccessible, ProcessServiceType {
                 loggingService.write(
                     message: ProcessError.invalidRegex(bundleId: appToClose.bundleId).errorDescription ?? String(),
                     type: .error)
+                
                 return nil
             }
             

@@ -63,6 +63,7 @@ final class MonitoringService: MonitoringServiceType {
         monitoringTask = nil
         
         computerService.stopSleepPreventing()
+        
         loggingService.write(
             message: Constants.logMonitoringHasBeenDisabled,
             type: .success)
@@ -72,7 +73,9 @@ final class MonitoringService: MonitoringServiceType {
             else { return }
             
             appState.applyMonitoringUpdate(
-                MonitoringStateUpdateBuilder().withIsMonitoringEnabled(false).build()
+                MonitoringStateUpdateBuilder()
+                    .withIsMonitoringEnabled(false)
+                    .build()
             )
         }
     }
@@ -80,10 +83,10 @@ final class MonitoringService: MonitoringServiceType {
     // MARK: Private functions
     
     private func runPeriodicChecksAsync() async {
-        let shouldCheckIp = appState.userData.periodicIpCheck &&
+        let checkIp = appState.userData.periodicIpCheck &&
         monitoringTime % appState.userData.intervalBetweenChecks == 0
         
-        if shouldCheckIp {
+        if checkIp {
             let result = await ipService.getPublicIpAsync(
                 ipApiUrl: nil,
                 withInfo: true)
@@ -95,7 +98,8 @@ final class MonitoringService: MonitoringServiceType {
         enforceIpAllowlist()
     }
         
-    private func handleUpdatedPublicIpResultAsync(_ result: OperationResult<IpInfoBase>) async {
+    private func handleUpdatedPublicIpResultAsync(
+        _ result: OperationResult<IpInfoBase>) async {
         guard !Task.isCancelled
         else { return }
         
@@ -117,7 +121,9 @@ final class MonitoringService: MonitoringServiceType {
             await updateStatusAsync { $0.withPublicIp(ipInfo) }
             
             loggingService.write(
-                message: String(format: Constants.logPublicIpHasBeenUpdated, ipInfo.ipAddress),
+                message: String(
+                    format: Constants.logPublicIpHasBeenUpdated,
+                    ipInfo.ipAddress),
                 type: .info
             )
         }
@@ -146,7 +152,10 @@ final class MonitoringService: MonitoringServiceType {
         )
         
         disableActiveNetworkInterfaces()
-        loggingService.write(message: message, type: .warning)
+        
+        loggingService.write(
+            message: message,
+            type: .warning)
         
         if appState.userData.autoCloseApps {
             processService.killActiveProcesses()
@@ -160,19 +169,25 @@ final class MonitoringService: MonitoringServiceType {
         else { return }
         
         disableActiveNetworkInterfaces()
-        loggingService.write(message: Constants.errorNoActiveIpApiFound, type: .error)
+        
+        loggingService.write(
+            message: Constants.errorNoActiveIpApiFound,
+            type: .error)
     }
     
-    private func shouldDisableConnection(for result: OperationResult<IpInfoBase>) -> Bool {
+    private func shouldDisableConnection(
+        for result: OperationResult<IpInfoBase>) -> Bool {
         isUnsafeUnderHigherProtection(result) || hasNoActiveIpApi(result)
     }
     
-    private func isUnsafeUnderHigherProtection(_ result: OperationResult<IpInfoBase>) -> Bool {
+    private func isUnsafeUnderHigherProtection(
+        _ result: OperationResult<IpInfoBase>) -> Bool {
         appState.userData.useHigherProtection &&
         (appState.system.locationServicesEnabled || result.result == nil)
     }
     
-    private func hasNoActiveIpApi(_ result: OperationResult<IpInfoBase>) -> Bool {
+    private func hasNoActiveIpApi(
+        _ result: OperationResult<IpInfoBase>) -> Bool {
         result.error == Constants.errorNoActiveIpApiFound
     }
         
@@ -191,7 +206,8 @@ final class MonitoringService: MonitoringServiceType {
         guard !Task.isCancelled
         else { return }
         
-        let update = configure(MonitoringStateUpdateBuilder()).build()
+        let update = configure(MonitoringStateUpdateBuilder())
+            .build()
         
         await MainActor.run {
             appState.applyMonitoringUpdate(update)

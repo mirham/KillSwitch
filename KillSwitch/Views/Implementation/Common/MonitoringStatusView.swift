@@ -8,96 +8,97 @@
 import SwiftUI
 import Factory
 
-struct MonitoringStatusView : View {
+struct MonitoringStatusView: View {
     @EnvironmentObject var appState: AppState
-    
     @Environment(\.openWindow) private var openWindow
     @Environment(\.controlActiveState) private var controlActiveState
     
     @Injected(\.monitoringService) private var monitoringService
     
-    @State private var showOverText = false
+    @State private var isHovering = false
+    
+    private var monitoringStatusControlData: MonitoringStatusControlData {
+        if appState.monitoring.isEnabled {
+            return MonitoringStatusControlData(
+                text: Constants.on,
+                color: .green,
+                hintText: Constants.hintClickToDisableMonitoring
+            )
+        } else {
+            return MonitoringStatusControlData(
+                text: Constants.off,
+                color: .red,
+                hintText: Constants.hintClickToEnableMonitoring
+            )
+        }
+    }
     
     var body: some View {
-        Section() {
-            VStack{
+        Section {
+            VStack {
                 Text(Constants.monitoring.uppercased())
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
-                renderMonitoringStatusControl()
+                monitoringStatusControl
             }
         }
-        //.frame(width: 110, height: 90)
     }
     
-    // MARK: Private functions
+    // MARK: View sections
     
-    private func renderMonitoringStatusControl() -> some View {
-        let data = getMonitoringStatusControlData()
+    @ViewBuilder
+    private var monitoringStatusControl: some View {
+        let data = monitoringStatusControlData
         
-        let result = Text(data.text.uppercased())
+        Text(data.text.uppercased())
             .frame(width: 60, height: 60)
             .background(data.color)
             .foregroundColor(.black.opacity(0.5))
             .font(.system(size: 18))
             .bold()
             .clipShape(Circle())
-            .overlay(content: { Circle().stroke(.blue, lineWidth: showOverText ? 2 : 0) })
-            .onTapGesture(perform: toggleMotinoring)
+            .overlay(
+                Circle()
+                    .stroke(.blue, lineWidth: isHovering ? 2 : 0)
+            )
+            .onTapGesture(perform: toggleMonitoring)
             .pointerOnHover()
-            .onHover(perform: { hovering in
-                showOverText = hovering && controlActiveState == .key
-            })
-            .popover(isPresented: $showOverText, arrowEdge: .trailing, content: {
+            .onHover { hovering in
+                isHovering = hovering && controlActiveState == .key
+            }
+            .popover(isPresented: $isHovering, arrowEdge: .trailing) {
                 Text(data.hintText)
                     .padding()
                     .interactiveDismissDisabled()
-            })
-        
-        return result
+            }
     }
     
-    private func getMonitoringStatusControlData() -> MonitoringStatusControlData {
-        switch appState.monitoring.isEnabled {
-            case true:
-                return MonitoringStatusControlData(
-                    text:Constants.on,
-                    color: .green,
-                    hintText: Constants.hintClickToDisableMonitoring)
-            case false:
-                return MonitoringStatusControlData(
-                    text:Constants.off,
-                    color: .red,
-                    hintText: Constants.hintClickToEnableMonitoring)
-        }
-    }
+    // MARK: Private functions
     
-    
-    private func toggleMotinoring() {
-        showOverText = false
+    private func toggleMonitoring() {
+        isHovering = false
         
-        if (appState.monitoring.isEnabled) {
+        if appState.monitoring.isEnabled {
             monitoringService.stopMonitoring()
-        }
-        else {
-            if (appState.userData.allowedIps.isEmpty) {
-                showNoOneAllowedIpDialog()
+        } else {
+            guard !appState.userData.allowedIps.isEmpty else {
+                showNoAllowedIpDialog()
+                
+                return
             }
-            else {
-                monitoringService.startMonitoring()
-            }
+            monitoringService.startMonitoring()
         }
     }
     
-    private func showNoOneAllowedIpDialog() {
-        let showDialog = !appState.views.shownWindows
-            .contains(where: {$0 == Constants.windowIdNoOneAllowedIpDialog})
+    private func showNoAllowedIpDialog() {
+        let dialogAlreadyShown = appState.views.shownWindows
+            .contains(where: { $0 == Constants.windowIdNoOneAllowedIpDialog })
         
-        if showDialog {
-            openWindow(id: Constants.windowIdNoOneAllowedIpDialog)
-        }
-
+        guard !dialogAlreadyShown
+        else { return }
+        
+        openWindow(id: Constants.windowIdNoOneAllowedIpDialog)
     }
     
     // MARK: Inner types

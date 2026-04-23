@@ -8,83 +8,104 @@
 import SwiftUI
 import Factory
 
-struct ProcessesStatusView : View {
+struct ProcessesStatusView: View {
     @EnvironmentObject var appState: AppState
-
     @Environment(\.openWindow) private var openWindow
     @Environment(\.controlActiveState) private var controlActiveState
     
     @Injected(\.processService) private var processService
     
-    @State private var showOverText = false
+    @State private var isHovering = false
     
     var body: some View {
-        Section() {
-            VStack{
+        Section {
+            VStack {
                 Text(Constants.applications.uppercased())
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
+                
                 Section {
-                    Text(appState.system.processesToKill.count.description)
-                        .frame(width: 60, height: 60)
-                        .background(.yellow)
-                        .foregroundColor(.black.opacity(0.5))
-                        .font(.system(size: 18))
-                        .bold()
-                        .clipShape(Circle())
-                        .overlay(content: { Circle()
-                            .stroke(.blue, lineWidth: showOverText ? 2 : 0) })
-                        .onTapGesture(perform: handleCloseAllpicationsButtonClick)
-                        .pointerOnHover()
-                }
-                .onHover(perform: { hovering in
-                    showOverText = hovering && controlActiveState == .key
-                })
-                .popover(isPresented: ($showOverText), arrowEdge: .trailing, content: {
-                    VStack{
-                        Text(Constants.clickToClose)
-                        VStack(alignment: .leading) {
-                            ForEach(appState.system.processesToKill, id: \.pid) { processInfo in
-                                HStack {
-                                    Image(nsImage: NSWorkspace.shared.icon(forFile: processInfo.url))
-                                    Text(processInfo.name)
-                                }
-                            }
+                    processCountView
+                        .onTapGesture(perform: handleCloseAllApplicationsButtonClick)
+                        .onHover(perform: updateHoverState)
+                        .popover(isPresented: $isHovering, arrowEdge: .trailing) {
+                            processesPopoverContent
                         }
-                    }
-                    .padding()
-                    .interactiveDismissDisabled()
-                })
+                }
             }
         }
-        //.frame(width: 110, height: 90)
-        .isHidden(hidden:appState.system.processesToKill.isEmpty, remove: true)
+        .isHidden(appState.system.processesToKill.isEmpty, remove: true)
+    }
+    
+    // MARK: View sections
+    
+    private var processCountView: some View {
+        Text(appState.system.processesToKill.count.description)
+            .frame(width: 60, height: 60)
+            .background(.yellow)
+            .foregroundColor(.black.opacity(0.5))
+            .font(.system(size: 18))
+            .bold()
+            .clipShape(Circle())
+            .overlay(
+                Circle()
+                    .stroke(.blue, lineWidth: isHovering ? 2 : 0)
+            )
+            .pointerOnHover()
+    }
+    
+    @ViewBuilder
+    private var processesPopoverContent: some View {
+        VStack {
+            Text(Constants.clickToClose)
+            
+            VStack(alignment: .leading) {
+                ForEach(appState.system.processesToKill, id: \.pid) {
+                    processInfo in
+                    HStack {
+                        Image(nsImage: NSWorkspace.shared.icon(
+                            forFile: processInfo.url))
+                        Text(processInfo.name)
+                    }
+                }
+            }
+        }
+        .padding()
+        .interactiveDismissDisabled()
     }
     
     // MARK: Private functions
     
-    private func handleCloseAllpicationsButtonClick() {
-        if (appState.userData.appsCloseConfirmation) {
+    private func updateHoverState(_ isHovering: Bool) {
+        self.isHovering = isHovering && controlActiveState == .key
+    }
+    
+    private func handleCloseAllApplicationsButtonClick() {
+        if appState.userData.appsCloseConfirmation {
             showKillProcessesConfirmationDialog()
-        }
-        else {
+        } else {
             closeApplications()
         }
     }
     
     private func showKillProcessesConfirmationDialog() {
-        let showDialog = !appState.views.shownWindows
-            .contains(where: {$0 == Constants.windowIdKillProcessesConfirmationDialog})
+        let dialogAlreadyShown = appState.views.shownWindows
+            .contains(
+                where: {
+                    $0 == Constants.windowIdKillProcessesConfirmationDialog
+                }
+            )
         
-        if showDialog {
-            openWindow(id: Constants.windowIdKillProcessesConfirmationDialog)
-        }
+        guard !dialogAlreadyShown
+        else { return }
+        
+        openWindow(id: Constants.windowIdKillProcessesConfirmationDialog)
     }
     
-    private func closeApplications(){
-        self.processService.killActiveProcesses()
-        showOverText = false
+    private func closeApplications() {
+        processService.killActiveProcesses()
+        isHovering = false
     }
 }
 

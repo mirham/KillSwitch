@@ -13,7 +13,7 @@ enum ComputerError: LocalizedError {
     var errorDescription: String? {
         switch self {
             case .rebootFailed(let reason):
-                return String(format: Constants.logCannotReboot, reason)
+                return "Cannot reboot the computer: \(reason)"
         }
     }
 }

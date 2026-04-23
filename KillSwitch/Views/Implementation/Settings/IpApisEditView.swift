@@ -8,157 +8,171 @@
 import SwiftUI
 import Factory
 
-struct IpApisEditView : View {
+struct IpApisEditView: View {
     @EnvironmentObject var appState: AppState
     
     @Injected(\.ipService) private var ipService
     
-    @State private var newUrl = String()
+    @State private var newApiUrl = String()
     @State private var isNewUrlValid = false
-    @State private var alertType: AlertType? = nil
-    @State private var pendingAlert: AlertType? = nil
+    @State private var alertState: AlertState?
     
     var body: some View {
         VStack(alignment: .leading) {
-            HStack {
-                Image(systemName: Constants.iconInfoFill)
-                    .asInfoIcon()
-                Text(Constants.hintIpApis)
-                    .padding(.top)
-                    .padding(.trailing)
-            }
+            infoHeader
             Spacer()
                 .frame(height: 10)
-            VStack(alignment: .center) {
-                Text(Constants.settingsElementIpAddressApis)
-                    .font(.title3)
-                    .multilineTextAlignment(.center)
-                NavigationStack {
-                    List {
-                        ForEach(appState.userData.ipApis, id: \.id) { api in
-                            HStack {
-                                Text(api.url)
-                                Spacer()
-                                Circle()
-                                    .fill(api.isActive() ? .green : .red)
-                                    .frame(width: 10, height: 10)
-                                
-                            }
-                            .help(api.isActive() ? Constants.hintApiIsActive : Constants.hintApiIsInactive)
-                            .contextMenu {
-                                Button(action: { String.copyToClipboard(input: api.url) } ) {
-                                    Text(Constants.copy)
-                                }
-                                Button(action: { handleDeleteIpApiClick(ipApiUrl: api.url) }) {
-                                    Text(Constants.delete)
-                                }
-                            }
-                        }
-                    }
-                    .padding(10)
-                }
-                .safeAreaInset(edge: .bottom) {
-                    VStack {
-                        HStack {
-                            Text("\(Constants.apiUrl):")
-                            TextField(Constants.hintNewVaildApiUrl, text: $newUrl)
-                                .onChange(of: newUrl) {
-                                    isNewUrlValid = newUrl.isValidUrl()
-                                }
-                        }
-                        AsyncButton(Constants.add, action: handleAddIpApiClickAsync)
-                            .disabled(!isNewUrlValid)
-                            .pointerOnHover()
-                            .bold()
-                    }
-                    .padding(10)
-                }
-            }
+            ipApisList
         }
-        .alert(isPresented: Binding(
-            get: { alertType != nil },
-            set: { _ in
-                alertType = pendingAlert
-                pendingAlert = nil
-            }
-        )) {
-            Alert (
-                title: Text(alertType?.alertContent.title ?? String()),
-                message: Text(alertType?.alertContent.message ?? String()),
+        .alert(item: $alertState) { state in
+            Alert(
+                title: Text(state.title),
+                message: Text(state.message),
                 dismissButton: .default(Text(Constants.ok)) {
-                    alertType = pendingAlert
-                    pendingAlert = nil
+                    alertState = nil
                 }
             )
         }
     }
     
+    // MARK: View sections
+    
+    @ViewBuilder
+    private var infoHeader: some View {
+        HStack {
+            Image(systemName: Constants.iconInfoFill)
+                .asInfoIcon()
+            Text(Constants.hintIpApis)
+                .padding(.top)
+                .padding(.trailing)
+        }
+    }
+    
+    @ViewBuilder
+    private var ipApisList: some View {
+        VStack(alignment: .center) {
+            Text(Constants.settingsElementIpAddressApis)
+                .font(.title3)
+                .multilineTextAlignment(.center)
+            NavigationStack {
+                List {
+                    ForEach(appState.userData.ipApis, id: \.id) { api in
+                        ipApiRow(for: api)
+                            .contextMenu {
+                                Button(action: { String.copyToClipboard(input: api.url) }) {
+                                    Text(Constants.copy)
+                                }
+                                Button(action: { confirmDelete(api.url) }) {
+                                    Text(Constants.delete)
+                                }
+                            }
+                    }
+                }
+                .padding(10)
+            }
+            .safeAreaInset(edge: .bottom) {
+                addApiForm
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private func ipApiRow(for api: IpApiInfo) -> some View {
+        HStack {
+            Text(api.url)
+            Spacer()
+            Circle()
+                .fill(api.isActive() ? .green : .red)
+                .frame(width: 10, height: 10)
+        }
+        .help(api.isActive() ? Constants.hintApiIsActive : Constants.hintApiIsInactive)
+    }
+    
+    @ViewBuilder
+    private var addApiForm: some View {
+        VStack {
+            HStack {
+                Text("\(Constants.apiUrl):")
+                TextField(Constants.hintNewVaildApiUrl, text: $newApiUrl)
+                    .onChange(of: newApiUrl) { _, newValue in
+                        isNewUrlValid = newValue.isValidUrl()
+                    }
+            }
+            AsyncButton(Constants.add, action: addNewApiAsync)
+                .disabled(!isNewUrlValid)
+                .pointerOnHover()
+                .bold()
+        }
+        .padding(10)
+    }
+    
     // MARK: Private functions
     
-    private func handleAddIpApiClickAsync() async {
-        let ipAddressResult = await ipService.getPublicIpAsync(ipApiUrl: newUrl, withInfo: true)
+    private func addNewApiAsync() async {
+        let ipAddressResult = await ipService.getPublicIpAsync(
+            ipApiUrl: newApiUrl,
+            withInfo: true
+        )
         
         guard ipAddressResult.success else {
-            showAlert(.ipApiInvalid)
-            
+            alertState = .apiInvalid
             return
         }
         
-        guard !appState.userData.ipApis.contains(where: {$0.url == newUrl}) else {
-            return
-        }
+        let isDuplicate = appState.userData.ipApis
+            .contains { $0.url == newApiUrl }
+        guard !isDuplicate else { return }
         
-        let newApi = IpApiInfo(url: newUrl, active: true)
-        
+        let newApi = IpApiInfo(url: newApiUrl, active: true)
         appState.userData.ipApis.append(newApi)
         
-        newUrl = String()
-        isNewUrlValid = false
+        resetForm()
     }
     
-    private func handleDeleteIpApiClick(ipApiUrl: String) {
-        guard appState.userData.ipApis.count > Constants.minIpApiCount
-
-        else {
-            showAlert(.lastIpApi)
+    private func confirmDelete(_ apiUrl: String) {
+        let isLastApi = appState.userData.ipApis.count <= Constants.minIpApiCount
+        
+        guard !isLastApi else {
+            alertState = .lastApiCannotBeRemoved
             
             return
         }
         
-        appState.userData.ipApis.removeAll(where: {$0.url == ipApiUrl})
+        deleteApi(at: apiUrl)
     }
     
-    private func showAlert(_ type: AlertType) {
-        if alertType == nil {
-            alertType = type
-        } else {
-            pendingAlert = type
-        }
+    private func deleteApi(at apiUrl: String) {
+        appState.userData.ipApis.removeAll { $0.url == apiUrl }
+    }
+    
+    private func resetForm() {
+        newApiUrl = String()
+        isNewUrlValid = false
     }
     
     // MARK: Inner types
     
-    private enum AlertType: Identifiable {
-        case ipApiInvalid
-        case lastIpApi
+    private enum AlertState: Identifiable {
+        case apiInvalid
+        case lastApiCannotBeRemoved
         
-        var id: Int {
+        var id: Self { self }
+        
+        var title: String {
             switch self {
-                case .ipApiInvalid: return 0
-                case .lastIpApi: return 1
+                case .apiInvalid:
+                    return Constants.dialogHeaderApiIsNotValid
+                case .lastApiCannotBeRemoved:
+                    return Constants.dialogHeaderLastIpApiCannotBeRemoved
             }
         }
         
-        var alertContent: (title: String, message: String) {
+        var message: String {
             switch self {
-                case .ipApiInvalid:
-                    return (
-                        title: Constants.dialogHeaderApiIsNotValid,
-                        message: Constants.dialogBodyApiIsNotValid)
-                case .lastIpApi:
-                    return (
-                        title: Constants.dialogHeaderLastIpApiCannotBeRemoved,
-                        message: Constants.dialogBodyLastIpApiCannotBeRemoved)
+                case .apiInvalid:
+                    return Constants.dialogBodyApiIsNotValid
+                case .lastApiCannotBeRemoved:
+                    return Constants.dialogBodyLastIpApiCannotBeRemoved
             }
         }
     }

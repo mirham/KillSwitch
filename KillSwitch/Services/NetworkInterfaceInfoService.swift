@@ -32,7 +32,9 @@ final class NetworkInterfaceInfoService : NSObject, NetworkInterfaceInfoServiceT
     }
     
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-        guard let continuation = ssidContinuation else { return }
+        guard let continuation = ssidContinuation
+        else { return }
+        
         ssidContinuation = nil
         
         switch manager.authorizationStatus {
@@ -125,7 +127,9 @@ final class NetworkInterfaceInfoService : NSObject, NetworkInterfaceInfoServiceT
                   interface == bsdName
             else { continue }
             
-            return resolveUserDefinedName(fromKey: key, session: session)
+            return resolveUserDefinedName(
+                fromKey: key,
+                session: session)
         }
         
         return nil
@@ -160,7 +164,9 @@ final class NetworkInterfaceInfoService : NSObject, NetworkInterfaceInfoServiceT
                   interface == bsdName
             else { continue }
             
-            return resolveUserDefinedName(fromKey: key, session: session)
+            return resolveUserDefinedName(
+                fromKey: key,
+                session: session)
         }
         
         return nil

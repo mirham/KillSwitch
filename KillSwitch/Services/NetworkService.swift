@@ -52,7 +52,7 @@ final class NetworkService: ShellAccessible, NetworkServiceType {
         
         return interfaces.compactMap { interface in
             guard
-                let name    = SCNetworkInterfaceGetLocalizedDisplayName(interface) as String?,
+                let name = SCNetworkInterfaceGetLocalizedDisplayName(interface) as String?,
                 let bsdName = SCNetworkInterfaceGetBSDName(interface) as String?,
                 isPhysical(bsdName: bsdName, displayName: name)
             else { return nil }
@@ -174,8 +174,8 @@ final class NetworkService: ShellAccessible, NetworkServiceType {
     }
     
     private func updateStatusAsync(
-        _ configure: (NetworkStateUpdateBuilder) -> NetworkStateUpdateBuilder
-    ) async {
+        _ configure: (NetworkStateUpdateBuilder)
+        -> NetworkStateUpdateBuilder) async {
         guard !Task.isCancelled
         else { return }
         

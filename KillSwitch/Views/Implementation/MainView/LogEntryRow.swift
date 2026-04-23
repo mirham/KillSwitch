@@ -37,15 +37,20 @@ struct LogEntryRow: View {
         .padding(.vertical, 3)
     }
     
-    func attributedStringWithLinks(from text: String) -> AttributedString {
+    // MARK: Private functions
+    
+    private func attributedStringWithLinks(from text: String) -> AttributedString {
         var attributedString = AttributedString(text)
         
-        guard let detector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue) else {
+        guard let detector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
+        else {
             return attributedString
         }
         
         let nsString = text as NSString
-        let matches = detector.matches(in: text, options: [], range: NSRange(location: 0, length: nsString.length))
+        let matches = detector.matches(
+            in: text, options: [],
+            range: NSRange(location: 0, length: nsString.length))
         
         for match in matches {
             if let url = match.url,

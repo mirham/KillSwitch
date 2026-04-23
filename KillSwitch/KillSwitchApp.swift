@@ -51,9 +51,8 @@ struct KillSwitchApp: App {
         .windowStyle(.hiddenTitleBar)
         
         WindowGroup(id: Constants.windowIdKillProcessesConfirmationDialog) {
-            KillProcessesConfirmationDialogView()
+            KillProcessesDialogView()
                 .environmentObject(appState)
-                .safeGlassEffect()
                 .hidden()
         }
         .windowResizability(.contentSize)
@@ -61,15 +60,13 @@ struct KillSwitchApp: App {
         WindowGroup(id: Constants.windowIdEnableNetworkDialog) {
             EnableNetworkDialogView()
                 .environmentObject(appState)
-                .safeGlassEffect()
                 .hidden()
         }
         .windowResizability(.contentSize)
         
         WindowGroup(id: Constants.windowIdNoOneAllowedIpDialog) {
-            NoOneAllowedIpDialogView()
+            MissingAllowedIpDialogView()
                 .environmentObject(appState)
-                .safeGlassEffect()
                 .hidden()
         }
         .windowResizability(.contentSize)

@@ -24,17 +24,17 @@ struct AsyncButton<Label: View>: View {
             
                 Task {
                     var progressViewTask: Task<Void, Error>?
-
+                    
                     if actionOptions.contains(.showProgressView) {
                         progressViewTask = Task {
                             try await Task.sleep(nanoseconds: Constants.defaultToleranceInNanoseconds)
                             showProgressView = true
                         }
                     }
-
+                    
                     await action()
                     progressViewTask?.cancel()
-
+                    
                     isDisabled = false
                     showProgressView = false
                 }
@@ -42,7 +42,7 @@ struct AsyncButton<Label: View>: View {
             label: {
                 ZStack {
                     label().opacity(showProgressView ? 0 : 1)
-
+                    
                     if showProgressView {
                         ProgressView()
                     }

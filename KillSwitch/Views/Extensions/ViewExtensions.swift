@@ -8,7 +8,7 @@
 import SwiftUI
 
 extension View {
-    func isHidden(hidden: Bool = false, remove: Bool = false) -> some View {
+    func isHidden(_ hidden: Bool = false, remove: Bool = true) -> some View {
         modifier(IsHiddenModifier(hidden: hidden, remove: remove))
     }
     
@@ -24,6 +24,7 @@ extension View {
         return state == .key ? 1 : 0.6
     }
     
+    @MainActor
     func renderAsImage() -> NSImage? {
         let view = NoInsetHostingView(rootView: self)
         view.setFrameSize(view.fittingSize)

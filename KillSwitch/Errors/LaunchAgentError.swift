@@ -21,9 +21,9 @@ enum LaunchAgentError: LocalizedError {
             case .libraryDirectoryNotFound:
                 return "Could not locate the Library directory."
             case .createFailed(let reason):
-                return String(format: Constants.logCannotAddLaunchAgent, reason)
+                return "Cannot add Launch agent: \(reason)"
             case .deleteFailed(let reason):
-                return String(format: Constants.logCannotRemoveLaunchAgent, reason)
+                return "Cannot remove Launch agent: \(reason)"
             case .applyFailed(let reason):
                 return "Failed to apply launch agent state: \(reason)"
         }

@@ -1,23 +1,19 @@
 //
-//  EnableNetworkDialogView.swift
+//  KillProcessesDialogView.swift
 //  KillSwitch
 //
-//  Created by UglyGeorge on 25.07.2024.
+//  Created by UglyGeorge on 27.06.2024.
 //
 
 import SwiftUI
 import Factory
 
-struct EnableNetworkDialogView: View {
+struct KillProcessesDialogView: View {
     @EnvironmentObject var appState: AppState
-    @Injected(\.networkService) private var networkService
+    
+    @Injected(\.processService) private var processService
     
     @State private var isDialogPresented = false
-    @State private var selectedInterfaceName: String?
-    
-    private var enableButtonColor: Color {
-        selectedInterfaceName == nil ? .gray : .green
-    }
     
     var body: some View {
         EmptyView()
@@ -37,7 +33,7 @@ struct EnableNetworkDialogView: View {
             appIcon
             Spacer()
                 .frame(height: 15)
-            Text(Constants.dialogHeaderEnableNetwork)
+            Text(Constants.dialogHeaderCloseApps)
                 .font(.title3)
                 .bold()
             Spacer()
@@ -45,12 +41,12 @@ struct EnableNetworkDialogView: View {
             messageText
             Spacer()
                 .frame(height: 20)
-            networkInterfacesList
+            processesList
             HStack {
-                enableButton
+                yesButton
                 Spacer()
                     .frame(width: 20)
-                cancelButton
+                noButton
             }
             .padding()
         }
@@ -68,7 +64,7 @@ struct EnableNetworkDialogView: View {
     
     @ViewBuilder
     private var messageText: some View {
-        Text(Constants.dialogBodyEnableNetwork)
+        Text(Constants.dialogBodyCloseApps)
             .multilineTextAlignment(.center)
             .font(.system(size: 10))
             .lineLimit(3...5)
@@ -76,65 +72,56 @@ struct EnableNetworkDialogView: View {
     }
     
     @ViewBuilder
-    private var networkInterfacesList: some View {
+    private var processesList: some View {
         VStack(alignment: .leading) {
-            ForEach(appState.network.physicalNetworkInterfaces, id: \.name) { networkInterface in
-                RadioButton(
-                    id: networkInterface.name,
-                    label: networkInterface.localizedName ?? networkInterface.name,
-                    size: 12,
-                    color: .primary,
-                    textSize: 11,
-                    isMarked: selectedInterfaceName == networkInterface.name,
-                    callback: { _ in selectedInterfaceName = networkInterface.name }
-                )
+            ForEach(appState.system.processesToKill, id: \.pid) { processInfo in
+                HStack {
+                    Image(nsImage: NSWorkspace.shared.icon(forFile: processInfo.url))
+                        .frame(width: 32, height: 32)
+                    Text(processInfo.name)
+                }
             }
         }
     }
     
     @ViewBuilder
-    private var enableButton: some View {
-        Button(action: handleEnableButtonClick) {
-            Text(Constants.enable)
+    private var yesButton: some View {
+        Button(action: handleYesButtonClick) {
+            Text(Constants.yes)
                 .frame(height: 25)
                 .frame(maxWidth: .infinity)
                 .background(
                     RoundedRectangle(cornerRadius: 5, style: .continuous)
-                        .fill(enableButtonColor)
+                        .fill(Color.red)
                 )
         }
         .buttonStyle(.plain)
-        .disabled(selectedInterfaceName == nil)
     }
     
     @ViewBuilder
-    private var cancelButton: some View {
-        Button(action: handleCancelButtonClick) {
-            Text(Constants.cancel)
+    private var noButton: some View {
+        Button(action: handleNoButtonClick) {
+            Text(Constants.no)
                 .frame(width: 100, height: 25)
         }
     }
     
     // MARK: Private functions
     
-    private func handleEnableButtonClick() {
-        guard let interfaceName = selectedInterfaceName
-        else { return }
-        
-        networkService.enableNetworkInterface(interfaceName: interfaceName)
+    private func handleYesButtonClick() {
+        processService.killActiveProcesses()
         closeDialog()
     }
     
-    private func handleCancelButtonClick() {
+    private func handleNoButtonClick() {
         closeDialog()
     }
     
     private func openDialog() {
-        appState.views.shownWindows.append(Constants.windowIdEnableNetworkDialog)
-        selectedInterfaceName = appState.current.mainNetworkInterface
+        appState.views.shownWindows.append(Constants.windowIdKillProcessesConfirmationDialog)
         
         AppHelper.setUpView(
-            viewName: Constants.windowIdEnableNetworkDialog,
+            viewName: Constants.windowIdKillProcessesConfirmationDialog,
             onTop: true
         )
         
@@ -142,15 +129,16 @@ struct EnableNetworkDialogView: View {
     }
     
     private func closeDialog() {
-        appState.views.shownWindows
-            .removeAll { $0 == Constants.windowIdEnableNetworkDialog }
-        
+        appState.views.shownWindows.removeAll { $0 == Constants.windowIdKillProcessesConfirmationDialog }
         isDialogPresented = false
         
-        AppHelper.activateView(viewId: Constants.windowIdMain)
+        let mainWindowIsShown = appState.views.shownWindows.contains { $0 == Constants.windowIdMain }
+        if mainWindowIsShown {
+            AppHelper.activateView(viewId: Constants.windowIdMain)
+        }
     }
 }
 
 #Preview {
-    EnableNetworkDialogView().environmentObject(AppState())
+    KillProcessesDialogView().environmentObject(AppState())
 }
