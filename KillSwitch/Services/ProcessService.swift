@@ -7,13 +7,15 @@
 
 import Foundation
 import AppKit
+import Factory
 
-class ProcessService : ServiceBase, ShellAccessible, ProcessServiceType {
+final class ProcessService: ShellAccessible, ProcessServiceType {
+    @Injected(\.appState) private var appState
+    @LazyInjected(\.loggingService) private var loggingService
+    
     private var monitoringTask: Task<Void, Never>?
     
-    override init() {
-        super.init()
-
+    init() {
         startProcessesMonitoring()
     }
     
@@ -22,79 +24,107 @@ class ProcessService : ServiceBase, ShellAccessible, ProcessServiceType {
     }
     
     func killActiveProcesses() {
-        guard !appState.system.processesToKill.isEmpty else { return }
-        
-        for targetProcess in appState.system.processesToKill {
-            kill(targetProcess.pid, SIGTERM)
+        Task { @MainActor [weak self] in
+            guard let self
+            else { return }
             
-            loggingService.write(
-                message: String(format: Constants.logProcessTerminated, targetProcess.name),
-                type: .info)
+            guard !appState.system.processesToKill.isEmpty
+            else { return }
+            
+            for process in appState.system.processesToKill {
+                kill(process.pid, SIGTERM)
+                loggingService.write(
+                    message: String(format: Constants.logProcessTerminated, process.name),
+                    type: .success)
+            }
         }
     }
     
-    // MARK: Privare functions
+    // MARK: Private methods
     
     private func startProcessesMonitoring() {
-        monitoringTask = Task {
+        monitoringTask = Task { [weak self] in
+            guard let self
+            else { return }
+            
             while !Task.isCancelled {
                 try? await Task.sleep(nanoseconds: Constants.defaultProcessesMonitoringIntervalNanoseconds)
                 
-                guard self.appState.userData.appsToClose.count > 0 else { continue }
+                guard !Task.isCancelled
+                else { break }
                 
-                do {
-                    let activeProcesses = NSWorkspace.shared.runningApplications
-                    
-                    var processesToKill = [ProcessInfo]()
-                    
-                    for appToClose in self.appState.userData.appsToClose {
-                        var escapedBundleId = appToClose.bundleId.replacingOccurrences(of: ".", with: "\\.")
-                        escapedBundleId = escapedBundleId.replacingOccurrences(of: "(", with: "\\(")
-                        escapedBundleId = escapedBundleId.replacingOccurrences(of: ")", with: "\\)")
-                        let search = #".\#(escapedBundleId) - "#
-                        let regex = try Regex(search).ignoresCase()
-                        
-                        let foundActiveProcess = activeProcesses.first{$0.description.contains(regex)}
-                        
-                        if (foundActiveProcess != nil) {
-                            let info = ProcessInfo(
-                                pid: foundActiveProcess!.processIdentifier,
-                                description: foundActiveProcess!.description,
-                                url: appToClose.url,
-                                name: appToClose.name)
-                            processesToKill.append(info)
-                        }
-                    }
-                    
-                    await self.updateStatusAsync(update: ProcessesStateUpdateBuilder()
-                        .withProcessesToKill(processesToKill)
-                        .build())
-                    
-                    let shouldKillProcesses = processesToKill.count > 0
-                        && self.appState.monitoring.isEnabled
-                        && (self.appState.current.safetyType == SafetyType.unsafe
-                            || (self.appState.userData.useHigherProtection
-                                && self.appState.network.publicIp != nil
-                                && !self.appState.network.publicIp!.hasLocation()))
-                    
-                    if shouldKillProcesses {
-                        self.killActiveProcesses()
-                    }
-                } catch {
-                    loggingService.write(
-                        message: String(format: Constants.logErrorHandlingProcesses, error.localizedDescription),
-                        type: .error)
+                let snapshot = await MainActor.run {(
+                    appsToClose: self.appState.userData.appsToClose,
+                    isMonitoringEnabled: self.appState.monitoring.isEnabled,
+                    safetyType: self.appState.current.safetyType,
+                    useHigherProtection: self.appState.userData.useHigherProtection,
+                    publicIp: self.appState.network.publicIp
+                )}
+                
+                guard !snapshot.appsToClose.isEmpty
+                else { continue }
+                
+                let activeProcesses = NSWorkspace.shared.runningApplications
+                let processesToKill = buildProcessesToKill(
+                    appsToClose: snapshot.appsToClose,
+                    activeProcesses: activeProcesses
+                )
+                
+                await updateStatusAsync {
+                    $0.withProcessesToKill(processesToKill)
+                }
+                
+                let shouldKill = !processesToKill.isEmpty
+                    && snapshot.isMonitoringEnabled
+                    && (snapshot.safetyType == .unsafe
+                        || (snapshot.useHigherProtection
+                        && snapshot.publicIp?.hasLocation() == false))
+                
+                if shouldKill {
+                    killActiveProcesses()
                 }
             }
         }
     }
     
-    private func updateStatusAsync(update: ProcessesStateUpdate) async {
+    private func buildProcessesToKill(
+        appsToClose: [AppInfo],
+        activeProcesses: [NSRunningApplication]
+    ) -> [ProcessInfo] {
+        appsToClose.compactMap { appToClose in
+            let escaped = appToClose.bundleId
+                .replacingOccurrences(of: ".", with: "\\.")
+                .replacingOccurrences(of: "(", with: "\\(")
+                .replacingOccurrences(of: ")", with: "\\)")
+            
+            guard let regex = try? Regex(#".\#(escaped) - "#).ignoresCase()
+            else {
+                loggingService.write(
+                    message: ProcessError.invalidRegex(bundleId: appToClose.bundleId).errorDescription ?? String(),
+                    type: .error)
+                
+                return nil
+            }
+            
+            guard let found = activeProcesses.first(where: { $0.description.contains(regex) })
+            else { return nil }
+            
+            return ProcessInfo(
+                pid: found.processIdentifier,
+                description: found.description,
+                url: appToClose.url,
+                name: appToClose.name
+            )
+        }
+    }
+    
+    private func updateStatusAsync(
+        _ configure: (ProcessesStateUpdateBuilder) -> ProcessesStateUpdateBuilder
+    ) async {
         guard !Task.isCancelled else { return }
-        
+        let update = configure(ProcessesStateUpdateBuilder()).build()
         await MainActor.run {
             appState.applyProcessesStateUpdate(update)
-            appState.objectWillChange.send()
         }
     }
 }

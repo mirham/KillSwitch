@@ -44,16 +44,17 @@ private struct MenuBarStatusRawView: MenuBarItemsContainerView {
     
     var body: some View {
         if !appState.userData.hasActiveIpApi() {
-            makeNoActiveIpApiView()
+            noActiveIpApiView
         }
         else {
-            makeDefaultView(appState: appState, colorScheme: colorScheme)
+            defaultView
         }
     }
     
     // MARK: Private functions
     
-    private func makeNoActiveIpApiView() -> some View {
+    @ViewBuilder
+    private var noActiveIpApiView: some View {
         HStack {
             Image(systemName: Constants.iconNoActiveIpApi)
             Text(Constants.noActiveIpApi.uppercased())
@@ -61,22 +62,22 @@ private struct MenuBarStatusRawView: MenuBarItemsContainerView {
         .foregroundStyle(.orange)
     }
     
-    @MainActor
-    private func makeDefaultView(
-        appState: AppState,
-        colorScheme: ColorScheme) -> some View {
-            let shownItems = getMenuBarElements(
-                keys: appState.userData.menuBarShownItems,
-                appState: appState,
-                colorScheme: colorScheme)
-            
-            return HStack(spacing: 5) {
-                ForEach(shownItems, id: \.id) { item in
-                    Image(nsImage: item.image)
-                        .nonAntialiased()
-                }
+    @ViewBuilder
+    private var defaultView: some View {
+        let shownItems = getMenuBarElements(
+            keys: appState.userData.menuBarShownItems,
+            appState: appState,
+            colorScheme: colorScheme,
+            exampleAllowed: false
+        )
+        
+        HStack(spacing: 5) {
+            ForEach(shownItems, id: \.id) { item in
+                Image(nsImage: item.image)
+                    .nonAntialiased()
             }
         }
+    }
 }
 
 #Preview {

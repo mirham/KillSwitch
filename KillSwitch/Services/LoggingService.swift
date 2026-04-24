@@ -6,43 +6,48 @@
 //
 
 import Foundation
+import Factory
 
-class LoggingService : ServiceBase, LoggingServiceType {
+final class LoggingService: LoggingServiceType {
+    @Injected(\.appState) private var appState
+    
+    private let dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .short
+        formatter.timeStyle = .medium
+        return formatter
+    }()
+    
     func write(message: String, type: LogEntryType = .info) {
-        DispatchQueue.main.async {
-            let logEntry = LogEntry(message: message, type: type)
-            self.write(logEntry: logEntry)
+        let logEntry = LogEntry(message: message, type: type)
+        
+        Task { @MainActor [weak self] in
+            guard let self
+            else { return }
+            
+            appState.log.insert(logEntry, at: 0)
         }
     }
     
     func copy() {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = Constants.logDateFormat
-        
-        var logText = String()
-        
-        for logEntry in self.appState.log {
-            logText.append("\(dateFormatter.string(from: logEntry.date)) [\(logEntry.type.description.uppercased())] \(logEntry.message)\n")
+        Task { @MainActor [weak self] in
+            guard let self
+            else { return }
+            
+            let logText = appState.log
+                .map { "\(self.dateFormatter.string(from: $0.date)) [\($0.type.description.uppercased())] \($0.message)" }
+                .joined(separator: "\n")
+            
+            AppHelper.copyTextToClipboard(text: logText)
         }
-        
-        AppHelper.copyTextToClipboard(text: logText)
     }
     
     func clear() {
-        Task {
-            await MainActor.run {
-                self.appState.log.removeAll()
-            }
-        }
-    }
-    
-    // MARK: Private functions
-    
-    private func write(logEntry: LogEntry) {
-        Task {
-            await MainActor.run {
-                self.appState.log.insert(logEntry, at: 0)
-            }
+        Task { @MainActor [weak self] in
+            guard let self
+            else { return }
+            
+            appState.log.removeAll()
         }
     }
 }

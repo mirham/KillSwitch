@@ -8,7 +8,7 @@
 import SwiftUI
 
 extension View {
-    func isHidden(hidden: Bool = false, remove: Bool = false) -> some View {
+    func isHidden(_ hidden: Bool = false, remove: Bool = true) -> some View {
         modifier(IsHiddenModifier(hidden: hidden, remove: remove))
     }
     
@@ -16,10 +16,15 @@ extension View {
         modifier(PointerOnHoverModifier())
     }
     
+    func badge(color: Color) -> some View {
+        modifier(BadgeModifier(color: color))
+    }
+    
     func getViewOpacity(state: ControlActiveState) -> Double {
         return state == .key ? 1 : 0.6
     }
     
+    @MainActor
     func renderAsImage() -> NSImage? {
         let view = NoInsetHostingView(rootView: self)
         view.setFrameSize(view.fittingSize)
@@ -27,6 +32,30 @@ extension View {
         let result = view.asImage()
         
         return result
+    }
+    
+    @ViewBuilder
+    func safeGlassEffect() -> some View {
+        if #available(macOS 26.0, *) {
+            self.background(
+                Color.clear
+                    .glassEffect(.regular, in: Rectangle())
+                    .ignoresSafeArea()
+            )
+        } else {
+            self.background(Color.clear)
+        }
+    }
+    
+    @ViewBuilder
+    func safeToolbarGlassEffect() -> some View {
+        if #available(macOS 26.0, *) {
+            self
+                .toolbarBackground(.ultraThinMaterial, for: .windowToolbar)
+                .toolbarBackgroundVisibility(.visible, for: .windowToolbar)
+        } else {
+            self
+        }
     }
 }
 

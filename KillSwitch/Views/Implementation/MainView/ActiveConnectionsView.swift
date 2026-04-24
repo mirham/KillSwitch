@@ -11,45 +11,16 @@ struct ActiveConnectionsView : View {
     @EnvironmentObject var appState: AppState
     
     var body: some View {
-        Section() {
-            VStack(spacing: 10){
+        Section {
+            VStack(spacing: 12) {
                 Text(Constants.activeConnections.uppercased())
                     .font(.caption2)
-                ForEach(appState.network.activeNetworkInterfaces.sorted(by: {$0.name < $1.name}), id: \.id) { 
-                    activeNetworkInterface in
-                    HStack {
-                        Image(systemName: getConnectionIcon(networkInterfaceType: activeNetworkInterface.type))
-                        Text("\(activeNetworkInterface.type)".uppercased())
-                        Spacer()
-                        Text("\(activeNetworkInterface.isPhysical ? Constants.physical : Constants.virtual)")
-                            .foregroundStyle(.gray)
-                        Spacer()
-                        Text(activeNetworkInterface.name)
-                            .foregroundStyle(.gray)
-                    }
-                    .help(activeNetworkInterface.localizedName ?? String())
-                    .font(Font.system(size: 11))
+                    .foregroundStyle(.secondary)
+                ForEach(appState.network.activeNetworkInterfaces.sorted(by: { $0.name < $1.name }), id: \.name) { interface in
+                    ConnectionItem(interface: interface)
                 }
-            }.padding()
-        }
-    }
-    
-    // MARK: Private functions
-    
-    private func getConnectionIcon(networkInterfaceType: NetworkInterfaceType) -> String {
-        switch networkInterfaceType {
-            case .cellular:
-                return Constants.iconCellular
-            case .loopback:
-                return Constants.iconLoopback
-            case .vpn:
-                return Constants.iconVpn
-            case .wifi:
-                return Constants.iconWifi
-            case .wired:
-                return Constants.iconWired
-            case .other, .unknown:
-                return Constants.iconUnknownConnection
+            }
+            .padding()
         }
     }
 }

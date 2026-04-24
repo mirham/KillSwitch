@@ -11,6 +11,7 @@ final class NetworkStateUpdateBuilder {
     @discardableResult
     func withStatus(_ status: NetworkStatusType) -> Self {
         update.status = status
+        
         return self
     }
     
@@ -18,18 +19,21 @@ final class NetworkStateUpdateBuilder {
     func withPublicIp(_ publicIp: IpInfoBase?) -> Self {
         update.publicIp = publicIp
         update.forceUpdatePublicIp = true
+        
         return self
     }
     
     @discardableResult
     func withActiveNetworkInterfaces(_ interfaces: [NetworkInterface]) -> Self {
         update.activeNetworkInterfaces = interfaces
+        
         return self
     }
     
     @discardableResult
     func withPhysicalNetworkInterfaces(_ interfaces: [NetworkInterface]) -> Self {
         update.physicalNetworkInterfaces = interfaces
+        
         return self
     }
     
@@ -48,6 +52,7 @@ final class NetworkStateUpdateBuilder {
     @discardableResult
     func withIsObtainingIp(_ isObtainingIp: Bool) -> Self {
         update.isObtainingIp = isObtainingIp
+        
         return self
     }
     

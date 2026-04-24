@@ -29,7 +29,6 @@ struct Constants{
     static let launchAgentPlistName = "\(Bundle.main.bundleIdentifier!).plist"
     static let launchAgents = "LaunchAgents"
     static let launchAgentsFolderPath = "~/Library/LaunchAgents/"
-    static let logDateFormat = "dd.MM.yyyy HH:mm:ss"
     static let networkMonitorQueryLabel = "KSNetworkMonitor"
     static let ipV4: Int = 4
     static let ipV6: Int = 6
@@ -39,8 +38,8 @@ struct Constants{
     static let defaultIntervalBetweenChecksInSeconds: Int = 10
     static let ipApiCallTimeoutInSeconds: Double = 1.0
     static let ipInfoApiCallTimeoutInSeconds: Double = 2.0
-    static let memuBarScaleCurrentIp = 0.9
-    static let memuBarScaleToggles = 0.8
+    static let menuBarScaleCurrentIp = 0.95
+    static let menuBarScaleToggles = 0.8
     static let physicalNetworkInterfacePrefix = "en"
     static let physicalNetworkInterfaceWiFi = "Wi-Fi"
     static let physicalNetworkInterfaceLan = "LAN"
@@ -48,6 +47,9 @@ struct Constants{
     static let sleepPreventingReason = "Monitoring sleep preventing"
     static let defaultInternetCheckUrl = "https://google.com"
     static let defaultIpInfoApiUrl = "http://ip-api.com/json/\(publicIpMask)"
+    
+    // MARK: HTTP methods
+    static let httpMethodGet = "GET"
     
     // MARK: Regexes
     static let regexUrl = /(?<protocol>https?):\/\/(?:(?<username>[^:@\s\/\\]*)(?::(?<password>[^:@\s\/\\]*))?@)?(?<domain>[\w\d]+[\w\d.\-]+[\w\d]+|\[[a-f\d:]+\])(?::(?<port>\d+))?(?:(?<path>\/[^\?#\s]*)(?:\?(?<query>[^\?#\s]*))?(?:#(?<anchor>[^\?#\s]*))?)?/
@@ -67,17 +69,24 @@ struct Constants{
     static let iconCopyLog = "doc.on.doc"
     static let iconClearLog = "trash"
     static let iconInfo = "info.circle"
+    static let iconInfoFill = "info.circle.fill"
     static let iconCellular = "cellularbars"
     static let iconLoopback = "point.forward.to.point.capsulepath"
     static let iconVpn = "network.badge.shield.half.filled"
     static let iconWifi = "wifi"
     static let iconWired = "cable.connector"
     static let iconUnknownConnection = "questionmark"
-    static let iconInfoFill = "info.circle.fill"
     static let iconCheckmark = "checkmark.circle.fill"
     static let iconCircle = "circle"
     static let iconMarkedCircle = "largecircle.fill.circle"
     static let iconNoActiveIpApi = "exclamationmark.triangle.fill"
+    static let iconFolder = "folder"
+    static let iconGear = "gear"
+    static let iconMenubar = "menubar.rectangle"
+    static let iconNetwork = "network"
+    static let iconBulletRectangle = "list.bullet.rectangle"
+    static let iconClosingApps = "xmark.circle"
+    static let iconEmptyLog = "text.alignleft"
     
     // MARK: Colors
     static let colorCompleteSafetyLightTheme = "#369300"
@@ -122,7 +131,7 @@ struct Constants{
     static let applications = "Applications"
     static let clickToClose = "Click to close"
     static let activeConnections = "Active connections"
-    static let safetyDescriprion = "%1$@ safety"
+    static let safetyDescriprion = "%1$@ privacy"
     static let disableLocationServices = "(disable location services)"
     static let publicIp = "Public IP"
     static let enabled = "enabled"
@@ -135,23 +144,27 @@ struct Constants{
     static let mappings = "Mappings"
     static let noActiveIpApi = "No active IP API"
     static let obtainingIp = "Obtaining IP..."
+    static let all = "All"
     
     // MARK: Symbols
     static let bullet = "•"
     static let pipe = "|"
     static let leftBracket = "("
     static let rightBracket = ")"
+    static let slash = "/"
     
     // MARK: Toolbar
     static let toolbarSettings = "Settings"
     static let toolbarCopyLog = "Copy log"
     static let toolbarClearLog = "Clear log"
     static let toolbarInfo = "Info"
+    static let toolbarLogEntrty = "%lld entry"
+    static let toolbarLogEntries = "%lld entries"
     
     // MARK: Menu items
     static let menuItemCopy = "Copy"
-    static let menuItemAddAsAllowedIpWithCompletePrivacy = "Add as allowed IP with complete privacy"
-    static let menuItemAddAsAllowedIpWithSomePrivacy = "Add as allowed IP with some privacy"
+    static let menuItemAddAsAllowedIpWithCompletePrivacy = "Add as allowed IP with complete safety"
+    static let menuItemAddAsAllowedIpWithSomePrivacy = "Add as allowed IP with some safety"
     
     // MARK: Settings elements names
     static let settingsElementGeneral = "General"
@@ -167,8 +180,8 @@ struct Constants{
     static let settingsElementOnTopOfAllWindows = "Always on top of all windows"
     static let settingsElementDisableLocationServices = "Disable location services"
     static let settingsElementPreventComputerSleep = "Preventing the computer from going to sleep"
-    static let settingsElementHigherProtection = "Higher protection"
-    static let settingsElementPickyMode = "Picky mode"
+    static let settingsElementHigherProtection = "Extended protection"
+    static let settingsElementPickyMode = "Extended IP address information required"
     static let settingsElementPeriodicIpCheck = "Periodic IP address check"
     static let settingsElementAutoCloseApps = "Automatically close applications"
     static let settingsElementConfirmationToCloseApps = "Confirmation to close applications"
@@ -206,6 +219,19 @@ struct Constants{
     static let mbItemKeySeparatorLeftBracket = "separator-left-bracket"
     static let mbItemKeySeparatorRightBracket = "separator-right-bracket"
     
+    // MARK: Network interfaces info
+    static let niiActiveServiceIPv4 = "State:/Network/Service/.*/IPv4"
+    static let niiInterfaceStateIPv4 = "State:/Network/Interface/%@/IPv4"
+    static let niiServiceSetup = "Setup:/Network/Service/%@"
+    static let niiPPPSetup = "Setup:/Network/Service/.*/PPP"
+    
+    static let niiInterfaceNameKey = "InterfaceName"
+    static let niiServiceKey = "Service"
+    static let niiUserDefinedNameKey = "UserDefinedName"
+    
+    static let niiService = "Service"
+    static let niiSessionName = "VPNLookup"
+    
     // MARK: Shell commands
     static let shCommandEnableNetworkIterface = "networksetup -setairportpower %1$@ on"
     static let shCommandDisableNetworkIterface = "networksetup -setairportpower %1$@ off"
@@ -218,8 +244,6 @@ struct Constants{
     // MARK: Error messages
     static let errorNoActiveIpApiFound = "Not possible to obtain IP, try to add a new IP API in the Settings to proceed work or check DNS availability"
     static let errorWhenCallingIpAddressApi = "Error when called IP address API '%1$@': '%2$@', API marked as inactive and will be skipped until next application run"
-    static let errorIpApiResponseIsInvalid = "IP address API returned invalid IP address (IP info API: %1$@)"
-    static let errorWhenCallingIpInfoApi = "Error when called IP info API: %1$@"
     static let errorTaskCancelled = "Task cancelled"
     static let errorInvalidJson = "Invalid JSON"
     
@@ -261,14 +285,9 @@ struct Constants{
     static let logCannotDisableNetworkInterface = "Cannot disable network interface '%1$@'"
     static let logLaunchAgentAdded = "Launch agent added, the application will be always running"
     static let logLaunchAgentRemoved = "Launch agent removed, the application won't be always running"
-    static let logCannotAddLaunchAgent = "Cannot add Launch agent: %1$@"
-    static let logCannotRemoveLaunchAgent = "Cannot remove Launch agent: %1$@"
     static let logLocationServicesHaveBeenToggled = "Location services have been %1$@, needs to restart to take effect"
-    static let logCannotToggleLocationServices = "Cannot toggle location services: %1$@"
     static let logRebooting = "Rebooting..."
-    static let logCannotReboot = "Cannot reboot the computer: %1$@"
-    static let logProcessTerminated = "%1$@ has been closed"   
-    static let logErrorHandlingProcesses = "Error when handling active processes: %1$@"
+    static let logProcessTerminated = "%1$@ has been closed"
     static let logPreventComputerSleepEnabled = "Preventing the computer from going to sleep is enabled"
     static let logPreventComputerSleepDisabled = "Preventing the computer from going to sleep is disabled"
     
@@ -299,6 +318,7 @@ struct Constants{
     static let hintIpInfoApi = "The IP info API is needed to get advanced information about a public IP address, such as its location. This allows you to display the country flag in the macOS menu bar, as well as show the address on a map. Typically, data from such APIs is in JSON format. Here, you can assign an API address and map the JSON data values to application values."
     static let hintNotSet = "Not set yet"
     static let hintJsonKey = "JSON data key"
+    static let hintNoLogEntries = "No log entries"
     
     // MARK: About
     static let aboutSupportMail = "bWlyaGFtQGFidi5iZw=="
@@ -327,7 +347,19 @@ struct Constants{
         "https://l2.io/ip",
         "https://api.ip.sb/ip",
         "https://ipv4.ddnspod.com/",
-        "https://api.ip.lk/"
+        "https://api.ip.lk/",
+        "https://realip.cc/simple",
+        "https://cdid.c-ctrip.com/model-poc2/h",
+        "https://ipv4.gdt.qq.com/get_client_ip",
+        "https://ifconfig.es/",
+        "https://eth0.me",
+        "http://ipaddr.site",
+        "https://ipaddress.sh",
+        "https://wgetip.com",
+        "https://ip.tyk.nu",
+        "https://curlmyip.net",
+        "https://ipcalf.com",
+        "https://getip.cc"
     ]
     
     static let defaultIpInfoApiKeyMapping = [

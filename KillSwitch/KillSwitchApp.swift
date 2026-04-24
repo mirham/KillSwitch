@@ -10,7 +10,7 @@ import Factory
 
 @main
 struct KillSwitchApp: App {
-    let appState = AppState.shared
+    @StateObject private var appState = AppState.shared
     
     init() {
         _ = Container.shared.networkStatusService()
@@ -18,60 +18,91 @@ struct KillSwitchApp: App {
     }
     
     var body: some Scene {
+        menuBar
+        mainWindow
+        settingsWindow
+        dialogsGroup
+        infoWindow
+    }
+    
+    // MARK: Menu bar
+ 
+    @SceneBuilder
+    private var menuBar: some Scene {
         MenuBarExtra {
-            VStack{
-                MenuBarView()
-                    .environmentObject(appState)
-            }
-            .padding(.top, 10)
-            .padding(.bottom, 10)
-            .background(.windowBackground)
+            MenuBarView()
+                .environmentObject(appState)
+                .safeGlassEffect()
         } label: {
             MenuBarStatusView()
                 .environmentObject(appState)
         }
         .menuBarExtraStyle(.window)
-        
-        WindowGroup(id:Constants.windowIdMain, makeContent: {
+    }
+    
+    // MARK: Windows
+    
+    @SceneBuilder
+    private var mainWindow: some Scene {
+        WindowGroup(id: Constants.windowIdMain) {
             MainView()
                 .environmentObject(appState)
-        })
+                .safeGlassEffect()
+        }
         .windowToolbarStyle(UnifiedCompactWindowToolbarStyle())
-        
-        WindowGroup(id:Constants.windowIdSettings, makeContent: {
+    }
+    
+    @SceneBuilder
+    private var settingsWindow: some Scene {
+        WindowGroup(id: Constants.windowIdSettings) {
             SettingsView()
                 .environmentObject(appState)
                 .navigationTitle(Constants.settings)
-                .frame(minWidth: 550, maxWidth: 550, minHeight: 500, maxHeight: 500)
-        }).windowResizability(.contentSize)
-        
-        WindowGroup(id: Constants.windowIdKillProcessesConfirmationDialog, makeContent: {
-            KillProcessesConfirmationDialogView()
-                .environmentObject(appState)
-                .hidden()
-        })
+                .safeGlassEffect()
+                .fixedSize(horizontal: true, vertical: true)
+                .frame(width: 650, height: 520)
+        }
         .windowResizability(.contentSize)
-        
-        WindowGroup(id: Constants.windowIdEnableNetworkDialog, makeContent: {
-            EnableNetworkDialogView()
-                .environmentObject(appState)
-                .hidden()
-        })
-        .windowResizability(.contentSize)
-        
-        WindowGroup(id: Constants.windowIdNoOneAllowedIpDialog, makeContent: {
-            NoOneAllowedIpDialogView()
-                .environmentObject(appState)
-                .hidden()
-        })
-        .windowResizability(.contentSize)
-        
-        WindowGroup(id: Constants.windowIdInfo, makeContent: {
+        .windowStyle(.hiddenTitleBar)
+    }
+    
+    @SceneBuilder
+    private var infoWindow: some Scene {
+        WindowGroup(id: Constants.windowIdInfo) {
             InfoView()
                 .environmentObject(appState)
                 .navigationTitle(Constants.info)
-                .frame(minWidth: 360, maxWidth: 360, minHeight: 220, maxHeight: 220)
-        })
+                .safeGlassEffect()
+                .fixedSize(horizontal: true, vertical: true)
+                .frame(width: 360, height: 190)
+        }
+        .windowResizability(.contentSize)
+        .windowStyle(.hiddenTitleBar)
+    }
+    
+    // MARK: Dialogs
+    
+    @SceneBuilder
+    private var dialogsGroup: some Scene {
+        WindowGroup(id: Constants.windowIdKillProcessesConfirmationDialog) {
+            KillProcessesDialogView()
+                .environmentObject(appState)
+                .hidden()
+        }
+        .windowResizability(.contentSize)
+        
+        WindowGroup(id: Constants.windowIdEnableNetworkDialog) {
+            EnableNetworkDialogView()
+                .environmentObject(appState)
+                .hidden()
+        }
+        .windowResizability(.contentSize)
+        
+        WindowGroup(id: Constants.windowIdNoOneAllowedIpDialog) {
+            MissingAllowedIpDialogView()
+                .environmentObject(appState)
+                .hidden()
+        }
         .windowResizability(.contentSize)
     }
 }

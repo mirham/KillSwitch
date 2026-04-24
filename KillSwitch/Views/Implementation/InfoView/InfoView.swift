@@ -26,8 +26,10 @@ struct InfoView: View {
                     Text(Constants.aboutGetSupport)
                     Link(mail, destination: URL(string: String(format: Constants.aboutMailTo, mail))!)
                         .buttonStyle(.plain)
+                        .focusEffectDisabled()
                 }
                 Link(Constants.aboutGitHub, destination: URL(string: Constants.aboutGitHubLink)!)
+                    .focusEffectDisabled()
             }
             .padding(.top, 70)
             .padding(.leading, 120)
@@ -36,6 +38,7 @@ struct InfoView: View {
             Image(nsImage: NSImage(named: Constants.aboutBackground) ?? NSImage())
                 .resizable()
                 .frame(minWidth: 360, maxWidth: 360, minHeight: 220, maxHeight: 220)
+                .offset(y: -16)
         }
         .onAppear(perform: {
             openDialog()

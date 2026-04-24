@@ -9,85 +9,133 @@ import SwiftUI
 import Factory
 
 struct CurrentIpView: IpAddressContainerView {
-    @EnvironmentObject var appState: AppState
-    
+    @EnvironmentObject private var appState: AppState
     @Environment(\.colorScheme) private var colorScheme
     
     @Injected(\.ipService) private var ipService
     
+    @State private var isHoveringRisk = false
+    
     var body: some View {
-        Section() {
-            VStack{
-                Text(Constants.publicIp)
-                    .textCase(.uppercase)
-                    .font(.title3)
-                    .multilineTextAlignment(.center)
-                    .isHidden(hidden: appState.network.status == .off, remove: true)
-                Text(appState.network.status == .off
-                     ? Constants.offline
-                     : appState.network.isObtainingIp
-                       ? Constants.obtainingIp
-                       : appState.network.publicIp?.ipAddress ?? Constants.none)
-                    .textCase(.uppercase)
-                    .font(.largeTitle)
-                    .bold()
-                    .foregroundStyle(getIpColor())
-                    .contextMenu {
-                        if(appState.network.publicIp?.ipAddress != nil){
-                            Button(action: { AppHelper.copyTextToClipboard(text: appState.network.publicIp!.ipAddress)}) {
-                                Text(Constants.menuItemCopy)
-                            }
-                            if (appState.current.safetyType == .unknown) {
-                                Button(action: { addAllowedIp(safetyType: SafetyType.compete)}) {
-                                    Text(Constants.menuItemAddAsAllowedIpWithCompletePrivacy)
-                                }
-                                Button(action: { addAllowedIp(safetyType: SafetyType.some)}) {
-                                    Text(Constants.menuItemAddAsAllowedIpWithSomePrivacy)
-                                }
-                            }
-                        }
-                    }
-                Spacer().frame(height: 1)
-                Text(appState.current.safetyType.fullDesctiption)
-                    .textCase(.uppercase)
-                    .font(.system(size: 10))
-                    .bold()
-                    .foregroundStyle(getSafetyColor(safetyType: appState.current.safetyType, colorScheme: colorScheme))
-                    .isHidden(hidden: appState.current.safetyType == .unknown, remove: true)
-                Text(Constants.disableLocationServices)
-                    .textCase(.lowercase)
-                    .font(.system(size: 9))
-                    .bold()
-                    .foregroundStyle(getSafetyColor(safetyType: appState.current.safetyType, colorScheme: colorScheme))
-                    .isHidden(hidden: !appState.current.isHighRisk || appState.network.status == .off, remove: true)
-                HStack {
-                    let flag = getCountryFlag(countryCode: appState.network.publicIp?.countryCode ?? String())
-                    Image(nsImage: flag)
-                        .resizable()
-                        .frame(width: flag.size.width, height: flag.size.height)
-                    Text(appState.network.publicIp?.countryName.uppercased() ?? String())
-                        .font(.system(size: 12))
-                        .bold()
+        Section {
+            VStack(spacing: 2) {
+                ipSection
+                countrySection
+                safetySection
+                    .padding(.top, 5)
+            }
+            .padding(5)
+            .frame(width: 200)
+            .background(
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(Color.secondary.opacity(0.08))
+            )
+        }
+    }
+    
+    // MARK: View sections
+    
+    @ViewBuilder
+    private var ipSection: some View {
+        if appState.network.status != .off {
+            Text(Constants.publicIp)
+                .textCase(.uppercase)
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+        }
+        
+        Text(ipLabel)
+            .textCase(.uppercase)
+            .font(.system(size: 20, weight: .semibold, design: .monospaced))
+            .foregroundStyle(ipColor)
+            .contextMenu { ipContextMenu }
+    }
+    
+    @ViewBuilder
+    private var safetySection: some View {
+        if shouldShowSafetySection {
+            SafetyBadgeView(
+                safetyType: appState.current.safetyType,
+                isHighRisk: appState.current.isHighRisk,
+                safetyColor: safetyColor,
+                isRisky: $isHoveringRisk
+            )
+        }
+    }
+    
+    @ViewBuilder
+    private var countrySection: some View {
+        if appState.current.isCountryDetected,
+           let publicIp = appState.network.publicIp {
+            HStack {
+                let flag = getCountryFlag(countryCode: publicIp.countryCode)
+                Image(nsImage: flag)
+                    .resizable()
+                    .frame(width: flag.size.width, height: flag.size.height)
+                    .scaleEffect(0.6)
+                Text(publicIp.countryName.uppercased())
+                    .font(.system(size: 11))
+                    .padding(.leading, -10)
+            }
+            .opacity(0.9)
+        }
+    }
+    
+    @ViewBuilder
+    private var ipContextMenu: some View {
+        if let ipAddress = appState.network.publicIp?.ipAddress {
+            Button(Constants.menuItemCopy) {
+                AppHelper.copyTextToClipboard(text: ipAddress)
+            }
+            
+            if appState.current.safetyType == .unknown {
+                Button(Constants.menuItemAddAsAllowedIpWithCompletePrivacy) {
+                    addAllowedIp(safetyType: .compete)
                 }
-                .opacity(0.7)
-                .isHidden(hidden: !appState.current.isCountryDetected, remove: true)
+                Button(Constants.menuItemAddAsAllowedIpWithSomePrivacy) {
+                    addAllowedIp(safetyType: .some)
+                }
             }
         }
     }
     
-    // MARK: Private functions
+    private var ipLabel: String {
+        switch appState.network.status {
+            case .off: return Constants.offline
+            default: return appState.network.isObtainingIp
+                ? Constants.obtainingIp
+                : appState.network.publicIp?.ipAddress ?? Constants.none
+        }
+    }
     
-    private func getIpColor() -> Color {
-        return appState.monitoring.isEnabled
-            ? getSafetyColor(safetyType: appState.current.safetyType, colorScheme: colorScheme)
+    private var ipColor: Color {
+        appState.monitoring.isEnabled
+            ? safetyColor
             : .primary
     }
     
-    private func addAllowedIp(safetyType : SafetyType) {
+    private var shouldShowSafetySection: Bool {
+        appState.current.safetyType != .unknown
+        && appState.network.status != .off
+    }
+    
+    private var safetyColor: Color {
+        getSafetyColor(
+            safetyType: appState.current.safetyType,
+            colorScheme: colorScheme)
+    }
+    
+    // MARK: Private functions
+    
+    private func addAllowedIp(safetyType: SafetyType) {
+        guard let publicIp = appState.network.publicIp
+        else { return }
+        
         let ip = IpInfo(
-            ipAddress: appState.network.publicIp!.ipAddress,
-            ipAddressInfo: appState.network.publicIp,
-            safetyType: safetyType)
+            ipAddress: publicIp.ipAddress,
+            ipAddressInfo: publicIp,
+            safetyType: safetyType
+        )
         
         ipService.addAllowedPublicIp(publicIp: ip)
     }

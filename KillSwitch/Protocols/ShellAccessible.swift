@@ -25,21 +25,45 @@ extension ShellAccessible {
         task.standardInput = nil
         
         try task.run()
+        task.waitUntilExit()
         
         let data = pipe.fileHandleForReading.readDataToEndOfFile()
-        let output = String(data: data, encoding: .utf8)!
+        
+        guard let output = String(data: data, encoding: .utf8)
+        else { throw ShellError.invalidOutput(command: command) }
+        
+        guard task.terminationStatus == 0
+        else {
+            throw ShellError.commandFailed(
+                command: command,
+                underlyingError: output)
+        }
         
         return output
     }
     
     @discardableResult
     func rootShell(command: String) throws -> String {
-        var error: NSDictionary?
+        let escapedCommand = command.replacingOccurrences(of: "\"", with: "\\\"")
+        let appleScriptSource = "do shell script \"\(escapedCommand)\" with administrator privileges"
         
-        if let output =  NSAppleScript(source: "do shell script \"\(command)\" with administrator privileges")?.executeAndReturnError(&error) {
-            return output.description
+        var error: NSDictionary?
+        let appleScript = NSAppleScript(source: appleScriptSource)
+        
+        guard let result = appleScript?.executeAndReturnError(&error) else {
+            let errorMessage = error?.description ?? String()
+            
+            throw ShellError.permissionDenied(
+                command: command,
+                underlyingError: errorMessage)
         }
         
-        throw error?.description.errorDescription ?? String()
+        let output = result.description
+        
+        guard !output.isEmpty else {
+            throw ShellError.invalidOutput(command: command)
+        }
+        
+        return output
     }
 }

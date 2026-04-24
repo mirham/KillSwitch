@@ -8,23 +8,27 @@
 import Foundation
 
 protocol ApiCallable{
-    func callGetApiAsync(apiUrl : String, timeoutInterval: Double) async throws -> String
+    func callGetApiAsync(apiUrl: String, timeoutInterval: Double) async throws -> String
 }
 
 extension ApiCallable {
-    func callGetApiAsync(apiUrl : String, timeoutInterval: Double) async throws -> String {
+    func callGetApiAsync(apiUrl: String, timeoutInterval: Double) async throws -> String {
         let defaultResponse = String()
         
-        guard !Task.isCancelled else { return defaultResponse }
+        guard !Task.isCancelled
+        else { return defaultResponse }
         
-        do {
-            let url = URL(string: apiUrl)!
-            let request = URLRequest(url: url)
-            
-            let (data, _) = try await URLSession.shared.data(for: request)
-            let response  = String(data: data, encoding: String.Encoding.utf8) as String?
-            
-            return response ?? String()
-        }
+        guard let url = URL(string: apiUrl)
+        else { throw URLError(.badURL) }
+        
+        var request = URLRequest(url: url, timeoutInterval: timeoutInterval)
+        request.httpMethod = Constants.httpMethodGet
+        
+        let (data, _) = try await URLSession.shared.data(for: request)
+        
+        guard let response = String(data: data, encoding: .utf8)
+        else { throw URLError(.cannotDecodeRawData) }
+        
+        return response
     }
 }

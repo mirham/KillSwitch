@@ -7,199 +7,279 @@
 
 import SwiftUI
 
-protocol MenuBarItemsContainerView : IpAddressContainerView {
+@MainActor
+protocol MenuBarItemsContainerView: IpAddressContainerView {
     func getMenuBarElements(
         keys: [String],
         appState: AppState,
         colorScheme: ColorScheme,
-        exampleAllowed: Bool) -> [MenuBarElement]
+        exampleAllowed: Bool
+    ) -> [MenuBarElement]
 }
 
 extension MenuBarItemsContainerView {
-    @MainActor 
+    @MainActor
     func getMenuBarElements(
         keys: [String],
         appState: AppState,
         colorScheme: ColorScheme,
-        exampleAllowed: Bool = false) -> [MenuBarElement] {
-        var result = [MenuBarElement]()
-        
-        let baseColor = colorScheme == .dark ? Color.white : Color.black
-        let safetyColor = appState.userData.menuBarUseThemeColor
-            ? baseColor
+        exampleAllowed: Bool = false
+    ) -> [MenuBarElement] {
+        let colors = MenuBarColors(
+            base: colorScheme == .dark ? .white : .black,
+            safety: appState.userData.menuBarUseThemeColor
+            ? (colorScheme == .dark ? .white : .black)
+            : getSafetyColor(safetyType: appState.current.safetyType, colorScheme: colorScheme),
+            main: (appState.userData.menuBarUseThemeColor || !appState.monitoring.isEnabled)
+            ? (colorScheme == .dark ? .white : .black)
             : getSafetyColor(safetyType: appState.current.safetyType, colorScheme: colorScheme)
-        let mainColor = appState.userData.menuBarUseThemeColor || !appState.monitoring.isEnabled
-            ? baseColor
-            : getSafetyColor(safetyType: appState.current.safetyType, colorScheme: colorScheme)
+        )
         
-        for key in keys {
-            switch key {
-                case Constants.mbItemKeyShield:
-                    let shield = getShieldIconItem(
-                        safetyType: appState.current.safetyType,
-                        color: safetyColor)
-                    let menuBarItem = MenuBarElement(image: renderMenuBarItemImage(view: shield), key: key)
-                    result.append(menuBarItem)
-                case Constants.mbItemKeyMonitoringStatus:
-                    let monitoringStatus = getMonitoringStatusItem(
-                        isMonitoringEnabled: appState.monitoring.isEnabled,
-                        color: safetyColor)
-                    let menuBarItem = MenuBarElement(image: renderMenuBarItemImage(view: monitoringStatus), key: key)
-                    result.append(menuBarItem)
-                case Constants.mbItemKeyIpAddress:
-                    let ipAddress = getIpAddressItem(
-                        ipAddress: appState.network.status == .off
-                            ? Constants.offline
-                            : appState.network.isObtainingIp
-                                ? Constants.obtainingIp
-                                : appState.network.publicIp?.ipAddress ?? Constants.none,
-                        color: mainColor,
-                        exampleAllowed: exampleAllowed)
-                    let menuBarItem = MenuBarElement(image: renderMenuBarItemImage(view: ipAddress), key: key)
-                    result.append(menuBarItem)
-                case Constants.mbItemKeyCountryCode:
-                    let countryCode = getCountryCodeItem(
-                        countryCode: appState.network.publicIp == nil
-                            ? String()
-                            : appState.network.publicIp!.countryCode,
-                        color: mainColor,
-                        exampleAllowed: exampleAllowed)
-                    let menuBarItem = MenuBarElement(image: renderMenuBarItemImage(view: countryCode), key: key)
-                    result.append(menuBarItem)
-                case Constants.mbItemKeyCountryFlag:
-                    let countryFlag = getCountryFlagItem(
-                        countryCode: appState.network.publicIp == nil
-                            ? String()
-                            : appState.network.publicIp!.countryCode,
-                        exampleAllowed: exampleAllowed)
-                    let menuBarItem = MenuBarElement(image: countryFlag, key: key)
-                    result.append(menuBarItem)
-                case Constants.mbItemKeySeparatorBullet:
-                    let bullet = getBulletItem(color: baseColor)
-                    let menuBarItem = MenuBarElement(image: renderMenuBarItemImage(view: bullet), key: key, isSeparator: true)
-                    result.append(menuBarItem)
-                case Constants.mbItemKeySeparatorPipe:
-                    let pipe = getPipeItem(color: baseColor)
-                    let menuBarItem = MenuBarElement(image: renderMenuBarItemImage(view: pipe), key: key, isSeparator: true)
-                    result.append(menuBarItem)
-                case Constants.mbItemKeySeparatorLeftBracket:
-                    let leftBracket = getLeftBracketItem(color: baseColor)
-                    let menuBarItem = MenuBarElement(image: renderMenuBarItemImage(view: leftBracket), key: key, isSeparator: true)
-                    result.append(menuBarItem)
-                case Constants.mbItemKeySeparatorRightBracket:
-                    let rightBracket = getRightBracketItem(color: baseColor)
-                    let menuBarItem = MenuBarElement(image: renderMenuBarItemImage(view: rightBracket), key: key, isSeparator: true)
-                    result.append(menuBarItem)
-                default:
-                    break
-            }
+        let context = MenuBarContext(
+            appState: appState,
+            colors: colors,
+            exampleAllowed: exampleAllowed
+        )
+        
+        return keys.compactMap { key in
+            buildMenuBarElement(for: key, context: context)
+        }
+    }
+    
+    @MainActor
+    private func buildMenuBarElement(for key: String, context: MenuBarContext) -> MenuBarElement? {
+        switch key {
+            case Constants.mbItemKeyShield:
+                return MenuBarElement(
+                    image: renderImage {
+                        getShieldIcon(
+                            safetyType: context.appState.current.safetyType,
+                            color: context.colors.safety)
+                    },
+                    key: key
+                )
+                
+            case Constants.mbItemKeyMonitoringStatus:
+                return MenuBarElement(
+                    image: renderImage {
+                        getMonitoringStatus(
+                            isMonitoringEnabled: context.appState.monitoring.isEnabled,
+                            color: context.colors.safety)
+                    },
+                    key: key
+                )
+                
+            case Constants.mbItemKeyIpAddress:
+                let ipText = resolveIpAddressText(
+                    appState: context.appState,
+                    exampleAllowed: context.exampleAllowed)
+                return MenuBarElement(
+                    image: renderImage {
+                        getIpAddressItem(
+                            ipText: ipText,
+                            color: context.colors.main)
+                    },
+                    key: key
+                )
+                
+            case Constants.mbItemKeyCountryCode:
+                let code = resolveCountryCode(
+                    appState: context.appState,
+                    exampleAllowed: context.exampleAllowed)
+                return MenuBarElement(
+                    image: renderImage {
+                        getCountryCodeItem(
+                            countryCode: code,
+                            color: context.colors.main)
+                    },
+                    key: key
+                )
+                
+            case Constants.mbItemKeyCountryFlag:
+                let code = resolveCountryCode(
+                    appState: context.appState,
+                    exampleAllowed: context.exampleAllowed)
+                return MenuBarElement(
+                    image: getCountryFlagItem(countryCode: code),
+                    key: key
+                )
+                
+            case Constants.mbItemKeySeparatorBullet:
+                return MenuBarElement(
+                    image: renderImage {
+                        getSeparatorItem(
+                            .bullet,
+                            color: context.colors.base)
+                    },
+                    key: key,
+                    isSeparator: true
+                )
+                
+            case Constants.mbItemKeySeparatorPipe:
+                return MenuBarElement(
+                    image: renderImage {
+                        getSeparatorItem(
+                            .pipe,
+                            color: context.colors.base)
+                    },
+                    key: key,
+                    isSeparator: true
+                )
+                
+            case Constants.mbItemKeySeparatorLeftBracket:
+                return MenuBarElement(
+                    image: renderImage {
+                        getSeparatorItem(
+                            .leftBracket,
+                            color: context.colors.base)
+                    },
+                    key: key,
+                    isSeparator: true
+                )
+                
+            case Constants.mbItemKeySeparatorRightBracket:
+                return MenuBarElement(
+                    image: renderImage {
+                        getSeparatorItem(
+                            .rightBracket,
+                            color: context.colors.base)
+                    },
+                    key: key,
+                    isSeparator: true
+                )
+                
+            default:
+                return nil
+        }
+    }
+    
+    // MARK: View sections
+    
+    private func getShieldIcon(safetyType: SafetyType, color: Color) -> some View {
+        let iconName: String
+        switch safetyType {
+            case .compete:
+                iconName = Constants.iconCompleteSafety
+            case .some:
+                iconName = Constants.iconSomeSafety
+            default:
+                iconName = Constants.iconUnsafe
         }
         
-        return result
+        return Text(Image(systemName: iconName))
+            .asPrimaryMenuBarItem(color: color)
+            .bold()
+    }
+    
+    @ViewBuilder
+    private func getMonitoringStatus(
+        isMonitoringEnabled: Bool,
+        color: Color) -> some View {
+        let status = (isMonitoringEnabled ? Constants.on : Constants.off).uppercased()
+        
+        Text(status)
+            .asPrimaryMenuBarItem(color: color)
+            .bold()
+    }
+    
+    @ViewBuilder
+    private func getIpAddressItem(
+        ipText: String,
+        color: Color) -> some View {
+        Text(ipText.uppercased())
+            .asOptionalMenuBarItem(color: color)
+    }
+    
+    @ViewBuilder
+    private func getCountryCodeItem(
+        countryCode: String,
+        color: Color) -> some View {
+        Text(countryCode.uppercased())
+            .asOptionalMenuBarItem(color: color)
+    }
+    
+    private func getCountryFlagItem(countryCode: String) -> NSImage {
+        let scale = 0.9
+        let flag = getCountryFlag(countryCode: countryCode)
+        
+        flag.size = CGSize(
+            width: flag.size.width * scale,
+            height: flag.size.height * scale
+        )
+        
+        return flag
     }
     
     // MARK: Private functions
+    
+    private func resolveIpAddressText(
+        appState: AppState,
+        exampleAllowed: Bool) -> String {
+            let ip: String
+            
+            if appState.network.status == .off {
+                ip = Constants.offline
+            } else if appState.network.isObtainingIp {
+                ip = Constants.obtainingIp
+            } else {
+                ip = appState.network.publicIp?.ipAddress ?? Constants.none
+            }
+            
+            let noValidIp = ip.isEmpty || [Constants.none, Constants.offline, Constants.obtainingIp].contains(ip)
+            
+            return (noValidIp && exampleAllowed)
+                ? Constants.defaultIpAddress
+                : ip
+        }
+    
+    private func resolveCountryCode(
+        appState: AppState,
+        exampleAllowed: Bool) -> String {
+            let code = appState.network.publicIp?.countryCode ?? String()
+            
+            return (code.isEmpty && exampleAllowed)
+                ? Constants.defaultCountryCode
+                : code
+        }
+    
     @MainActor
-    private func renderMenuBarItemImage(view: some View) -> NSImage {
-        let renderer = ImageRenderer(content: view)
-        let result = renderer.nsImage ?? NSImage()
-        
-        return result
+    private func renderImage(@ViewBuilder content: () -> some View) -> NSImage {
+        ImageRenderer(content: content()).nsImage ?? NSImage()
     }
     
-    private func getShieldIconItem(safetyType: SafetyType, color: Color) -> Text {
-        var result: Text
+    private func getSeparatorItem(_ type: SeparatorType, color: Color) -> some View {
+        let symbol: String
         
-        switch safetyType {
-            case .compete:
-                result = Text(Image(systemName:Constants.iconCompleteSafety))
-            case .some:
-                result = Text(Image(systemName:Constants.iconSomeSafety))
-            default:
-                result = Text(Image(systemName:Constants.iconUnsafe))
+        switch type {
+            case .bullet:
+                symbol = Constants.bullet
+            case .pipe:
+                symbol = Constants.pipe
+            case .leftBracket:
+                symbol = Constants.leftBracket
+            case .rightBracket:
+                symbol = Constants.rightBracket
         }
         
-        result = result
-            .asPrimaryMenuBarItem(color: color)
-            .bold()
-        
-        return result
-    }
-    
-    private func getMonitoringStatusItem(isMonitoringEnabled: Bool, color: Color) -> Text {
-        let result = Text((isMonitoringEnabled ? Constants.on : Constants.off).uppercased())
-            .asPrimaryMenuBarItem(color: color)
-            .bold()
-        
-        return result
-    }
-    
-    private func getIpAddressItem(ipAddress: String, color: Color, exampleAllowed: Bool) -> Text {
-        let noIpAddress = ipAddress.isEmpty
-            || ipAddress == Constants.none
-            || ipAddress == Constants.offline
-            || ipAddress == Constants.obtainingIp
-        let effectiveIpAddress = noIpAddress && exampleAllowed
-            ? Constants.defaultIpAddress
-            : ipAddress
-        
-        let result = Text(effectiveIpAddress.uppercased())
+        return Text(symbol)
             .asOptionalMenuBarItem(color: color)
-        
-        return result
     }
-    
-    private func getCountryCodeItem(
-        countryCode: String,
-        color: Color,
-        exampleAllowed: Bool) -> Text {
-        let effectiveCountryCode = countryCode.isEmpty && exampleAllowed
-            ? Constants.defaultCountryCode
-            : countryCode
-        
-        let result = Text(effectiveCountryCode.uppercased())
-            .asOptionalMenuBarItem(color: color)
-        
-        return result
-    }
-    
-    private func getCountryFlagItem(countryCode: String, exampleAllowed: Bool) -> NSImage {
-        let scale = 0.9
-        let effectiveCountryCode = countryCode.isEmpty && exampleAllowed ? Constants.defaultCountryCode : countryCode
-        let result = getCountryFlag(countryCode: effectiveCountryCode)
-        result.size.width = result.size.width * scale
-        result.size.height = result.size.height * scale
-        
-        return result
-    }
-    
-    private func getBulletItem(color: Color) -> Text {
-        let result = Text(Constants.bullet)
-            .asOptionalMenuBarItem(color: color)
-        
-        return result
-    }
-    
-    private func getPipeItem(color: Color) -> Text {
-        let result = Text(Constants.pipe)
-            .asOptionalMenuBarItem(color: color)
-        
-        return result
-    }
-    
-    private func getLeftBracketItem(color: Color) -> Text {
-        let result = Text(Constants.leftBracket)
-            .asOptionalMenuBarItem(color: color)
-        
-        return result
-    }
-    
-    private func getRightBracketItem(color: Color) -> Text {
-        let result = Text(Constants.rightBracket)
-            .asOptionalMenuBarItem(color: color)
-        
-        return result
-    }
+}
+
+private enum SeparatorType {
+    case bullet, pipe, leftBracket, rightBracket
+}
+
+private struct MenuBarColors {
+    let base: Color
+    let safety: Color
+    let main: Color
+}
+
+private struct MenuBarContext {
+    let appState: AppState
+    let colors: MenuBarColors
+    let exampleAllowed: Bool
 }
 
 private extension Text {

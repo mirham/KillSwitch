@@ -8,7 +8,7 @@
 import SwiftUI
 import Factory
 
-struct ToolbarView : View {
+struct ToolbarView: View {
     @EnvironmentObject var appState: AppState
     
     @Environment(\.openWindow) private var openWindow
@@ -16,102 +16,88 @@ struct ToolbarView : View {
     
     @Injected(\.loggingService) private var loggingService
     
-    @State private var showOverSettings = false
-    @State private var showOverCopyLog = false
-    @State private var showOverClearLog = false
-    @State private var showOverInfo = false
-
+    @State private var hoveredButton: ToolbarButtonType?
+    
     var body: some View {
-        Section {
+        Group {
             Spacer()
-            Button(Constants.toolbarCopyLog, systemImage: Constants.iconCopyLog) {
-                loggingService.copy()
-            }
-            .withToolbarButtonStyle(showOver: showOverCopyLog, activeState: controlActiveState)
-            .popover(isPresented: $showOverCopyLog, content: {
-                renderHint(hint: Constants.toolbarCopyLog)
-            })
-            .onHover(perform: { hovering in
-                showOverCopyLog = hovering && controlActiveState == .key
-            })
-            Button(Constants.toolbarClearLog, systemImage: Constants.iconClearLog) {
-                loggingService.clear()
-            }
-            .withToolbarButtonStyle(showOver: showOverClearLog, activeState: controlActiveState)
-            .popover(isPresented: $showOverClearLog, content: {
-                renderHint(hint: Constants.toolbarClearLog)
-            })
-            .onHover(perform: { hovering in
-                showOverClearLog = hovering && controlActiveState == .key
-            })
-            Button(Constants.toolbarSettings, systemImage: Constants.iconSettings) {
-                showSettingsWindow()
-            }
-            .withToolbarButtonStyle(showOver: showOverSettings, activeState: controlActiveState)
-            .popover(isPresented: $showOverSettings, content: {
-                renderHint(hint: Constants.toolbarSettings)
-            })
-            .onHover(perform: { hovering in
-                showOverSettings = hovering && controlActiveState == .key
-            })
-            Button(Constants.toolbarInfo, systemImage: Constants.iconInfo) {
-                showInfoWindow()
-            }
-            .withToolbarButtonStyle(showOver: showOverInfo, activeState: controlActiveState)
-            .popover(isPresented: $showOverInfo, content: {
-                renderHint(hint: Constants.toolbarInfo)
-            })
-            .onHover(perform: { hovering in
-                showOverInfo = hovering && controlActiveState == .key
-            })
+            toolbarButton(
+                for: .copy,
+                title: Constants.toolbarCopyLog,
+                icon: Constants.iconCopyLog,
+                action: { loggingService.copy() }
+            )
+            .padding(.leading, 10)
+            toolbarButton(
+                for: .clear,
+                title: Constants.toolbarClearLog,
+                icon: Constants.iconClearLog,
+                action: { loggingService.clear() }
+            )
+            toolbarButton(
+                for: .settings,
+                title: Constants.toolbarSettings,
+                icon: Constants.iconSettings,
+                action: showSettingsWindow
+            )
+            toolbarButton(
+                for: .info,
+                title: Constants.toolbarInfo,
+                icon: Constants.iconInfo,
+                action: showInfoWindow
+            )
+            .padding(.trailing, -10)
         }
+    }
+    
+    // MARK: View sections
+    
+    @ViewBuilder
+    private func toolbarButton(
+        for type: ToolbarButtonType,
+        title: String,
+        icon: String,
+        action: @escaping () -> Void
+    ) -> some View {
+        ToolbarButton(
+            title: title,
+            systemImage: icon,
+            isHovered: hoveredButton == type,
+            activeState: controlActiveState,
+            action: action
+        )
+        .onHover { hoveredButton = $0 ? type : nil }
+        .help(title)
     }
     
     // MARK: Private functions
     
-    private func renderHint(hint: String) -> some View {
-        let result = Text(hint)
-            .padding()
-            .interactiveDismissDisabled()
-        
-        return result
-    }
-    
     private func showSettingsWindow() {
-        let requireOpenWindow = !appState.views.shownWindows
-            .contains(where: {$0 == Constants.windowIdSettings})
-        
-        if requireOpenWindow {
-            openWindow(id: Constants.windowIdSettings)
-        }
-        
+        openWindowIfNeeded(id: Constants.windowIdSettings)
         AppHelper.activateView(viewId: Constants.windowIdSettings)
     }
     
     private func showInfoWindow() {
-        let requireOpenWindow = !appState.views.shownWindows
-            .contains(where: {$0 == Constants.windowIdInfo})
-        
-        if requireOpenWindow {
-            openWindow(id: Constants.windowIdInfo)
-        }
-        
+        openWindowIfNeeded(id: Constants.windowIdInfo)
         AppHelper.activateView(viewId: Constants.windowIdInfo)
     }
-}
-
-private extension Button {
-    func withToolbarButtonStyle(showOver: Bool, activeState: ControlActiveState) -> some View {
-        self.buttonStyle(.plain)
-            .foregroundColor(showOver && activeState == .key ? .blue : .gray)
-            .bold(showOver)
-            .focusEffectDisabled()
-            .font(.system(size: 17))
-            .opacity(getViewOpacity(state: activeState))
-            .pointerOnHover()
+    
+    private func openWindowIfNeeded(id: String) {
+        let windowAlreadyShown = appState.views.shownWindows
+            .contains(where: { $0 == id })
+        
+        guard !windowAlreadyShown
+        else { return }
+        
+        openWindow(id: id)
+    }
+    
+    // MARK: Inner types
+    
+    private enum ToolbarButtonType {
+        case copy, clear, settings, info
     }
 }
-
 #Preview {
     ToolbarView().environmentObject(AppState())
 }

@@ -7,52 +7,62 @@
 
 import SwiftUI
 
-struct MainView : View {
+struct MainView: View {
     @EnvironmentObject var appState: AppState
     
-    @Environment(\.controlActiveState) var controlActiveState
+    @Environment(\.controlActiveState) private var controlActiveState
     
     var body: some View {
         NavigationSplitView {
-            VStack{
-                CurrentIpView()
-                    .environmentObject(appState)
-                    .padding(.top)
-                Spacer()
-                    .frame(height: 25)
-                MonitoringStatusView()
-                    .environmentObject(appState)
-                    .padding(.top)
-                NetworkStatusView()
-                    .environmentObject(appState)
-                    .padding(.top)
-                ProcessesStatusView()
-                    .environmentObject(appState)
-                    .padding(.top)
-                Spacer()
-                    .frame(minHeight: 20)
-                ActiveConnectionsView()
-                    .environmentObject(appState)
-            }
-            .opacity(controlActiveState == .key ? 1 : 0.6)
-            .navigationSplitViewColumnWidth(220)
+            sidebarContent
+                .opacity(controlActiveState == .key ? 1 : 0.6)
+                .navigationSplitViewColumnWidth(220)
         } detail: {
-            VStack{
-                LogView()
-                    .environmentObject(appState)
-            }
-            .navigationSplitViewColumnWidth(min: 600, ideal: 600)
-        }.onAppear(perform: {
-            openView()
-        })
-        .onDisappear(perform: {
-            closeView()
-        })
+            detailContent
+                .navigationSplitViewColumnWidth(min: 600, ideal: 600)
+        }
         .frame(minHeight: 600)
-        .toolbar(content: {
+        .toolbar {
             ToolbarView()
                 .padding(.trailing)
-        })
+        }
+        .safeToolbarGlassEffect()
+        .onAppear(perform: openView)
+        .onDisappear(perform: closeView)
+    }
+    
+    // MARK: View sections
+    
+    @ViewBuilder
+    private var sidebarContent: some View {
+        VStack {
+            CurrentIpView()
+                .environmentObject(appState)
+                .padding(.top)
+            Spacer()
+                .frame(height: 15)
+            MonitoringStatusView()
+                .environmentObject(appState)
+                .padding(.top)
+            NetworkStatusView()
+                .environmentObject(appState)
+                .padding(.top)
+            ProcessesStatusView()
+                .environmentObject(appState)
+                .padding(.top)
+            Spacer()
+                .frame(minHeight: 20)
+            ActiveConnectionsView()
+                .environmentObject(appState)
+        }
+    }
+    
+    @ViewBuilder
+    private var detailContent: some View {
+        VStack {
+            LogView()
+                .environmentObject(appState)
+        }
     }
     
     // MARK: Private functions
@@ -61,11 +71,13 @@ struct MainView : View {
         appState.views.shownWindows.append(Constants.windowIdMain)
         AppHelper.setUpView(
             viewName: Constants.windowIdMain,
-            onTop: appState.userData.onTopOfAllWindows)
+            onTop: appState.userData.onTopOfAllWindows
+        )
     }
     
     private func closeView() {
-        appState.views.shownWindows.removeAll(where: {$0 == Constants.windowIdMain})
+        appState.views.shownWindows
+            .removeAll { $0 == Constants.windowIdMain }
     }
 }
 

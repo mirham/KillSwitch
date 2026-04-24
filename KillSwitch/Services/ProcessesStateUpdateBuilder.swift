@@ -11,6 +11,7 @@ final class ProcessesStateUpdateBuilder {
     @discardableResult
     func withProcessesToKill (_ processesToKill: [ProcessInfo]?) -> Self {
         update.processesToKill = processesToKill
+        
         return self
     }
     
