@@ -59,8 +59,7 @@ struct KillSwitchApp: App {
                 .environmentObject(appState)
                 .navigationTitle(Constants.settings)
                 .safeGlassEffect()
-                .fixedSize(horizontal: true, vertical: true)
-                .frame(width: 650, height: 520)
+                .frame(minWidth: 650, maxWidth: 650, minHeight: 520, maxHeight: 520)
         }
         .windowResizability(.contentSize)
         .windowStyle(.hiddenTitleBar)
