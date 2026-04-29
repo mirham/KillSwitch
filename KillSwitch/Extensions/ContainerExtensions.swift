@@ -39,6 +39,10 @@ extension Container {
             .singleton
     }
     
+    var dnsService: Factory<DnsServiceType> {
+        Factory(self) { DnsService() }.singleton
+    }
+    
     var ipApiService: Factory<IpApiServiceType> {
         Factory(self) { IpApiService() }
             .singleton

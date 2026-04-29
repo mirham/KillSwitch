@@ -11,6 +11,7 @@ import Factory
 final class MonitoringService: MonitoringServiceType {
     @Injected(\.appState) private var appState
     @Injected(\.ipService) private var ipService
+    @Injected(\.dnsService) private var dnsService
     @Injected(\.networkService) private var networkService
     @Injected(\.processService) private var processService
     @Injected(\.computerService) private var computerService
@@ -31,10 +32,13 @@ final class MonitoringService: MonitoringServiceType {
     
     func startMonitoring() {
         monitoringTime = 0
+        
         loggingService.write(
             message: Constants.logMonitoringHasBeenEnabled,
             type: .success)
+        
         computerService.startSleepPreventing()
+        dnsService.startMonitoring()
         
         monitoringTask = Task { [weak self] in
             guard let self
@@ -62,6 +66,7 @@ final class MonitoringService: MonitoringServiceType {
         monitoringTask?.cancel()
         monitoringTask = nil
         
+        dnsService.stopMonitoring()
         computerService.stopSleepPreventing()
         
         loggingService.write(
@@ -195,8 +200,11 @@ final class MonitoringService: MonitoringServiceType {
         guard appState.network.status != .off
         else { return }
         
-        appState.network.physicalNetworkInterfaces.forEach {
-            networkService.disableNetworkInterface(interfaceName: $0.name)
+        appState.network.physicalNetworkInterfaces.forEach { networkInterface in
+            Task {
+                await networkService.disableNetworkInterfaceAsync(
+                    interfaceName: networkInterface.name)
+            }
         }
     }
     

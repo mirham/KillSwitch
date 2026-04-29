@@ -94,7 +94,9 @@ struct EnableNetworkDialogView: View {
     
     @ViewBuilder
     private var enableButton: some View {
-        Button(action: handleEnableButtonClick) {
+        Button {
+            Task { await enableNetworkAsync() }
+        } label: {
             Text(Constants.enable)
                 .frame(height: 25)
                 .frame(maxWidth: .infinity)
@@ -109,7 +111,7 @@ struct EnableNetworkDialogView: View {
     
     @ViewBuilder
     private var cancelButton: some View {
-        Button(action: handleCancelButtonClick) {
+        Button(action: cancel) {
             Text(Constants.cancel)
                 .frame(width: 100, height: 25)
         }
@@ -117,15 +119,16 @@ struct EnableNetworkDialogView: View {
     
     // MARK: Private functions
     
-    private func handleEnableButtonClick() {
+    private func enableNetworkAsync() async {
         guard let interfaceName = selectedInterfaceName
         else { return }
         
-        networkService.enableNetworkInterface(interfaceName: interfaceName)
+        await networkService.enableNetworkInterfaceAsync(
+            interfaceName: interfaceName)
         closeDialog()
     }
     
-    private func handleCancelButtonClick() {
+    private func cancel() {
         closeDialog()
     }
     

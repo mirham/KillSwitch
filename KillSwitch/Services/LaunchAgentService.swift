@@ -96,13 +96,13 @@ final class LaunchAgentService: ShellAccessible, LaunchAgentServiceType {
             
             do {
                 if isInstalled {
-                    try safeShell(String(
+                    try await safeShellAsync(String(
                         format: Constants.shCommandLoadLaunchAgent,
                         Constants.launchAgentsFolderPath,
                         Constants.launchAgentPlistName
                     ))
                 } else {
-                    try safeShell(String(
+                    try await safeShellAsync(String(
                         format: Constants.shCommandRemoveLaunchAgent,
                         Constants.launchAgentName
                     ))

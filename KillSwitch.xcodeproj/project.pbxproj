@@ -59,6 +59,8 @@
 		357266822C36FE710021978C /* AppHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 357266812C36FE710021978C /* AppHelper.swift */; };
 		3582BF612C59073F004E0B80 /* IpAddressContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3582BF602C59073F004E0B80 /* IpAddressContainerView.swift */; };
 		3582BF632C59345E004E0B80 /* InfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3582BF622C59345E004E0B80 /* InfoView.swift */; };
+		3589AB282FA202A700D7F3A8 /* DnsServiceType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3589AB272FA2029E00D7F3A8 /* DnsServiceType.swift */; };
+		3589AB2A2FA2036A00D7F3A8 /* DnsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3589AB292FA2036500D7F3A8 /* DnsService.swift */; };
 		3590333C2C396950006787AD /* ViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3590333B2C396950006787AD /* ViewExtensions.swift */; };
 		359C7C6D2C29605D00CA3CE1 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 359C7C6C2C29605D00CA3CE1 /* LocationService.swift */; };
 		359E44ED2C11A6BD00BF6093 /* MenuBarStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 359E44EC2C11A6BD00BF6093 /* MenuBarStatusView.swift */; };
@@ -171,6 +173,8 @@
 		357266812C36FE710021978C /* AppHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppHelper.swift; sourceTree = "<group>"; };
 		3582BF602C59073F004E0B80 /* IpAddressContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IpAddressContainerView.swift; sourceTree = "<group>"; };
 		3582BF622C59345E004E0B80 /* InfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoView.swift; sourceTree = "<group>"; };
+		3589AB272FA2029E00D7F3A8 /* DnsServiceType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DnsServiceType.swift; sourceTree = "<group>"; };
+		3589AB292FA2036500D7F3A8 /* DnsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DnsService.swift; sourceTree = "<group>"; };
 		3590333B2C396950006787AD /* ViewExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewExtensions.swift; sourceTree = "<group>"; };
 		359C7C6C2C29605D00CA3CE1 /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
 		359E44EC2C11A6BD00BF6093 /* MenuBarStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarStatusView.swift; sourceTree = "<group>"; };
@@ -248,6 +252,7 @@
 				35A6E4272F97B61800731FF3 /* NetworkInterfaceInfoService.swift */,
 				351F0C652C0F6D2A00644C66 /* NetworkService.swift */,
 				357154FA2C173E4C00A41AA4 /* IpService.swift */,
+				3589AB292FA2036500D7F3A8 /* DnsService.swift */,
 				35C8A9202E04353300C574A5 /* IpApiService.swift */,
 				35DA7E242C11E91800BFC680 /* LaunchAgentService.swift */,
 				359C7C6C2C29605D00CA3CE1 /* LocationService.swift */,
@@ -447,6 +452,7 @@
 				35BD39CB2DDCA0010021CF49 /* MonitoringServiceType.swift */,
 				35BD39CD2DDCA0B30021CF49 /* NetworkStatusServiceType.swift */,
 				35BD39CF2DDCA1540021CF49 /* IpServiceType.swift */,
+				3589AB272FA2029E00D7F3A8 /* DnsServiceType.swift */,
 				35C8A9222E04393400C574A5 /* IpApiServiceType.swift */,
 				35BD39D12DDCA1F00021CF49 /* NetworkServiceType.swift */,
 				35A6E4252F97B4FC00731FF3 /* NetworkInterfaceInfoServiceType.swift */,
@@ -663,6 +669,7 @@
 				3572667D2C36EDC30021978C /* ShellAccessible.swift in Sources */,
 				3570E46D2C21CFEA00CB5D42 /* SafetyType.swift in Sources */,
 				359E44EF2C11BFED00BF6093 /* MenuBarView.swift in Sources */,
+				3589AB282FA202A700D7F3A8 /* DnsServiceType.swift in Sources */,
 				3570E4772C2317E800CB5D42 /* LogEntryType.swift in Sources */,
 				35BD39D82DDCA4750021CF49 /* ComputerServiceType.swift in Sources */,
 				35F12F3E2C15B4E100AFA738 /* NetworkInterface.swift in Sources */,
@@ -691,6 +698,7 @@
 				35A6E4332F99535D00731FF3 /* IpError.swift in Sources */,
 				359C7C6D2C29605D00CA3CE1 /* LocationService.swift in Sources */,
 				3505D94E2C2D5DD300E8FF61 /* KillProcessesDialogView.swift in Sources */,
+				3589AB2A2FA2036A00D7F3A8 /* DnsService.swift in Sources */,
 				3568505C2C2B1999006E64B8 /* ClosingAppsEditView.swift in Sources */,
 				3570E48E2C25B81400CB5D42 /* MenuBarElement.swift in Sources */,
 				35BD39C12DDC9CB60021CF49 /* StringExtensions.swift in Sources */,

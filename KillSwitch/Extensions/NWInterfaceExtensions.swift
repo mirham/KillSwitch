@@ -31,7 +31,7 @@ extension NWInterface {
     // MARK: Private functions
     
     private func isVpn(name: String) -> Bool {
-        for vpnProtocol in Constants.vpnProtocols
+        for vpnProtocol in Constants.vpnInterfacePrefixes
         where name.starts(with: vpnProtocol) {
             return true
         }

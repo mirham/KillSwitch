@@ -33,6 +33,7 @@ struct Constants{
     static let ipV4: Int = 4
     static let ipV6: Int = 6
     static let minIpApiCount: Int = 1
+    static let defaultRetryCount: Int = 3
     static let defaultToleranceInNanoseconds: UInt64 = 100_000_000
     static let menuBarItemTimeToleranceInSeconds: Int = 1
     static let defaultIntervalBetweenChecksInSeconds: Int = 10
@@ -53,6 +54,7 @@ struct Constants{
     
     // MARK: Regexes
     static let regexUrl = /(?<protocol>https?):\/\/(?:(?<username>[^:@\s\/\\]*)(?::(?<password>[^:@\s\/\\]*))?@)?(?<domain>[\w\d]+[\w\d.\-]+[\w\d]+|\[[a-f\d:]+\])(?::(?<port>\d+))?(?:(?<path>\/[^\?#\s]*)(?:\?(?<query>[^\?#\s]*))?(?:#(?<anchor>[^\?#\s]*))?)?/
+    static let regexScutilParenthesesPattern = #"\(([^)]+)\)"#
     
     // MARK: Masks
     static let publicIpMask = "%IP%"
@@ -152,6 +154,13 @@ struct Constants{
     static let leftBracket = "("
     static let rightBracket = ")"
     static let slash = "/"
+    static let doubleNewline = "\n\n"
+    static let newline = "\n"
+    static let colon = ":"
+    static let parentheses = "()"
+    static let nilPlaceholder = "nil"
+    static let serverSeparator = ", "
+    static let leakDetailSeparator = "; "
     
     // MARK: Toolbar
     static let toolbarSettings = "Settings"
@@ -240,6 +249,15 @@ struct Constants{
     static let shCommandRemoveLaunchAgent = "launchctl remove %1$@"
     static let shCommandToggleLocationServices = "defaults -currentHost write '/var/db/locationd/Library/Preferences/ByHost/com.apple.locationd' LocationServicesEnabled -bool %1$@"
     static let shCommandReboot = "reboot"
+    static let shDnsCommand = "scutil --dns"
+    
+    // MARK: scutil
+    
+    static let scutilScopedQueriesHeader = "DNS configuration (for scoped queries)"
+    static let scutilResolverPrefix = "resolver #"
+    static let scutilNameserverPrefix = "nameserver["
+    static let scutilIfIndexPrefix = "if_index"
+    static let scutilDomainPrefix = "domain"
     
     // MARK: Error messages
     static let errorNoActiveIpApiFound = "Not possible to obtain IP, try to add a new IP API in the Settings to proceed work or check DNS availability"
@@ -290,6 +308,22 @@ struct Constants{
     static let logProcessTerminated = "%1$@ has been closed"
     static let logPreventComputerSleepEnabled = "Preventing the computer from going to sleep is enabled"
     static let logPreventComputerSleepDisabled = "Preventing the computer from going to sleep is disabled"
+    static let logDnsMonitoringStarted = "DNS monitoring enabled (interval: %1$ds)"
+    static let logDnsMonitoringStopped = "DNS monitoring disabled"
+    static let logDnsCheckInitiated = "DNS leak check initiated"
+    static let logDnsCheckFailed = "DNS leak check failed: %1$@"
+    static let logDnsNoResolversFound = "DNS leak check inconclusive: no resolvers found in scutil output"
+    static let logDnsNoVpnDetected = "DNS check: no VPN tunnel detected, direct connection in use"
+    static let logDnsResolverEntry = "DNS resolver #%1$d | interface: %2$@ | nameservers: [%3$@]%4$@%5$@"
+    static let logDnsLeakDetected = "DNS LEAK DETECTED — %1$d resolver(s) active outside VPN tunnel: %2$@"
+    static let logDnsCheckPassed = "DNS check passed — all resolvers are tunnel-bound (%1$@)"
+    static let logNetworkInterfaceDetails = "interface '%1$@' → [%2$@]"
+    static let logLeakFlag = " ⚠️ LEAK"
+    static let logDomainSuffix = " | domain: %1$@"
+    static let logUnboundInterface = "unbound (system-wide)"
+    static let logSystemWide = "system-wide"
+    static let logNoSpecificInterface = "no specific interface"
+    static let logMaxRetriesExceeded = "Max retries exceeded"
     
     // MARK: Hints
     static let hintApiIsActive = "API is in use"
@@ -389,12 +423,20 @@ struct Constants{
         </plist>
         """;
     
-    static let vpnProtocols = [
+    static let vpnInterfacePrefixes = [
         "tap", 
         "tun",
         "ppp",
         "ipsec",
         "utun"
+    ]
+    
+    static let physicalInterfacePrefixes = [
+        "en",
+        "bridge",
+        "awdl",
+        "llw",
+        "anpi"
     ]
     
     static let defaultShownMenuBarItems = [

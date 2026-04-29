@@ -63,7 +63,7 @@ struct ConnectionItem: View {
     @ViewBuilder
     private var typeBadge: some View {
         Text(interface.isPhysical ? Constants.physical : Constants.virtual)
-            .badge(color: interface.isPhysical ? .green : .orange)
+            .badge(color: .primary)
     }
     
     @ViewBuilder

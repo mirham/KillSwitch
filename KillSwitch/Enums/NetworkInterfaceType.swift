@@ -30,7 +30,7 @@ enum NetworkInterfaceType : Int, CaseIterable {
     
     var color: Color {
         switch self {
-            case .vpn: return .red
+            case .vpn: return .orange
             case .wifi: return .blue
             case .wired: return .green
             case .loopback: return .purple
