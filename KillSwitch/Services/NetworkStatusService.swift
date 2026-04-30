@@ -109,8 +109,6 @@ final class NetworkStatusService: ApiCallable, NetworkStatusServiceType {
         }
     }
     
-    // MARK: - Pure Helpers
-    
     private func determineNetworkStatus(
         path: NWPath,
         activeInterfaces: [NetworkInterface]

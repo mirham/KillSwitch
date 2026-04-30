@@ -122,7 +122,10 @@ final class NetworkInterfaceInfoService : NSObject, NetworkInterfaceInfoServiceT
         else { return nil }
         
         for key in keys {
-            guard let dict = SCDynamicStoreCopyValue(session, key as CFString) as? [String: Any],
+            guard let dict = SCDynamicStoreCopyValue(
+                session,
+                key as CFString
+            ) as? [String: Any],
                   let interface = dict[Constants.niiInterfaceNameKey] as? String,
                   interface == bsdName
             else { continue }
@@ -140,13 +143,19 @@ final class NetworkInterfaceInfoService : NSObject, NetworkInterfaceInfoServiceT
         session: SCDynamicStore) -> String? {
         let interfaceKey = String(format: Constants.niiInterfaceStateIPv4, bsdName)
         
-        guard let dict = SCDynamicStoreCopyValue(session, interfaceKey as CFString) as? [String: Any],
+        guard let dict = SCDynamicStoreCopyValue(
+            session,
+            interfaceKey as CFString
+        ) as? [String: Any],
               let serviceID = dict[Constants.niiServiceKey] as? String
         else { return nil }
         
         let setupKey = String(format: Constants.niiServiceSetup, serviceID)
             
-        guard let setupDict = SCDynamicStoreCopyValue(session, setupKey as CFString) as? [String: Any]
+        guard let setupDict = SCDynamicStoreCopyValue(
+            session,
+            setupKey as CFString
+        ) as? [String: Any]
         else { return nil }
         
         return setupDict[Constants.niiUserDefinedNameKey] as? String
@@ -155,13 +164,19 @@ final class NetworkInterfaceInfoService : NSObject, NetworkInterfaceInfoServiceT
     private func findVpnNameInPppServices(
         bsdName: String,
         session: SCDynamicStore) -> String? {
-        guard let keys = SCDynamicStoreCopyKeyList(session, Constants.niiPPPSetup as CFString) as? [String]
+        guard let keys = SCDynamicStoreCopyKeyList(
+            session,
+            Constants.niiPPPSetup as CFString)
+                as? [String]
         else { return nil }
         
         for key in keys {
-            guard let dict = SCDynamicStoreCopyValue(session, key as CFString) as? [String: Any],
-                  let interface = dict[Constants.niiInterfaceNameKey] as? String,
-                  interface == bsdName
+            guard let dict = SCDynamicStoreCopyValue(
+                session,
+                key as CFString
+            ) as? [String: Any],
+                let interface = dict[Constants.niiInterfaceNameKey] as? String,
+                interface == bsdName
             else { continue }
             
             return resolveUserDefinedName(
@@ -184,7 +199,10 @@ final class NetworkInterfaceInfoService : NSObject, NetworkInterfaceInfoServiceT
         let serviceID = components[serviceIndex + 1]
         let setupKey = String(format: Constants.niiServiceSetup, serviceID)
         
-        guard let setupDict = SCDynamicStoreCopyValue(session, setupKey as CFString) as? [String: Any]
+        guard let setupDict = SCDynamicStoreCopyValue(
+            session,
+            setupKey as CFString
+        ) as? [String: Any]
         else { return nil }
         
         return setupDict[Constants.niiUserDefinedNameKey] as? String

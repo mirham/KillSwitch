@@ -35,13 +35,13 @@ struct ProcessesStatusView: View {
                 }
             }
         }
-        .isHidden(appState.system.processesToKill.isEmpty, remove: true)
+        .isHidden(appState.system.killingProcesses.isEmpty, remove: true)
     }
     
     // MARK: View sections
     
     private var processCountView: some View {
-        Text(appState.system.processesToKill.count.description)
+        Text(appState.system.killingProcesses.count.description)
             .frame(width: 60, height: 60)
             .background(.yellow)
             .foregroundColor(.black.opacity(0.5))
@@ -61,7 +61,7 @@ struct ProcessesStatusView: View {
             Text(Constants.clickToClose)
             
             VStack(alignment: .leading) {
-                ForEach(appState.system.processesToKill, id: \.pid) {
+                ForEach(appState.system.killingProcesses, id: \.pid) {
                     processInfo in
                     HStack {
                         Image(nsImage: NSWorkspace.shared.icon(

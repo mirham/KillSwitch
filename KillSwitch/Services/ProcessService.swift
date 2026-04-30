@@ -28,13 +28,16 @@ final class ProcessService: ShellAccessible, ProcessServiceType {
             guard let self
             else { return }
             
-            guard !appState.system.processesToKill.isEmpty
+            guard !appState.system.killingProcesses.isEmpty
             else { return }
             
-            for process in appState.system.processesToKill {
+            for process in appState.system.killingProcesses {
                 kill(process.pid, SIGTERM)
+                
                 loggingService.write(
-                    message: String(format: Constants.logProcessTerminated, process.name),
+                    message: String(
+                        format: Constants.logProcessTerminated,
+                        process.name),
                     type: .success)
             }
         }
@@ -57,7 +60,7 @@ final class ProcessService: ShellAccessible, ProcessServiceType {
                     appsToClose: self.appState.userData.appsToClose,
                     isMonitoringEnabled: self.appState.monitoring.isEnabled,
                     safetyType: self.appState.current.safetyType,
-                    useHigherProtection: self.appState.userData.useHigherProtection,
+                    useExtendedProtection: self.appState.userData.useExtendedProtection,
                     publicIp: self.appState.network.publicIp
                 )}
                 
@@ -65,19 +68,22 @@ final class ProcessService: ShellAccessible, ProcessServiceType {
                 else { continue }
                 
                 let activeProcesses = NSWorkspace.shared.runningApplications
-                let processesToKill = buildProcessesToKill(
+                let killingProcesses = buildProcessesToKill(
                     appsToClose: snapshot.appsToClose,
                     activeProcesses: activeProcesses
                 )
+                let monitoringProcesses = buildProcessesToMonitor(
+                    activeProcesses: activeProcesses)
                 
                 await updateStatusAsync {
-                    $0.withProcessesToKill(processesToKill)
+                    $0.withKilllingProcesses(killingProcesses)
+                    .withMonitoringProcesses(monitoringProcesses)
                 }
                 
-                let shouldKill = !processesToKill.isEmpty
+                let shouldKill = !killingProcesses.isEmpty
                     && snapshot.isMonitoringEnabled
                     && (snapshot.safetyType == .unsafe
-                        || (snapshot.useHigherProtection
+                        || (snapshot.useExtendedProtection
                         && snapshot.publicIp?.hasLocation() == false))
                 
                 if shouldKill {
@@ -114,6 +120,25 @@ final class ProcessService: ShellAccessible, ProcessServiceType {
                 description: found.description,
                 url: appToClose.url,
                 name: appToClose.name
+            )
+        }
+    }
+    
+    private func buildProcessesToMonitor(
+        activeProcesses: [NSRunningApplication]
+    ) -> [ProcessInfo] {
+        activeProcesses.compactMap { app in
+            guard let appName = app.localizedName,
+                  Constants.monitoredApps.contains(where: {
+                      $0.name.caseInsensitiveCompare(appName) == .orderedSame
+                  })
+            else { return nil }
+            
+            return ProcessInfo(
+                pid: app.processIdentifier,
+                description: app.description,
+                url: app.bundleIdentifier ?? appName,
+                name: appName
             )
         }
     }

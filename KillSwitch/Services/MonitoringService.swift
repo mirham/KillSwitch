@@ -11,6 +11,8 @@ import Factory
 final class MonitoringService: MonitoringServiceType {
     @Injected(\.appState) private var appState
     @Injected(\.ipService) private var ipService
+    @Injected(\.dnsService) private var dnsService
+    @Injected(\.webRtcService) private var webRtcService
     @Injected(\.networkService) private var networkService
     @Injected(\.processService) private var processService
     @Injected(\.computerService) private var computerService
@@ -31,16 +33,20 @@ final class MonitoringService: MonitoringServiceType {
     
     func startMonitoring() {
         monitoringTime = 0
-        loggingService.write(
-            message: Constants.logMonitoringHasBeenEnabled,
-            type: .success)
-        computerService.startSleepPreventing()
         
         monitoringTask = Task { [weak self] in
             guard let self
             else { return }
             
+            loggingService.write(
+                message: Constants.logMonitoringHasBeenEnabled,
+                type: .success)
+            
             await updateStatusAsync { $0.withIsMonitoringEnabled(true) }
+            
+            computerService.startSleepPreventing()
+            dnsService.startMonitoring()
+            webRtcService.startMonitoring()
             
             while !Task.isCancelled && appState.monitoring.isEnabled {
                 try? await Task.sleep(nanoseconds: Constants.defaultMonitoringIntervalNanoseconds)
@@ -62,6 +68,8 @@ final class MonitoringService: MonitoringServiceType {
         monitoringTask?.cancel()
         monitoringTask = nil
         
+        webRtcService.stopMonitoring()
+        dnsService.stopMonitoring()
         computerService.stopSleepPreventing()
         
         loggingService.write(
@@ -182,7 +190,7 @@ final class MonitoringService: MonitoringServiceType {
     
     private func isUnsafeUnderHigherProtection(
         _ result: OperationResult<IpInfoBase>) -> Bool {
-        appState.userData.useHigherProtection &&
+        appState.userData.useExtendedProtection &&
         (appState.system.locationServicesEnabled || result.result == nil)
     }
     
@@ -195,8 +203,11 @@ final class MonitoringService: MonitoringServiceType {
         guard appState.network.status != .off
         else { return }
         
-        appState.network.physicalNetworkInterfaces.forEach {
-            networkService.disableNetworkInterface(interfaceName: $0.name)
+        appState.network.physicalNetworkInterfaces.forEach { networkInterface in
+            Task {
+                await networkService.disableNetworkInterfaceAsync(
+                    interfaceName: networkInterface.name)
+            }
         }
     }
     

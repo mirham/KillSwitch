@@ -35,29 +35,59 @@ final class IpApiService: ApiCallable, IpApiServiceType {
         
         let timeout = await MainActor.run { calculateCallTimeout() }
         
-        do {
-            let response = try await callGetApiAsync(
-                apiUrl: ipApiUrl,
-                timeoutInterval: timeout
-            )
-            
-            return OperationResult(result: response)
-            
-        } catch let urlError as URLError
-            where [.notConnectedToInternet, .networkConnectionLost]
-            .contains(urlError.code) {
-            return OperationResult(
-                error: IpApiError.notConnected.localizedDescription)
-        } catch {
-            await deactivateIpApiAsync(ipApiUrl: ipApiUrl)
-            
-            return OperationResult(
-                error: IpApiError.callFailed(
+        for attempt in 1...Constants.defaultRetryCount {
+            guard !Task.isCancelled else {
+                return OperationResult(
+                    error: IpApiError.taskCancelled.localizedDescription)
+            }
+            do {
+                let response = try await callGetApiAsync(
                     apiUrl: ipApiUrl,
-                    reason: error.localizedDescription
-                ).localizedDescription
-            )
+                    timeoutInterval: timeout
+                )
+                
+                let trimmed = response.trimmingCharacters(in: .whitespacesAndNewlines)
+                
+                guard trimmed.isValidIp()
+                else {
+                    return OperationResult(
+                        error: IpError.invalidIpAddress(
+                            apiUrl: ipApiUrl).localizedDescription
+                    )
+                }
+                
+                return OperationResult(result: response)
+                
+            } catch let urlError as URLError
+                        where [.notConnectedToInternet, .networkConnectionLost]
+                .contains(urlError.code) {
+                return OperationResult(
+                    error: IpApiError.notConnected.localizedDescription)
+            } catch {
+                if attempt < Constants.defaultRetryCount {
+                    try? await Task.sleep(nanoseconds: UInt64(attempt) * Constants.secondInNanoseconds)
+                    continue
+                }
+                
+                await deactivateIpApiAsync(ipApiUrl: ipApiUrl)
+                
+                return OperationResult(
+                    error: IpApiError.callFailed(
+                        apiUrl: ipApiUrl,
+                        reason: error.localizedDescription
+                    ).localizedDescription
+                )
+            }
         }
+        
+        await deactivateIpApiAsync(ipApiUrl: ipApiUrl)
+        
+        return OperationResult(
+            error: IpApiError.callFailed(
+                apiUrl: ipApiUrl,
+                reason: Constants.logMaxRetriesExceeded
+            ).localizedDescription
+        )
     }
     
     // MARK: Private methods

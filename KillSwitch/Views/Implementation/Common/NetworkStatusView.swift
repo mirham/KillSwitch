@@ -23,7 +23,7 @@ struct NetworkStatusView: View {
                 return NetworkStatusControlData(
                     text: appState.network.status.description,
                     color: .green,
-                    action: { toggleNetwork(enable: false) },
+                    action: { Task { await toggleNetworkAsync(enable: false) } },
                     hintText: Constants.hintClickToDisableNetwork
                 )
                 
@@ -31,7 +31,7 @@ struct NetworkStatusView: View {
                 return NetworkStatusControlData(
                     text: appState.network.status.description,
                     color: .red,
-                    action: { toggleNetwork(enable: true) },
+                    action: { Task { await toggleNetworkAsync(enable: true) } },
                     hintText: Constants.hintClickToEnableNetwork
                 )
                 
@@ -105,7 +105,7 @@ struct NetworkStatusView: View {
         }
     }
     
-    private func toggleNetwork(enable: Bool) {
+    private func toggleNetworkAsync(enable: Bool) async {
         isHovering = false
         
         let physicalNetworkInterfaces = networkService.getPhysicalInterfaces()
@@ -117,12 +117,12 @@ struct NetworkStatusView: View {
                 guard let firstInterface = appState.network.physicalNetworkInterfaces.first
                 else { return }
                 
-                networkService.enableNetworkInterface(
+                await networkService.enableNetworkInterfaceAsync(
                     interfaceName: firstInterface.name)
             }
         } else {
             for interface in physicalNetworkInterfaces {
-                networkService.disableNetworkInterface(
+                await networkService.disableNetworkInterfaceAsync(
                     interfaceName: interface.name)
             }
         }

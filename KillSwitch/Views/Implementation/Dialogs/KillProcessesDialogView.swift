@@ -74,7 +74,7 @@ struct KillProcessesDialogView: View {
     @ViewBuilder
     private var processesList: some View {
         VStack(alignment: .leading) {
-            ForEach(appState.system.processesToKill, id: \.pid) { processInfo in
+            ForEach(appState.system.killingProcesses, id: \.pid) { processInfo in
                 HStack {
                     Image(nsImage: NSWorkspace.shared.icon(forFile: processInfo.url))
                         .frame(width: 32, height: 32)

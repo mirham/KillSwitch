@@ -34,10 +34,11 @@ final class NetworkService: ShellAccessible, NetworkServiceType {
     }
     
     func refreshPublicIpAsync() async {
-        guard !Task.isCancelled
-        else { return }
-        
         await updateStatusAsync { $0.withIsObtainingIp(true) }
+        
+        defer {
+            Task { await updateStatusAsync { $0.withIsObtainingIp(false) } }
+        }
         
         let publicIp = await fetchPublicIpAsync()
         
@@ -65,59 +66,49 @@ final class NetworkService: ShellAccessible, NetworkServiceType {
         }
     }
     
-    func enableNetworkInterface(interfaceName: String) {
-        Task.detached(priority: .userInitiated) { [weak self] in
-            guard let self
-            else { return }
+    func enableNetworkInterfaceAsync(interfaceName: String) async {
+        do {
+            try await safeShellAsync(String(
+                format: Constants.shCommandEnableNetworkIterface,
+                interfaceName))
             
-            do {
-                try safeShell(String(
-                    format: Constants.shCommandEnableNetworkIterface,
-                    interfaceName))
-                
-                loggingService.write(
-                    message: String(
-                        format: Constants.logNetworkInterfaceHasBeenEnabled,
-                        interfaceName),
-                    type: .success)
-            } catch {
-                let networkError = NetworkError.interfaceCommandFailed(
-                    interfaceName: interfaceName,
-                    action: .enable
-                )
-                
-                loggingService.write(
-                    message: networkError.errorDescription ?? networkError.localizedDescription,
-                    type: .error)
-            }
+            loggingService.write(
+                message: String(
+                    format: Constants.logNetworkInterfaceHasBeenEnabled,
+                    interfaceName),
+                type: .success)
+        } catch {
+            let networkError = NetworkError.interfaceCommandFailed(
+                interfaceName: interfaceName,
+                action: .enable
+            )
+            
+            loggingService.write(
+                message: networkError.errorDescription ?? networkError.localizedDescription,
+                type: .error)
         }
     }
     
-    func disableNetworkInterface(interfaceName: String) {
-        Task.detached(priority: .userInitiated) { [weak self] in
-            guard let self
-            else { return }
+    func disableNetworkInterfaceAsync(interfaceName: String) async {
+        do {
+            try await safeShellAsync(String(
+                format: Constants.shCommandDisableNetworkIterface,
+                interfaceName))
             
-            do {
-                try safeShell(String(
-                    format: Constants.shCommandDisableNetworkIterface,
-                    interfaceName))
-                
-                loggingService.write(
-                    message: String(
-                        format: Constants.logNetworkInterfaceHasBeenDisabled,
-                        interfaceName),
-                    type: .success)
-            } catch {
-                let networkError = NetworkError.interfaceCommandFailed(
-                    interfaceName: interfaceName,
-                    action: .disable
-                )
-                
-                loggingService.write(
-                    message: networkError.errorDescription ?? networkError.localizedDescription,
-                    type: .error)
-            }
+            loggingService.write(
+                message: String(
+                    format: Constants.logNetworkInterfaceHasBeenDisabled,
+                    interfaceName),
+                type: .success)
+        } catch {
+            let networkError = NetworkError.interfaceCommandFailed(
+                interfaceName: interfaceName,
+                action: .disable
+            )
+            
+            loggingService.write(
+                message: networkError.errorDescription ?? networkError.localizedDescription,
+                type: .error)
         }
     }
     

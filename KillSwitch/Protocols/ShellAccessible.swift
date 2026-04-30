@@ -8,38 +8,44 @@
 import Foundation
 
 protocol ShellAccessible {
-    func safeShell(_ command: String) throws -> String
+    func safeShellAsync(_ command: String) async throws -> String
     func rootShell(command: String) throws -> String
 }
 
 extension ShellAccessible {
     @discardableResult
-    func safeShell(_ command: String) throws -> String {
-        let task = Process()
-        let pipe = Pipe()
-        
-        task.standardOutput = pipe
-        task.standardError = pipe
-        task.arguments = ["-c", command]
-        task.executableURL = URL(fileURLWithPath: Constants.zshPath)
-        task.standardInput = nil
-        
-        try task.run()
-        task.waitUntilExit()
-        
-        let data = pipe.fileHandleForReading.readDataToEndOfFile()
-        
-        guard let output = String(data: data, encoding: .utf8)
-        else { throw ShellError.invalidOutput(command: command) }
-        
-        guard task.terminationStatus == 0
-        else {
-            throw ShellError.commandFailed(
-                command: command,
-                underlyingError: output)
+    func safeShellAsync(_ command: String) async throws -> String {
+        try await withCheckedThrowingContinuation { continuation in
+            let task = Process()
+            let pipe = Pipe()
+            
+            task.standardOutput = pipe
+            task.standardError = pipe
+            task.arguments = ["-c", command]
+            task.executableURL = URL(fileURLWithPath: Constants.zshPath)
+            task.standardInput = nil
+            
+            task.terminationHandler = { process in
+                let data = pipe.fileHandleForReading.readDataToEndOfFile()
+                guard let output = String(data: data, encoding: .utf8) else {
+                    continuation.resume(throwing: ShellError.invalidOutput(command: command))
+                    return
+                }
+                guard process.terminationStatus == 0 else {
+                    continuation.resume(throwing: ShellError.commandFailed(
+                        command: command,
+                        underlyingError: output))
+                    return
+                }
+                continuation.resume(returning: output)
+            }
+            
+            do {
+                try task.run()
+            } catch {
+                continuation.resume(throwing: error)
+            }
         }
-        
-        return output
     }
     
     @discardableResult
