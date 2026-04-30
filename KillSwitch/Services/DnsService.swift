@@ -13,44 +13,51 @@ final class DnsService: DnsServiceType, ShellAccessible {
     @Injected(\.appState) private var appState
     
     private var pollingTask: Task<Void, Never>?
-    private let pollingInterval: TimeInterval = 15
+    private var shouldCheckForLeak: Bool {
+        appState.monitoring.isEnabled
+        && appState.userData.dnsLeakCheck
+        && appState.network.status == .on
+    }
     
     deinit {
         pollingTask?.cancel()
     }
     
     func startMonitoring() {
-        guard pollingTask == nil
+        print("\(appState.monitoring.isEnabled), \(appState.userData.dnsLeakCheck), \(appState.network.status == .on)")
+        guard pollingTask == nil, shouldCheckForLeak
         else { return }
+        
+        logger.write(
+            message: String(
+                format: Constants.logDnsMonitoringStarted,
+                Int(self.appState.userData.dnsLeakCheckInterval)),
+            type: .success)
         
         pollingTask = Task { [weak self] in
             guard let self
             else { return }
             
             while !Task.isCancelled {
-                if self.appState.monitoring.isEnabled
-                    && self.appState.network.status == .on {
+                if shouldCheckForLeak {
                     await self.checkForLeakAsync()
                 }
                 
-                try? await Task.sleep(for: .seconds(self.pollingInterval))
+                try? await Task.sleep(
+                    for: .seconds(appState.userData.dnsLeakCheckInterval))
             }
         }
-        
-        logger.write(
-            message: String(
-                format: Constants.logDnsMonitoringStarted,
-                Int(pollingInterval)),
-            type: .success)
     }
     
     func stopMonitoring() {
+        if pollingTask != nil {
+            logger.write(
+                message: Constants.logDnsMonitoringStopped,
+                type: .success)
+        }
+        
         pollingTask?.cancel()
         pollingTask = nil
-        
-        logger.write(
-            message: Constants.logDnsMonitoringStopped,
-            type: .success)
     }
     
     @discardableResult
@@ -135,7 +142,7 @@ final class DnsService: DnsServiceType, ShellAccessible {
             of: Constants.scutilResolverPrefix,
             with: String())) ?? 0
         var nameservers: [String] = []
-        var ifaceName: String?
+        var interfaceName: String?
         var domain: String?
         
         for line in lines.dropFirst() {
@@ -148,7 +155,7 @@ final class DnsService: DnsServiceType, ShellAccessible {
                 let match = line.range(
                     of: Constants.regexScutilParenthesesPattern,
                     options: .regularExpression) {
-                ifaceName = String(line[match]).trimmingCharacters(
+                interfaceName = String(line[match]).trimmingCharacters(
                     in: CharacterSet(charactersIn: Constants.parentheses))
             } else if line.hasPrefix(Constants.scutilDomainPrefix) {
                 domain = line.components(separatedBy: Constants.colon)
@@ -162,7 +169,7 @@ final class DnsService: DnsServiceType, ShellAccessible {
         
         return DnsResolver(
             index: index,
-            interfaceName: ifaceName,
+            interfaceName: interfaceName,
             nameservers: nameservers,
             domain: domain)
     }

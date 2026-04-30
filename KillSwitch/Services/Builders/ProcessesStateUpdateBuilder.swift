@@ -9,8 +9,14 @@ final class ProcessesStateUpdateBuilder {
     private var update = ProcessesStateUpdate()
     
     @discardableResult
-    func withProcessesToKill (_ processesToKill: [ProcessInfo]?) -> Self {
-        update.processesToKill = processesToKill
+    func withKilllingProcesses (_ killingProcesses: [ProcessInfo]?) -> Self {
+        update.killingProcesses = killingProcesses
+        
+        return self
+    }
+    
+    func withMonitoringProcesses(_ monitoringProcesses: [ProcessInfo]?) -> Self {
+        update.monitoringProcesses = monitoringProcesses
         
         return self
     }

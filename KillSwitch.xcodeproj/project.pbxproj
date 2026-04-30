@@ -29,6 +29,9 @@
 		354BEEB82DE8B1E000EFD1B2 /* MonitoringStateUpdateBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 354BEEB72DE8B1E000EFD1B2 /* MonitoringStateUpdateBuilder.swift */; };
 		354BEEBA2DE8B5DE00EFD1B2 /* ProcessesStateUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 354BEEB92DE8B5DE00EFD1B2 /* ProcessesStateUpdate.swift */; };
 		354BEEBC2DE8B65400EFD1B2 /* ProcessesStateUpdateBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 354BEEBB2DE8B65400EFD1B2 /* ProcessesStateUpdateBuilder.swift */; };
+		356580CC2FA37B2A00A6BBC5 /* LeaksEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 356580CB2FA37B2A00A6BBC5 /* LeaksEditView.swift */; };
+		356580CE2FA3A64300A6BBC5 /* WarningHint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 356580CD2FA3A63F00A6BBC5 /* WarningHint.swift */; };
+		356580D22FA3AE4900A6BBC5 /* TextExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 356580D12FA3AE4300A6BBC5 /* TextExtensions.swift */; };
 		3568505A2C2B0ACF006E64B8 /* ProcessInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 356850592C2B0ACF006E64B8 /* ProcessInfo.swift */; };
 		3568505C2C2B1999006E64B8 /* ClosingAppsEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3568505B2C2B1999006E64B8 /* ClosingAppsEditView.swift */; };
 		3568505E2C2B2415006E64B8 /* AppInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3568505D2C2B2415006E64B8 /* AppInfo.swift */; };
@@ -61,6 +64,10 @@
 		3582BF632C59345E004E0B80 /* InfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3582BF622C59345E004E0B80 /* InfoView.swift */; };
 		3589AB282FA202A700D7F3A8 /* DnsServiceType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3589AB272FA2029E00D7F3A8 /* DnsServiceType.swift */; };
 		3589AB2A2FA2036A00D7F3A8 /* DnsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3589AB292FA2036500D7F3A8 /* DnsService.swift */; };
+		3589AB2C2FA291B400D7F3A8 /* WebRtcServiceType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3589AB2B2FA291AE00D7F3A8 /* WebRtcServiceType.swift */; };
+		3589AB2E2FA291EC00D7F3A8 /* WebRtcService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3589AB2D2FA291E800D7F3A8 /* WebRtcService.swift */; };
+		3589AB302FA3680800D7F3A8 /* MonitoredAppInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3589AB2F2FA3680500D7F3A8 /* MonitoredAppInfo.swift */; };
+		3589AB322FA368AB00D7F3A8 /* BrowserPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3589AB312FA368A800D7F3A8 /* BrowserPolicy.swift */; };
 		3590333C2C396950006787AD /* ViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3590333B2C396950006787AD /* ViewExtensions.swift */; };
 		359C7C6D2C29605D00CA3CE1 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 359C7C6C2C29605D00CA3CE1 /* LocationService.swift */; };
 		359E44ED2C11A6BD00BF6093 /* MenuBarStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 359E44EC2C11A6BD00BF6093 /* MenuBarStatusView.swift */; };
@@ -144,6 +151,9 @@
 		354BEEB72DE8B1E000EFD1B2 /* MonitoringStateUpdateBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonitoringStateUpdateBuilder.swift; sourceTree = "<group>"; };
 		354BEEB92DE8B5DE00EFD1B2 /* ProcessesStateUpdate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessesStateUpdate.swift; sourceTree = "<group>"; };
 		354BEEBB2DE8B65400EFD1B2 /* ProcessesStateUpdateBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessesStateUpdateBuilder.swift; sourceTree = "<group>"; };
+		356580CB2FA37B2A00A6BBC5 /* LeaksEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaksEditView.swift; sourceTree = "<group>"; };
+		356580CD2FA3A63F00A6BBC5 /* WarningHint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WarningHint.swift; sourceTree = "<group>"; };
+		356580D12FA3AE4300A6BBC5 /* TextExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextExtensions.swift; sourceTree = "<group>"; };
 		356850592C2B0ACF006E64B8 /* ProcessInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessInfo.swift; sourceTree = "<group>"; };
 		3568505B2C2B1999006E64B8 /* ClosingAppsEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClosingAppsEditView.swift; sourceTree = "<group>"; };
 		3568505D2C2B2415006E64B8 /* AppInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppInfo.swift; sourceTree = "<group>"; };
@@ -175,6 +185,10 @@
 		3582BF622C59345E004E0B80 /* InfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoView.swift; sourceTree = "<group>"; };
 		3589AB272FA2029E00D7F3A8 /* DnsServiceType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DnsServiceType.swift; sourceTree = "<group>"; };
 		3589AB292FA2036500D7F3A8 /* DnsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DnsService.swift; sourceTree = "<group>"; };
+		3589AB2B2FA291AE00D7F3A8 /* WebRtcServiceType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebRtcServiceType.swift; sourceTree = "<group>"; };
+		3589AB2D2FA291E800D7F3A8 /* WebRtcService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebRtcService.swift; sourceTree = "<group>"; };
+		3589AB2F2FA3680500D7F3A8 /* MonitoredAppInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonitoredAppInfo.swift; sourceTree = "<group>"; };
+		3589AB312FA368A800D7F3A8 /* BrowserPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserPolicy.swift; sourceTree = "<group>"; };
 		3590333B2C396950006787AD /* ViewExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewExtensions.swift; sourceTree = "<group>"; };
 		359C7C6C2C29605D00CA3CE1 /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
 		359E44EC2C11A6BD00BF6093 /* MenuBarStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarStatusView.swift; sourceTree = "<group>"; };
@@ -247,21 +261,20 @@
 		351E9CEA2C10B19600CEC15F /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				3589AB332FA36EB400D7F3A8 /* Builders */,
 				351E9CE42C10A3BA00CEC15F /* MonitoringService.swift */,
 				35E7DD4E2C13420000CC68F7 /* NetworkStatusService.swift */,
 				35A6E4272F97B61800731FF3 /* NetworkInterfaceInfoService.swift */,
 				351F0C652C0F6D2A00644C66 /* NetworkService.swift */,
 				357154FA2C173E4C00A41AA4 /* IpService.swift */,
 				3589AB292FA2036500D7F3A8 /* DnsService.swift */,
+				3589AB2D2FA291E800D7F3A8 /* WebRtcService.swift */,
 				35C8A9202E04353300C574A5 /* IpApiService.swift */,
 				35DA7E242C11E91800BFC680 /* LaunchAgentService.swift */,
 				359C7C6C2C29605D00CA3CE1 /* LocationService.swift */,
 				353179302C29CD700030FDF1 /* ComputerService.swift */,
 				357183352C2C0199008B2D83 /* ProcessService.swift */,
 				351F0C632C0F599400644C66 /* LoggingService.swift */,
-				354BEEB72DE8B1E000EFD1B2 /* MonitoringStateUpdateBuilder.swift */,
-				354BEEB12DE8971800EFD1B2 /* NetworkStateUpdateBuilder.swift */,
-				354BEEBB2DE8B65400EFD1B2 /* ProcessesStateUpdateBuilder.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -299,6 +312,7 @@
 				35A6E41F2F9777CB00731FF3 /* ToolbarButton.swift */,
 				35A6E4212F9791A700731FF3 /* FixedSidebarTabView.swift */,
 				35A6E4292F98004900731FF3 /* ConnectionItem.swift */,
+				356580CD2FA3A63F00A6BBC5 /* WarningHint.swift */,
 				35C218A72C6E0E1600964A7B /* NoInsetHostingView.swift */,
 			);
 			path = Controls;
@@ -394,12 +408,23 @@
 			path = Protocols;
 			sourceTree = "<group>";
 		};
+		3589AB332FA36EB400D7F3A8 /* Builders */ = {
+			isa = PBXGroup;
+			children = (
+				354BEEB72DE8B1E000EFD1B2 /* MonitoringStateUpdateBuilder.swift */,
+				354BEEB12DE8971800EFD1B2 /* NetworkStateUpdateBuilder.swift */,
+				354BEEBB2DE8B65400EFD1B2 /* ProcessesStateUpdateBuilder.swift */,
+			);
+			path = Builders;
+			sourceTree = "<group>";
+		};
 		3590333D2C396973006787AD /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
 				3590333B2C396950006787AD /* ViewExtensions.swift */,
 				35C218A52C6DEB7100964A7B /* ImageExtensions.swift */,
 				35C218AB2C6E21A600964A7B /* ColorExtensions.swift */,
+				356580D12FA3AE4300A6BBC5 /* TextExtensions.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -453,6 +478,7 @@
 				35BD39CD2DDCA0B30021CF49 /* NetworkStatusServiceType.swift */,
 				35BD39CF2DDCA1540021CF49 /* IpServiceType.swift */,
 				3589AB272FA2029E00D7F3A8 /* DnsServiceType.swift */,
+				3589AB2B2FA291AE00D7F3A8 /* WebRtcServiceType.swift */,
 				35C8A9222E04393400C574A5 /* IpApiServiceType.swift */,
 				35BD39D12DDCA1F00021CF49 /* NetworkServiceType.swift */,
 				35A6E4252F97B4FC00731FF3 /* NetworkInterfaceInfoServiceType.swift */,
@@ -474,6 +500,7 @@
 				351E9CE82C10ADB300CEC15F /* AllowedIpsEditView.swift */,
 				3570E4682C21CC1600CB5D42 /* IpApisEditView.swift */,
 				35C8A9262E04400600C574A5 /* IpInfoApiEditView.swift */,
+				356580CB2FA37B2A00A6BBC5 /* LeaksEditView.swift */,
 				3568505B2C2B1999006E64B8 /* ClosingAppsEditView.swift */,
 			);
 			path = Settings;
@@ -546,6 +573,7 @@
 				3570E4762C2317E800CB5D42 /* LogEntryType.swift */,
 				35F12F3A2C15B3BE00AFA738 /* NetworkInterfaceType.swift */,
 				3570E46C2C21CFEA00CB5D42 /* SafetyType.swift */,
+				3589AB312FA368A800D7F3A8 /* BrowserPolicy.swift */,
 			);
 			path = Enums;
 			sourceTree = "<group>";
@@ -560,6 +588,7 @@
 				3570E46E2C21E70D00CB5D42 /* IpApiInfo.swift */,
 				356850592C2B0ACF006E64B8 /* ProcessInfo.swift */,
 				3568505D2C2B2415006E64B8 /* AppInfo.swift */,
+				3589AB2F2FA3680500D7F3A8 /* MonitoredAppInfo.swift */,
 				35DFC12C2C38338D001CAF43 /* OperationResult.swift */,
 				354BEEB32DE8974100EFD1B2 /* NetworkStateUpdate.swift */,
 				354BEEB52DE8AB6D00EFD1B2 /* MonitoringStateUpdate.swift */,
@@ -656,9 +685,11 @@
 				3570E4792C23396E00CB5D42 /* ToolbarView.swift in Sources */,
 				351F0C662C0F6D2A00644C66 /* NetworkService.swift in Sources */,
 				35A6E4372F995B5500731FF3 /* LaunchAgentError.swift in Sources */,
+				3589AB2C2FA291B400D7F3A8 /* WebRtcServiceType.swift in Sources */,
 				35E7DD4F2C13420000CC68F7 /* NetworkStatusService.swift in Sources */,
 				35A6E43D2F995F6500731FF3 /* ComputerError.swift in Sources */,
 				35DD1C4E2C0FA9D2003AA3ED /* CheckToggleStyle.swift in Sources */,
+				3589AB2E2FA291EC00D7F3A8 /* WebRtcService.swift in Sources */,
 				35BD39DC2DDCA5920021CF49 /* LoggingServiceType.swift in Sources */,
 				35C8A9212E04353300C574A5 /* IpApiService.swift in Sources */,
 				35EE63712C57983700D45D66 /* MenuBarItemsContainerView.swift in Sources */,
@@ -668,6 +699,7 @@
 				35A6E43F2F99644900731FF3 /* ProcessError.swift in Sources */,
 				3572667D2C36EDC30021978C /* ShellAccessible.swift in Sources */,
 				3570E46D2C21CFEA00CB5D42 /* SafetyType.swift in Sources */,
+				356580D22FA3AE4900A6BBC5 /* TextExtensions.swift in Sources */,
 				359E44EF2C11BFED00BF6093 /* MenuBarView.swift in Sources */,
 				3589AB282FA202A700D7F3A8 /* DnsServiceType.swift in Sources */,
 				3570E4772C2317E800CB5D42 /* LogEntryType.swift in Sources */,
@@ -680,6 +712,7 @@
 				351F0C5F2C0F3B4500644C66 /* AsyncButton.swift in Sources */,
 				351E9CF02C10C03700CEC15F /* MonitoringStatusView.swift in Sources */,
 				359E44F32C11C37E00BF6093 /* CurrentIpView.swift in Sources */,
+				356580CC2FA37B2A00A6BBC5 /* LeaksEditView.swift in Sources */,
 				3570E4892C258D1E00CB5D42 /* PointerOnHoverModifier.swift in Sources */,
 				35A6E4202F9777CF00731FF3 /* ToolbarButton.swift in Sources */,
 				3570E4822C249FC300CB5D42 /* GeneralSettingsEditView.swift in Sources */,
@@ -715,6 +748,7 @@
 				3582BF632C59345E004E0B80 /* InfoView.swift in Sources */,
 				351E9CE52C10A3BA00CEC15F /* MonitoringService.swift in Sources */,
 				35C218A82C6E0E1600964A7B /* NoInsetHostingView.swift in Sources */,
+				3589AB302FA3680800D7F3A8 /* MonitoredAppInfo.swift in Sources */,
 				35BD39BF2DDC9C930021CF49 /* KeyedContainerExtensions.swift in Sources */,
 				357154F72C17339100A41AA4 /* SettingsView.swift in Sources */,
 				357266822C36FE710021978C /* AppHelper.swift in Sources */,
@@ -739,6 +773,7 @@
 				35C218A62C6DEB7100964A7B /* ImageExtensions.swift in Sources */,
 				3570E46F2C21E70D00CB5D42 /* IpApiInfo.swift in Sources */,
 				357183362C2C0199008B2D83 /* ProcessService.swift in Sources */,
+				356580CE2FA3A64300A6BBC5 /* WarningHint.swift in Sources */,
 				35C8A9272E04400600C574A5 /* IpInfoApiEditView.swift in Sources */,
 				3568505A2C2B0ACF006E64B8 /* ProcessInfo.swift in Sources */,
 				3568505E2C2B2415006E64B8 /* AppInfo.swift in Sources */,
@@ -747,6 +782,7 @@
 				3570E4752C23058200CB5D42 /* Constants.swift in Sources */,
 				3570E48C2C25B02600CB5D42 /* MenuBarStatusEditView.swift in Sources */,
 				357154FB2C173E4C00A41AA4 /* IpService.swift in Sources */,
+				3589AB322FA368AB00D7F3A8 /* BrowserPolicy.swift in Sources */,
 				35A6E4262F97B50500731FF3 /* NetworkInterfaceInfoServiceType.swift in Sources */,
 				3571833C2C2C0A79008B2D83 /* Settable.swift in Sources */,
 				35A6E4412F9A2B1600731FF3 /* LogEntryRow.swift in Sources */,

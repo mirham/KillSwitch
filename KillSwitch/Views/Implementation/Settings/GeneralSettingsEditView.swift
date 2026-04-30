@@ -12,7 +12,6 @@ struct GeneralSettingsEditView: View {
     @EnvironmentObject var appState: AppState
     @Environment(\.controlActiveState) private var controlActiveState
     
-    @Injected(\.monitoringService) private var monitoringService
     @Injected(\.launchAgentService) private var launchAgentService
     @Injected(\.locationService) private var locationService
     @Injected(\.computerService) private var computerService
@@ -116,9 +115,9 @@ struct GeneralSettingsEditView: View {
     @ViewBuilder
     private var higherProtectionRow: some View {
         settingRow(
-            title: Constants.settingsElementHigherProtection,
+            title: Constants.settingsElementExtendedProtection,
             hint: Constants.hintHigherProtection,
-            isOn: $appState.userData.useHigherProtection,
+            isOn: $appState.userData.useExtendedProtection,
             settingType: .higherProtection
         )
     }

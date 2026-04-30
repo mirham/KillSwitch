@@ -48,6 +48,9 @@ struct Constants{
     static let sleepPreventingReason = "Monitoring sleep preventing"
     static let defaultInternetCheckUrl = "https://google.com"
     static let defaultIpInfoApiUrl = "http://ip-api.com/json/\(publicIpMask)"
+    static let libraryBasePath = NSHomeDirectory() + "/Library/"
+    static let defaultDnsLeakCheckIntervalInSeconds: Int = 15
+    static let defaultWebRtcLeakCheckIntervalInSeconds: Int = 10
     
     // MARK: HTTP methods
     static let httpMethodGet = "GET"
@@ -89,6 +92,8 @@ struct Constants{
     static let iconBulletRectangle = "list.bullet.rectangle"
     static let iconClosingApps = "xmark.circle"
     static let iconEmptyLog = "text.alignleft"
+    static let iconLeak = "humidity"
+    static let iconWarning = "exclamationmark.triangle.fill"
     
     // MARK: Colors
     static let colorCompleteSafetyLightTheme = "#369300"
@@ -149,6 +154,7 @@ struct Constants{
     static let all = "All"
     
     // MARK: Symbols
+    static let dot = "."
     static let bullet = "•"
     static let pipe = "|"
     static let leftBracket = "("
@@ -161,6 +167,7 @@ struct Constants{
     static let nilPlaceholder = "nil"
     static let serverSeparator = ", "
     static let leakDetailSeparator = "; "
+    static let space = " "
     
     // MARK: Toolbar
     static let toolbarSettings = "Settings"
@@ -183,13 +190,14 @@ struct Constants{
     static let settingsElementAllowedIpAddresses = "Allowed IPs"
     static let settingsElementIpAddressApis = "IP APIs"
     static let settingsElementIpInfoApi = "IP info API"
+    static let settingsElementLeaks = "Leaks"
     static let settingsElementClosingApps = "Closing apps"
     static let settingsElementClosingApplications = "Closing applications"
     static let settingsElementKeepAppRunning = "Keep application running"
     static let settingsElementOnTopOfAllWindows = "Always on top of all windows"
     static let settingsElementDisableLocationServices = "Disable location services"
     static let settingsElementPreventComputerSleep = "Preventing the computer from going to sleep"
-    static let settingsElementHigherProtection = "Extended protection"
+    static let settingsElementExtendedProtection = "Extended protection"
     static let settingsElementPickyMode = "Extended IP address information required"
     static let settingsElementPeriodicIpCheck = "Periodic IP address check"
     static let settingsElementAutoCloseApps = "Automatically close applications"
@@ -197,12 +205,15 @@ struct Constants{
     static let settingsElementIntervalBegin = "at intervals of"
     static let settingsElementIntervalEnd = "second(s)"
     static let settingsElementThemeColor = "Use system theme color"
+    static let settingsElementPeriodicDnsLeakCheck = "Periodic DNS leak check"
+    static let settingsElementPeriodicWebRtcLeakCheck = "Periodic WebRTC leak check"
     
     // MARK:  Settings key names
     static let settingsKeyIps = "allowed-addresses"
     static let settingsKeyApis = "apis"
+    static let settingsKeyApisRemoved = "apis-removed"
     static let settingsKeyIsMonitoringEnabled = "is-monitoring-enabled"
-    static let settingsKeyHigherProtection = "higher-protection"
+    static let settingsKeyExtendedProtection = "higher-protection"
     static let settingsKeyUsePickyMode = "use-picky-mode"
     static let settingsKeyPeriodicIpCheck = "periodic-ip-check"
     static let settingsKeyIntervalBetweenChecks = "interval-between-checks"
@@ -216,6 +227,10 @@ struct Constants{
     static let settingsKeyPreventComputerSleep = "prevent-computer-sleep"
     static let settingsKeyIpInfoApiUrl = "ip-info-api-url"
     static let settingsKeyIpInfoMapping = "ip-info-api-matches"
+    static let settingsKeyDnsLeakCheck = "dns-leak-check"
+    static let settingsKeyDnsLeakCheckInterval = "dns-leak-check-interval"
+    static let settingsKeyWebRtcLeakCheck = "webrtc-leak-check"
+    static let settingsKeyWebRtcLeakCheckInterval = "webrtc-leak-check-interval"
     
     // MARK: Menubar item keys
     static let mbItemKeyShield = "shiled"
@@ -252,12 +267,28 @@ struct Constants{
     static let shDnsCommand = "scutil --dns"
     
     // MARK: scutil
-    
     static let scutilScopedQueriesHeader = "DNS configuration (for scoped queries)"
     static let scutilResolverPrefix = "resolver #"
     static let scutilNameserverPrefix = "nameserver["
     static let scutilIfIndexPrefix = "if_index"
     static let scutilDomainPrefix = "domain"
+    
+    // MARK: WebRTC
+    static let firefoxProfilesPath = "Application Support/Firefox/Profiles"
+    static let firefoxPrefsFile = "/prefs.js"
+    static let firefoxWebRtcDisabledEntry = "user_pref(\"media.peerconnection.enabled\", false)"
+    static let chromiumWebRtcKey = "webrtc"
+    static let chromiumIpHandlingKey = "ip_handling_policy"
+    static let chromiumProfileDefault = "Default"
+    static let chromiumProfile = "Profile "
+    static let chromiumSafePolicies: Set<String> = [
+        "disable_non_proxied_udp",
+        "default_public_interface_only"
+    ]
+    
+    // MARK: Warnings
+    static let warningDnsLeakDoubleCheck = "Always double-check at https://dnsleaktest.com/."
+    static let warningWebRtcLeakDoubleCheck = "Always double-check at https://browserleaks.com/webrtc."
     
     // MARK: Error messages
     static let errorNoActiveIpApiFound = "Not possible to obtain IP, try to add a new IP API in the Settings to proceed work or check DNS availability"
@@ -294,6 +325,8 @@ struct Constants{
     // MARK: Log messages
     static let logMonitoringHasBeenEnabled = "Monitoring enabled"
     static let logMonitoringHasBeenDisabled = "Monitoring disabled"
+    static let logDnsLeak = "[DNS LEAK CHECKS] "
+    static let logWebRtcLeak = "[WebRTC LEAK CHECKS] "
     static let logPublicIp = "Public IP is %1$@ (location: %2$@, fetched from API: %3$@)"
     static let logPublicIpHasBeenUpdated = "Public IP has been updated to %1$@"
     static let logPublicIpHasBeenUpdatedWithNotFromWhitelist = "Public IP address has been changed to %1$@ which is not from allowed IPs, network disabled"
@@ -308,15 +341,15 @@ struct Constants{
     static let logProcessTerminated = "%1$@ has been closed"
     static let logPreventComputerSleepEnabled = "Preventing the computer from going to sleep is enabled"
     static let logPreventComputerSleepDisabled = "Preventing the computer from going to sleep is disabled"
-    static let logDnsMonitoringStarted = "DNS monitoring enabled (interval: %1$ds)"
-    static let logDnsMonitoringStopped = "DNS monitoring disabled"
-    static let logDnsCheckInitiated = "DNS leak check initiated"
-    static let logDnsCheckFailed = "DNS leak check failed: %1$@"
-    static let logDnsNoResolversFound = "DNS leak check inconclusive: no resolvers found in scutil output"
-    static let logDnsNoVpnDetected = "DNS check: no VPN tunnel detected, direct connection in use"
-    static let logDnsResolverEntry = "DNS resolver #%1$d | interface: %2$@ | nameservers: [%3$@]%4$@%5$@"
-    static let logDnsLeakDetected = "DNS LEAK DETECTED — %1$d resolver(s) active outside VPN tunnel: %2$@"
-    static let logDnsCheckPassed = "DNS check passed — all resolvers are tunnel-bound (%1$@)"
+    static let logDnsMonitoringStarted = "\(logDnsLeak)Monitoring enabled (interval: %1$ds)"
+    static let logDnsMonitoringStopped = "\(logDnsLeak)Monitoring disabled"
+    static let logDnsCheckInitiated = "\(logDnsLeak)Leak check initiated"
+    static let logDnsCheckFailed = "\(logDnsLeak)Check failed: %1$@"
+    static let logDnsNoResolversFound = "\(logDnsLeak)Check inconclusive: no resolvers found in scutil output"
+    static let logDnsNoVpnDetected = "\(logDnsLeak)No VPN tunnel detected, direct connection in use"
+    static let logDnsResolverEntry = "\(logDnsLeak)DNS resolver #%1$d | interface: %2$@ | nameservers: [%3$@]%4$@%5$@"
+    static let logDnsLeakDetected = "\(logDnsLeak)⚠️ LEAK DETECTED — %1$d resolver(s) active outside VPN tunnel: %2$@"
+    static let logDnsCheckPassed = "\(logDnsLeak)Check passed — all resolvers are tunnel-bound (%1$@)"
     static let logNetworkInterfaceDetails = "interface '%1$@' → [%2$@]"
     static let logLeakFlag = " ⚠️ LEAK"
     static let logDomainSuffix = " | domain: %1$@"
@@ -324,6 +357,17 @@ struct Constants{
     static let logSystemWide = "system-wide"
     static let logNoSpecificInterface = "no specific interface"
     static let logMaxRetriesExceeded = "Max retries exceeded"
+    static let logWebRtcMonitoringStarted = "\(logWebRtcLeak)Monitoring enabled (interval: %1$ds)"
+    static let logWebRtcMonitoringStopped = "\(logWebRtcLeak)Monitoring disabled"
+    static let chromiumPrefsFile = "Preferences"
+    static let logWebRtcBusinessAppWarning = "\(logWebRtcLeak)%1$@ is running. Desktop version has its own WebRTC stack which cannot be adjusted. Use the web version instead."
+    static let logWebRtcSafariWarning = "\(logWebRtcLeak)%1$@ is running. Safari's WebRTC settings are protected by macOS SIP and cannot be verified. Go to Develop → Experimental Features and disable Legacy WebRTC API to reduce leak risk. If you did that, this warning can be ignored."
+    static let logWebRtcPrefsUnavailable = "\(logWebRtcLeak)%1$@: settings could not be read — assuming unprotected"
+    static let logWebRtcNoPolicy = "\(logWebRtcLeak)%1$@ profile '%2$@': no system-level WebRTC policy found. If you use a WebRTC protection extension, this warning can be ignored."
+    static let logWebRtcChromiumPolicy = "\(logWebRtcLeak)%1$@ profile '%2$@': WebRTC policy is '%3$@'"
+    static let logWebRtcFirefoxProfile  = "\(logWebRtcLeak)Firefox profile '%1$@': WebRTC is %2$@"
+    static let logFirefoxProfileProtected = "protected"
+    static let logFirefoxProfileUnprotected = "unprotected — consider setting media.peerconnection.enabled to false in about:config"
     
     // MARK: Hints
     static let hintApiIsActive = "API is in use"
@@ -344,15 +388,19 @@ struct Constants{
     static let hintCloseApplicationConfirmation = "Confirmation dialog when closing applications. This option is ignored in higher protection mode."
     static let hintPickyMode = "Use extended information about current IP address, such as country. Does not allow the use of an IP address as an allowed one if there is no reliable information about it."
     static let hintPeriodicIpCheck = "Check the public IP address periodically when monitoring is enabled at the interval specified below."
+    static let hintPeriodicDnsLeakCheck = "Check DNS leak periodically when monitoring is enabled at the interval specified below."
+    static let hintPeriodicWebRtcLeakCheck = "Check WebRTC leak periodically when monitoring is enabled at the interval specified below."
     static let hintInterval = "\(minTimeIntervalToCheck)..\(maxTimeIntervalToCheck)"
-    static let hintMenuBarAdjustment = "Drag menu bar item icons between the sections below to arrange item as you want"
-    static let hintAllowedIps = "Add an allowed IP address with desired safety type\nRight click on the address to display the context menu"
-    static let hintIpApis = "Add an API that returns the public IP address in plain text\nRight click on the API to display the context menu\nIf API marked green, it works properly and in use"
+    static let hintMenuBarAdjustment = "Drag menu bar item icons between the sections below to arrange item as you want."
+    static let hintAllowedIps = "Add an allowed IP address with desired safety type.\nRight click on the address to display the context menu."
+    static let hintIpApis = "Add an API that returns the public IP address in plain text\nRight click on the API to display the context menu\nIf API marked green, it works properly and in use."
     static let hintCloseApps = "Add the application you want to close automatically or manually\nRight click on the application to display the context menu"
     static let hintIpInfoApi = "The IP info API is needed to get advanced information about a public IP address, such as its location. This allows you to display the country flag in the macOS menu bar, as well as show the address on a map. Typically, data from such APIs is in JSON format. Here, you can assign an API address and map the JSON data values to application values."
     static let hintNotSet = "Not set yet"
     static let hintJsonKey = "JSON data key"
     static let hintNoLogEntries = "No log entries"
+    static let hintLeaks = "This app can monitor your device for potential DNS and WebRTC privacy leaks and notify when a risk is detected. It does NOT prevent leaks. Detection has limitations: some leak vectors, such as browser extensions overriding WebRTC settings or system-level DNS changes, may not be visible to this app."
+    static let hintPrivacyProtection = "Only you are responsible for verifying your privacy protection!"
     
     // MARK: About
     static let aboutSupportMail = "bWlyaGFtQGFidi5iZw=="
@@ -367,6 +415,21 @@ struct Constants{
     static let aboutGitHub = "GitHub"
     
     // MARK: Static data
+    static let defaultShownMenuBarItems = [
+        mbItemKeyShield,
+        mbItemKeyMonitoringStatus
+    ]
+    
+    static let defaultHiddenMenuBarItems = [
+        mbItemKeyIpAddress,
+        mbItemKeyCountryFlag,
+        mbItemKeyCountryCode,
+        mbItemKeySeparatorBullet,
+        mbItemKeySeparatorPipe,
+        mbItemKeySeparatorLeftBracket,
+        mbItemKeySeparatorRightBracket
+    ]
+    
     static let ipApiUrls = [
         "http://api.ipify.org",
         "http://icanhazip.com",
@@ -439,18 +502,24 @@ struct Constants{
         "anpi"
     ]
     
-    static let defaultShownMenuBarItems = [
-        mbItemKeyShield,
-        mbItemKeyMonitoringStatus
+    static let monitoredApps: [MonitoredAppInfo] = [
+        .chromium(
+            name: "Google Chrome",
+            profilesBasePath: "Application Support/Google/Chrome"),
+        .chromium(
+            name: "Brave",
+            profilesBasePath: "Application Support/BraveSoftware/Brave-Browser"),
+        .chromium(
+            name: "Microsoft Edge",
+            profilesBasePath: "Application Support/Microsoft Edge"),
+        .chromium(
+            name: "Opera",
+            profilesBasePath: "Application Support/com.operasoftware.Opera"),
+        .firefox(name: "Firefox"),
+        .safari(name: "Safari"),
+        .businessApp(name: "Slack"),
+        .businessApp(name: "Microsoft Teams")
     ]
     
-    static let defaultHiddenMenuBarItems = [
-        mbItemKeyIpAddress,
-        mbItemKeyCountryFlag,
-        mbItemKeyCountryCode,
-        mbItemKeySeparatorBullet,
-        mbItemKeySeparatorPipe,
-        mbItemKeySeparatorLeftBracket,
-        mbItemKeySeparatorRightBracket
-    ]
+    static let monitoredAppNames: Set<String> = Set(monitoredApps.map { $0.name.lowercased() })
 }

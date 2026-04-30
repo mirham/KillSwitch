@@ -46,6 +46,14 @@ struct SettingsView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
             FixedSidebarTabView.TabItem(
+                title: Constants.settingsElementLeaks,
+                icon: Constants.iconLeak
+            ) {
+                LeaksEditView()
+                    .environmentObject(appState)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+            FixedSidebarTabView.TabItem(
                 title: Constants.settingsElementMenubar,
                 icon: Constants.iconMenubar
             ) {

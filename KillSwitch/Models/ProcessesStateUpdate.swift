@@ -6,5 +6,6 @@
 //
 
 struct ProcessesStateUpdate {
-    var processesToKill: [ProcessInfo]?
+    var killingProcesses: [ProcessInfo]?
+    var monitoringProcesses: [ProcessInfo]?
 }

@@ -40,7 +40,13 @@ extension Container {
     }
     
     var dnsService: Factory<DnsServiceType> {
-        Factory(self) { DnsService() }.singleton
+        Factory(self) { DnsService() }
+            .singleton
+    }
+    
+    var webRtcService: Factory<WebRtcServiceType> {
+        Factory(self) { WebRtcService() }
+            .singleton
     }
     
     var ipApiService: Factory<IpApiServiceType> {

@@ -125,6 +125,7 @@ struct IpApisEditView: View {
         
         let newApi = IpApiInfo(url: newApiUrl, active: true)
         appState.userData.ipApis.append(newApi)
+        appState.userData.ipApisRemoved.removeAll { $0.url == newApiUrl }
         
         resetForm()
     }
@@ -143,6 +144,7 @@ struct IpApisEditView: View {
     
     private func deleteApi(at apiUrl: String) {
         appState.userData.ipApis.removeAll { $0.url == apiUrl }
+        appState.userData.ipApisRemoved.append(IpApiInfo(url: apiUrl))
     }
     
     private func resetForm() {

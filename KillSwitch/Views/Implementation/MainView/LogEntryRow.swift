@@ -24,7 +24,8 @@ struct LogEntryRow: View {
             Group {
                 Text(dateFormatter.string(from: entry.date))
                     .foregroundStyle(Color.secondary.opacity(0.8))
-                + Text(attributedStringWithLinks(from: "  \(entry.message)"))
+                + Text(Constants.space)
+                + Text(linksIn: entry.message)
                     .foregroundStyle(.primary.opacity(0.8))
             }
             .font(.system(size: 11, design: .monospaced))
@@ -35,30 +36,5 @@ struct LogEntryRow: View {
         }
         .padding(.horizontal, 5)
         .padding(.vertical, 3)
-    }
-    
-    // MARK: Private functions
-    
-    private func attributedStringWithLinks(from text: String) -> AttributedString {
-        var attributedString = AttributedString(text)
-        
-        guard let detector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
-        else {
-            return attributedString
-        }
-        
-        let nsString = text as NSString
-        let matches = detector.matches(
-            in: text, options: [],
-            range: NSRange(location: 0, length: nsString.length))
-        
-        for match in matches {
-            if let url = match.url,
-               let range = Range(match.range, in: attributedString) {
-                attributedString[range].link = url
-            }
-        }
-        
-        return attributedString
     }
 }
