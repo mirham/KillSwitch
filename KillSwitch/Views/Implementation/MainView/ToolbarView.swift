@@ -14,32 +14,18 @@ struct ToolbarView: View {
     @Environment(\.openWindow) private var openWindow
     @Environment(\.controlActiveState) private var controlActiveState
     
-    @Injected(\.loggingService) private var loggingService
-    
     @State private var hoveredButton: ToolbarButtonType?
     
     var body: some View {
         Group {
             Spacer()
             toolbarButton(
-                for: .copy,
-                title: Constants.toolbarCopyLog,
-                icon: Constants.iconCopyLog,
-                action: { loggingService.copy() }
-            )
-            .padding(.leading, 10)
-            toolbarButton(
-                for: .clear,
-                title: Constants.toolbarClearLog,
-                icon: Constants.iconClearLog,
-                action: { loggingService.clear() }
-            )
-            toolbarButton(
                 for: .settings,
                 title: Constants.toolbarSettings,
                 icon: Constants.iconSettings,
                 action: showSettingsWindow
             )
+            .padding(.leading, 10)
             toolbarButton(
                 for: .info,
                 title: Constants.toolbarInfo,
@@ -95,7 +81,7 @@ struct ToolbarView: View {
     // MARK: Inner types
     
     private enum ToolbarButtonType {
-        case copy, clear, settings, info
+        case settings, info
     }
 }
 #Preview {

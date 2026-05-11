@@ -6,11 +6,16 @@
 //
 
 import SwiftUI
+import Factory
 
 struct LogView: View {
     @EnvironmentObject var appState: AppState
+    @Environment(\.controlActiveState) private var controlActiveState
+    
+    @Injected(\.loggingService) private var loggingService
     
     @State private var selectedType: LogEntryType? = nil
+    @State private var hoveredButton: ToolbarButtonType?
     
     private let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -27,9 +32,9 @@ struct LogView: View {
     var body: some View {
         Section {
             VStack(spacing: 0) {
-                filterBar
+                actionsBar
                 Divider()
-                logList
+                logRecordsView
             }
         }
     }
@@ -37,24 +42,43 @@ struct LogView: View {
     // MARK: View sections
     
     @ViewBuilder
-    private var filterBar: some View {
+    private var actionsBar: some View {
         HStack(spacing: 6) {
+            logRecordsCount
             filterButton(type: nil)
             filterButton(type: .info)
             filterButton(type: .success)
             filterButton(type: .warning)
             filterButton(type: .error)
             Spacer()
-            Text(String(format: filteredEntries.count == 1
-                        ? Constants.toolbarLogEntrty
-                        : Constants.toolbarLogEntries,
-                        filteredEntries.count))
-                .font(.system(size: 9))
-                .foregroundStyle(.tertiary)
+            toolbarButton(
+                for: .copy,
+                title: Constants.toolbarCopyLog,
+                icon: Constants.iconCopyLog,
+                action: { loggingService.copy() }
+            )
+            toolbarButton(
+                for: .clear,
+                title: Constants.toolbarClearLog,
+                icon: Constants.iconClearLog,
+                color: .red,
+                action: { loggingService.clear() }
+            )
         }
         .padding(.horizontal, 10)
         .padding(.vertical, 6)
         .focusable(false)
+    }
+    
+    @ViewBuilder
+    private var logRecordsCount: some View {
+        Text(String(format: filteredEntries.count == 1
+                    ? Constants.toolbarLogEntrty
+                    : Constants.toolbarLogEntries,
+                    filteredEntries.count))
+        .font(.system(size: 9))
+        .foregroundStyle(.tertiary)
+        .frame(width: 70)
     }
     
     @ViewBuilder
@@ -84,7 +108,28 @@ struct LogView: View {
     }
     
     @ViewBuilder
-    private var logList: some View {
+    private func toolbarButton(
+        for type: ToolbarButtonType,
+        title: String,
+        icon: String,
+        color: Color = .blue,
+        action: @escaping () -> Void
+    ) -> some View {
+        ToolbarButton(
+            title: title.uppercased(),
+            systemImage: icon,
+            isHovered: hoveredButton == type,
+            activeState: controlActiveState,
+            action: action,
+            fontSize: 9,
+            color: color
+        )
+        .onHover { hoveredButton = $0 ? type : nil }
+        .help(title)
+    }
+    
+    @ViewBuilder
+    private var logRecordsView: some View {
         if filteredEntries.isEmpty {
             emptyState
         } else {
@@ -122,6 +167,12 @@ struct LogView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding()
+    }
+    
+    // MARK: Inner types
+    
+    private enum ToolbarButtonType {
+        case copy, clear
     }
 }
 

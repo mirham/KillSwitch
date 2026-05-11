@@ -67,15 +67,14 @@ struct CurrentIpView: IpAddressContainerView {
     private var countrySection: some View {
         if appState.current.isCountryDetected,
            let publicIp = appState.network.publicIp {
-            HStack {
+            HStack(spacing: 2) {
                 let flag = getCountryFlag(countryCode: publicIp.countryCode)
                 Image(nsImage: flag)
                     .resizable()
                     .frame(width: flag.size.width, height: flag.size.height)
                     .scaleEffect(0.6)
-                Text(publicIp.countryName.uppercased())
+                Text(publicIp.countryName)
                     .font(.system(size: 11))
-                    .padding(.leading, -10)
             }
             .opacity(0.9)
         }

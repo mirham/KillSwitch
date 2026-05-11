@@ -17,92 +17,64 @@ struct NetworkStatusView: View {
     
     @State private var isHovering = false
     
-    private var networkStatusControlData: NetworkStatusControlData {
-        switch appState.network.status {
-            case .on:
-                return NetworkStatusControlData(
-                    text: appState.network.status.description,
-                    color: .green,
-                    action: { Task { await toggleNetworkAsync(enable: false) } },
-                    hintText: Constants.hintClickToDisableNetwork
-                )
-                
-            case .off:
-                return NetworkStatusControlData(
-                    text: appState.network.status.description,
-                    color: .red,
-                    action: { Task { await toggleNetworkAsync(enable: true) } },
-                    hintText: Constants.hintClickToEnableNetwork
-                )
-                
-            case .wait:
-                return NetworkStatusControlData(
-                    text: appState.network.status.description,
-                    color: .yellow,
-                    action: {},
-                    hintText: nil
-                )
-                
-            default:
-                return NetworkStatusControlData(
-                    text: Constants.na,
-                    color: .gray,
-                    action: {},
-                    hintText: nil
-                )
+    private var status: NetworkStatusType { appState.network.status }
+    private var userIntentOn: Bool { status == .on || status == .wait }
+    private var hintText: String {
+        switch status {
+            case .on: return Constants.hintClickToDisableNetwork
+            case .off: return Constants.hintClickToEnableNetwork
+            default: return String()
         }
     }
     
     var body: some View {
-        Section {
-            VStack {
-                Text(Constants.network.uppercased())
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                networkStatusControl
-            }
+        StatusCard(
+            imageName: appState.network.firstPhysicalInterface?.type.icon
+                ?? NetworkInterfaceType.unknown.icon,
+            title: Constants.network,
+            cardBackgroundColor: status.backgroundColor,
+            cardBorderColor: status.borderColor
+        ) {
+            statusView
+        } trailingContent: {
+            toggleView
         }
+        .focusEffectDisabled()
     }
     
     // MARK: View sections
     
-    @ViewBuilder
-    private var networkStatusControl: some View {
-        let data = networkStatusControlData
-        
-        Text(data.text.uppercased())
-            .frame(width: 60, height: 60)
-            .background(data.color)
-            .foregroundColor(.black.opacity(0.5))
-            .font(.system(size: 18))
-            .bold()
-            .clipShape(Circle())
-            .overlay(
-                Circle()
-                    .stroke(.blue, lineWidth: isHovering ? 2 : 0)
-            )
-            .onTapGesture(perform: data.action)
-            .pointerOnHover()
-            .onHover(perform: updateHoverState(for: data))
-            .popover(isPresented: $isHovering, arrowEdge: .trailing) {
-                if let hintText = data.hintText {
-                    Text(hintText)
-                        .padding()
-                        .focusEffectDisabled()
-                        .interactiveDismissDisabled()
-                }
-            }
+    private var statusView: some View {
+        HStack(alignment: .center, spacing: 3) {
+            Circle()
+                .fill(status.color)
+                .frame(width: 10, height: 10)
+            Text(status.description)
+                .font(.system(size: 10, weight: .medium))
+                .foregroundColor(status.color)
+        }
+    }
+    
+    private var toggleView: some View {
+        Toggle(String(), isOn: Binding(
+            get: { userIntentOn },
+            set: { newValue in Task { await toggleNetworkAsync(enable: newValue) } }
+        ))
+        .toggleStyle(.switch)
+        .focusable(false)
+        .labelsHidden()
+        .disabled(status == .wait)
+        .pointerOnHover()
+        .onHover(perform: updateHoverState)
+        .help(hintText)
     }
     
     // MARK: Private functions
     
-    private func updateHoverState(
-        for data: NetworkStatusControlData) -> (Bool) -> Void {
-        return { hovering in
-            isHovering = hovering
-            && controlActiveState == .key
-            && data.hintText != nil
-        }
+    private func updateHoverState(_ hovering: Bool) {
+        isHovering = hovering
+        && controlActiveState == .key
+        && hintText != String()
     }
     
     private func toggleNetworkAsync(enable: Bool) async {
@@ -136,15 +108,6 @@ struct NetworkStatusView: View {
         else { return }
         
         openWindow(id: Constants.windowIdEnableNetworkDialog)
-    }
-    
-    // MARK: Inner types
-    
-    private struct NetworkStatusControlData {
-        let text: String
-        let color: Color
-        let action: () -> Void
-        let hintText: String?
     }
 }
 

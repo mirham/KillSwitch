@@ -80,7 +80,8 @@ struct Constants{
     static let iconVpn = "network.badge.shield.half.filled"
     static let iconWifi = "wifi"
     static let iconWired = "cable.connector"
-    static let iconUnknownConnection = "questionmark"
+    static let iconOtherConnection = "questionmark"
+    static let iconUnknownConnection = "network.slash"
     static let iconCheckmark = "checkmark.circle.fill"
     static let iconCircle = "circle"
     static let iconMarkedCircle = "largecircle.fill.circle"
@@ -94,10 +95,16 @@ struct Constants{
     static let iconEmptyLog = "text.alignleft"
     static let iconLeak = "humidity"
     static let iconWarning = "exclamationmark.triangle.fill"
+    static let iconMonitoring = "waveform.path.ecg"
+    static let iconApps = "square.grid.2x2"
+    static let iconExpandApps = "chevron.forward"
     
     // MARK: Colors
     static let colorCompleteSafetyLightTheme = "#369300"
     static let colorSomeSafetyLightTheme = "#A7A200"
+    static let colorOn = "#34C759"
+    static let colorOff = "#8E8E93"
+    static let colorWait = "#FF9F0A"
     
     // MARK: Window IDs
     static let windowIdMain = "main-view"

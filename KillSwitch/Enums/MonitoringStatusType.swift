@@ -1,24 +1,22 @@
 //
-//  NetworkStatusType.swift
+//  MonitoringStatusType.swift
 //  KillSwitch
 //
-//  Created by UglyGeorge on 09.06.2024.
+//  Created by UglyGeorge on 08.05.2026.
 //
 
 import Foundation
 
-enum NetworkStatusType : Int, CaseIterable {
+enum MonitoringStatusType : Int, CaseIterable {
     case unknown = 0
     case on = 1
     case off = 2
-    case wait = 3
     
     var description : String {
         switch self {
             case .unknown: return Constants.na
             case .on: return "On"
             case .off: return "Off"
-            case .wait: return "Wait"
         }
     }
 }

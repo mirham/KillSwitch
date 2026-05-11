@@ -139,6 +139,10 @@ extension AppState {
         var physicalNetworkInterfaces: [NetworkInterface] = [NetworkInterface]()
         var publicIp: IpInfoBase? = nil
         
+        var firstPhysicalInterface: NetworkInterface? {
+            get { physicalNetworkInterfaces.first }
+        }
+        
         func isConnectionChanged (
             status: NetworkStatusType,
             activeNetworkInterfaces: [NetworkInterface]) -> Bool {

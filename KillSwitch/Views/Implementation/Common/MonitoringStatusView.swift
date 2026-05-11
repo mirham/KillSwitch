@@ -17,61 +17,61 @@ struct MonitoringStatusView: View {
     
     @State private var isHovering = false
     
-    private var monitoringStatusControlData: MonitoringStatusControlData {
-        if appState.monitoring.isEnabled {
-            return MonitoringStatusControlData(
-                text: Constants.on,
-                color: .green,
-                hintText: Constants.hintClickToDisableMonitoring
-            )
-        } else {
-            return MonitoringStatusControlData(
-                text: Constants.off,
-                color: .red,
-                hintText: Constants.hintClickToEnableMonitoring
-            )
-        }
+    private var status: MonitoringStatusType {
+        appState.monitoring.isEnabled
+        ? .on
+        : .off
+    }
+    private var isEnabled: Bool { appState.monitoring.isEnabled }
+    private var hintText: String {
+        isEnabled
+        ? Constants.hintClickToDisableMonitoring
+        : Constants.hintClickToEnableMonitoring
     }
     
     var body: some View {
-        Section {
-            VStack {
-                Text(Constants.monitoring.uppercased())
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-                monitoringStatusControl
-            }
+        StatusCard(
+            imageName: Constants.iconMonitoring,
+            title: Constants.monitoring,
+            cardBackgroundColor: status.backgroundColor,
+            cardBorderColor: status.borderColor
+        ) {
+            statusView
+        } trailingContent: {
+            toggleView
         }
+        .focusEffectDisabled()
     }
     
     // MARK: View sections
     
     @ViewBuilder
-    private var monitoringStatusControl: some View {
-        let data = monitoringStatusControlData
-        
-        Text(data.text.uppercased())
-            .frame(width: 60, height: 60)
-            .background(data.color)
-            .foregroundColor(.black.opacity(0.5))
-            .font(.system(size: 18))
-            .bold()
-            .clipShape(Circle())
-            .overlay(
-                Circle()
-                    .stroke(.blue, lineWidth: isHovering ? 2 : 0)
-            )
-            .onTapGesture(perform: toggleMonitoring)
-            .pointerOnHover()
-            .onHover { hovering in
-                isHovering = hovering && controlActiveState == .key
-            }
-            .popover(isPresented: $isHovering, arrowEdge: .trailing) {
-                Text(data.hintText)
-                    .padding()
-                    .interactiveDismissDisabled()
-            }
+    private var statusView: some View {
+        HStack(alignment: .center, spacing: 3) {
+            Circle()
+                .fill(status.color)
+                .frame(width: 10, height: 10)
+            Text(status.description)
+                .font(.system(size: 10, weight: .medium))
+                .foregroundColor(status.color)
+        }
+    }
+    
+    @ViewBuilder
+    private var toggleView: some View {
+        Toggle(String(), isOn: Binding(
+            get: { isEnabled },
+            set: { _ in toggleMonitoring() }
+        ))
+        .toggleStyle(.switch)
+        .focusable(false)
+        .labelsHidden()
+        .onTapGesture(perform: toggleMonitoring)
+        .pointerOnHover()
+        .onHover { hovering in
+            isHovering = hovering && controlActiveState == .key
+        }
+        .help(hintText)
     }
     
     // MARK: Private functions
@@ -82,7 +82,8 @@ struct MonitoringStatusView: View {
         if appState.monitoring.isEnabled {
             monitoringService.stopMonitoring()
         } else {
-            guard !appState.userData.allowedIps.isEmpty else {
+            guard !appState.userData.allowedIps.isEmpty
+            else {
                 showNoAllowedIpDialog()
                 
                 return
@@ -99,14 +100,6 @@ struct MonitoringStatusView: View {
         else { return }
         
         openWindow(id: Constants.windowIdNoOneAllowedIpDialog)
-    }
-    
-    // MARK: Inner types
-    
-    private struct MonitoringStatusControlData {
-        let text: String
-        let color: Color
-        let hintText: String
     }
 }
 
