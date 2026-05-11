@@ -356,6 +356,15 @@ extension AppState {
             }
         }
         
+        var webRtcMonitoredApps = [MonitoredAppInfo]() {
+            didSet {
+                writeSettingsArray(
+                    newValues: webRtcMonitoredApps,
+                    key: Constants.settingsKeyWebRtcMonitoredApps
+                )
+            }
+        }
+        
         var webRtcLeakCheckInterval: Int = Constants.defaultWebRtcLeakCheckIntervalInSeconds {
             didSet {
                 writeSetting(
@@ -425,6 +434,13 @@ extension AppState {
             
             if let savedAppsToClose:[AppInfo] = readSettingsArray(key: Constants.settingsKeyAppsToClose) {
                 appsToClose = savedAppsToClose
+            }
+            
+            if let savedWebRtcMonitoredApps:[MonitoredAppInfo] = readSettingsArray(key: Constants.settingsKeyWebRtcMonitoredApps) {
+                webRtcMonitoredApps = savedWebRtcMonitoredApps
+            }
+            else {
+                webRtcMonitoredApps = Constants.webRtcMonitoredApps
             }
             
             if let savedMenuBarShownItems:[String] = readSettingsArray(key: Constants.settingsKeyShownMenuBarItems) {

@@ -101,6 +101,7 @@ struct Constants{
     static let iconLocation = "location.fill"
     static let iconGranted = "checkmark"
     static let iconDenied = "xmark"
+    static let iconPermissions = "hand.raised"
     
     // MARK: Colors
     static let colorCompleteSecurityLightTheme = "#369300"
@@ -205,6 +206,7 @@ struct Constants{
     static let settingsElementIpAddressApis = "IP APIs"
     static let settingsElementIpInfoApi = "IP info API"
     static let settingsElementLeaks = "Leaks"
+    static let settingsElementPermissions = "Permissions"
     static let settingsElementClosingApps = "Closing apps"
     static let settingsElementClosingApplications = "Closing applications"
     static let settingsElementKeepAppRunning = "Keep application running"
@@ -234,6 +236,7 @@ struct Constants{
     static let settingsKeyPeriodicIpCheck = "periodic-ip-check"
     static let settingsKeyIntervalBetweenChecks = "interval-between-checks"
     static let settingsKeyAppsToClose = "apps-to-close"
+    static let settingsKeyWebRtcMonitoredApps = "webrtc-mon-apps"
     static let settingsKeyAutoCloseApps = "auto-close-apps"
     static let settingsKeyConfirmationApplicationsClose = "confirmation-apps-close"
     static let settingsKeyShownMenuBarItems = "shown-menubar-items"
@@ -428,6 +431,7 @@ struct Constants{
     static let hintLeaks = "This app can monitor your device for potential DNS and WebRTC privacy leaks and notify when a risk is detected. It does NOT prevent leaks. Detection has limitations: some leak vectors, such as browser extensions overriding WebRTC settings or system-level DNS changes, may not be visible to this app."
     static let hintPrivacyProtection = "Only you are responsible for verifying your privacy protection!"
     static let hintNetworkDetails = "Provides extended network details. Optional."
+    static let hintPermissions = "Manage application permissions here. Your data is never shared with third parties, including the developer."
     
     // MARK: About
     static let aboutSupportMail = "bWlyaGFtQGFidi5iZw=="
@@ -529,7 +533,7 @@ struct Constants{
         "anpi"
     ]
     
-    static let monitoredApps: [MonitoredAppInfo] = [
+    static let webRtcMonitoredApps: [MonitoredAppInfo] = [
         .chromium(
             name: "Google Chrome",
             profilesBasePath: "Application Support/Google/Chrome"),
@@ -548,5 +552,5 @@ struct Constants{
         .businessApp(name: "Microsoft Teams")
     ]
     
-    static let monitoredAppNames: Set<String> = Set(monitoredApps.map { $0.name.lowercased() })
+    static let webRtcMonitoredAppNames: Set<String> = Set(webRtcMonitoredApps.map { $0.name.lowercased() })
 }

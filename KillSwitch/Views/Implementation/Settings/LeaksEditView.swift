@@ -6,8 +6,6 @@
 //
 
 import SwiftUI
-import CoreWLAN
-import CoreLocation
 import Factory
 
 struct LeaksEditView: View {
@@ -22,8 +20,6 @@ struct LeaksEditView: View {
     @State private var webRtcLeakCheckInterval = 0
     @State private var hoveredSetting: SettingType?
     
-    private let locationManager = CLLocationManager()
-    
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             infoHeader
@@ -35,9 +31,6 @@ struct LeaksEditView: View {
             webRtcLeakCheckIntervalRow
                 .isHidden(!appState.userData.webRtcLeakCheck)
             Spacer()
-            locationPermissionRow
-            Spacer()
-                .frame(height: 10)
         }
         .onAppear {
             dnsLeakCheckInterval = appState.userData.dnsLeakCheckInterval
@@ -110,6 +103,8 @@ struct LeaksEditView: View {
             onEnabled: webRtcService.startMonitoring,
             onDisabled: webRtcService.stopMonitoring
         )
+        webRtcMonitoredAppsRow
+            .isHidden(!appState.userData.webRtcLeakCheck)
     }
     
     @ViewBuilder
@@ -133,6 +128,24 @@ struct LeaksEditView: View {
             }
             WarningHint(text: Constants.warningWebRtcLeakDoubleCheck)
         }
+    }
+    
+    @ViewBuilder
+    private var webRtcMonitoredAppsRow: some View {
+        FlowLayout(spacing: 8) {
+            ForEach(appState.userData.webRtcMonitoredApps.indices, id: \.self) { index in
+                let app = appState.userData.webRtcMonitoredApps[index]
+                AppToggleChip(
+                    app: app,
+                    isOn: Binding(
+                        get: { app.enabled },
+                        set: { appState.userData.webRtcMonitoredApps[index].enabled = $0 }
+                    )
+                )
+            }
+        }
+        .padding(.leading, 30)
+        .padding(.trailing, 30)
     }
     
     @ViewBuilder
@@ -177,48 +190,6 @@ struct LeaksEditView: View {
     }
     
     @ViewBuilder
-    private var locationPermissionRow: some View {
-        HStack(spacing: 14) {
-            RoundedRectangle(cornerRadius: 8)
-                .fill(.blue.opacity(0.12))
-                .frame(width: 36, height: 36)
-                .overlay(Image(systemName: Constants.iconLocation)
-                    .foregroundStyle(.blue))
-            
-            VStack(alignment: .leading, spacing: 2) {
-                Text(Constants.settingsElementLocationAccess)
-                    .font(.system(size: 14, weight: .medium))
-                Text(Constants.hintNetworkDetails)
-                    .font(.system(size: 12))
-                    .foregroundStyle(.secondary)
-            }
-            
-            Spacer()
-            
-            switch locationManager.authorizationStatus {
-                case .notDetermined:
-                    Text(Constants.notDetermined)
-                    Button(Constants.allow) {
-                        locationManager.requestWhenInUseAuthorization()
-                    }
-                case .authorized, .authorizedAlways:
-                    Label(Constants.granted, systemImage: Constants.iconGranted)
-                        .foregroundStyle(.green)
-                case .denied, .restricted:
-                    Label(Constants.denied, systemImage: Constants.iconDenied)
-                        .foregroundStyle(.red)
-                    Button(Constants.settingsElementOpenSettings) {
-                        NSWorkspace.shared.open(
-                            URL(string: Constants.sspLocationServices)!)
-                    }
-                @unknown default:
-                    EmptyView()
-            }
-        }
-        .padding()
-    }
-    
-    @ViewBuilder
     private func helpIcon(for hint: String) -> some View {
         Image(systemName: Constants.iconQuestionMark)
             .asHelpIcon()
@@ -236,6 +207,21 @@ struct LeaksEditView: View {
     private enum SettingType {
         case periodicDnsLeakCheck
         case periodicWebRtcLeakCheck
+    }
+    
+    struct AppToggleChip: View {
+        let app: MonitoredAppInfo
+        @Binding var isOn: Bool
+        
+        var body: some View {
+            Toggle(isOn: app.configurable ? $isOn : .constant(isOn)) {
+                Text(app.name)
+                    .font(.system(size: 11))
+                    .foregroundStyle(app.configurable ? .primary : .secondary)
+            }
+            .toggleStyle(.checkbox)
+            .disabled(!app.configurable)
+        }
     }
 }
 

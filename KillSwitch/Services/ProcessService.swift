@@ -149,7 +149,7 @@ final class ProcessService: ShellAccessible, ProcessServiceType {
     ) -> [ProcessInfo] {
         activeProcesses.compactMap { app in
             guard let appName = app.localizedName,
-                  Constants.monitoredApps.contains(where: {
+                  Constants.webRtcMonitoredApps.contains(where: {
                       $0.name.caseInsensitiveCompare(appName) == .orderedSame
                   })
             else { return nil }

@@ -68,6 +68,13 @@ struct SettingsView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
             FixedSidebarTabView.TabItem(
+                title: Constants.settingsElementClosingApps,
+                icon: Constants.iconClosingApps
+            ) {
+                ClosingAppsEditView()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+            FixedSidebarTabView.TabItem(
                 title: Constants.settingsElementIpAddressApis,
                 icon: Constants.iconBulletRectangle
             ) {
@@ -84,10 +91,11 @@ struct SettingsView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
             FixedSidebarTabView.TabItem(
-                title: Constants.settingsElementClosingApps,
-                icon: Constants.iconClosingApps
+                title: Constants.settingsElementPermissions,
+                icon: Constants.iconPermissions
             ) {
-                ClosingAppsEditView()
+                PermissionsView()
+                    .environmentObject(appState)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }

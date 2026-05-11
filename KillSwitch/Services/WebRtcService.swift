@@ -9,8 +9,8 @@ import Foundation
 import Factory
 
 final class WebRtcService: WebRtcServiceType {
-    @Injected(\.loggingService) private var logger
     @Injected(\.appState) private var appState
+    @Injected(\.loggingService) private var logger
     
     private var pollingTask: Task<Void, Never>?
     private var checkedApps = Set<String>()
@@ -70,8 +70,10 @@ final class WebRtcService: WebRtcServiceType {
         
         checkedApps.subtract(old)
         
-        if !new.isEmpty {
-            let hasLeak = await evaluateNewAppsAsync(current: new)
+        if !new.isEmpty || !old.isEmpty  {
+            let hasLeak = await evaluateNewAppsAsync(current: current)
+            
+            print("\(hasLeak)")
             
             await updateStatusAsync { builder in
                 builder.withHasWebRtcLeakIp(hasLeak)
@@ -82,15 +84,16 @@ final class WebRtcService: WebRtcServiceType {
     }
     
     private func evaluateNewAppsAsync(current apps: Set<String>) async -> Bool {
-        let newApps = Constants.monitoredApps.filter { app in
+        let newApps = appState.userData.webRtcMonitoredApps.filter { app in
             let name = app.name.lowercased()
+            
             return apps.contains(name) && !checkedApps.contains(name)
         }
         
         guard !newApps.isEmpty else {
             previousRunningApps = apps
             
-            return appState.network.hasWebRtcLeak
+            return false
         }
         
         var hasLeak = false
@@ -103,7 +106,9 @@ final class WebRtcService: WebRtcServiceType {
             }
             
             for await leakDetected in group {
-                if leakDetected { hasLeak = true }
+                if leakDetected {
+                    hasLeak = true
+                }
             }
         }
         
@@ -124,7 +129,6 @@ final class WebRtcService: WebRtcServiceType {
                     message: Constants.logWebRtcBusinessAppWarning,
                     type: .warning
                 )
-                
                 return true
             case .safari:
                 log(
@@ -132,7 +136,6 @@ final class WebRtcService: WebRtcServiceType {
                     message: Constants.logWebRtcSafariWarning,
                     type: .warning
                 )
-                
                 return true
             case .chromium(let profilesBasePath):
                 return await evaluateChromiumAsync(
@@ -311,7 +314,13 @@ final class WebRtcService: WebRtcServiceType {
     }
     
     private func currentRunningApps() -> Set<String> {
-        Set(appState.system.monitoringProcesses.map { $0.name.lowercased() })
+        let enabledApps = Set(appState.userData.webRtcMonitoredApps
+            .filter { $0.enabled }
+            .map { $0.name.lowercased() })
+        
+        return Set(appState.system.monitoringProcesses
+            .map { $0.name.lowercased() }
+            .filter { enabledApps.contains($0) })
     }
     
     private func log(app: String, message: String, type: LogEntryType) {

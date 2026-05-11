@@ -64,6 +64,8 @@
 		3572667D2C36EDC30021978C /* ShellAccessible.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3572667C2C36EDC30021978C /* ShellAccessible.swift */; };
 		357266822C36FE710021978C /* AppHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 357266812C36FE710021978C /* AppHelper.swift */; };
 		357763E02FB21C8000B44A16 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 357763DF2FB21C7D00B44A16 /* AppDelegate.swift */; };
+		357763E22FB2495400B44A16 /* PermissionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 357763E12FB2495400B44A16 /* PermissionsView.swift */; };
+		357763E42FB2576B00B44A16 /* FlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 357763E32FB2576700B44A16 /* FlowLayout.swift */; };
 		3582BF612C59073F004E0B80 /* IpAddressContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3582BF602C59073F004E0B80 /* IpAddressContainerView.swift */; };
 		3582BF632C59345E004E0B80 /* InfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3582BF622C59345E004E0B80 /* InfoView.swift */; };
 		3589AB282FA202A700D7F3A8 /* DnsServiceType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3589AB272FA2029E00D7F3A8 /* DnsServiceType.swift */; };
@@ -189,6 +191,8 @@
 		3572667C2C36EDC30021978C /* ShellAccessible.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShellAccessible.swift; sourceTree = "<group>"; };
 		357266812C36FE710021978C /* AppHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppHelper.swift; sourceTree = "<group>"; };
 		357763DF2FB21C7D00B44A16 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		357763E12FB2495400B44A16 /* PermissionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionsView.swift; sourceTree = "<group>"; };
+		357763E32FB2576700B44A16 /* FlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlowLayout.swift; sourceTree = "<group>"; };
 		3582BF602C59073F004E0B80 /* IpAddressContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IpAddressContainerView.swift; sourceTree = "<group>"; };
 		3582BF622C59345E004E0B80 /* InfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoView.swift; sourceTree = "<group>"; };
 		3589AB272FA2029E00D7F3A8 /* DnsServiceType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DnsServiceType.swift; sourceTree = "<group>"; };
@@ -323,6 +327,7 @@
 				35A6E4292F98004900731FF3 /* ConnectionItem.swift */,
 				356580CD2FA3A63F00A6BBC5 /* WarningHint.swift */,
 				353BA4972FACE4A3004BC97D /* StatusCard.swift */,
+				357763E32FB2576700B44A16 /* FlowLayout.swift */,
 				35C218A72C6E0E1600964A7B /* NoInsetHostingView.swift */,
 			);
 			path = Controls;
@@ -513,6 +518,7 @@
 				35C8A9262E04400600C574A5 /* IpInfoApiEditView.swift */,
 				356580CB2FA37B2A00A6BBC5 /* LeaksEditView.swift */,
 				3568505B2C2B1999006E64B8 /* ClosingAppsEditView.swift */,
+				357763E12FB2495400B44A16 /* PermissionsView.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -763,6 +769,7 @@
 				3582BF632C59345E004E0B80 /* InfoView.swift in Sources */,
 				351E9CE52C10A3BA00CEC15F /* MonitoringService.swift in Sources */,
 				35C218A82C6E0E1600964A7B /* NoInsetHostingView.swift in Sources */,
+				357763E22FB2495400B44A16 /* PermissionsView.swift in Sources */,
 				3589AB302FA3680800D7F3A8 /* MonitoredAppInfo.swift in Sources */,
 				35BD39BF2DDC9C930021CF49 /* KeyedContainerExtensions.swift in Sources */,
 				357154F72C17339100A41AA4 /* SettingsView.swift in Sources */,
@@ -779,6 +786,7 @@
 				359EED4C2C52D0280094EFAF /* EnableNetworkDialogView.swift in Sources */,
 				35A6E4282F97B61E00731FF3 /* NetworkInterfaceInfoService.swift in Sources */,
 				35A6E4222F9791AA00731FF3 /* FixedSidebarTabView.swift in Sources */,
+				357763E42FB2576B00B44A16 /* FlowLayout.swift in Sources */,
 				3570E4732C22F95B00CB5D42 /* IpInfoBase.swift in Sources */,
 				35BD39CC2DDCA0050021CF49 /* MonitoringServiceType.swift in Sources */,
 				351F0C622C0F593A00644C66 /* LogEntry.swift in Sources */,
