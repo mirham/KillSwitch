@@ -116,7 +116,7 @@ struct GeneralSettingsEditView: View {
     private var higherProtectionRow: some View {
         settingRow(
             title: Constants.settingsElementExtendedProtection,
-            hint: Constants.hintHigherProtection,
+            hint: Constants.hintExtendedProtection,
             isOn: $appState.userData.useExtendedProtection,
             settingType: .higherProtection
         )

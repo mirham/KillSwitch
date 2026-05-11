@@ -13,13 +13,14 @@ final class WebRtcService: WebRtcServiceType {
     @Injected(\.appState) private var appState
     
     private var pollingTask: Task<Void, Never>?
-    private var shouldCheckForLeak: Bool {
-        self.appState.monitoring.isEnabled
-        && self.appState.userData.webRtcLeakCheck
-        && self.appState.network.status == .on
-    }
     private var checkedApps = Set<String>()
     private var previousRunningApps = Set<String>()
+    
+    private var shouldCheckForLeak: Bool {
+        appState.monitoring.isEnabled
+        && appState.userData.webRtcLeakCheck
+        && appState.network.status == .on
+    }
     
     deinit {
         pollingTask?.cancel()
@@ -30,10 +31,9 @@ final class WebRtcService: WebRtcServiceType {
         else { return }
         
         logger.write(
-            message: String(
-                format: Constants.logWebRtcMonitoringStarted,
-                Int(self.appState.userData.webRtcLeakCheckInterval)),
-            type: .success)
+            message: String(format: Constants.logWebRtcMonitoringStarted, Int(appState.userData.webRtcLeakCheckInterval)),
+            type: .success
+        )
         
         pollingTask = Task { [weak self] in
             guard let self
@@ -41,11 +41,9 @@ final class WebRtcService: WebRtcServiceType {
             
             while !Task.isCancelled {
                 if shouldCheckForLeak {
-                    await self.checkForLeakAsync()
+                    await checkForLeakAsync()
                 }
-                
-                try? await Task.sleep(
-                    for: .seconds(appState.userData.webRtcLeakCheckInterval))
+                try? await Task.sleep(for: .seconds(appState.userData.webRtcLeakCheckInterval))
             }
         }
     }
@@ -63,7 +61,7 @@ final class WebRtcService: WebRtcServiceType {
         previousRunningApps.removeAll()
     }
     
-    // MARK: Private methods
+    // MARK: Private functions
     
     private func checkForLeakAsync() async {
         let current = currentRunningApps()
@@ -73,31 +71,39 @@ final class WebRtcService: WebRtcServiceType {
         checkedApps.subtract(old)
         
         if !new.isEmpty {
-            await evaluateNewAppsAsync(current: new)
+            let hasLeak = await evaluateNewAppsAsync(current: new)
+            
+            await updateStatusAsync { builder in
+                builder.withHasWebRtcLeakIp(hasLeak)
+            }
         }
         
         previousRunningApps = current
     }
     
-    private func evaluateNewAppsAsync(current apps: Set<String>) async {
+    private func evaluateNewAppsAsync(current apps: Set<String>) async -> Bool {
         let newApps = Constants.monitoredApps.filter { app in
-            let lowercasedName = app.name.lowercased()
-            
-            return apps.contains(lowercasedName)
-                   && !checkedApps.contains(lowercasedName)
+            let name = app.name.lowercased()
+            return apps.contains(name) && !checkedApps.contains(name)
         }
         
-        guard !newApps.isEmpty
-        else {
+        guard !newApps.isEmpty else {
             previousRunningApps = apps
-            return
+            
+            return appState.network.hasWebRtcLeak
         }
         
-        await withTaskGroup(of: Void.self) { group in
+        var hasLeak = false
+        
+        await withTaskGroup(of: Bool.self) { group in
             for app in newApps {
                 group.addTask { [weak self] in
-                    await self?.evaluateAppAsync(app: app)
+                    await self?.evaluateAppAsync(app: app) ?? false
                 }
+            }
+            
+            for await leakDetected in group {
+                if leakDetected { hasLeak = true }
             }
         }
         
@@ -106,9 +112,11 @@ final class WebRtcService: WebRtcServiceType {
         }
         
         previousRunningApps = apps
+        
+        return hasLeak
     }
     
-    private func evaluateAppAsync(app: MonitoredAppInfo) async {
+    private func evaluateAppAsync(app: MonitoredAppInfo) async -> Bool {
         switch app.policy {
             case .businessApp:
                 log(
@@ -116,26 +124,30 @@ final class WebRtcService: WebRtcServiceType {
                     message: Constants.logWebRtcBusinessAppWarning,
                     type: .warning
                 )
+                
+                return true
             case .safari:
                 log(
                     app: app.name,
                     message: Constants.logWebRtcSafariWarning,
                     type: .warning
                 )
+                
+                return true
             case .chromium(let profilesBasePath):
-                await evaluateChromiumAsync(
+                return await evaluateChromiumAsync(
                     app: app,
-                    profilesBasePath: profilesBasePath
-                )
+                    profilesBasePath: profilesBasePath)
             case .firefox:
-                await evaluateFirefoxAsync(app: app)
+                return await evaluateFirefoxAsync(app: app)
         }
     }
     
     private func evaluateChromiumAsync(
         app: MonitoredAppInfo,
-        profilesBasePath: String) async {
+        profilesBasePath: String) async -> Bool {
         let basePath = Constants.libraryBasePath.appending(profilesBasePath)
+        
         let entries = await Task.detached(priority: .background) {
             try? FileManager.default.contentsOfDirectory(atPath: basePath)
         }.value
@@ -147,40 +159,49 @@ final class WebRtcService: WebRtcServiceType {
                 type: .warning
             )
             
-            return
+            return true
         }
         
         let profileFolders = entries.filter {
-            $0 == Constants.chromiumProfileDefault
-            || $0.hasPrefix(Constants.chromiumProfile)
+            $0 == Constants.chromiumProfileDefault || $0.hasPrefix(Constants.chromiumProfile)
         }
         
-        guard !profileFolders.isEmpty
-        else {
+        guard !profileFolders.isEmpty else {
             log(
                 app: app.name,
                 message: Constants.logWebRtcPrefsUnavailable,
-                type: .warning)
+                type: .warning
+            )
             
-            return
+            return true
         }
         
-        await withTaskGroup(of: Void.self) { group in
+        var hasLeak = false
+        
+        await withTaskGroup(of: Bool.self) { group in
             for folder in profileFolders {
                 group.addTask { [weak self] in
                     await self?.evaluateChromiumProfileAsync(
                         app: app,
                         basePath: basePath,
-                        folder: folder)
+                        folder: folder
+                    ) ?? false
                 }
             }
+            
+            for await leakDetected in group {
+                if leakDetected { hasLeak = true }
+            }
         }
+        
+        return hasLeak
     }
     
     private func evaluateChromiumProfileAsync(
         app: MonitoredAppInfo,
         basePath: String,
-        folder: String) async {
+        folder: String
+    ) async -> Bool {
         let prefsPath = "\(basePath)/\(folder)/\(Constants.chromiumPrefsFile)"
         
         let result = await Task.detached(priority: .background) {
@@ -202,19 +223,19 @@ final class WebRtcService: WebRtcServiceType {
                 type: .warning
             )
             
-            return
+            return true
         }
         
-        guard let policy = result.policy
-        else {
+        guard let policy = result.policy else {
             logger.write(
                 message: String(
                     format: Constants.logWebRtcNoPolicy,
                     app.name,
                     folder),
-                type: .warning)
+                type: .warning
+            )
             
-            return
+            return true
         }
         
         let isSafe = Constants.chromiumSafePolicies.contains(policy)
@@ -223,14 +244,15 @@ final class WebRtcService: WebRtcServiceType {
             message: String(
                 format: Constants.logWebRtcChromiumPolicy,
                 app.name,
-                folder,
-                policy),
-            type: isSafe ? .success : .warning)
+                folder, policy),
+            type: isSafe ? .success : .warning
+        )
+        
+        return !isSafe
     }
     
-    private func evaluateFirefoxAsync(app: MonitoredAppInfo) async {
-        let profilesPath = Constants.libraryBasePath
-            .appending(Constants.firefoxProfilesPath)
+    private func evaluateFirefoxAsync(app: MonitoredAppInfo) async -> Bool {
+        let profilesPath = Constants.libraryBasePath.appending(Constants.firefoxProfilesPath)
         
         let allProfiles = await Task.detached(priority: .background) {
             try? FileManager.default
@@ -239,36 +261,38 @@ final class WebRtcService: WebRtcServiceType {
         }.value
         
         guard let allProfiles else {
-            log(
-                app: app.name,
-                message: Constants.logWebRtcPrefsUnavailable,
-                type: .warning
-            )
-            
-            return
+            log(app: app.name, message: Constants.logWebRtcPrefsUnavailable, type: .warning)
+            return true
         }
         
-        await withTaskGroup(of: Void.self) { group in
+        var isProtected = false
+        
+        await withTaskGroup(of: Bool.self) { group in
             for profile in allProfiles {
                 group.addTask { [weak self] in
-                    await self?.evaluateFirefoxProfile(
-                        named: profile,
-                        profilesPath: profilesPath)
+                    await self?.evaluateFirefoxProfile(named: profile, profilesPath: profilesPath) ?? false
                 }
             }
+            
+            for await leakDetected in group {
+                if leakDetected { isProtected = true }
+            }
         }
+        
+        return isProtected
     }
     
     private func evaluateFirefoxProfile(
-        named profile: String,
-        profilesPath: String) async {
+        named profile:
+        String, profilesPath: String) async -> Bool {
         let prefsPath = "\(profilesPath)/\(profile)\(Constants.firefoxPrefsFile)"
+        
         let content = await Task.detached(priority: .background) {
             try? String(contentsOfFile: prefsPath, encoding: .utf8)
         }.value
         
         guard let content
-        else { return }
+        else { return false }
         
         let isProtected = content.contains(Constants.firefoxWebRtcDisabledEntry)
         
@@ -278,10 +302,12 @@ final class WebRtcService: WebRtcServiceType {
                 profile,
                 isProtected
                     ? Constants.logFirefoxProfileProtected
-                    : Constants.logFirefoxProfileUnprotected),
-            type: isProtected
-                ? .success
-                : .warning)
+                    : Constants.logFirefoxProfileUnprotected
+            ),
+            type: isProtected ? .success : .warning
+        )
+        
+        return !isProtected
     }
     
     private func currentRunningApps() -> Set<String> {
@@ -289,8 +315,17 @@ final class WebRtcService: WebRtcServiceType {
     }
     
     private func log(app: String, message: String, type: LogEntryType) {
-        logger.write(
-            message: String(format: message, app),
-            type: type)
+        logger.write(message: String(format: message, app), type: type)
+    }
+    
+    private func updateStatusAsync(_ configure: (NetworkStateUpdateBuilder) -> NetworkStateUpdateBuilder) async {
+        guard !Task.isCancelled
+        else { return }
+        
+        let update = configure(NetworkStateUpdateBuilder()).build()
+        
+        await MainActor.run {
+            appState.applyNetworkUpdate(update)
+        }
     }
 }

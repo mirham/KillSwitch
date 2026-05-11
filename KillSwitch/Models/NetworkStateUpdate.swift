@@ -11,6 +11,8 @@ struct NetworkStateUpdate {
     var activeNetworkInterfaces: [NetworkInterface]?
     var physicalNetworkInterfaces: [NetworkInterface]?
     var isDisconnected: Bool?
-    var isObtainingIp: Bool?
+    var isFetchingIp: Bool?
     var forceUpdatePublicIp: Bool = false
+    var hasDnsLeak: Bool?
+    var hasWebRtcLeak: Bool?
 }

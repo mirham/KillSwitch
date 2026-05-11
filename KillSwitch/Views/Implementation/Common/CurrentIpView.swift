@@ -14,14 +14,14 @@ struct CurrentIpView: IpAddressContainerView {
     
     @Injected(\.ipService) private var ipService
     
-    @State private var isHoveringRisk = false
+    var showDetailedIssues: Bool = false
     
     var body: some View {
         Section {
             VStack(spacing: 2) {
                 ipSection
                 countrySection
-                safetySection
+                securitySection
                     .padding(.top, 5)
             }
             .padding(5)
@@ -52,13 +52,13 @@ struct CurrentIpView: IpAddressContainerView {
     }
     
     @ViewBuilder
-    private var safetySection: some View {
-        if shouldShowSafetySection {
-            SafetyBadgeView(
-                safetyType: appState.current.safetyType,
+    private var securitySection: some View {
+        if shouldShowSecuritySection {
+            SecurityBadgeView(
+                securityType: appState.current.securityType,
                 isHighRisk: appState.current.isHighRisk,
-                safetyColor: safetyColor,
-                isRisky: $isHoveringRisk
+                securityColor: securityColor,
+                showDetailedIssues: showDetailedIssues
             )
         }
     }
@@ -87,12 +87,12 @@ struct CurrentIpView: IpAddressContainerView {
                 AppHelper.copyTextToClipboard(text: ipAddress)
             }
             
-            if appState.current.safetyType == .unknown {
-                Button(Constants.menuItemAddAsAllowedIpWithCompletePrivacy) {
-                    addAllowedIp(safetyType: .compete)
+            if appState.current.securityType == .unknown {
+                Button(Constants.menuItemAddAsAllowedIpWithCompleteSecurity) {
+                    addAllowedIp(securityType: .compete)
                 }
-                Button(Constants.menuItemAddAsAllowedIpWithSomePrivacy) {
-                    addAllowedIp(safetyType: .some)
+                Button(Constants.menuItemAddAsAllowedIpWithSomeSecurity) {
+                    addAllowedIp(securityType: .some)
                 }
             }
         }
@@ -101,39 +101,39 @@ struct CurrentIpView: IpAddressContainerView {
     private var ipLabel: String {
         switch appState.network.status {
             case .off: return Constants.offline
-            default: return appState.network.isObtainingIp
-                ? Constants.obtainingIp
+            default: return appState.network.isFetchingIp
+                ? Constants.fetchingIp
                 : appState.network.publicIp?.ipAddress ?? Constants.none
         }
     }
     
     private var ipColor: Color {
         appState.monitoring.isEnabled
-            ? safetyColor
+            ? securityColor
             : .primary
     }
     
-    private var shouldShowSafetySection: Bool {
-        appState.current.safetyType != .unknown
+    private var shouldShowSecuritySection: Bool {
+        appState.current.securityType != .unknown
         && appState.network.status != .off
     }
     
-    private var safetyColor: Color {
-        getSafetyColor(
-            safetyType: appState.current.safetyType,
+    private var securityColor: Color {
+        getSecurityColor(
+            securityType: appState.current.securityType,
             colorScheme: colorScheme)
     }
     
     // MARK: Private functions
     
-    private func addAllowedIp(safetyType: SafetyType) {
+    private func addAllowedIp(securityType: SecurityType) {
         guard let publicIp = appState.network.publicIp
         else { return }
         
         let ip = IpInfo(
             ipAddress: publicIp.ipAddress,
             ipAddressInfo: publicIp,
-            safetyType: safetyType
+            securityType: securityType
         )
         
         ipService.addAllowedPublicIp(publicIp: ip)

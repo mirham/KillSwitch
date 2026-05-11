@@ -57,16 +57,8 @@ final class NetworkInterfaceInfoService : NSObject, NetworkInterfaceInfoServiceT
         switch status {
             case .authorized, .authorizedAlways:
                 return await fetchSsid()
-                
-            case .notDetermined:
-                return await withCheckedContinuation { continuation in
-                    ssidContinuation = continuation
-                    locationManager.requestWhenInUseAuthorization()
-                }
-                
-            case .denied, .restricted:
+            case .notDetermined, .denied, .restricted:
                 return nil
-                
             @unknown default:
                 return nil
         }

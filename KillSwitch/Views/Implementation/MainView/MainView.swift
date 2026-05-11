@@ -36,7 +36,7 @@ struct MainView: View {
     @ViewBuilder
     private var sidebarContent: some View {
         VStack {
-            CurrentIpView()
+            CurrentIpView(showDetailedIssues: true)
                 .environmentObject(appState)
                 .padding(.top)
             Spacer()

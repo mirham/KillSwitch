@@ -12,19 +12,19 @@ struct IpInfo: Codable, Identifiable, Equatable {
     var ipAddress: String
     var countryName: String
     var countryCode: String
-    var safetyType: SafetyType
+    var securityType: SecurityType
     
     init(_ id: UUID = UUID(),
          ipAddress: String,
          ipAddressInfo: IpInfoBase?,
-         safetyType: SafetyType = .unknown) {
+         securityType: SecurityType = .unknown) {
         let info = ipAddressInfo ?? IpInfoBase(ipAddress: ipAddress)
         
         self.id = id
         self.ipAddress = info.ipAddress
         self.countryName = info.countryName
         self.countryCode = info.countryCode
-        self.safetyType = safetyType
+        self.securityType = securityType
     }
     
     static func == (lhs: IpInfo, rhs: IpInfo) -> Bool {

@@ -39,7 +39,7 @@ class AppState : ObservableObject, Equatable {
     }
     
     func applyNetworkUpdate(_ update: NetworkStateUpdate) {
-        var updatedNetwork = Network()
+        var updatedNetwork = network
         
         if let status = update.status {
             updatedNetwork.status = status
@@ -48,14 +48,30 @@ class AppState : ObservableObject, Equatable {
                 reactivateIpApis()
             }
         }
-        else {
-            updatedNetwork.status = network.status
+        
+        if update.forceUpdatePublicIp {
+            updatedNetwork.publicIp = update.publicIp
         }
         
-        updatedNetwork.publicIp = update.forceUpdatePublicIp ? update.publicIp : network.publicIp
-        updatedNetwork.activeNetworkInterfaces = update.activeNetworkInterfaces ?? network.activeNetworkInterfaces
-        updatedNetwork.physicalNetworkInterfaces = update.physicalNetworkInterfaces ?? network.physicalNetworkInterfaces
-        updatedNetwork.isObtainingIp = update.isObtainingIp ?? network.isObtainingIp
+        if let activeInterfaces = update.activeNetworkInterfaces {
+            updatedNetwork.activeNetworkInterfaces = activeInterfaces
+        }
+        
+        if let physicalInterfaces = update.physicalNetworkInterfaces {
+            updatedNetwork.physicalNetworkInterfaces = physicalInterfaces
+        }
+        
+        if let isFetchingIp = update.isFetchingIp {
+            updatedNetwork.isFetchingIp = isFetchingIp
+        }
+        
+        if let hasDnsLeak = update.hasDnsLeak {
+            updatedNetwork.hasDnsLeak = hasDnsLeak
+        }
+        
+        if let hasWebRtcLeak = update.hasWebRtcLeak {
+            updatedNetwork.hasWebRtcLeak = hasWebRtcLeak
+        }
         
         if network != updatedNetwork {
             network = updatedNetwork
@@ -70,7 +86,7 @@ class AppState : ObservableObject, Equatable {
     // MARK: Private functions
     
     private func setCurrentState() {
-        current.safetyType = determineSafetyType()
+        current.securityType = determineSecurityType()
         current.isPublicIpAllowed = getCurrentAllowedIp() != nil
         current.isHighRisk = isHighRisk()
         current.isCountryDetected = isCountryDetected()
@@ -80,7 +96,7 @@ class AppState : ObservableObject, Equatable {
 
 extension AppState {
     struct Current : Equatable {
-        var safetyType = SafetyType.unknown
+        var securityType = SecurityType.unknown
         var isPublicIpAllowed = false
         var isHighRisk = false
         var isCountryDetected = false
@@ -88,7 +104,7 @@ extension AppState {
         var colorScheme: ColorScheme = .light
         
         static func == (lhs: Current, rhs: Current) -> Bool {
-            let result = lhs.safetyType == rhs.safetyType
+            let result = lhs.securityType == rhs.securityType
             && lhs.isHighRisk == rhs.isHighRisk
             && lhs.isPublicIpAllowed == rhs.isPublicIpAllowed
             
@@ -134,10 +150,12 @@ extension AppState {
 extension AppState {
     struct Network : Equatable {
         var status: NetworkStatusType = NetworkStatusType.unknown
-        var isObtainingIp = false
+        var isFetchingIp = false
         var activeNetworkInterfaces: [NetworkInterface] = [NetworkInterface]()
         var physicalNetworkInterfaces: [NetworkInterface] = [NetworkInterface]()
         var publicIp: IpInfoBase? = nil
+        var hasDnsLeak: Bool = false
+        var hasWebRtcLeak: Bool = false
         
         var firstPhysicalInterface: NetworkInterface? {
             get { physicalNetworkInterfaces.first }
@@ -154,9 +172,11 @@ extension AppState {
             let result = lhs.status == rhs.status
             && lhs.publicIp == rhs.publicIp
             && lhs.publicIp?.hasLocation() == rhs.publicIp?.hasLocation()
-            && lhs.isObtainingIp == rhs.isObtainingIp
+            && lhs.isFetchingIp == rhs.isFetchingIp
             && lhs.activeNetworkInterfaces == rhs.activeNetworkInterfaces
             && lhs.physicalNetworkInterfaces == rhs.physicalNetworkInterfaces
+            && lhs.hasDnsLeak == rhs.hasDnsLeak
+            && lhs.hasWebRtcLeak == rhs.hasWebRtcLeak
             
             return result
         }
@@ -440,34 +460,34 @@ extension AppState {
 }
 
 extension AppState {
-    private func determineSafetyType() -> SafetyType {
-        if (monitoring.isEnabled && network.publicIp != nil) {
-            let currentAllowedIp = getCurrentAllowedIp()
-            
-            if currentAllowedIp != nil && !system.locationServicesEnabled {
-                return currentAllowedIp!.safetyType
-            }
-            
-            return SafetyType.unsafe
-        }
+    private func determineSecurityType() -> SecurityType {
+        guard monitoring.isEnabled
+        else { return .unknown }
         
-        return SafetyType.unknown
+        guard network.publicIp != nil
+        else { return .unknown }
+        
+        guard let currentAllowedIp = getCurrentAllowedIp(),
+              !system.locationServicesEnabled,
+              !network.hasDnsLeak,
+              !network.hasWebRtcLeak
+        else { return .notSecure }
+        
+        return currentAllowedIp.securityType
     }
     
     private func getCurrentAllowedIp() -> IpInfo? {
-        var result: IpInfo? = nil
+        guard let publicIp = network.publicIp?.ipAddress
+        else { return nil }
         
-        for allowedIp in userData.allowedIps {
-            if (network.publicIp?.ipAddress == allowedIp.ipAddress) {
-                result = allowedIp
-            }
-        }
-        
-        return result
+        return userData.allowedIps.first { $0.ipAddress == publicIp }
     }
     
     private func isHighRisk() -> Bool {
-        return monitoring.isEnabled && system.locationServicesEnabled
+        return monitoring.isEnabled
+            && (system.locationServicesEnabled
+                || network.hasDnsLeak
+                || network.hasWebRtcLeak)
     }
     
     private func isCountryDetected() -> Bool {

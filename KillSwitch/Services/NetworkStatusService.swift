@@ -146,7 +146,7 @@ final class NetworkStatusService: ApiCallable, NetworkStatusServiceType {
     
     private func shouldFetchPublicIp() -> Bool {
         guard appState.network.status == .on,
-              !appState.network.isObtainingIp
+              !appState.network.isFetchingIp
         else { return false }
         
         return appState.network.publicIp?.hasLocation() != true

@@ -11,6 +11,7 @@ import Factory
 @main
 struct KillSwitchApp: App {
     @StateObject private var appState = AppState.shared
+    @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     
     init() {
         _ = Container.shared.networkStatusService()
@@ -48,6 +49,12 @@ struct KillSwitchApp: App {
             MainView()
                 .environmentObject(appState)
                 .safeGlassEffect()
+                .onAppear {
+                    NSApp.setActivationPolicy(.regular)
+                }
+                .onDisappear() {
+                    NSApp.setActivationPolicy(.accessory)
+                }
         }
         .windowToolbarStyle(UnifiedCompactWindowToolbarStyle())
     }

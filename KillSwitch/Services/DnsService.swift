@@ -24,7 +24,6 @@ final class DnsService: DnsServiceType, ShellAccessible {
     }
     
     func startMonitoring() {
-        print("\(appState.monitoring.isEnabled), \(appState.userData.dnsLeakCheck), \(appState.network.status == .on)")
         guard pollingTask == nil, shouldCheckForLeak
         else { return }
         
@@ -40,7 +39,11 @@ final class DnsService: DnsServiceType, ShellAccessible {
             
             while !Task.isCancelled {
                 if shouldCheckForLeak {
-                    await self.checkForLeakAsync()
+                    let hasLeak = await self.checkForLeakAsync()
+                    
+                    await self.updateStatusAsync { builder in
+                        builder.withHasDnsLeakIp(hasLeak)
+                    }
                 }
                 
                 try? await Task.sleep(
@@ -96,6 +99,7 @@ final class DnsService: DnsServiceType, ShellAccessible {
             logger.write(
                 message: Constants.logDnsNoVpnDetected,
                 type: .success)
+            
             return false
         }
         
@@ -222,6 +226,17 @@ final class DnsService: DnsServiceType, ShellAccessible {
             logger.write(
                 message: String(format: Constants.logDnsCheckPassed, vpnInterfaces.isEmpty ? Constants.logNoSpecificInterface : vpnInterfaces),
                 type: .success)
+        }
+    }
+    
+    private func updateStatusAsync(_ configure: (NetworkStateUpdateBuilder) -> NetworkStateUpdateBuilder) async {
+        guard !Task.isCancelled
+        else { return }
+        
+        let update = configure(NetworkStateUpdateBuilder()).build()
+        
+        await MainActor.run {
+            appState.applyNetworkUpdate(update)
         }
     }
     

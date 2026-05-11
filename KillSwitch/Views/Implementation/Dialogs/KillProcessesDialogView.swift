@@ -109,7 +109,8 @@ struct KillProcessesDialogView: View {
     // MARK: Private functions
     
     private func handleYesButtonClick() {
-        processService.killActiveProcesses()
+        processService.killProcesses(
+            processes: appState.system.killingProcesses)
         closeDialog()
     }
     

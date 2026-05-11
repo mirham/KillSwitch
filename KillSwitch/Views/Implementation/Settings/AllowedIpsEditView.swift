@@ -19,7 +19,7 @@ struct AllowedIpsEditView: IpAddressContainerView {
     @State private var editingIpId: UUID?
     @State private var newIpAddress = String()
     @State private var isNewIpValid = false
-    @State private var newIpSafetyType: SafetyType = .compete
+    @State private var newIpSecurityType: SecurityType = .compete
     @State private var alertState: AlertState?
     
     var body: some View {
@@ -94,7 +94,9 @@ struct AllowedIpsEditView: IpAddressContainerView {
             Spacer()
             
             Circle()
-                .fill(getSafetyColor(safetyType: ipAddress.safetyType, colorScheme: colorScheme))
+                .fill(getSecurityColor(
+                    securityType: ipAddress.securityType,
+                    colorScheme: colorScheme))
                 .frame(width: 10, height: 10)
         }
     }
@@ -111,28 +113,32 @@ struct AllowedIpsEditView: IpAddressContainerView {
                     }
             }
             HStack {
-                Text("\(Constants.safety):")
+                Text("\(Constants.security):")
                     .frame(width: 80, alignment: .leading)
                 
                 RadioButton(
-                    id: String(SafetyType.compete.rawValue),
-                    label: SafetyType.compete.description,
+                    id: String(SecurityType.compete.rawValue),
+                    label: SecurityType.compete.description,
                     size: 12,
-                    color: getSafetyColor(safetyType: .compete, colorScheme: colorScheme),
+                    color: getSecurityColor(
+                        securityType: .compete,
+                        colorScheme: colorScheme),
                     textSize: 11,
-                    isMarked: newIpSafetyType == .compete,
-                    callback: { _ in newIpSafetyType = .compete }
+                    isMarked: newIpSecurityType == .compete,
+                    callback: { _ in newIpSecurityType = .compete }
                 )
                 Spacer()
                     .frame(width: 5)
                 RadioButton(
-                    id: String(SafetyType.some.rawValue),
-                    label: SafetyType.some.description,
+                    id: String(SecurityType.some.rawValue),
+                    label: SecurityType.some.description,
                     size: 12,
-                    color: getSafetyColor(safetyType: .some, colorScheme: colorScheme),
+                    color: getSecurityColor(
+                        securityType: .some,
+                        colorScheme: colorScheme),
                     textSize: 11,
-                    isMarked: newIpSafetyType == .some,
-                    callback: { _ in newIpSafetyType = .some }
+                    isMarked: newIpSecurityType == .some,
+                    callback: { _ in newIpSecurityType = .some }
                 )
             }
             AsyncButton(
@@ -169,7 +175,7 @@ struct AllowedIpsEditView: IpAddressContainerView {
             editingIpId ?? UUID(),
             ipAddress: newIpAddress,
             ipAddressInfo: ipInfoResult.result,
-            safetyType: newIpSafetyType
+            securityType: newIpSecurityType
         )
         
         if let existingIndex = appState.userData.allowedIps
@@ -195,7 +201,7 @@ struct AllowedIpsEditView: IpAddressContainerView {
     private func startEditing(_ ipAddress: IpInfo) {
         editingIpId = ipAddress.id
         newIpAddress = ipAddress.ipAddress
-        newIpSafetyType = ipAddress.safetyType
+        newIpSecurityType = ipAddress.securityType
         isNewIpValid = true
     }
     
@@ -223,7 +229,7 @@ struct AllowedIpsEditView: IpAddressContainerView {
         editingIpId = nil
         newIpAddress = String()
         isNewIpValid = false
-        newIpSafetyType = .compete
+        newIpSecurityType = .compete
     }
     
     private func alert(for state: AlertState) -> Alert {

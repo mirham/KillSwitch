@@ -150,7 +150,7 @@ final class MonitoringService: MonitoringServiceType {
     private func enforceIpAllowlist() {
         guard
             !appState.current.isPublicIpAllowed,
-            !appState.network.isObtainingIp,
+            !appState.network.isFetchingIp,
             let publicIp = appState.network.publicIp
         else { return }
         
@@ -166,7 +166,8 @@ final class MonitoringService: MonitoringServiceType {
             type: .warning)
         
         if appState.userData.autoCloseApps {
-            processService.killActiveProcesses()
+            processService.killProcesses(
+                processes: appState.system.killingProcesses)
         }
     }
     
@@ -185,13 +186,16 @@ final class MonitoringService: MonitoringServiceType {
     
     private func shouldDisableConnection(
         for result: OperationResult<IpInfoBase>) -> Bool {
-        isUnsafeUnderHigherProtection(result) || hasNoActiveIpApi(result)
+            isUnsafeUnderExtendedProtection(result) || hasNoActiveIpApi(result)
     }
     
-    private func isUnsafeUnderHigherProtection(
+    private func isUnsafeUnderExtendedProtection(
         _ result: OperationResult<IpInfoBase>) -> Bool {
         appState.userData.useExtendedProtection &&
-        (appState.system.locationServicesEnabled || result.result == nil)
+        (appState.system.locationServicesEnabled
+         || appState.network.hasDnsLeak
+         || appState.network.hasWebRtcLeak
+         || result.result == nil)
     }
     
     private func hasNoActiveIpApi(

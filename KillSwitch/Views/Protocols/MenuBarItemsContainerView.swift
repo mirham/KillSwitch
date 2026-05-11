@@ -27,12 +27,16 @@ extension MenuBarItemsContainerView {
     ) -> [MenuBarElement] {
         let colors = MenuBarColors(
             base: colorScheme == .dark ? .white : .black,
-            safety: appState.userData.menuBarUseThemeColor
+            security: appState.userData.menuBarUseThemeColor
             ? (colorScheme == .dark ? .white : .black)
-            : getSafetyColor(safetyType: appState.current.safetyType, colorScheme: colorScheme),
+            : getSecurityColor(
+                securityType: appState.current.securityType,
+                colorScheme: colorScheme),
             main: (appState.userData.menuBarUseThemeColor || !appState.monitoring.isEnabled)
             ? (colorScheme == .dark ? .white : .black)
-            : getSafetyColor(safetyType: appState.current.safetyType, colorScheme: colorScheme)
+            : getSecurityColor(
+                securityType: appState.current.securityType,
+                colorScheme: colorScheme)
         )
         
         let context = MenuBarContext(
@@ -53,8 +57,8 @@ extension MenuBarItemsContainerView {
                 return MenuBarElement(
                     image: renderImage {
                         getShieldIcon(
-                            safetyType: context.appState.current.safetyType,
-                            color: context.colors.safety)
+                            securityType: context.appState.current.securityType,
+                            color: context.colors.security)
                     },
                     key: key
                 )
@@ -64,7 +68,7 @@ extension MenuBarItemsContainerView {
                     image: renderImage {
                         getMonitoringStatus(
                             isMonitoringEnabled: context.appState.monitoring.isEnabled,
-                            color: context.colors.safety)
+                            color: context.colors.security)
                     },
                     key: key
                 )
@@ -155,15 +159,15 @@ extension MenuBarItemsContainerView {
     
     // MARK: View sections
     
-    private func getShieldIcon(safetyType: SafetyType, color: Color) -> some View {
+    private func getShieldIcon(securityType: SecurityType, color: Color) -> some View {
         let iconName: String
-        switch safetyType {
+        switch securityType {
             case .compete:
-                iconName = Constants.iconCompleteSafety
+                iconName = Constants.iconCompleteSecurity
             case .some:
-                iconName = Constants.iconSomeSafety
+                iconName = Constants.iconSomeSecurity
             default:
-                iconName = Constants.iconUnsafe
+                iconName = Constants.iconNotSecure
         }
         
         return Text(Image(systemName: iconName))
@@ -219,13 +223,13 @@ extension MenuBarItemsContainerView {
             
             if appState.network.status == .off {
                 ip = Constants.offline
-            } else if appState.network.isObtainingIp {
-                ip = Constants.obtainingIp
+            } else if appState.network.isFetchingIp {
+                ip = Constants.fetchingIp
             } else {
                 ip = appState.network.publicIp?.ipAddress ?? Constants.none
             }
             
-            let noValidIp = ip.isEmpty || [Constants.none, Constants.offline, Constants.obtainingIp].contains(ip)
+            let noValidIp = ip.isEmpty || [Constants.none, Constants.offline, Constants.fetchingIp].contains(ip)
             
             return (noValidIp && exampleAllowed)
                 ? Constants.defaultIpAddress
@@ -272,7 +276,7 @@ private enum SeparatorType {
 
 private struct MenuBarColors {
     let base: Color
-    let safety: Color
+    let security: Color
     let main: Color
 }
 

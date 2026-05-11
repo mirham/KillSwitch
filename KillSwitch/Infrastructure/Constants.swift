@@ -64,9 +64,9 @@ struct Constants{
     
     // MARK: Icons
     static let iconApp = "AppIcon"
-    static let iconCompleteSafety = "checkmark.shield.fill"
-    static let iconSomeSafety = "exclamationmark.shield.fill"
-    static let iconUnsafe = "xmark.shield.fill"
+    static let iconCompleteSecurity = "checkmark.shield.fill"
+    static let iconSomeSecurity = "exclamationmark.shield.fill"
+    static let iconNotSecure = "xmark.shield.fill"
     static let iconWindow = "macwindow"
     static let iconQuit = "xmark.circle"
     static let iconSettings = "gearshape.2"
@@ -98,10 +98,13 @@ struct Constants{
     static let iconMonitoring = "waveform.path.ecg"
     static let iconApps = "square.grid.2x2"
     static let iconExpandApps = "chevron.forward"
+    static let iconLocation = "location.fill"
+    static let iconGranted = "checkmark"
+    static let iconDenied = "xmark"
     
     // MARK: Colors
-    static let colorCompleteSafetyLightTheme = "#369300"
-    static let colorSomeSafetyLightTheme = "#A7A200"
+    static let colorCompleteSecurityLightTheme = "#369300"
+    static let colorSomeSecurityLightTheme = "#A7A200"
     static let colorOn = "#34C759"
     static let colorOff = "#8E8E93"
     static let colorWait = "#FF9F0A"
@@ -139,14 +142,13 @@ struct Constants{
     static let later = "Later"
     static let ip = "IP"
     static let apiUrl = "API URL"
-    static let safety = "Safety"
+    static let security = "Security"
     static let network = "Network"
     static let monitoring = "Monitoring"
     static let applications = "Applications"
     static let clickToClose = "Click to close"
     static let activeConnections = "Active connections"
-    static let safetyDescriprion = "%1$@ privacy"
-    static let disableLocationServices = "(disable location services)"
+    static let securityDescriprion = "%1$@ security"
     static let publicIp = "Public IP"
     static let enabled = "enabled"
     static let disabled = "disabled"
@@ -157,8 +159,13 @@ struct Constants{
     static let ipInfoApiUrl = "IP info API address (use \(publicIpMask) for public IP address)"
     static let mappings = "Mappings"
     static let noActiveIpApi = "No active IP API"
-    static let obtainingIp = "Obtaining IP..."
+    static let fetchingIp = "Fetching IP..."
     static let all = "All"
+    static let securityConcerns = "Security concerns"
+    static let allow = "Allow"
+    static let granted = "Granted"
+    static let denied = "Denied"
+    static let notDetermined = "Not determined"
     
     // MARK: Symbols
     static let dot = "."
@@ -186,8 +193,8 @@ struct Constants{
     
     // MARK: Menu items
     static let menuItemCopy = "Copy"
-    static let menuItemAddAsAllowedIpWithCompletePrivacy = "Add as allowed IP with complete safety"
-    static let menuItemAddAsAllowedIpWithSomePrivacy = "Add as allowed IP with some safety"
+    static let menuItemAddAsAllowedIpWithCompleteSecurity = "Add as allowed IP with complete security"
+    static let menuItemAddAsAllowedIpWithSomeSecurity = "Add as allowed IP with some security"
     
     // MARK: Settings elements names
     static let settingsElementGeneral = "General"
@@ -214,6 +221,8 @@ struct Constants{
     static let settingsElementThemeColor = "Use system theme color"
     static let settingsElementPeriodicDnsLeakCheck = "Periodic DNS leak check"
     static let settingsElementPeriodicWebRtcLeakCheck = "Periodic WebRTC leak check"
+    static let settingsElementOpenSettings = "Open settings"
+    static let settingsElementLocationAccess = "Location access"
     
     // MARK:  Settings key names
     static let settingsKeyIps = "allowed-addresses"
@@ -263,6 +272,11 @@ struct Constants{
     static let niiService = "Service"
     static let niiSessionName = "VPNLookup"
     
+    // MARK: Risks
+    static let riskLocationServicesEnabled = "Location services are enabled"
+    static let riskDnsLeakDetected = "DNS leak detected"
+    static let riskWebRtcLeakDetected = "Potential WebRTC leak detected"
+    
     // MARK: Shell commands
     static let shCommandEnableNetworkIterface = "networksetup -setairportpower %1$@ on"
     static let shCommandDisableNetworkIterface = "networksetup -setairportpower %1$@ off"
@@ -294,11 +308,14 @@ struct Constants{
     ]
     
     // MARK: Warnings
-    static let warningDnsLeakDoubleCheck = "Always double-check at https://dnsleaktest.com/."
+    static let warningDnsLeakDoubleCheck = "Always double-check at https://dnsleaktest.com."
     static let warningWebRtcLeakDoubleCheck = "Always double-check at https://browserleaks.com/webrtc."
     
+    // MARK: System settings paths
+    static let sspLocationServices = "x-apple.systempreferences:com.apple.preference.security?Privacy_LocationServices"
+    
     // MARK: Error messages
-    static let errorNoActiveIpApiFound = "Not possible to obtain IP, try to add a new IP API in the Settings to proceed work or check DNS availability"
+    static let errorNoActiveIpApiFound = "Unable to fetch IP address. Try to add a new IP API in Settings or check your DNS availability"
     static let errorWhenCallingIpAddressApi = "Error when called IP address API '%1$@': '%2$@', API marked as inactive and will be skipped until next application run"
     static let errorTaskCancelled = "Task cancelled"
     static let errorInvalidJson = "Invalid JSON"
@@ -328,6 +345,8 @@ struct Constants{
     static let dialogBodyIpInfoApiMappingIsNotValid = "The API does not return the country code or country name. Please double-check the API values and mapping for correctness."
     static let dialogHeaderLastIpApiCannotBeRemoved = "Cannot remove the last remaining IP API"
     static let dialogBodyLastIpApiCannotBeRemoved = "You're trying to remove the last IP API, which will make the application stop working. To keep the app functional, please add more valid IP APIs (as many as possible) before deleting this one."
+    static let dialogHeaderCloseApp = "Quit application?"
+    static let dialogBodyCloseApp = "Are you sure you want to quit?"
     
     // MARK: Log messages
     static let logMonitoringHasBeenEnabled = "Monitoring enabled"
@@ -390,8 +409,8 @@ struct Constants{
     static let hintOnTopOfAllWindows = "Put application windows on top of all other windows."
     static let hintToggleLocationServices = "Toggle location services after restart. If the required state is critical, this can be done manually in Settings → Privacy & Security → Location Services without restarting."
     static let hintPreventComputerSleep = "Preventing the computer from going to sleep when monitoring is enabled."
-    static let hintHigherProtection = "Disable the network when monitoring is enabled, if there is no reliable information about the current IP address. Also close all running monitored applications, if any."
-    static let hintAutoCloseApps = "Force close applications when monitoring is enabled and current IP address is unsafe. The confirmation dialog option when closing applications will be ignored."
+    static let hintExtendedProtection = "Disable the network when monitoring is enabled, if there is no reliable information about the current IP address. Also close all running monitored applications, if any."
+    static let hintAutoCloseApps = "Force close applications when monitoring is enabled and current IP address is not secure. The confirmation dialog option when closing applications will be ignored."
     static let hintCloseApplicationConfirmation = "Confirmation dialog when closing applications. This option is ignored in higher protection mode."
     static let hintPickyMode = "Use extended information about current IP address, such as country. Does not allow the use of an IP address as an allowed one if there is no reliable information about it."
     static let hintPeriodicIpCheck = "Check the public IP address periodically when monitoring is enabled at the interval specified below."
@@ -399,7 +418,7 @@ struct Constants{
     static let hintPeriodicWebRtcLeakCheck = "Check WebRTC leak periodically when monitoring is enabled at the interval specified below."
     static let hintInterval = "\(minTimeIntervalToCheck)..\(maxTimeIntervalToCheck)"
     static let hintMenuBarAdjustment = "Drag menu bar item icons between the sections below to arrange item as you want."
-    static let hintAllowedIps = "Add an allowed IP address with desired safety type.\nRight click on the address to display the context menu."
+    static let hintAllowedIps = "Add an allowed IP address with desired security type.\nRight click on the address to display the context menu."
     static let hintIpApis = "Add an API that returns the public IP address in plain text\nRight click on the API to display the context menu\nIf API marked green, it works properly and in use."
     static let hintCloseApps = "Add the application you want to close automatically or manually\nRight click on the application to display the context menu"
     static let hintIpInfoApi = "The IP info API is needed to get advanced information about a public IP address, such as its location. This allows you to display the country flag in the macOS menu bar, as well as show the address on a map. Typically, data from such APIs is in JSON format. Here, you can assign an API address and map the JSON data values to application values."
@@ -408,6 +427,7 @@ struct Constants{
     static let hintNoLogEntries = "No log entries"
     static let hintLeaks = "This app can monitor your device for potential DNS and WebRTC privacy leaks and notify when a risk is detected. It does NOT prevent leaks. Detection has limitations: some leak vectors, such as browser extensions overriding WebRTC settings or system-level DNS changes, may not be visible to this app."
     static let hintPrivacyProtection = "Only you are responsible for verifying your privacy protection!"
+    static let hintNetworkDetails = "Provides extended network details. Optional."
     
     // MARK: About
     static let aboutSupportMail = "bWlyaGFtQGFidi5iZw=="

@@ -11,19 +11,19 @@ import FlagKit
 protocol IpAddressContainerView: View {}
 
 extension IpAddressContainerView {
-    func getSafetyColor(safetyType: SafetyType, colorScheme: ColorScheme) -> Color {
+    func getSecurityColor(securityType: SecurityType, colorScheme: ColorScheme) -> Color {
         let isDarkTheme = colorScheme == .dark
         
-        switch safetyType {
+        switch securityType {
             case .compete:
                 return isDarkTheme
                 ? .green
-                : Color(hex: Constants.colorCompleteSafetyLightTheme)
+                : Color(hex: Constants.colorCompleteSecurityLightTheme)
             case .some:
                 return isDarkTheme
                 ? .yellow
-                : Color(hex: Constants.colorSomeSafetyLightTheme)
-            case .unsafe:
+                : Color(hex: Constants.colorSomeSecurityLightTheme)
+            case .notSecure:
                 return .red
             default:
                 return (isDarkTheme ? Color.white : Color.black).opacity(0.7)
