@@ -35,6 +35,12 @@ extension String {
         }
     }
     
+    func isSeparator() -> Bool {
+        return self.range(
+            of: Constants.regexSeparator,
+            options: .caseInsensitive) != nil
+    }
+    
     static func copyToClipboard(input: String) {
         guard !input.isEmpty else { return }
         

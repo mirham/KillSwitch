@@ -91,6 +91,8 @@ class AppState : ObservableObject, Equatable {
         current.isHighRisk = isHighRisk()
         current.isCountryDetected = isCountryDetected()
         current.mainNetworkInterface = findMainInterface()
+        current.isDnsLeakCheckEnabled = isDnsLeakCheckEnabled()
+        current.isWebRtcLeakCheckEnabled = isWebRtcLeakCheckEnabled()
     }
 }
 
@@ -102,11 +104,19 @@ extension AppState {
         var isCountryDetected = false
         var mainNetworkInterface = String()
         var colorScheme: ColorScheme = .light
+        var isDnsLeakCheckEnabled = false
+        var isWebRtcLeakCheckEnabled = false
+        
+        var areLeakChecksEnabled: Bool {
+            get { isDnsLeakCheckEnabled || isWebRtcLeakCheckEnabled }
+        }
         
         static func == (lhs: Current, rhs: Current) -> Bool {
             let result = lhs.securityType == rhs.securityType
             && lhs.isHighRisk == rhs.isHighRisk
             && lhs.isPublicIpAllowed == rhs.isPublicIpAllowed
+            && lhs.isDnsLeakCheckEnabled == rhs.isDnsLeakCheckEnabled
+            && lhs.isWebRtcLeakCheckEnabled == rhs.isWebRtcLeakCheckEnabled
             
             return result
         }
@@ -157,8 +167,16 @@ extension AppState {
         var hasDnsLeak: Bool = false
         var hasWebRtcLeak: Bool = false
         
+        var hasLeak: Bool {
+            get { hasDnsLeak || hasWebRtcLeak }
+        }
+        
         var firstPhysicalInterface: NetworkInterface? {
             get { physicalNetworkInterfaces.first }
+        }
+        
+        var isVpnConnected: Bool {
+            get { activeNetworkInterfaces.contains(where: {$0.type == .vpn}) }
         }
         
         func isConnectionChanged (
@@ -413,17 +431,20 @@ extension AppState {
             webRtcLeakCheckInterval = readSetting(key: Constants.settingsKeyWebRtcLeakCheckInterval) ?? Constants.defaultWebRtcLeakCheckIntervalInSeconds
             menuBarUseThemeColor = readSetting(key: Constants.settingsKeyMenuBarUseThemeColor) ?? false
             
-            if let savedAllowedIps: [IpInfo] = readSettingsArray(key: Constants.settingsKeyIps) {
+            if let savedAllowedIps: [IpInfo] = readSettingsArray(
+                key: Constants.settingsKeyIps) {
                 allowedIps = savedAllowedIps
             }
             
             let defaultIpApis = getDefaultIpApis()
             
-            if let savedIpApisRemoved: [IpApiInfo] = readSettingsArray(key: Constants.settingsKeyApisRemoved) {
+            if let savedIpApisRemoved: [IpApiInfo] = readSettingsArray(
+                key: Constants.settingsKeyApisRemoved) {
                 ipApisRemoved = savedIpApisRemoved
             }
             
-            if let savedIpApis: [IpApiInfo] = readSettingsArray(key: Constants.settingsKeyApis) {
+            if let savedIpApis: [IpApiInfo] = readSettingsArray(
+                key: Constants.settingsKeyApis) {
                 ipApis = savedIpApis.syncWithDefaults(
                     defaultIpApis,
                     excluding: ipApisRemoved)
@@ -432,23 +453,30 @@ extension AppState {
                 ipApis = defaultIpApis
             }
             
-            if let savedAppsToClose:[AppInfo] = readSettingsArray(key: Constants.settingsKeyAppsToClose) {
+            if let savedAppsToClose:[AppInfo] = readSettingsArray(
+                key: Constants.settingsKeyAppsToClose) {
                 appsToClose = savedAppsToClose
             }
             
-            if let savedWebRtcMonitoredApps:[MonitoredAppInfo] = readSettingsArray(key: Constants.settingsKeyWebRtcMonitoredApps) {
+            if let savedWebRtcMonitoredApps:[MonitoredAppInfo] = readSettingsArray(
+                key: Constants.settingsKeyWebRtcMonitoredApps) {
                 webRtcMonitoredApps = savedWebRtcMonitoredApps
             }
             else {
                 webRtcMonitoredApps = Constants.webRtcMonitoredApps
             }
             
-            if let savedMenuBarShownItems:[String] = readSettingsArray(key: Constants.settingsKeyShownMenuBarItems) {
+            if let savedMenuBarShownItems:[String] = readSettingsArray(
+                key: Constants.settingsKeyShownMenuBarItems) {
                 menuBarShownItems = savedMenuBarShownItems
             }
             
-            if let savedMenuBarHiddenItems: [String] = readSettingsArray(key: Constants.settingsKeyHiddenMenuBarItems) {
-                menuBarHiddenItems = savedMenuBarHiddenItems
+            if let savedMenuBarHiddenItems: [String] = readSettingsArray(
+                key: Constants.settingsKeyHiddenMenuBarItems) {
+                menuBarHiddenItems = savedMenuBarHiddenItems.syncWithDefaults(
+                    Constants.defaultHiddenMenuBarItems,
+                    excluding: menuBarShownItems.filter({!$0.isSeparator()})
+                )
             }
         }
         
@@ -520,5 +548,19 @@ extension AppState {
         }
         
         return current.mainNetworkInterface
+    }
+    
+    private func isDnsLeakCheckEnabled() -> Bool {
+        return monitoring.isEnabled
+            && userData.dnsLeakCheck
+            && network.status == .on
+            && network.isVpnConnected
+    }
+    
+    private func isWebRtcLeakCheckEnabled() -> Bool {
+        return monitoring.isEnabled
+            && userData.webRtcLeakCheck
+            && network.status == .on
+            && network.isVpnConnected
     }
 }

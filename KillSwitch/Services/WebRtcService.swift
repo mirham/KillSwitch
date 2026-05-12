@@ -16,18 +16,12 @@ final class WebRtcService: WebRtcServiceType {
     private var checkedApps = Set<String>()
     private var previousRunningApps = Set<String>()
     
-    private var shouldCheckForLeak: Bool {
-        appState.monitoring.isEnabled
-        && appState.userData.webRtcLeakCheck
-        && appState.network.status == .on
-    }
-    
     deinit {
         pollingTask?.cancel()
     }
     
     func startMonitoring() {
-        guard pollingTask == nil, shouldCheckForLeak
+        guard pollingTask == nil, appState.current.isWebRtcLeakCheckEnabled
         else { return }
         
         logger.write(
@@ -40,7 +34,7 @@ final class WebRtcService: WebRtcServiceType {
             else { return }
             
             while !Task.isCancelled {
-                if shouldCheckForLeak {
+                if appState.current.isWebRtcLeakCheckEnabled {
                     await checkForLeakAsync()
                 }
                 try? await Task.sleep(for: .seconds(appState.userData.webRtcLeakCheckInterval))
@@ -72,8 +66,6 @@ final class WebRtcService: WebRtcServiceType {
         
         if !new.isEmpty || !old.isEmpty  {
             let hasLeak = await evaluateNewAppsAsync(current: current)
-            
-            print("\(hasLeak)")
             
             await updateStatusAsync { builder in
                 builder.withHasWebRtcLeakIp(hasLeak)

@@ -13,18 +13,13 @@ final class DnsService: DnsServiceType, ShellAccessible {
     @Injected(\.appState) private var appState
     
     private var pollingTask: Task<Void, Never>?
-    private var shouldCheckForLeak: Bool {
-        appState.monitoring.isEnabled
-        && appState.userData.dnsLeakCheck
-        && appState.network.status == .on
-    }
     
     deinit {
         pollingTask?.cancel()
     }
     
     func startMonitoring() {
-        guard pollingTask == nil, shouldCheckForLeak
+        guard pollingTask == nil, appState.current.isDnsLeakCheckEnabled
         else { return }
         
         logger.write(
@@ -38,7 +33,7 @@ final class DnsService: DnsServiceType, ShellAccessible {
             else { return }
             
             while !Task.isCancelled {
-                if shouldCheckForLeak {
+                if appState.current.isDnsLeakCheckEnabled {
                     let hasLeak = await self.checkForLeakAsync()
                     
                     await self.updateStatusAsync { builder in

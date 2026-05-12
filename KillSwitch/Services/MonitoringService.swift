@@ -193,8 +193,7 @@ final class MonitoringService: MonitoringServiceType {
         _ result: OperationResult<IpInfoBase>) -> Bool {
         appState.userData.useExtendedProtection &&
         (appState.system.locationServicesEnabled
-         || appState.network.hasDnsLeak
-         || appState.network.hasWebRtcLeak
+         || appState.network.hasLeak
          || result.result == nil)
     }
     

@@ -58,6 +58,7 @@ struct Constants{
     // MARK: Regexes
     static let regexUrl = /(?<protocol>https?):\/\/(?:(?<username>[^:@\s\/\\]*)(?::(?<password>[^:@\s\/\\]*))?@)?(?<domain>[\w\d]+[\w\d.\-]+[\w\d]+|\[[a-f\d:]+\])(?::(?<port>\d+))?(?:(?<path>\/[^\?#\s]*)(?:\?(?<query>[^\?#\s]*))?(?:#(?<anchor>[^\?#\s]*))?)?/
     static let regexScutilParenthesesPattern = #"\(([^)]+)\)"#
+    static let regexSeparator = "separator"
     
     // MARK: Masks
     static let publicIpMask = "%IP%"
@@ -93,7 +94,7 @@ struct Constants{
     static let iconBulletRectangle = "list.bullet.rectangle"
     static let iconClosingApps = "xmark.circle"
     static let iconEmptyLog = "text.alignleft"
-    static let iconLeak = "humidity"
+    static let iconLeak = "humidity.fill"
     static let iconWarning = "exclamationmark.triangle.fill"
     static let iconMonitoring = "waveform.path.ecg"
     static let iconApps = "square.grid.2x2"
@@ -254,9 +255,12 @@ struct Constants{
     // MARK: Menubar item keys
     static let mbItemKeyShield = "shiled"
     static let mbItemKeyMonitoringStatus = "monitoring-status"
+    static let mbItemKeyBullet = "bullet"
     static let mbItemKeyIpAddress = "ip-address"
     static let mbItemKeyCountryCode = "country-code"
     static let mbItemKeyCountryFlag = "country-flag"
+    static let mbItemKeyVpn = "vpn"
+    static let mbItemKeyLeak = "leak"
     static let mbItemKeySeparatorBullet = "separator-bullet"
     static let mbItemKeySeparatorPipe = "separator-pipe"
     static let mbItemKeySeparatorLeftBracket = "separator-left-bracket"
@@ -455,6 +459,9 @@ struct Constants{
         mbItemKeyIpAddress,
         mbItemKeyCountryFlag,
         mbItemKeyCountryCode,
+        mbItemKeyVpn,
+        mbItemKeyLeak,
+        mbItemKeyBullet,
         mbItemKeySeparatorBullet,
         mbItemKeySeparatorPipe,
         mbItemKeySeparatorLeftBracket,
