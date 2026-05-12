@@ -182,7 +182,9 @@ extension AppState {
         func isConnectionChanged (
             status: NetworkStatusType,
             activeNetworkInterfaces: [NetworkInterface]) -> Bool {
-                let result = self.status != status || self.activeNetworkInterfaces != activeNetworkInterfaces
+                let result = self.status != status
+                    || self.activeNetworkInterfaces != activeNetworkInterfaces
+                
                 return result
             }
         

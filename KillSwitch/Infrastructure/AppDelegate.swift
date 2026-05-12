@@ -11,6 +11,19 @@ import Factory
 final class AppDelegate: NSObject, NSApplicationDelegate {
     @Injected(\.appState) private var appState
     
+    func orderFrontStandardAboutPanel(_ sender: Any?) {
+        for window in NSApplication.shared.windows {
+            if let identifier = window.identifier?.rawValue,
+               identifier.starts(with: Constants.windowIdInfo) {
+                window.makeKeyAndOrderFront(nil)
+                NSApp.activate(ignoringOtherApps: true)
+                return
+            }
+        }
+        
+        NSApplication.shared.orderFrontStandardAboutPanel(sender)
+    }
+    
     func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
         guard appState.monitoring.isEnabled
         else { return .terminateNow }
@@ -26,7 +39,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         alert.addButton(withTitle: Constants.cancel)
         
         return alert.runModal() == .alertFirstButtonReturn
-        ? .terminateNow
-        : .terminateCancel
+            ? .terminateNow
+            : .terminateCancel
     }
 }

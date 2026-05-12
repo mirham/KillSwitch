@@ -9,6 +9,7 @@ import Foundation
 
 struct Constants{
     // MARK: Default values
+    static let appName = "MirHam KillSwitch"
     static let defaultCountryCode = "US"
     static let defaultIpAddress = "1.1.1.1"
     static let secondInNanoseconds: UInt64 = 1_000_000_000
@@ -51,6 +52,10 @@ struct Constants{
     static let libraryBasePath = NSHomeDirectory() + "/Library/"
     static let defaultDnsLeakCheckIntervalInSeconds: Int = 15
     static let defaultWebRtcLeakCheckIntervalInSeconds: Int = 10
+    static let logExtension = "log"
+    static let logPath = "\(appName)/Logs"
+    static let logMaxInMemoryEntries = 500
+    static let logMaxLogAgeDays = 30
     
     // MARK: HTTP methods
     static let httpMethodGet = "GET"
@@ -74,6 +79,7 @@ struct Constants{
     static let iconQuestionMark = "questionmark.circle.fill"
     static let iconCopyLog = "doc.on.doc"
     static let iconClearLog = "trash"
+    static let iconOpenCurrentLog = "doc.text"
     static let iconInfo = "info.circle"
     static let iconInfoFill = "info.circle.fill"
     static let iconCellular = "cellularbars"
@@ -168,6 +174,8 @@ struct Constants{
     static let granted = "Granted"
     static let denied = "Denied"
     static let notDetermined = "Not determined"
+    static let about = "About \(appName)"
+    static let settingsTitle = "\(settings)..."
     
     // MARK: Symbols
     static let dot = "."
@@ -187,8 +195,10 @@ struct Constants{
     
     // MARK: Toolbar
     static let toolbarSettings = "Settings"
+    static let toolbarOpenLogsFolder = "Open logs folder"
     static let toolbarCopyLog = "Copy log"
     static let toolbarClearLog = "Clear log"
+    static let toolbarOpenFullLog = "Open full log"
     static let toolbarInfo = "Info"
     static let toolbarLogEntrty = "%lld entry"
     static let toolbarLogEntries = "%lld entries"

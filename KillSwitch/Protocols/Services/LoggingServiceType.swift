@@ -6,7 +6,12 @@
 //
 
 protocol LoggingServiceType {
+    var entriesCount: Int { get }
+    var isWritingToFile: Bool { get }
+    
     func write(message: String, type: LogEntryType)
     func copy()
     func clear()
+    func openCurrentLog()
+    func openLogsFolder()
 }

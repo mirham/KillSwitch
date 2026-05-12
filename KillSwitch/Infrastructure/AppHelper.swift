@@ -13,7 +13,7 @@ class AppHelper {
             let windowId = String(window.identifier?.rawValue ?? String())
             
             if(windowId.starts(with: viewName)) {
-                window.level = onTop ? .floating : .normal
+                window.level = onTop ? .statusBar : .normal
                 window.standardWindowButton(.zoomButton)?.isHidden = true
                 window.standardWindowButton(.miniaturizeButton)?.isHidden = true
             }
@@ -29,12 +29,8 @@ class AppHelper {
                     window.makeKeyAndOrderFront(window)
                 }
                 else {
-                    let prevLevel = window.level
-                    window.level = .floating
+                    window.level = .statusBar
                     NSApp.activate()
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                        window.level = prevLevel
-                    }
                 }
             }
         }

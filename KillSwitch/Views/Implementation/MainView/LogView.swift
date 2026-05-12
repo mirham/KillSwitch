@@ -58,6 +58,13 @@ struct LogView: View {
                 action: { loggingService.copy() }
             )
             toolbarButton(
+                for: .openCurrentLog,
+                title: Constants.toolbarOpenFullLog,
+                icon: Constants.iconOpenCurrentLog,
+                action: { loggingService.openCurrentLog() }
+            )
+            .isHidden(!loggingService.isWritingToFile)
+            toolbarButton(
                 for: .clear,
                 title: Constants.toolbarClearLog,
                 icon: Constants.iconClearLog,
@@ -75,7 +82,9 @@ struct LogView: View {
         Text(String(format: filteredEntries.count == 1
                     ? Constants.toolbarLogEntrty
                     : Constants.toolbarLogEntries,
-                    filteredEntries.count))
+                    selectedType != nil
+                    ? filteredEntries.count
+                    : loggingService.entriesCount))
         .font(.system(size: 9))
         .foregroundStyle(.tertiary)
         .frame(width: 70)
@@ -172,7 +181,7 @@ struct LogView: View {
     // MARK: Inner types
     
     private enum ToolbarButtonType {
-        case copy, clear
+        case copy, clear, openCurrentLog
     }
 }
 
