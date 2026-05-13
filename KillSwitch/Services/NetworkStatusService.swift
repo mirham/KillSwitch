@@ -33,6 +33,12 @@ final class NetworkStatusService: ApiCallable, NetworkStatusServiceType {
         checkConnectionTask?.cancel()
     }
     
+    func setNetworkStatusAsync(status: NetworkStatusType) async {
+        await updateStatusAsync {
+            $0.withStatus(status)
+        }
+    }
+    
     // MARK: Private functions
     
     private func startNetworkMonitoring() {

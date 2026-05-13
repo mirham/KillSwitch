@@ -14,6 +14,7 @@ struct NetworkStatusView: View {
     @Environment(\.controlActiveState) private var controlActiveState
     
     @Injected(\.networkService) private var networkService
+    @Injected(\.networkStatusService) private var networkStatusService
     
     @State private var isHovering = false
     
@@ -26,6 +27,7 @@ struct NetworkStatusView: View {
             default: return String()
         }
     }
+    private var isBusy: Bool { status == .wait }
     
     var body: some View {
         StatusCard(
@@ -56,17 +58,25 @@ struct NetworkStatusView: View {
     }
     
     private var toggleView: some View {
-        Toggle(String(), isOn: Binding(
-            get: { userIntentOn },
-            set: { newValue in Task { await toggleNetworkAsync(enable: newValue) } }
-        ))
-        .toggleStyle(.switch)
-        .focusable(false)
-        .labelsHidden()
-        .disabled(status == .wait)
-        .pointerOnHover()
-        .onHover(perform: updateHoverState)
-        .help(hintText)
+        HStack(spacing: 8) {
+            if isBusy {
+                ProgressView()
+                    .scaleEffect(0.6)
+                    .frame(width: 16, height: 16)
+            }
+            
+            Toggle(String(), isOn: Binding(
+                get: { userIntentOn },
+                set: { newValue in Task { await toggleNetworkAsync(enable: newValue) } }
+            ))
+            .toggleStyle(.switch)
+            .focusable(false)
+            .labelsHidden()
+            .disabled(isBusy)
+            .pointerOnHover()
+            .onHover(perform: updateHoverState)
+            .help(hintText)
+        }
     }
     
     // MARK: Private functions
@@ -78,6 +88,8 @@ struct NetworkStatusView: View {
     }
     
     private func toggleNetworkAsync(enable: Bool) async {
+        await networkStatusService.setNetworkStatusAsync(status: .wait)
+        
         isHovering = false
         
         let physicalNetworkInterfaces = networkService.getPhysicalInterfaces()
