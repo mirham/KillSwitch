@@ -6,6 +6,6 @@
 //
 
 protocol LocationServiceType {
-    func isLocationServicesEnabled() -> Bool
+    func areLocationServicesEnabled() -> Bool
     func toggleLocationServices(isEnabled : Bool)
 }

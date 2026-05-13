@@ -26,13 +26,33 @@ extension MenuBarItemsContainerView {
         exampleAllowed: Bool = false
     ) -> [MenuBarElement] {
         let colors = MenuBarColors(
-            base: colorScheme == .dark ? .white : .black,
-            safety: appState.userData.menuBarUseThemeColor
-            ? (colorScheme == .dark ? .white : .black)
-            : getSafetyColor(safetyType: appState.current.safetyType, colorScheme: colorScheme),
+            base: colorScheme == .dark
+                ? .white
+                : .black,
+            security: appState.userData.menuBarUseThemeColor
+                ? (colorScheme == .dark ? .white : .black)
+                : getSecurityColor(
+                    securityType: appState.current.securityType,
+                    colorScheme: colorScheme
+                ),
             main: (appState.userData.menuBarUseThemeColor || !appState.monitoring.isEnabled)
-            ? (colorScheme == .dark ? .white : .black)
-            : getSafetyColor(safetyType: appState.current.safetyType, colorScheme: colorScheme)
+                ? (colorScheme == .dark ? .white : .black)
+                : getSecurityColor(
+                    securityType: appState.current.securityType,
+                    colorScheme: colorScheme
+                ),
+            vpn: appState.userData.menuBarUseThemeColor
+                ? (colorScheme == .dark ? .white : .black)
+                : getVpnColor(
+                    isVpnConnected: appState.network.isVpnConnected,
+                    colorScheme: colorScheme
+                ),
+            leak: appState.userData.menuBarUseThemeColor
+                ? (colorScheme == .dark ? .white : .black)
+                : getLeakColor(
+                    areLeakChecksEnabled: appState.current.areLeakChecksEnabled,
+                    hasLeak: appState.network.hasLeak,
+                    colorScheme: colorScheme)
         )
         
         let context = MenuBarContext(
@@ -53,8 +73,9 @@ extension MenuBarItemsContainerView {
                 return MenuBarElement(
                     image: renderImage {
                         getShieldIcon(
-                            safetyType: context.appState.current.safetyType,
-                            color: context.colors.safety)
+                            securityType: context.appState.current.securityType,
+                            color: context.colors.security
+                        )
                     },
                     key: key
                 )
@@ -64,7 +85,16 @@ extension MenuBarItemsContainerView {
                     image: renderImage {
                         getMonitoringStatus(
                             isMonitoringEnabled: context.appState.monitoring.isEnabled,
-                            color: context.colors.safety)
+                            color: context.colors.security
+                        )
+                    },
+                    key: key
+                )
+                
+            case Constants.mbItemKeyBullet:
+                return MenuBarElement(
+                    image: renderImage {
+                        getBulletItem(color: context.colors.security)
                     },
                     key: key
                 )
@@ -77,7 +107,8 @@ extension MenuBarItemsContainerView {
                     image: renderImage {
                         getIpAddressItem(
                             ipText: ipText,
-                            color: context.colors.main)
+                            color: context.colors.main
+                        )
                     },
                     key: key
                 )
@@ -90,7 +121,8 @@ extension MenuBarItemsContainerView {
                     image: renderImage {
                         getCountryCodeItem(
                             countryCode: code,
-                            color: context.colors.main)
+                            color: context.colors.main
+                        )
                     },
                     key: key
                 )
@@ -104,12 +136,35 @@ extension MenuBarItemsContainerView {
                     key: key
                 )
                 
+            case Constants.mbItemKeyVpn:
+                return MenuBarElement(
+                    image: renderImage {
+                        getVpnIcon(
+                            isVpnConnected: context.appState.network.isVpnConnected,
+                            color: context.colors.vpn
+                        )
+                    },
+                    key: key
+                )
+                
+            case Constants.mbItemKeyLeak:
+                return MenuBarElement(
+                    image: renderImage {
+                        getLeakIcon(
+                            hasLeak: context.appState.network.hasLeak,
+                            color: context.colors.leak
+                        )
+                    },
+                    key: key
+                )
+                
             case Constants.mbItemKeySeparatorBullet:
                 return MenuBarElement(
                     image: renderImage {
                         getSeparatorItem(
                             .bullet,
-                            color: context.colors.base)
+                            color: context.colors.base
+                        )
                     },
                     key: key,
                     isSeparator: true
@@ -120,7 +175,8 @@ extension MenuBarItemsContainerView {
                     image: renderImage {
                         getSeparatorItem(
                             .pipe,
-                            color: context.colors.base)
+                            color: context.colors.base
+                        )
                     },
                     key: key,
                     isSeparator: true
@@ -131,7 +187,8 @@ extension MenuBarItemsContainerView {
                     image: renderImage {
                         getSeparatorItem(
                             .leftBracket,
-                            color: context.colors.base)
+                            color: context.colors.base
+                        )
                     },
                     key: key,
                     isSeparator: true
@@ -142,7 +199,8 @@ extension MenuBarItemsContainerView {
                     image: renderImage {
                         getSeparatorItem(
                             .rightBracket,
-                            color: context.colors.base)
+                            color: context.colors.base
+                        )
                     },
                     key: key,
                     isSeparator: true
@@ -155,15 +213,15 @@ extension MenuBarItemsContainerView {
     
     // MARK: View sections
     
-    private func getShieldIcon(safetyType: SafetyType, color: Color) -> some View {
+    private func getShieldIcon(securityType: SecurityType, color: Color) -> some View {
         let iconName: String
-        switch safetyType {
-            case .compete:
-                iconName = Constants.iconCompleteSafety
-            case .some:
-                iconName = Constants.iconSomeSafety
+        switch securityType {
+            case .full:
+                iconName = Constants.iconCompleteSecurity
+            case .partial:
+                iconName = Constants.iconSomeSecurity
             default:
-                iconName = Constants.iconUnsafe
+                iconName = Constants.iconNotSecure
         }
         
         return Text(Image(systemName: iconName))
@@ -180,6 +238,21 @@ extension MenuBarItemsContainerView {
         Text(status)
             .asPrimaryMenuBarItem(color: color)
             .bold()
+    }
+    
+    @ViewBuilder
+    private func getBulletItem(
+        color: Color) -> some View
+    {
+        Circle()
+            .fill(color)
+            .frame(width: 20, height: 20)
+            .overlay(content: {
+                Circle()
+                    .stroke(Color.primary, lineWidth: 1)
+                    .padding(1)
+            })
+            .scaleEffect(0.7)
     }
     
     @ViewBuilder
@@ -210,6 +283,22 @@ extension MenuBarItemsContainerView {
         return flag
     }
     
+    private func getVpnIcon(isVpnConnected: Bool, color: Color) -> some View {
+        let iconName = isVpnConnected
+            ? Constants.iconVpn
+            : Constants.iconUnknownConnection
+        
+        return Text(Image(systemName: iconName))
+            .asPrimaryMenuBarItem(color: color)
+            .bold()
+    }
+    
+    private func getLeakIcon(hasLeak: Bool, color: Color) -> some View {
+        return Text(Image(systemName: Constants.iconLeak))
+            .asPrimaryMenuBarItem(color: color)
+            .bold()
+    }
+    
     // MARK: Private functions
     
     private func resolveIpAddressText(
@@ -219,13 +308,13 @@ extension MenuBarItemsContainerView {
             
             if appState.network.status == .off {
                 ip = Constants.offline
-            } else if appState.network.isObtainingIp {
-                ip = Constants.obtainingIp
+            } else if appState.network.isFetchingIp {
+                ip = Constants.fetchingIp
             } else {
                 ip = appState.network.publicIp?.ipAddress ?? Constants.none
             }
             
-            let noValidIp = ip.isEmpty || [Constants.none, Constants.offline, Constants.obtainingIp].contains(ip)
+            let noValidIp = ip.isEmpty || [Constants.none, Constants.offline, Constants.fetchingIp].contains(ip)
             
             return (noValidIp && exampleAllowed)
                 ? Constants.defaultIpAddress
@@ -272,8 +361,10 @@ private enum SeparatorType {
 
 private struct MenuBarColors {
     let base: Color
-    let safety: Color
+    let security: Color
     let main: Color
+    let vpn: Color
+    let leak: Color
 }
 
 private struct MenuBarContext {

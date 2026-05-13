@@ -24,6 +24,11 @@ extension Container {
             .singleton
     }
     
+    var networkEnforcementService: Factory<NetworkEnforcementServiceType> {
+        Factory(self) { NetworkEnforcementService() }
+            .singleton
+    }
+    
     var networkStatusService: Factory<NetworkStatusServiceType> {
         Factory(self) { NetworkStatusService() }
             .singleton

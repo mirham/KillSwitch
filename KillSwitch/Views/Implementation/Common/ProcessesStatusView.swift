@@ -17,42 +17,44 @@ struct ProcessesStatusView: View {
     
     @State private var isHovering = false
     
+    private var processCount: Int { appState.system.killingProcesses.count }
+
     var body: some View {
-        Section {
-            VStack {
-                Text(Constants.applications.uppercased())
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-                
-                Section {
-                    processCountView
-                        .onTapGesture(perform: handleCloseAllApplicationsButtonClick)
-                        .onHover(perform: updateHoverState)
-                        .popover(isPresented: $isHovering, arrowEdge: .trailing) {
-                            processesPopoverContent
-                        }
-                }
-            }
+        StatusCard(
+            imageName: Constants.iconApps,
+            title: Constants.applications,
+            cardBackgroundColor: .orange.opacity(0.08),
+            cardBorderColor: .orange.opacity(0.35)
+        ) {
+            EmptyView()
+        } trailingContent: {
+            trailingView
         }
-        .isHidden(appState.system.killingProcesses.isEmpty, remove: true)
+        .isHidden(processCount == 0)
+        .popover(isPresented: $isHovering, arrowEdge: .trailing) {
+            processesPopoverContent
+        }
     }
     
     // MARK: View sections
     
-    private var processCountView: some View {
-        Text(appState.system.killingProcesses.count.description)
-            .frame(width: 60, height: 60)
-            .background(.yellow)
-            .foregroundColor(.black.opacity(0.5))
-            .font(.system(size: 18))
-            .bold()
-            .clipShape(Circle())
-            .overlay(
-                Circle()
-                    .stroke(.blue, lineWidth: isHovering ? 2 : 0)
-            )
-            .pointerOnHover()
+    @ViewBuilder
+    private var trailingView: some View {
+        HStack(alignment: .center, spacing: 3) {
+            Text("\(processCount)")
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundColor(.primary)
+                .frame(width: 28, height: 28)
+                .background(Color.orange)
+                .clipShape(Circle())
+            
+            Image(systemName: Constants.iconExpandApps)
+                .font(.system(size: 17))
+                .foregroundStyle(.secondary)
+        }
+        .onHover(perform: updateHoverState)
+        .pointerOnHover()
+        .onTapGesture(perform: handleCloseAllApplicationsButtonClick)
     }
     
     @ViewBuilder
@@ -61,11 +63,9 @@ struct ProcessesStatusView: View {
             Text(Constants.clickToClose)
             
             VStack(alignment: .leading) {
-                ForEach(appState.system.killingProcesses, id: \.pid) {
-                    processInfo in
+                ForEach(appState.system.killingProcesses, id: \.pid) { processInfo in
                     HStack {
-                        Image(nsImage: NSWorkspace.shared.icon(
-                            forFile: processInfo.url))
+                        Image(nsImage: NSWorkspace.shared.icon(forFile: processInfo.url))
                         Text(processInfo.name)
                     }
                 }
@@ -77,8 +77,8 @@ struct ProcessesStatusView: View {
     
     // MARK: Private functions
     
-    private func updateHoverState(_ isHovering: Bool) {
-        self.isHovering = isHovering && controlActiveState == .key
+    private func updateHoverState(_ hovering: Bool) {
+        isHovering = hovering && controlActiveState == .key
     }
     
     private func handleCloseAllApplicationsButtonClick() {
@@ -91,11 +91,7 @@ struct ProcessesStatusView: View {
     
     private func showKillProcessesConfirmationDialog() {
         let dialogAlreadyShown = appState.views.shownWindows
-            .contains(
-                where: {
-                    $0 == Constants.windowIdKillProcessesConfirmationDialog
-                }
-            )
+            .contains(where: { $0 == Constants.windowIdKillProcessesConfirmationDialog })
         
         guard !dialogAlreadyShown
         else { return }
@@ -104,7 +100,7 @@ struct ProcessesStatusView: View {
     }
     
     private func closeApplications() {
-        processService.killActiveProcesses()
+        processService.killProcesses(processes: appState.system.killingProcesses)
         isHovering = false
     }
 }

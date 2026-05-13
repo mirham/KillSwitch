@@ -138,15 +138,17 @@ struct EnableNetworkDialogView: View {
         
         AppHelper.setUpView(
             viewName: Constants.windowIdEnableNetworkDialog,
-            onTop: true
+            onTop: true,
+            hideButtons: true
         )
         
         isDialogPresented = true
     }
     
     private func closeDialog() {
-        appState.views.shownWindows
-            .removeAll { $0 == Constants.windowIdEnableNetworkDialog }
+        appState.views.shownWindows.removeAll {
+            $0 == Constants.windowIdEnableNetworkDialog
+        }
         
         isDialogPresented = false
         

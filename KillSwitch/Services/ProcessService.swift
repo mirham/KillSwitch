@@ -23,15 +23,15 @@ final class ProcessService: ShellAccessible, ProcessServiceType {
         monitoringTask?.cancel()
     }
     
-    func killActiveProcesses() {
+    func killProcesses(processes: [ProcessInfo]) {
         Task { @MainActor [weak self] in
             guard let self
             else { return }
             
-            guard !appState.system.killingProcesses.isEmpty
+            guard !processes.isEmpty
             else { return }
             
-            for process in appState.system.killingProcesses {
+            for process in processes {
                 kill(process.pid, SIGTERM)
                 
                 loggingService.write(
@@ -59,9 +59,12 @@ final class ProcessService: ShellAccessible, ProcessServiceType {
                 let snapshot = await MainActor.run {(
                     appsToClose: self.appState.userData.appsToClose,
                     isMonitoringEnabled: self.appState.monitoring.isEnabled,
-                    safetyType: self.appState.current.safetyType,
+                    autoCloseApps: self.appState.userData.autoCloseApps,
+                    securityType: self.appState.current.securityType,
                     useExtendedProtection: self.appState.userData.useExtendedProtection,
-                    publicIp: self.appState.network.publicIp
+                    publicIp: self.appState.network.publicIp,
+                    hasDnsLeak: self.appState.network.hasDnsLeak,
+                    hasWebRtcLeak: self.appState.network.hasWebRtcLeak
                 )}
                 
                 guard !snapshot.appsToClose.isEmpty
@@ -80,14 +83,31 @@ final class ProcessService: ShellAccessible, ProcessServiceType {
                     .withMonitoringProcesses(monitoringProcesses)
                 }
                 
-                let shouldKill = !killingProcesses.isEmpty
-                    && snapshot.isMonitoringEnabled
-                    && (snapshot.safetyType == .unsafe
-                        || (snapshot.useExtendedProtection
-                        && snapshot.publicIp?.hasLocation() == false))
+                let hasNetworkLeaks = snapshot.hasDnsLeak || snapshot.hasWebRtcLeak
                 
-                if shouldKill {
-                    killActiveProcesses()
+                let isUnsafeForExtendedProtection = snapshot.useExtendedProtection
+                    && (snapshot.publicIp?.hasLocation() == false || hasNetworkLeaks)
+                
+                let shouldKillActiveProcesses = !killingProcesses.isEmpty
+                    && snapshot.isMonitoringEnabled
+                    && snapshot.securityType == .notSecure
+                    && (snapshot.autoCloseApps || isUnsafeForExtendedProtection)
+                
+                if shouldKillActiveProcesses {
+                    killProcesses(processes: appState.system.killingProcesses)
+                }
+                
+                let shouldKillMonitoringProcesses = !monitoringProcesses.isEmpty
+                    && snapshot.isMonitoringEnabled
+                    && snapshot.useExtendedProtection
+                    && hasNetworkLeaks
+                
+                if shouldKillActiveProcesses {
+                    killProcesses(processes: appState.system.killingProcesses)
+                }
+                
+                if shouldKillMonitoringProcesses {
+                    killProcesses(processes: appState.system.monitoringProcesses)
                 }
             }
         }
@@ -129,7 +149,7 @@ final class ProcessService: ShellAccessible, ProcessServiceType {
     ) -> [ProcessInfo] {
         activeProcesses.compactMap { app in
             guard let appName = app.localizedName,
-                  Constants.monitoredApps.contains(where: {
+                  Constants.webRtcMonitoredApps.contains(where: {
                       $0.name.caseInsensitiveCompare(appName) == .orderedSame
                   })
             else { return nil }

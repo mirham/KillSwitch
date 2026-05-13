@@ -10,7 +10,9 @@ import Factory
 
 @main
 struct KillSwitchApp: App {
+    @Environment(\.openWindow) private var openWindow
     @StateObject private var appState = AppState.shared
+    @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     
     init() {
         _ = Container.shared.networkStatusService()
@@ -48,8 +50,32 @@ struct KillSwitchApp: App {
             MainView()
                 .environmentObject(appState)
                 .safeGlassEffect()
+                .onAppear {
+                    NSApp.setActivationPolicy(.regular)
+                }
+                .onDisappear() {
+                    NSApp.setActivationPolicy(.accessory)
+                }
         }
         .windowToolbarStyle(UnifiedCompactWindowToolbarStyle())
+        .commands {
+            CommandGroup(replacing: .appInfo) {
+                Button(Constants.about) {
+                    openWindow.openSingle(
+                        id: Constants.windowIdInfo,
+                        title: Constants.info)
+                }
+            }
+            CommandGroup(replacing: .appSettings){
+                Button(Constants.settingsTitle) {
+                    openWindow.openSingle(
+                        id: Constants.windowIdSettings,
+                        title: Constants.settings)
+                }
+                .keyboardShortcut(",", modifiers: .command)
+            }
+            CommandGroup(replacing: .newItem) { }
+        }
     }
     
     @SceneBuilder

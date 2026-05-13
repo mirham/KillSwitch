@@ -28,6 +28,7 @@ extension String {
     func isValidUrl() -> Bool {
         do {
             let match = try Constants.regexUrl.wholeMatch(in: self)
+            
             return match != nil
         }
         catch {
@@ -35,8 +36,15 @@ extension String {
         }
     }
     
+    func isSeparator() -> Bool {
+        return self.range(
+            of: Constants.regexSeparator,
+            options: .caseInsensitive) != nil
+    }
+    
     static func copyToClipboard(input: String) {
-        guard !input.isEmpty else { return }
+        guard !input.isEmpty
+        else { return }
         
         NSPasteboard.general.declareTypes([.string], owner: nil)
         
@@ -44,9 +52,4 @@ extension String {
         pasteboard.clearContents()
         pasteboard.setString(input, forType: .string)
     }
-}
-
-extension String: @retroactive Error {}
-extension String: @retroactive LocalizedError {
-    public var errorDescription: String? { return self }
 }

@@ -13,8 +13,7 @@ final class MonitoringService: MonitoringServiceType {
     @Injected(\.ipService) private var ipService
     @Injected(\.dnsService) private var dnsService
     @Injected(\.webRtcService) private var webRtcService
-    @Injected(\.networkService) private var networkService
-    @Injected(\.processService) private var processService
+    @Injected(\.networkEnforcementService) private var networkEnforcementService
     @Injected(\.computerService) private var computerService
     @LazyInjected(\.loggingService) private var loggingService
     
@@ -38,28 +37,10 @@ final class MonitoringService: MonitoringServiceType {
             guard let self
             else { return }
             
-            loggingService.write(
-                message: Constants.logMonitoringHasBeenEnabled,
-                type: .success)
+            await enableMonitoringAsync()
             
-            await updateStatusAsync { $0.withIsMonitoringEnabled(true) }
-            
-            computerService.startSleepPreventing()
-            dnsService.startMonitoring()
-            webRtcService.startMonitoring()
-            
-            while !Task.isCancelled && appState.monitoring.isEnabled {
-                try? await Task.sleep(nanoseconds: Constants.defaultMonitoringIntervalNanoseconds)
-                
-                guard !Task.isCancelled
-                else { break }
-                
-                monitoringTime = monitoringTime &+ Constants.defaultMonitoringInterval
-                
-                guard appState.network.status == .on
-                else { continue }
-                
-                await runPeriodicChecksAsync()
+            while shouldContinueMonitoring() {
+                await handleMonitoringCycleAsync()
             }
         }
     }
@@ -68,8 +49,7 @@ final class MonitoringService: MonitoringServiceType {
         monitoringTask?.cancel()
         monitoringTask = nil
         
-        webRtcService.stopMonitoring()
-        dnsService.stopMonitoring()
+        stopLeaksMonitoring()
         computerService.stopSleepPreventing()
         
         loggingService.write(
@@ -90,6 +70,53 @@ final class MonitoringService: MonitoringServiceType {
     
     // MARK: Private functions
     
+    private func enableMonitoringAsync() async {
+        loggingService.write(
+            message: Constants.logMonitoringHasBeenEnabled,
+            type: .success)
+        
+        await updateStatusAsync { $0.withIsMonitoringEnabled(true) }
+        computerService.startSleepPreventing()
+    }
+    
+    private func handleMonitoringCycleAsync() async {
+        updateLeaksMonitoring()
+        
+        try? await Task.sleep(nanoseconds: Constants.defaultMonitoringIntervalNanoseconds)
+        
+        guard !Task.isCancelled
+        else { return }
+        
+        monitoringTime = monitoringTime &+ Constants.defaultMonitoringInterval
+        
+        guard appState.network.status == .on
+        else { return }
+        
+        await runPeriodicChecksAsync()
+    }
+    
+    private func updateLeaksMonitoring() {
+        if appState.network.isVpnConnected {
+            startLeaksMonitoring()
+        } else {
+            stopLeaksMonitoring()
+        }
+    }
+    
+    private func startLeaksMonitoring() {
+        dnsService.startMonitoring()
+        webRtcService.startMonitoring()
+    }
+    
+    private func stopLeaksMonitoring() {
+        webRtcService.stopMonitoring()
+        dnsService.stopMonitoring()
+    }
+    
+    private func shouldContinueMonitoring() -> Bool {
+        return !Task.isCancelled && appState.monitoring.isEnabled
+    }
+    
     private func runPeriodicChecksAsync() async {
         let checkIp = appState.userData.periodicIpCheck &&
         monitoringTime % appState.userData.intervalBetweenChecks == 0
@@ -102,8 +129,8 @@ final class MonitoringService: MonitoringServiceType {
             await handleUpdatedPublicIpResultAsync(result)
         }
         
-        enforceIpApiAvailability()
-        enforceIpAllowlist()
+        networkEnforcementService.enforceIpApiAvailability()
+        networkEnforcementService.enforceIpAllowlist()
     }
         
     private func handleUpdatedPublicIpResultAsync(
@@ -111,9 +138,7 @@ final class MonitoringService: MonitoringServiceType {
         guard !Task.isCancelled
         else { return }
         
-        if shouldDisableConnection(for: result) {
-            disableActiveNetworkInterfaces()
-        }
+        networkEnforcementService.enforce(for: result)
         
         guard let ipInfo = result.result
         else {
@@ -130,7 +155,7 @@ final class MonitoringService: MonitoringServiceType {
             
             loggingService.write(
                 message: String(
-                    format: Constants.logPublicIpHasBeenUpdated,
+                    format: Constants.logPublicIpUpdated,
                     ipInfo.ipAddress),
                 type: .info
             )
@@ -145,70 +170,6 @@ final class MonitoringService: MonitoringServiceType {
             ),
             type: .info
         )
-    }
-    
-    private func enforceIpAllowlist() {
-        guard
-            !appState.current.isPublicIpAllowed,
-            !appState.network.isObtainingIp,
-            let publicIp = appState.network.publicIp
-        else { return }
-        
-        let message = String(
-            format: Constants.logPublicIpHasBeenUpdatedWithNotFromWhitelist,
-            publicIp.ipAddress
-        )
-        
-        disableActiveNetworkInterfaces()
-        
-        loggingService.write(
-            message: message,
-            type: .warning)
-        
-        if appState.userData.autoCloseApps {
-            processService.killActiveProcesses()
-        }
-    }
-    
-    private func enforceIpApiAvailability() {
-        guard
-            appState.network.publicIp == nil,
-            !appState.userData.hasActiveIpApi()
-        else { return }
-        
-        disableActiveNetworkInterfaces()
-        
-        loggingService.write(
-            message: Constants.errorNoActiveIpApiFound,
-            type: .error)
-    }
-    
-    private func shouldDisableConnection(
-        for result: OperationResult<IpInfoBase>) -> Bool {
-        isUnsafeUnderHigherProtection(result) || hasNoActiveIpApi(result)
-    }
-    
-    private func isUnsafeUnderHigherProtection(
-        _ result: OperationResult<IpInfoBase>) -> Bool {
-        appState.userData.useExtendedProtection &&
-        (appState.system.locationServicesEnabled || result.result == nil)
-    }
-    
-    private func hasNoActiveIpApi(
-        _ result: OperationResult<IpInfoBase>) -> Bool {
-        result.error == Constants.errorNoActiveIpApiFound
-    }
-        
-    private func disableActiveNetworkInterfaces() {
-        guard appState.network.status != .off
-        else { return }
-        
-        appState.network.physicalNetworkInterfaces.forEach { networkInterface in
-            Task {
-                await networkService.disableNetworkInterfaceAsync(
-                    interfaceName: networkInterface.name)
-            }
-        }
     }
     
     private func updateStatusAsync(

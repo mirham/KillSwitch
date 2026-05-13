@@ -130,7 +130,7 @@ final class IpService: ApiCallable, IpServiceType {
             if !appState.userData.allowedIps.contains(publicIp) {
                 appState.userData.allowedIps.append(publicIp)
             } else if let index = appState.userData.allowedIps.firstIndex(where: {
-                $0.ipAddress == publicIp.ipAddress && $0.safetyType != publicIp.safetyType
+                $0.ipAddress == publicIp.ipAddress && $0.securityType != publicIp.securityType
             }) {
                 appState.userData.allowedIps[index] = publicIp
             }

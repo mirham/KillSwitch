@@ -50,8 +50,22 @@ final class NetworkStateUpdateBuilder {
     }
     
     @discardableResult
-    func withIsObtainingIp(_ isObtainingIp: Bool) -> Self {
-        update.isObtainingIp = isObtainingIp
+    func withIsFetchingIp(_ isFetchingIp: Bool) -> Self {
+        update.isFetchingIp = isFetchingIp
+        
+        return self
+    }
+    
+    @discardableResult
+    func withHasDnsLeakIp(_ hasDnsLeak: Bool) -> Self {
+        update.hasDnsLeak = hasDnsLeak
+        
+        return self
+    }
+    
+    @discardableResult
+    func withHasWebRtcLeakIp(_ hasWebRtcLeak: Bool) -> Self {
+        update.hasWebRtcLeak = hasWebRtcLeak
         
         return self
     }

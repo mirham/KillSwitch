@@ -6,5 +6,5 @@
 //
 
 protocol ProcessServiceType {
-    func killActiveProcesses()
+    func killProcesses(processes: [ProcessInfo])
 }

@@ -85,7 +85,9 @@ struct IpApisEditView: View {
                 .fill(api.isActive() ? .green : .red)
                 .frame(width: 10, height: 10)
         }
-        .help(api.isActive() ? Constants.hintApiIsActive : Constants.hintApiIsInactive)
+        .help(api.isActive()
+              ? Constants.hintApiIsActive
+              : Constants.hintApiIsInactive)
     }
     
     @ViewBuilder
@@ -93,7 +95,7 @@ struct IpApisEditView: View {
         VStack {
             HStack {
                 Text("\(Constants.apiUrl):")
-                TextField(Constants.hintNewVaildApiUrl, text: $newApiUrl)
+                TextField(Constants.hintNewValidApiUrl, text: $newApiUrl)
                     .onChange(of: newApiUrl) { _, newValue in
                         isNewUrlValid = newValue.isValidUrl()
                     }
@@ -121,7 +123,9 @@ struct IpApisEditView: View {
         
         let isDuplicate = appState.userData.ipApis
             .contains { $0.url == newApiUrl }
-        guard !isDuplicate else { return }
+        
+        guard !isDuplicate
+        else { return }
         
         let newApi = IpApiInfo(url: newApiUrl, active: true)
         appState.userData.ipApis.append(newApi)

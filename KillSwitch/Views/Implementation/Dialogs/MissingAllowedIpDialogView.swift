@@ -14,7 +14,7 @@ struct MissingAllowedIpDialogView: View {
     @Injected(\.monitoringService) private var monitoringService
     @Injected(\.ipService) private var ipService
     
-    @State private var selectedSafetyType: SafetyType = .compete
+    @State private var selectedSecurityType: SecurityType = .full
     @State private var isDialogPresented = false
     
     var body: some View {
@@ -40,7 +40,7 @@ struct MissingAllowedIpDialogView: View {
             Spacer().frame(height: 10)
             messageText
             Spacer().frame(height: 20)
-            safetyTypeRadios
+            securityTypeRadios
                 .isHidden(!isOnline)
             HStack {
                 addButton
@@ -77,25 +77,25 @@ struct MissingAllowedIpDialogView: View {
     }
     
     @ViewBuilder
-    private var safetyTypeRadios: some View {
+    private var securityTypeRadios: some View {
         VStack(alignment: .leading) {
             RadioButton(
-                id: String(SafetyType.compete.rawValue),
-                label: SafetyType.compete.description,
+                id: String(SecurityType.full.rawValue),
+                label: SecurityType.full.description,
                 size: 12,
                 color: .green,
                 textSize: 11,
-                isMarked: selectedSafetyType == .compete,
-                callback: { _ in selectedSafetyType = .compete }
+                isMarked: selectedSecurityType == .full,
+                callback: { _ in selectedSecurityType = .full }
             )
             RadioButton(
-                id: String(SafetyType.some.rawValue),
-                label: SafetyType.some.description,
+                id: String(SecurityType.partial.rawValue),
+                label: SecurityType.partial.description,
                 size: 12,
                 color: .yellow,
                 textSize: 11,
-                isMarked: selectedSafetyType == .some,
-                callback: { _ in selectedSafetyType = .some }
+                isMarked: selectedSecurityType == .partial,
+                callback: { _ in selectedSecurityType = .partial }
             )
         }
     }
@@ -128,21 +128,21 @@ struct MissingAllowedIpDialogView: View {
         appState.network.status == .on
     }
     
-    private func addAllowedIpAddress(safetyType: SafetyType) {
+    private func addAllowedIpAddress(securityType: SecurityType) {
         guard let publicIp = appState.network.publicIp
         else { return }
         
         let ip = IpInfo(
             ipAddress: publicIp.ipAddress,
             ipAddressInfo: publicIp,
-            safetyType: safetyType
+            securityType: securityType
         )
         
         ipService.addAllowedPublicIp(publicIp: ip)
     }
     
     private func handleAddButtonClick() {
-        addAllowedIpAddress(safetyType: selectedSafetyType)
+        addAllowedIpAddress(securityType: selectedSecurityType)
         monitoringService.startMonitoring()
         closeDialog()
     }
@@ -156,7 +156,8 @@ struct MissingAllowedIpDialogView: View {
         
         AppHelper.setUpView(
             viewName: Constants.windowIdEnableNetworkDialog,
-            onTop: true
+            onTop: true,
+            hideButtons: true
         )
         
         isDialogPresented = true

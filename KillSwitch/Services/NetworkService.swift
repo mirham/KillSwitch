@@ -34,16 +34,16 @@ final class NetworkService: ShellAccessible, NetworkServiceType {
     }
     
     func refreshPublicIpAsync() async {
-        await updateStatusAsync { $0.withIsObtainingIp(true) }
+        await updateStatusAsync { $0.withIsFetchingIp(true) }
         
         defer {
-            Task { await updateStatusAsync { $0.withIsObtainingIp(false) } }
+            Task { await updateStatusAsync { $0.withIsFetchingIp(false) } }
         }
         
         let publicIp = await fetchPublicIpAsync()
         
         await updateStatusAsync {
-            $0.withIsObtainingIp(false)
+            $0.withIsFetchingIp(false)
                 .withPublicIp(publicIp)
         }
     }
@@ -74,7 +74,7 @@ final class NetworkService: ShellAccessible, NetworkServiceType {
             
             loggingService.write(
                 message: String(
-                    format: Constants.logNetworkInterfaceHasBeenEnabled,
+                    format: Constants.logNetworkInterfaceEnabled,
                     interfaceName),
                 type: .success)
         } catch {
@@ -97,7 +97,7 @@ final class NetworkService: ShellAccessible, NetworkServiceType {
             
             loggingService.write(
                 message: String(
-                    format: Constants.logNetworkInterfaceHasBeenDisabled,
+                    format: Constants.logNetworkInterfaceDisabled,
                     interfaceName),
                 type: .success)
         } catch {

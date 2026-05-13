@@ -22,18 +22,12 @@ struct ToolbarView: View {
         Group {
             Spacer()
             toolbarButton(
-                for: .copy,
-                title: Constants.toolbarCopyLog,
-                icon: Constants.iconCopyLog,
-                action: { loggingService.copy() }
+                for: .logsFolder,
+                title: Constants.toolbarOpenLogsFolder,
+                icon: Constants.iconFolder,
+                action: { loggingService.openLogsFolder() }
             )
             .padding(.leading, 10)
-            toolbarButton(
-                for: .clear,
-                title: Constants.toolbarClearLog,
-                icon: Constants.iconClearLog,
-                action: { loggingService.clear() }
-            )
             toolbarButton(
                 for: .settings,
                 title: Constants.toolbarSettings,
@@ -95,7 +89,7 @@ struct ToolbarView: View {
     // MARK: Inner types
     
     private enum ToolbarButtonType {
-        case copy, clear, settings, info
+        case logsFolder, settings, info
     }
 }
 #Preview {

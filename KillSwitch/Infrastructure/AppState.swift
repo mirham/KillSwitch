@@ -39,7 +39,7 @@ class AppState : ObservableObject, Equatable {
     }
     
     func applyNetworkUpdate(_ update: NetworkStateUpdate) {
-        var updatedNetwork = Network()
+        var updatedNetwork = network
         
         if let status = update.status {
             updatedNetwork.status = status
@@ -48,14 +48,30 @@ class AppState : ObservableObject, Equatable {
                 reactivateIpApis()
             }
         }
-        else {
-            updatedNetwork.status = network.status
+        
+        if update.forceUpdatePublicIp {
+            updatedNetwork.publicIp = update.publicIp
         }
         
-        updatedNetwork.publicIp = update.forceUpdatePublicIp ? update.publicIp : network.publicIp
-        updatedNetwork.activeNetworkInterfaces = update.activeNetworkInterfaces ?? network.activeNetworkInterfaces
-        updatedNetwork.physicalNetworkInterfaces = update.physicalNetworkInterfaces ?? network.physicalNetworkInterfaces
-        updatedNetwork.isObtainingIp = update.isObtainingIp ?? network.isObtainingIp
+        if let activeInterfaces = update.activeNetworkInterfaces {
+            updatedNetwork.activeNetworkInterfaces = activeInterfaces
+        }
+        
+        if let physicalInterfaces = update.physicalNetworkInterfaces {
+            updatedNetwork.physicalNetworkInterfaces = physicalInterfaces
+        }
+        
+        if let isFetchingIp = update.isFetchingIp {
+            updatedNetwork.isFetchingIp = isFetchingIp
+        }
+        
+        if let hasDnsLeak = update.hasDnsLeak {
+            updatedNetwork.hasDnsLeak = hasDnsLeak
+        }
+        
+        if let hasWebRtcLeak = update.hasWebRtcLeak {
+            updatedNetwork.hasWebRtcLeak = hasWebRtcLeak
+        }
         
         if network != updatedNetwork {
             network = updatedNetwork
@@ -70,27 +86,37 @@ class AppState : ObservableObject, Equatable {
     // MARK: Private functions
     
     private func setCurrentState() {
-        current.safetyType = determineSafetyType()
+        current.securityType = determineSecurityType()
         current.isPublicIpAllowed = getCurrentAllowedIp() != nil
         current.isHighRisk = isHighRisk()
         current.isCountryDetected = isCountryDetected()
         current.mainNetworkInterface = findMainInterface()
+        current.isDnsLeakCheckEnabled = isDnsLeakCheckEnabled()
+        current.isWebRtcLeakCheckEnabled = isWebRtcLeakCheckEnabled()
     }
 }
 
 extension AppState {
     struct Current : Equatable {
-        var safetyType = SafetyType.unknown
+        var securityType = SecurityType.unknown
         var isPublicIpAllowed = false
         var isHighRisk = false
         var isCountryDetected = false
         var mainNetworkInterface = String()
         var colorScheme: ColorScheme = .light
+        var isDnsLeakCheckEnabled = false
+        var isWebRtcLeakCheckEnabled = false
+        
+        var areLeakChecksEnabled: Bool {
+            get { isDnsLeakCheckEnabled || isWebRtcLeakCheckEnabled }
+        }
         
         static func == (lhs: Current, rhs: Current) -> Bool {
-            let result = lhs.safetyType == rhs.safetyType
+            let result = lhs.securityType == rhs.securityType
             && lhs.isHighRisk == rhs.isHighRisk
             && lhs.isPublicIpAllowed == rhs.isPublicIpAllowed
+            && lhs.isDnsLeakCheckEnabled == rhs.isDnsLeakCheckEnabled
+            && lhs.isWebRtcLeakCheckEnabled == rhs.isWebRtcLeakCheckEnabled
             
             return result
         }
@@ -134,15 +160,31 @@ extension AppState {
 extension AppState {
     struct Network : Equatable {
         var status: NetworkStatusType = NetworkStatusType.unknown
-        var isObtainingIp = false
+        var isFetchingIp = false
         var activeNetworkInterfaces: [NetworkInterface] = [NetworkInterface]()
         var physicalNetworkInterfaces: [NetworkInterface] = [NetworkInterface]()
         var publicIp: IpInfoBase? = nil
+        var hasDnsLeak: Bool = false
+        var hasWebRtcLeak: Bool = false
+        
+        var hasLeak: Bool {
+            get { hasDnsLeak || hasWebRtcLeak }
+        }
+        
+        var firstPhysicalInterface: NetworkInterface? {
+            get { physicalNetworkInterfaces.first }
+        }
+        
+        var isVpnConnected: Bool {
+            get { activeNetworkInterfaces.contains(where: {$0.type == .vpn}) }
+        }
         
         func isConnectionChanged (
             status: NetworkStatusType,
             activeNetworkInterfaces: [NetworkInterface]) -> Bool {
-                let result = self.status != status || self.activeNetworkInterfaces != activeNetworkInterfaces
+                let result = self.status != status
+                    || self.activeNetworkInterfaces != activeNetworkInterfaces
+                
                 return result
             }
         
@@ -150,9 +192,11 @@ extension AppState {
             let result = lhs.status == rhs.status
             && lhs.publicIp == rhs.publicIp
             && lhs.publicIp?.hasLocation() == rhs.publicIp?.hasLocation()
-            && lhs.isObtainingIp == rhs.isObtainingIp
+            && lhs.isFetchingIp == rhs.isFetchingIp
             && lhs.activeNetworkInterfaces == rhs.activeNetworkInterfaces
             && lhs.physicalNetworkInterfaces == rhs.physicalNetworkInterfaces
+            && lhs.hasDnsLeak == rhs.hasDnsLeak
+            && lhs.hasWebRtcLeak == rhs.hasWebRtcLeak
             
             return result
         }
@@ -332,6 +376,15 @@ extension AppState {
             }
         }
         
+        var webRtcMonitoredApps = [MonitoredAppInfo]() {
+            didSet {
+                writeSettingsArray(
+                    newValues: webRtcMonitoredApps,
+                    key: Constants.settingsKeyWebRtcMonitoredApps
+                )
+            }
+        }
+        
         var webRtcLeakCheckInterval: Int = Constants.defaultWebRtcLeakCheckIntervalInSeconds {
             didSet {
                 writeSetting(
@@ -380,17 +433,20 @@ extension AppState {
             webRtcLeakCheckInterval = readSetting(key: Constants.settingsKeyWebRtcLeakCheckInterval) ?? Constants.defaultWebRtcLeakCheckIntervalInSeconds
             menuBarUseThemeColor = readSetting(key: Constants.settingsKeyMenuBarUseThemeColor) ?? false
             
-            if let savedAllowedIps: [IpInfo] = readSettingsArray(key: Constants.settingsKeyIps) {
+            if let savedAllowedIps: [IpInfo] = readSettingsArray(
+                key: Constants.settingsKeyIps) {
                 allowedIps = savedAllowedIps
             }
             
             let defaultIpApis = getDefaultIpApis()
             
-            if let savedIpApisRemoved: [IpApiInfo] = readSettingsArray(key: Constants.settingsKeyApisRemoved) {
+            if let savedIpApisRemoved: [IpApiInfo] = readSettingsArray(
+                key: Constants.settingsKeyApisRemoved) {
                 ipApisRemoved = savedIpApisRemoved
             }
             
-            if let savedIpApis: [IpApiInfo] = readSettingsArray(key: Constants.settingsKeyApis) {
+            if let savedIpApis: [IpApiInfo] = readSettingsArray(
+                key: Constants.settingsKeyApis) {
                 ipApis = savedIpApis.syncWithDefaults(
                     defaultIpApis,
                     excluding: ipApisRemoved)
@@ -399,16 +455,30 @@ extension AppState {
                 ipApis = defaultIpApis
             }
             
-            if let savedAppsToClose:[AppInfo] = readSettingsArray(key: Constants.settingsKeyAppsToClose) {
+            if let savedAppsToClose:[AppInfo] = readSettingsArray(
+                key: Constants.settingsKeyAppsToClose) {
                 appsToClose = savedAppsToClose
             }
             
-            if let savedMenuBarShownItems:[String] = readSettingsArray(key: Constants.settingsKeyShownMenuBarItems) {
+            if let savedWebRtcMonitoredApps:[MonitoredAppInfo] = readSettingsArray(
+                key: Constants.settingsKeyWebRtcMonitoredApps) {
+                webRtcMonitoredApps = savedWebRtcMonitoredApps
+            }
+            else {
+                webRtcMonitoredApps = Constants.webRtcMonitoredApps
+            }
+            
+            if let savedMenuBarShownItems:[String] = readSettingsArray(
+                key: Constants.settingsKeyShownMenuBarItems) {
                 menuBarShownItems = savedMenuBarShownItems
             }
             
-            if let savedMenuBarHiddenItems: [String] = readSettingsArray(key: Constants.settingsKeyHiddenMenuBarItems) {
-                menuBarHiddenItems = savedMenuBarHiddenItems
+            if let savedMenuBarHiddenItems: [String] = readSettingsArray(
+                key: Constants.settingsKeyHiddenMenuBarItems) {
+                menuBarHiddenItems = savedMenuBarHiddenItems.syncWithDefaults(
+                    Constants.defaultHiddenMenuBarItems,
+                    excluding: menuBarShownItems.filter({!$0.isSeparator()})
+                )
             }
         }
         
@@ -436,34 +506,34 @@ extension AppState {
 }
 
 extension AppState {
-    private func determineSafetyType() -> SafetyType {
-        if (monitoring.isEnabled && network.publicIp != nil) {
-            let currentAllowedIp = getCurrentAllowedIp()
-            
-            if currentAllowedIp != nil && !system.locationServicesEnabled {
-                return currentAllowedIp!.safetyType
-            }
-            
-            return SafetyType.unsafe
-        }
+    private func determineSecurityType() -> SecurityType {
+        guard monitoring.isEnabled
+        else { return .unknown }
         
-        return SafetyType.unknown
+        guard network.publicIp != nil
+        else { return .unknown }
+        
+        guard let currentAllowedIp = getCurrentAllowedIp(),
+              !system.locationServicesEnabled,
+              !network.hasDnsLeak,
+              !network.hasWebRtcLeak
+        else { return .notSecure }
+        
+        return currentAllowedIp.securityType
     }
     
     private func getCurrentAllowedIp() -> IpInfo? {
-        var result: IpInfo? = nil
+        guard let publicIp = network.publicIp?.ipAddress
+        else { return nil }
         
-        for allowedIp in userData.allowedIps {
-            if (network.publicIp?.ipAddress == allowedIp.ipAddress) {
-                result = allowedIp
-            }
-        }
-        
-        return result
+        return userData.allowedIps.first { $0.ipAddress == publicIp }
     }
     
     private func isHighRisk() -> Bool {
-        return monitoring.isEnabled && system.locationServicesEnabled
+        return monitoring.isEnabled
+            && (system.locationServicesEnabled
+                || network.hasDnsLeak
+                || network.hasWebRtcLeak)
     }
     
     private func isCountryDetected() -> Bool {
@@ -480,5 +550,19 @@ extension AppState {
         }
         
         return current.mainNetworkInterface
+    }
+    
+    private func isDnsLeakCheckEnabled() -> Bool {
+        return monitoring.isEnabled
+            && userData.dnsLeakCheck
+            && network.status == .on
+            && network.isVpnConnected
+    }
+    
+    private func isWebRtcLeakCheckEnabled() -> Bool {
+        return monitoring.isEnabled
+            && userData.webRtcLeakCheck
+            && network.status == .on
+            && network.isVpnConnected
     }
 }

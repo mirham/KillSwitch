@@ -14,12 +14,15 @@ struct ToolbarButton: View {
     let activeState: ControlActiveState
     let action: () -> Void
     
+    var fontSize: CGFloat = 16
+    var color: Color = .blue
+    
     var body: some View {
         Button(title, systemImage: systemImage, action: action)
             .buttonStyle(.plain)
-            .foregroundColor(isHovered && activeState == .key ? .blue : .gray)
+            .foregroundColor(isHovered && activeState == .key ? color : .gray)
             .focusEffectDisabled()
-            .font(.system(size: 16))
+            .font(.system(size: fontSize))
             .opacity(activeState == .inactive ? 0.5 : 1.0)
             .pointerOnHover()
             .contentShape(Rectangle())

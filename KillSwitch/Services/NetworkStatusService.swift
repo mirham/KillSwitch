@@ -33,6 +33,12 @@ final class NetworkStatusService: ApiCallable, NetworkStatusServiceType {
         checkConnectionTask?.cancel()
     }
     
+    func setNetworkStatusAsync(status: NetworkStatusType) async {
+        await updateStatusAsync {
+            $0.withStatus(status)
+        }
+    }
+    
     // MARK: Private functions
     
     private func startNetworkMonitoring() {
@@ -53,39 +59,7 @@ final class NetworkStatusService: ApiCallable, NetworkStatusServiceType {
             )
             else { return }
             
-            ipUpdateTask?.cancel()
-            
-            ipUpdateTask = Task { [weak self] in
-                guard let self else { return }
-                
-                let activeInterfaces = await determineNetworkInterfacesAsync(path: path)
-                let physicalInterfaces = networkService.getPhysicalInterfaces()
-                let status = determineNetworkStatus(
-                    path: path,
-                    activeInterfaces: activeInterfaces)
-                
-                guard appState.network.isConnectionChanged(
-                    status: status,
-                    activeNetworkInterfaces: activeInterfaces
-                ) else { return }
-                
-                await updateStatusAsync {
-                    $0.withStatus(status)
-                        .withActiveNetworkInterfaces(activeInterfaces)
-                        .withPhysicalNetworkInterfaces(physicalInterfaces)
-                        .withIsDisconnected(status != .on)
-                }
-                
-                guard status == .on, !Task.isCancelled
-                else { return }
-                
-                do {
-                    try await Task.sleep(nanoseconds: Constants.defaultToleranceInNanoseconds)
-                    await networkService.refreshPublicIpAsync()
-                } catch {
-                    // Sleep was cancelled externally — task exits cleanly
-                }
-            }
+            handleNetworkChange(path: path)
         }
         
         monitor.start(queue: monitorQueue)
@@ -107,6 +81,43 @@ final class NetworkStatusService: ApiCallable, NetworkStatusServiceType {
                 await networkService.refreshPublicIpAsync()
             }
         }
+    }
+    
+    private func handleNetworkChange(path: NWPath) {
+        ipUpdateTask?.cancel()
+        
+        ipUpdateTask = Task { [weak self] in
+            guard let self else { return }
+            
+            let activeInterfaces = await determineNetworkInterfacesAsync(path: path)
+            let physicalInterfaces = networkService.getPhysicalInterfaces()
+            let status = determineNetworkStatus(
+                path: path,
+                activeInterfaces: activeInterfaces)
+            
+            guard shouldUpdateNetworkState(
+                status: status,
+                activeInterfaces: activeInterfaces)
+            else { return }
+            
+            await updateStatusAsync {
+                $0.withStatus(status)
+                    .withActiveNetworkInterfaces(activeInterfaces)
+                    .withPhysicalNetworkInterfaces(physicalInterfaces)
+                    .withIsDisconnected(status != .on)
+            }
+            
+            await refreshPublicIpIfNeededAsync(status: status)
+        }
+    }
+    
+    private func shouldUpdateNetworkState(
+        status: NetworkStatusType,
+        activeInterfaces: [NetworkInterface]) -> Bool {
+        return appState.network.isConnectionChanged(
+            status: status,
+            activeNetworkInterfaces: activeInterfaces
+        )
     }
     
     private func determineNetworkStatus(
@@ -146,10 +157,22 @@ final class NetworkStatusService: ApiCallable, NetworkStatusServiceType {
     
     private func shouldFetchPublicIp() -> Bool {
         guard appState.network.status == .on,
-              !appState.network.isObtainingIp
+              !appState.network.isFetchingIp
         else { return false }
         
         return appState.network.publicIp?.hasLocation() != true
+    }
+    
+    private func refreshPublicIpIfNeededAsync(status: NetworkStatusType) async {
+        guard status == .on, !Task.isCancelled
+        else { return }
+        
+        do {
+            try await Task.sleep(nanoseconds: Constants.defaultToleranceInNanoseconds)
+            await networkService.refreshPublicIpAsync()
+        } catch {
+            // Sleep was cancelled externally — task exits cleanly
+        }
     }
     
     private func updateStatusAsync(

@@ -9,13 +9,10 @@ import SwiftUI
 
 struct MainView: View {
     @EnvironmentObject var appState: AppState
-    
-    @Environment(\.controlActiveState) private var controlActiveState
-    
+
     var body: some View {
         NavigationSplitView {
             sidebarContent
-                .opacity(controlActiveState == .key ? 1 : 0.6)
                 .navigationSplitViewColumnWidth(220)
         } detail: {
             detailContent
@@ -36,20 +33,17 @@ struct MainView: View {
     @ViewBuilder
     private var sidebarContent: some View {
         VStack {
-            CurrentIpView()
+            CurrentIpView(showDetailedIssues: true)
                 .environmentObject(appState)
                 .padding(.top)
             Spacer()
                 .frame(height: 15)
             MonitoringStatusView()
                 .environmentObject(appState)
-                .padding(.top)
             NetworkStatusView()
                 .environmentObject(appState)
-                .padding(.top)
             ProcessesStatusView()
                 .environmentObject(appState)
-                .padding(.top)
             Spacer()
                 .frame(minHeight: 20)
             ActiveConnectionsView()

@@ -8,14 +8,20 @@
 import SwiftUI
 
 class AppHelper {
-    static func setUpView(viewName: String, onTop: Bool) {
+    static func setUpView(
+        viewName: String,
+        onTop: Bool,
+        hideButtons: Bool = false) {
         for window in NSApplication.shared.windows {
             let windowId = String(window.identifier?.rawValue ?? String())
             
-            if(windowId.starts(with: viewName)) {
-                window.level = onTop ? .floating : .normal
-                window.standardWindowButton(.zoomButton)?.isHidden = true
-                window.standardWindowButton(.miniaturizeButton)?.isHidden = true
+            if windowId.starts(with: viewName) {
+                window.level = onTop ? .statusBar : .normal
+                
+                if hideButtons {
+                    window.standardWindowButton(.zoomButton)?.isHidden = true
+                    window.standardWindowButton(.miniaturizeButton)?.isHidden = true
+                }
             }
         }
     }
@@ -29,12 +35,8 @@ class AppHelper {
                     window.makeKeyAndOrderFront(window)
                 }
                 else {
-                    let prevLevel = window.level
-                    window.level = .floating
+                    window.level = .statusBar
                     NSApp.activate()
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                        window.level = prevLevel
-                    }
                 }
             }
         }

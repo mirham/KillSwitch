@@ -103,6 +103,8 @@ struct LeaksEditView: View {
             onEnabled: webRtcService.startMonitoring,
             onDisabled: webRtcService.stopMonitoring
         )
+        webRtcMonitoredAppsRow
+            .isHidden(!appState.userData.webRtcLeakCheck)
     }
     
     @ViewBuilder
@@ -129,6 +131,24 @@ struct LeaksEditView: View {
     }
     
     @ViewBuilder
+    private var webRtcMonitoredAppsRow: some View {
+        FlowLayout(spacing: 8) {
+            ForEach(appState.userData.webRtcMonitoredApps.indices, id: \.self) { index in
+                let app = appState.userData.webRtcMonitoredApps[index]
+                AppToggleChip(
+                    app: app,
+                    isOn: Binding(
+                        get: { app.enabled },
+                        set: { appState.userData.webRtcMonitoredApps[index].enabled = $0 }
+                    )
+                )
+            }
+        }
+        .padding(.leading, 30)
+        .padding(.trailing, 30)
+    }
+    
+    @ViewBuilder
     private func settingRow(
         title: String,
         hint: String,
@@ -151,12 +171,10 @@ struct LeaksEditView: View {
             ))
             .withSettingToggleStyle()
             Spacer()
-            
             helpIcon(for: hint)
                 .onHover { isHovering in
                     hoveredSetting = (isHovering && controlActiveState == .key)
-                    ? settingType
-                    : nil
+                        ? settingType : nil
                 }
                 .popover(
                     isPresented: .constant(hoveredSetting == settingType),
@@ -178,7 +196,8 @@ struct LeaksEditView: View {
     // MARK: Private functions
     
     private func isTimeIntervalValid(interval: Int) -> Bool {
-        interval >= Constants.minTimeIntervalToCheck && interval <= Constants.maxTimeIntervalToCheck
+        interval >= Constants.minTimeIntervalToCheck
+        && interval <= Constants.maxTimeIntervalToCheck
     }
     
     // MARK: Inner types
@@ -186,6 +205,21 @@ struct LeaksEditView: View {
     private enum SettingType {
         case periodicDnsLeakCheck
         case periodicWebRtcLeakCheck
+    }
+    
+    struct AppToggleChip: View {
+        let app: MonitoredAppInfo
+        @Binding var isOn: Bool
+        
+        var body: some View {
+            Toggle(isOn: app.configurable ? $isOn : .constant(isOn)) {
+                Text(app.name)
+                    .font(.system(size: 11))
+                    .foregroundStyle(app.configurable ? .primary : .secondary)
+            }
+            .toggleStyle(.checkbox)
+            .disabled(!app.configurable)
+        }
     }
 }
 

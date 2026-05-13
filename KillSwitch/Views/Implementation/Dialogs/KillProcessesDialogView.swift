@@ -109,7 +109,8 @@ struct KillProcessesDialogView: View {
     // MARK: Private functions
     
     private func handleYesButtonClick() {
-        processService.killActiveProcesses()
+        processService.killProcesses(
+            processes: appState.system.killingProcesses)
         closeDialog()
     }
     
@@ -122,17 +123,24 @@ struct KillProcessesDialogView: View {
         
         AppHelper.setUpView(
             viewName: Constants.windowIdKillProcessesConfirmationDialog,
-            onTop: true
+            onTop: true,
+            hideButtons: true
         )
         
         isDialogPresented = true
     }
     
     private func closeDialog() {
-        appState.views.shownWindows.removeAll { $0 == Constants.windowIdKillProcessesConfirmationDialog }
+        appState.views.shownWindows.removeAll {
+            $0 == Constants.windowIdKillProcessesConfirmationDialog
+        }
+        
         isDialogPresented = false
         
-        let mainWindowIsShown = appState.views.shownWindows.contains { $0 == Constants.windowIdMain }
+        let mainWindowIsShown = appState.views.shownWindows.contains {
+            $0 == Constants.windowIdMain
+        }
+        
         if mainWindowIsShown {
             AppHelper.activateView(viewId: Constants.windowIdMain)
         }

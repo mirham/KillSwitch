@@ -20,22 +20,19 @@ struct MenuBarView: View {
     @State private var isQuitButtonHovering = false
     
     var body: some View {
-        VStack {
+        VStack(spacing: 3) {
             CurrentIpView()
                 .environmentObject(appState)
                 .scaleEffect(Constants.menuBarScaleCurrentIp)
-            
-            HStack(spacing: 10) {
-                MonitoringStatusView()
-                    .environmentObject(appState)
-                    .scaleEffect(Constants.menuBarScaleToggles)
-                NetworkStatusView()
-                    .environmentObject(appState)
-                    .scaleEffect(Constants.menuBarScaleToggles)
-                ProcessesStatusView()
-                    .environmentObject(appState)
-                    .scaleEffect(Constants.menuBarScaleToggles)
-            }
+            MonitoringStatusView()
+                .environmentObject(appState)
+                .scaleEffect(Constants.menuBarScaleCurrentIp)
+            NetworkStatusView()
+                .environmentObject(appState)
+                .scaleEffect(Constants.menuBarScaleCurrentIp)
+            ProcessesStatusView()
+                .environmentObject(appState)
+                .scaleEffect(Constants.menuBarScaleCurrentIp)
             Spacer()
                 .frame(height: 5)
             HStack {
@@ -59,8 +56,7 @@ struct MenuBarView: View {
                 .onHover { isQuitButtonHovering = $0 }
             }
         }
-        .padding(.top, 10)
-        .padding(.bottom, 10)
+        .padding(5)
         .onAppear {
             appState.views.shownWindows
                 .append(Constants.windowIdMenuBar)

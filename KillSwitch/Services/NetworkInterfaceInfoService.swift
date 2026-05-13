@@ -10,14 +10,19 @@ import CoreWLAN
 import CoreLocation
 import SystemConfiguration
 
-final class NetworkInterfaceInfoService : NSObject, NetworkInterfaceInfoServiceType, CLLocationManagerDelegate {
+final class NetworkInterfaceInfoService : NSObject, NetworkInterfaceInfoServiceType, CLLocationManagerDelegate, CWEventDelegate {
     private let locationManager = CLLocationManager()
     private var ssidContinuation: CheckedContinuation<String?, Never>?
+    private let client = CWWiFiClient.shared()
+    private(set) var ssid: String?
     
     override init() {
         super.init()
         
+        client.delegate = self
         locationManager.delegate = self
+        try? client.startMonitoringEvent(with: .ssidDidChange)
+        ssid = getSsid()
     }
     
     func getFriendlyNameAsync(for interface: NetworkInterface) async -> String? {
@@ -39,42 +44,31 @@ final class NetworkInterfaceInfoService : NSObject, NetworkInterfaceInfoServiceT
         
         switch manager.authorizationStatus {
             case .authorized, .authorizedAlways:
-                Task {
-                    let ssid = await fetchSsid()
-                    continuation.resume(returning: ssid)
-                }
+                ssid = getSsid()
+                continuation.resume(returning: ssid)
             default:
                 continuation.resume(returning: nil)
         }
     }
 
     
-    // MARK: Private Functions
+    // MARK: Private functions
     
     private func getCurrentSsid() async -> String? {
         let status = locationManager.authorizationStatus
         
         switch status {
             case .authorized, .authorizedAlways:
-                return await fetchSsid()
-                
-            case .notDetermined:
-                return await withCheckedContinuation { continuation in
-                    ssidContinuation = continuation
-                    locationManager.requestWhenInUseAuthorization()
-                }
-                
-            case .denied, .restricted:
+                return ssid ?? getSsid()
+            case .notDetermined, .denied, .restricted:
                 return nil
-                
             @unknown default:
                 return nil
         }
     }
     
-    @MainActor
-    private func fetchSsid() -> String? {
-        CWWiFiClient.shared().interface()?.ssid()
+    private func getSsid() -> String? {
+        client.interfaces()?.compactMap { $0.ssid() }.first
     }
     
     private func getVpnName(forInterface bsdName: String) -> String? {

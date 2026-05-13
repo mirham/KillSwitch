@@ -13,24 +13,18 @@ final class DnsService: DnsServiceType, ShellAccessible {
     @Injected(\.appState) private var appState
     
     private var pollingTask: Task<Void, Never>?
-    private var shouldCheckForLeak: Bool {
-        appState.monitoring.isEnabled
-        && appState.userData.dnsLeakCheck
-        && appState.network.status == .on
-    }
     
     deinit {
         pollingTask?.cancel()
     }
     
     func startMonitoring() {
-        print("\(appState.monitoring.isEnabled), \(appState.userData.dnsLeakCheck), \(appState.network.status == .on)")
-        guard pollingTask == nil, shouldCheckForLeak
+        guard pollingTask == nil, appState.current.isDnsLeakCheckEnabled
         else { return }
         
         logger.write(
             message: String(
-                format: Constants.logDnsMonitoringStarted,
+                format: Constants.logDnsMonitoringEnabled,
                 Int(self.appState.userData.dnsLeakCheckInterval)),
             type: .success)
         
@@ -39,8 +33,12 @@ final class DnsService: DnsServiceType, ShellAccessible {
             else { return }
             
             while !Task.isCancelled {
-                if shouldCheckForLeak {
-                    await self.checkForLeakAsync()
+                if appState.current.isDnsLeakCheckEnabled {
+                    let hasLeak = await self.checkForLeakAsync()
+                    
+                    await self.updateStatusAsync { builder in
+                        builder.withHasDnsLeakIp(hasLeak)
+                    }
                 }
                 
                 try? await Task.sleep(
@@ -52,12 +50,18 @@ final class DnsService: DnsServiceType, ShellAccessible {
     func stopMonitoring() {
         if pollingTask != nil {
             logger.write(
-                message: Constants.logDnsMonitoringStopped,
+                message: Constants.logDnsMonitoringDisabled,
                 type: .success)
         }
         
         pollingTask?.cancel()
         pollingTask = nil
+        
+        Task {
+            await updateStatusAsync { builder in
+                builder.withHasDnsLeakIp(false)
+            }
+        }
     }
     
     @discardableResult
@@ -96,6 +100,7 @@ final class DnsService: DnsServiceType, ShellAccessible {
             logger.write(
                 message: Constants.logDnsNoVpnDetected,
                 type: .success)
+            
             return false
         }
         
@@ -222,6 +227,17 @@ final class DnsService: DnsServiceType, ShellAccessible {
             logger.write(
                 message: String(format: Constants.logDnsCheckPassed, vpnInterfaces.isEmpty ? Constants.logNoSpecificInterface : vpnInterfaces),
                 type: .success)
+        }
+    }
+    
+    private func updateStatusAsync(_ configure: (NetworkStateUpdateBuilder) -> NetworkStateUpdateBuilder) async {
+        guard !Task.isCancelled
+        else { return }
+        
+        let update = configure(NetworkStateUpdateBuilder()).build()
+        
+        await MainActor.run {
+            appState.applyNetworkUpdate(update)
         }
     }
     

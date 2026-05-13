@@ -96,7 +96,9 @@ struct GeneralSettingsEditView: View {
             Alert(
                 title: Text(Constants.dialogHeaderLocationServicesToggled),
                 message: Text(Constants.dialogBodyLocationServicesToggled),
-                primaryButton: .default(Text(Constants.dialogButtonRebootNow), action: { computerService.reboot() }),
+                primaryButton: .default(
+                    Text(Constants.dialogButtonRebootNow),
+                    action: { computerService.reboot() }),
                 secondaryButton: .default(Text(Constants.later))
             )
         }
@@ -116,7 +118,7 @@ struct GeneralSettingsEditView: View {
     private var higherProtectionRow: some View {
         settingRow(
             title: Constants.settingsElementExtendedProtection,
-            hint: Constants.hintHigherProtection,
+            hint: Constants.hintExtendedProtection,
             isOn: $appState.userData.useExtendedProtection,
             settingType: .higherProtection
         )
