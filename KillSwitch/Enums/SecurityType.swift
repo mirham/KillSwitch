@@ -9,15 +9,15 @@ import Foundation
 
 enum SecurityType : Int, CaseIterable, Codable {
     case unknown = 0
-    case compete = 1
-    case some = 2
+    case full = 1
+    case partial = 2
     case notSecure = 3
     
     var description : String {
         switch self {
             case .unknown: return "Unknown"
-            case .compete: return "Compete"
-            case .some: return "Some"
+            case .full: return "Full"
+            case .partial: return "Partial"
             case .notSecure: return "Not secure"
         }
     }
@@ -27,10 +27,10 @@ enum SecurityType : Int, CaseIterable, Codable {
             case .unknown: return String(
                 format:Constants.securityDescriprion,
                 description)
-            case .compete: return String(
+            case .full: return String(
                 format:Constants.securityDescriprion,
                 description)
-            case .some: return String(
+            case .partial: return String(
                 format:Constants.securityDescriprion,
                 description)
             case .notSecure: return description

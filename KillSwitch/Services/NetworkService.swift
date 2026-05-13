@@ -74,7 +74,7 @@ final class NetworkService: ShellAccessible, NetworkServiceType {
             
             loggingService.write(
                 message: String(
-                    format: Constants.logNetworkInterfaceHasBeenEnabled,
+                    format: Constants.logNetworkInterfaceEnabled,
                     interfaceName),
                 type: .success)
         } catch {
@@ -97,7 +97,7 @@ final class NetworkService: ShellAccessible, NetworkServiceType {
             
             loggingService.write(
                 message: String(
-                    format: Constants.logNetworkInterfaceHasBeenDisabled,
+                    format: Constants.logNetworkInterfaceDisabled,
                     interfaceName),
                 type: .success)
         } catch {

@@ -25,7 +25,7 @@ final class WebRtcService: WebRtcServiceType {
         else { return }
         
         logger.write(
-            message: String(format: Constants.logWebRtcMonitoringStarted, Int(appState.userData.webRtcLeakCheckInterval)),
+            message: String(format: Constants.logWebRtcMonitoringEnabled, Int(appState.userData.webRtcLeakCheckInterval)),
             type: .success
         )
         
@@ -45,7 +45,7 @@ final class WebRtcService: WebRtcServiceType {
     func stopMonitoring() {
         if pollingTask != nil {
             logger.write(
-                message: Constants.logWebRtcMonitoringStopped,
+                message: Constants.logWebRtcMonitoringDisabled,
                 type: .success)
         }
         

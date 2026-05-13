@@ -31,7 +31,7 @@ final class NetworkEnforcementService: NetworkEnforcementServiceType {
         
         loggingService.write(
             message: String(
-                format: Constants.logPublicIpHasBeenUpdatedWithNotFromWhitelist,
+                format: Constants.logPublicIpUpdatedWithNotFromWhitelist,
                 publicIp.ipAddress
             ),
             type: .warning

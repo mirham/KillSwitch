@@ -19,7 +19,7 @@ struct AllowedIpsEditView: IpAddressContainerView {
     @State private var editingIpId: UUID?
     @State private var newIpAddress = String()
     @State private var isNewIpValid = false
-    @State private var newIpSecurityType: SecurityType = .compete
+    @State private var newIpSecurityType: SecurityType = .full
     @State private var alertState: AlertState?
     
     var body: some View {
@@ -107,7 +107,7 @@ struct AllowedIpsEditView: IpAddressContainerView {
             HStack {
                 Text("\(Constants.ip):")
                     .frame(width: 80, alignment: .leading)
-                TextField(Constants.hintNewVaildIpAddress, text: $newIpAddress)
+                TextField(Constants.hintNewValidIpAddress, text: $newIpAddress)
                     .onChange(of: newIpAddress) { _, newValue in
                         isNewIpValid = newValue.isValidIp()
                     }
@@ -117,28 +117,28 @@ struct AllowedIpsEditView: IpAddressContainerView {
                     .frame(width: 80, alignment: .leading)
                 
                 RadioButton(
-                    id: String(SecurityType.compete.rawValue),
-                    label: SecurityType.compete.description,
+                    id: String(SecurityType.full.rawValue),
+                    label: SecurityType.full.description,
                     size: 12,
                     color: getSecurityColor(
-                        securityType: .compete,
+                        securityType: .full,
                         colorScheme: colorScheme),
                     textSize: 11,
-                    isMarked: newIpSecurityType == .compete,
-                    callback: { _ in newIpSecurityType = .compete }
+                    isMarked: newIpSecurityType == .full,
+                    callback: { _ in newIpSecurityType = .full }
                 )
                 Spacer()
                     .frame(width: 5)
                 RadioButton(
-                    id: String(SecurityType.some.rawValue),
-                    label: SecurityType.some.description,
+                    id: String(SecurityType.partial.rawValue),
+                    label: SecurityType.partial.description,
                     size: 12,
                     color: getSecurityColor(
-                        securityType: .some,
+                        securityType: .partial,
                         colorScheme: colorScheme),
                     textSize: 11,
-                    isMarked: newIpSecurityType == .some,
-                    callback: { _ in newIpSecurityType = .some }
+                    isMarked: newIpSecurityType == .partial,
+                    callback: { _ in newIpSecurityType = .partial }
                 )
             }
             AsyncButton(
@@ -229,7 +229,7 @@ struct AllowedIpsEditView: IpAddressContainerView {
         editingIpId = nil
         newIpAddress = String()
         isNewIpValid = false
-        newIpSecurityType = .compete
+        newIpSecurityType = .full
     }
     
     private func alert(for state: AlertState) -> Alert {

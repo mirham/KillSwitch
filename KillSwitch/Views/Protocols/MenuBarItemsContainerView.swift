@@ -216,9 +216,9 @@ extension MenuBarItemsContainerView {
     private func getShieldIcon(securityType: SecurityType, color: Color) -> some View {
         let iconName: String
         switch securityType {
-            case .compete:
+            case .full:
                 iconName = Constants.iconCompleteSecurity
-            case .some:
+            case .partial:
                 iconName = Constants.iconSomeSecurity
             default:
                 iconName = Constants.iconNotSecure

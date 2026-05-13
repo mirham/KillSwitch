@@ -14,7 +14,7 @@ struct MissingAllowedIpDialogView: View {
     @Injected(\.monitoringService) private var monitoringService
     @Injected(\.ipService) private var ipService
     
-    @State private var selectedSecurityType: SecurityType = .compete
+    @State private var selectedSecurityType: SecurityType = .full
     @State private var isDialogPresented = false
     
     var body: some View {
@@ -80,22 +80,22 @@ struct MissingAllowedIpDialogView: View {
     private var securityTypeRadios: some View {
         VStack(alignment: .leading) {
             RadioButton(
-                id: String(SecurityType.compete.rawValue),
-                label: SecurityType.compete.description,
+                id: String(SecurityType.full.rawValue),
+                label: SecurityType.full.description,
                 size: 12,
                 color: .green,
                 textSize: 11,
-                isMarked: selectedSecurityType == .compete,
-                callback: { _ in selectedSecurityType = .compete }
+                isMarked: selectedSecurityType == .full,
+                callback: { _ in selectedSecurityType = .full }
             )
             RadioButton(
-                id: String(SecurityType.some.rawValue),
-                label: SecurityType.some.description,
+                id: String(SecurityType.partial.rawValue),
+                label: SecurityType.partial.description,
                 size: 12,
                 color: .yellow,
                 textSize: 11,
-                isMarked: selectedSecurityType == .some,
-                callback: { _ in selectedSecurityType = .some }
+                isMarked: selectedSecurityType == .partial,
+                callback: { _ in selectedSecurityType = .partial }
             )
         }
     }

@@ -95,7 +95,7 @@ struct IpApisEditView: View {
         VStack {
             HStack {
                 Text("\(Constants.apiUrl):")
-                TextField(Constants.hintNewVaildApiUrl, text: $newApiUrl)
+                TextField(Constants.hintNewValidApiUrl, text: $newApiUrl)
                     .onChange(of: newApiUrl) { _, newValue in
                         isNewUrlValid = newValue.isValidUrl()
                     }

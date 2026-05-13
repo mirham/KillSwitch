@@ -155,7 +155,7 @@ final class MonitoringService: MonitoringServiceType {
             
             loggingService.write(
                 message: String(
-                    format: Constants.logPublicIpHasBeenUpdated,
+                    format: Constants.logPublicIpUpdated,
                     ipInfo.ipAddress),
                 type: .info
             )

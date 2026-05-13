@@ -24,7 +24,7 @@ final class DnsService: DnsServiceType, ShellAccessible {
         
         logger.write(
             message: String(
-                format: Constants.logDnsMonitoringStarted,
+                format: Constants.logDnsMonitoringEnabled,
                 Int(self.appState.userData.dnsLeakCheckInterval)),
             type: .success)
         
@@ -50,7 +50,7 @@ final class DnsService: DnsServiceType, ShellAccessible {
     func stopMonitoring() {
         if pollingTask != nil {
             logger.write(
-                message: Constants.logDnsMonitoringStopped,
+                message: Constants.logDnsMonitoringDisabled,
                 type: .success)
         }
         

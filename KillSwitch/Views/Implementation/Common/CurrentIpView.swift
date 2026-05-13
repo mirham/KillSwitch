@@ -114,11 +114,11 @@ struct CurrentIpView: IpAddressContainerView {
             }
             
             if appState.current.securityType == .unknown {
-                Button(Constants.menuItemAddAsAllowedIpWithCompleteSecurity) {
-                    addAllowedIp(securityType: .compete)
+                Button(Constants.menuItemAddAsAllowedIpWithFullSecurity) {
+                    addAllowedIp(securityType: .full)
                 }
-                Button(Constants.menuItemAddAsAllowedIpWithSomeSecurity) {
-                    addAllowedIp(securityType: .some)
+                Button(Constants.menuItemAddAsAllowedIpWithPartialSecurity) {
+                    addAllowedIp(securityType: .partial)
                 }
             }
         }

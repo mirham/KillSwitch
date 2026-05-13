@@ -80,7 +80,7 @@ struct LogView: View {
     @ViewBuilder
     private var logRecordsCount: some View {
         Text(String(format: filteredEntries.count == 1
-                    ? Constants.toolbarLogEntrty
+                    ? Constants.toolbarLogEntry
                     : Constants.toolbarLogEntries,
                     selectedType != nil
                     ? filteredEntries.count

@@ -15,11 +15,11 @@ extension IpAddressContainerView {
         let isDarkTheme = colorScheme == .dark
         
         switch securityType {
-            case .compete:
+            case .full:
                 return isDarkTheme
                 ? .green
                 : Color(hex: Constants.colorCompleteSecurityLightTheme)
-            case .some:
+            case .partial:
                 return isDarkTheme
                 ? .yellow
                 : Color(hex: Constants.colorSomeSecurityLightTheme)
