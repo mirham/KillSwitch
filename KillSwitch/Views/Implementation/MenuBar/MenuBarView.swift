@@ -59,6 +59,7 @@ struct MenuBarView: View {
                 )
                 .onHover { isQuitButtonHovering = $0 }
             }
+            .frame(height: 30)
         }
         .frame(width: 200)
         .padding(5)
