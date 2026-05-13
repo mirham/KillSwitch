@@ -8,28 +8,42 @@
 import SwiftUI
 
 extension NetworkStatusType {
-    var color: Color {
+    func getColor(for colorScheme: ColorScheme) -> Color {
         switch self {
-            case .on: return Color(hex: Constants.colorOn)
+            case .on: return colorScheme == .dark
+                ? Color(hex: Constants.colorOn)
+                : Color(hex: Constants.colorGreenLightTheme)
             case .wait: return Color(hex: Constants.colorWait)
             case .off, .unknown: return Color(hex: Constants.colorOff)
         }
     }
     
-    var backgroundColor: Color { color.opacity(0.10) }
-    var borderColor: Color { color.opacity(0.35) }
+    func getBackgroundColor(for colorScheme: ColorScheme) -> Color {
+        getColor(for: colorScheme).opacity(0.10)
+    }
+    
+    func getBorderColor(for colorScheme: ColorScheme) ->  Color {
+        getColor(for: colorScheme).opacity(0.35)
+    }
 }
 
 extension MonitoringStatusType {
-    var color: Color {
+    func getColor(for colorScheme: ColorScheme) -> Color {
         switch self {
-            case .on: return Color(hex: Constants.colorOn)
+            case .on: return colorScheme == .dark
+                ? Color(hex: Constants.colorOn)
+                : Color(hex: Constants.colorGreenLightTheme)
             case .off, .unknown: return Color(hex: Constants.colorOff)
         }
     }
     
-    var backgroundColor: Color { color.opacity(0.10) }
-    var borderColor: Color { color.opacity(0.35) }
+    func getBackgroundColor(for colorScheme: ColorScheme) -> Color {
+        getColor(for: colorScheme).opacity(0.10)
+    }
+    
+    func getBorderColor(for colorScheme: ColorScheme) -> Color {
+        getColor(for: colorScheme).opacity(0.35)
+    }
 }
 
 extension NetworkInterfaceType {

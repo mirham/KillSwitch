@@ -18,11 +18,11 @@ extension IpAddressContainerView {
             case .full:
                 return isDarkTheme
                 ? .green
-                : Color(hex: Constants.colorCompleteSecurityLightTheme)
+                : Color(hex: Constants.colorGreenLightTheme)
             case .partial:
                 return isDarkTheme
                 ? .yellow
-                : Color(hex: Constants.colorSomeSecurityLightTheme)
+                : Color(hex: Constants.colorYellowLightTheme)
             case .notSecure:
                 return .red
             default:
@@ -45,7 +45,7 @@ extension IpAddressContainerView {
         else {
             return isDarkTheme
                 ? .green
-                : Color(hex: Constants.colorCompleteSecurityLightTheme)
+                : Color(hex: Constants.colorGreenLightTheme)
         }
     }
     
@@ -55,7 +55,7 @@ extension IpAddressContainerView {
         if isVpnConnected {
             return isDarkTheme
             ? .green
-            : Color(hex: Constants.colorCompleteSecurityLightTheme)
+            : Color(hex: Constants.colorGreenLightTheme)
         }
         else {
             return (isDarkTheme ? Color.white : Color.black).opacity(0.7)

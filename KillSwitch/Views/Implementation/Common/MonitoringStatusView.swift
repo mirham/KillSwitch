@@ -12,6 +12,7 @@ struct MonitoringStatusView: View {
     @EnvironmentObject var appState: AppState
     @Environment(\.openWindow) private var openWindow
     @Environment(\.controlActiveState) private var controlActiveState
+    @Environment(\.colorScheme) private var colorScheme
     
     @Injected(\.monitoringService) private var monitoringService
     
@@ -33,8 +34,8 @@ struct MonitoringStatusView: View {
         StatusCard(
             imageName: Constants.iconMonitoring,
             title: Constants.monitoring,
-            cardBackgroundColor: status.backgroundColor,
-            cardBorderColor: status.borderColor
+            cardBackgroundColor: status.getBackgroundColor(for: colorScheme),
+            cardBorderColor: status.getBorderColor(for: colorScheme)
         ) {
             statusView
         } trailingContent: {
@@ -49,11 +50,11 @@ struct MonitoringStatusView: View {
     private var statusView: some View {
         HStack(alignment: .center, spacing: 3) {
             Circle()
-                .fill(status.color)
+                .fill(status.getColor(for: colorScheme))
                 .frame(width: 10, height: 10)
             Text(status.description)
                 .font(.system(size: 10, weight: .medium))
-                .foregroundColor(status.color)
+                .foregroundColor(status.getColor(for: colorScheme))
         }
     }
     

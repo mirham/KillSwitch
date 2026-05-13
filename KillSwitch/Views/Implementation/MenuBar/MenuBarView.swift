@@ -33,8 +33,10 @@ struct MenuBarView: View {
             ProcessesStatusView()
                 .environmentObject(appState)
                 .scaleEffect(Constants.menuBarScaleCurrentIp)
-            Spacer()
-                .frame(height: 5)
+            Divider()
+                .padding(.top, 5)
+                .padding(.leading, 5)
+                .padding(.trailing, 5)
             HStack {
                 Button(Constants.show, systemImage: Constants.iconWindow) {
                     handleShowButtonClick()
@@ -45,7 +47,9 @@ struct MenuBarView: View {
                 )
                 .onHover { isShowButtonHovering = $0 }
                 Spacer()
-                    .frame(width: 20)
+                Divider()
+                    .padding(.horizontal)
+                Spacer()
                 Button(Constants.quit, systemImage: Constants.iconQuit) {
                     handleQuitButtonClick()
                 }
@@ -56,6 +60,7 @@ struct MenuBarView: View {
                 .onHover { isQuitButtonHovering = $0 }
             }
         }
+        .frame(width: 200)
         .padding(5)
         .onAppear {
             appState.views.shownWindows
@@ -97,6 +102,7 @@ private extension Button {
         self.buttonStyle(.plain)
             .focusEffectDisabled()
             .foregroundColor(color)
+            .padding(5)
     }
 }
 

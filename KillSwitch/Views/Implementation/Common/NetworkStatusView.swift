@@ -12,6 +12,7 @@ struct NetworkStatusView: View {
     @EnvironmentObject var appState: AppState
     @Environment(\.openWindow) private var openWindow
     @Environment(\.controlActiveState) private var controlActiveState
+    @Environment(\.colorScheme) private var colorScheme
     
     @Injected(\.networkService) private var networkService
     @Injected(\.networkStatusService) private var networkStatusService
@@ -34,8 +35,8 @@ struct NetworkStatusView: View {
             imageName: appState.network.firstPhysicalInterface?.type.icon
                 ?? NetworkInterfaceType.unknown.icon,
             title: Constants.network,
-            cardBackgroundColor: status.backgroundColor,
-            cardBorderColor: status.borderColor
+            cardBackgroundColor: status.getBackgroundColor(for: colorScheme),
+            cardBorderColor: status.getBorderColor(for: colorScheme)
         ) {
             statusView
         } trailingContent: {
@@ -49,11 +50,11 @@ struct NetworkStatusView: View {
     private var statusView: some View {
         HStack(alignment: .center, spacing: 3) {
             Circle()
-                .fill(status.color)
+                .fill(status.getColor(for: colorScheme))
                 .frame(width: 10, height: 10)
             Text(status.description)
                 .font(.system(size: 10, weight: .medium))
-                .foregroundColor(status.color)
+                .foregroundColor(status.getColor(for: colorScheme))
         }
     }
     
