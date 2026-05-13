@@ -44,17 +44,33 @@ Download the DMG installer from the [releases](https://github.com/mirham/KillSwi
 
 ### Main window
 <p align="left">
-  <img src="https://github.com/mirham/KillSwitch/blob/main/Images/MainView.png" width="800">
+  <img src="https://github.com/mirham/KillSwitch/blob/main/Images/MainView.png" width="900">
 </p>
 
 ### Settings
 <p align="left">
-  <img src="https://github.com/mirham/KillSwitch/blob/main/Images/SettingsView1.png" width="400">
-  <img src="https://github.com/mirham/KillSwitch/blob/main/Images/SettingsView2.png" width="400">
-  <img src="https://github.com/mirham/KillSwitch/blob/main/Images/SettingsView3.png" width="400">
-  <img src="https://github.com/mirham/KillSwitch/blob/main/Images/SettingsView4.png" width="400">
-  <img src="https://github.com/mirham/KillSwitch/blob/main/Images/SettingsView5.png" width="400">
-  <img src="https://github.com/mirham/KillSwitch/blob/main/Images/SettingsView6.png" width="400">
+  <img src="https://github.com/mirham/KillSwitch/blob/main/Images/SettingsView1.png" width="600">
+  <br/>
+  <br/>
+  <img src="https://github.com/mirham/KillSwitch/blob/main/Images/SettingsView2.png" width="600">
+  <br/>
+  <br/>
+  <img src="https://github.com/mirham/KillSwitch/blob/main/Images/SettingsView3.png" width="600">
+  <br/>
+  <br/>
+  <img src="https://github.com/mirham/KillSwitch/blob/main/Images/SettingsView4.png" width="600">
+  <br/>
+  <br/>
+  <img src="https://github.com/mirham/KillSwitch/blob/main/Images/SettingsView5.png" width="600">
+  <br/>
+  <br/>
+  <img src="https://github.com/mirham/KillSwitch/blob/main/Images/SettingsView6.png" width="600">
+  <br/>
+  <br/>
+  <img src="https://github.com/mirham/KillSwitch/blob/main/Images/SettingsView7.png" width="600">
+  <br/>
+  <br/>
+  <img src="https://github.com/mirham/KillSwitch/blob/main/Images/SettingsView8.png" width="600">
 </p>
 
 ## Troubleshooting
@@ -74,7 +90,7 @@ The mapping for the last service is as follows:
   - Country code -> ```countryCode```
   - Country name -> ```countryName```
   - IP address -> ```ipAddress```
-### The app dispalys "Obtaining IP..." for a long time
+### The app dispalys "Fetching IP..." for a long time
 This could happen if some public IP APIs are unreachable from your current connection location. The app skips these, but this process takes time. Furthermore, after updating the public IP, the app attempts to use them again. I recommend checking public IP APIs in your browser. If an API no more rapidly return an IP address as plain text, you should remove that API from the app. This will solve the problem. Additionally, you can find new free APIs online, if they work well, feel free to add them to the app.
 ### The app dispalys "No active IP API"
 This means no IP API can be called at this moment, and the application cannot obtain your public IP address. For the app to function normally, at least one IP API must be available and working properly. But it is better to have a lot of them, **at least 10**, to prevent this message from appearing. You can check the status of each IP API under `Settings` -> `IP APIs`. The "No active IP API" message indicates a network problem, such as a connection or DNS issue. Try restarting the application to reactivate the IP APIs. If this doesn't resolve the problem, please find and add working IP APIs, as explained in the previous instructions, as more as possible.
