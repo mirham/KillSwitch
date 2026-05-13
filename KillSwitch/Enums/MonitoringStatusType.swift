@@ -15,8 +15,8 @@ enum MonitoringStatusType : Int, CaseIterable {
     var description : String {
         switch self {
             case .unknown: return Constants.na
-            case .on: return "On"
-            case .off: return "Off"
+            case .on: return Constants.on
+            case .off: return Constants.off
         }
     }
 }

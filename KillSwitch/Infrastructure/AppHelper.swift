@@ -8,14 +8,20 @@
 import SwiftUI
 
 class AppHelper {
-    static func setUpView(viewName: String, onTop: Bool) {
+    static func setUpView(
+        viewName: String,
+        onTop: Bool,
+        hideButtons: Bool = false) {
         for window in NSApplication.shared.windows {
             let windowId = String(window.identifier?.rawValue ?? String())
             
-            if(windowId.starts(with: viewName)) {
+            if windowId.starts(with: viewName) {
                 window.level = onTop ? .statusBar : .normal
-                window.standardWindowButton(.zoomButton)?.isHidden = true
-                window.standardWindowButton(.miniaturizeButton)?.isHidden = true
+                
+                if hideButtons {
+                    window.standardWindowButton(.zoomButton)?.isHidden = true
+                    window.standardWindowButton(.miniaturizeButton)?.isHidden = true
+                }
             }
         }
     }

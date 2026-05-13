@@ -12,7 +12,7 @@ import Factory
 final class LocationService: ShellAccessible, LocationServiceType {
     @LazyInjected(\.loggingService) private var loggingService
     
-    func isLocationServicesEnabled() -> Bool {
+    func areLocationServicesEnabled() -> Bool {
         CLLocationManager.locationServicesEnabled()
     }
     

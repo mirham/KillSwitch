@@ -100,8 +100,7 @@ struct ProcessesStatusView: View {
     }
     
     private func closeApplications() {
-        processService.killProcesses(
-            processes: appState.system.killingProcesses)
+        processService.killProcesses(processes: appState.system.killingProcesses)
         isHovering = false
     }
 }

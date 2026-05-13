@@ -85,7 +85,9 @@ struct IpApisEditView: View {
                 .fill(api.isActive() ? .green : .red)
                 .frame(width: 10, height: 10)
         }
-        .help(api.isActive() ? Constants.hintApiIsActive : Constants.hintApiIsInactive)
+        .help(api.isActive()
+              ? Constants.hintApiIsActive
+              : Constants.hintApiIsInactive)
     }
     
     @ViewBuilder
@@ -121,7 +123,9 @@ struct IpApisEditView: View {
         
         let isDuplicate = appState.userData.ipApis
             .contains { $0.url == newApiUrl }
-        guard !isDuplicate else { return }
+        
+        guard !isDuplicate
+        else { return }
         
         let newApi = IpApiInfo(url: newApiUrl, active: true)
         appState.userData.ipApis.append(newApi)

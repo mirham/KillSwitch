@@ -16,6 +16,32 @@ struct CurrentIpView: IpAddressContainerView {
     
     var showDetailedIssues: Bool = false
     
+    private var ipLabel: String {
+        switch appState.network.status {
+            case .off: return Constants.offline
+            default: return appState.network.isFetchingIp
+                ? Constants.fetchingIp
+                : appState.network.publicIp?.ipAddress ?? Constants.none
+        }
+    }
+    
+    private var ipColor: Color {
+        appState.monitoring.isEnabled
+        ? securityColor
+        : .primary
+    }
+    
+    private var shouldShowSecuritySection: Bool {
+        appState.current.securityType != .unknown
+        && appState.network.status != .off
+    }
+    
+    private var securityColor: Color {
+        getSecurityColor(
+            securityType: appState.current.securityType,
+            colorScheme: colorScheme)
+    }
+    
     var body: some View {
         Section {
             VStack(spacing: 2) {
@@ -96,32 +122,6 @@ struct CurrentIpView: IpAddressContainerView {
                 }
             }
         }
-    }
-    
-    private var ipLabel: String {
-        switch appState.network.status {
-            case .off: return Constants.offline
-            default: return appState.network.isFetchingIp
-                ? Constants.fetchingIp
-                : appState.network.publicIp?.ipAddress ?? Constants.none
-        }
-    }
-    
-    private var ipColor: Color {
-        appState.monitoring.isEnabled
-            ? securityColor
-            : .primary
-    }
-    
-    private var shouldShowSecuritySection: Bool {
-        appState.current.securityType != .unknown
-        && appState.network.status != .off
-    }
-    
-    private var securityColor: Color {
-        getSecurityColor(
-            securityType: appState.current.securityType,
-            colorScheme: colorScheme)
     }
     
     // MARK: Private functions

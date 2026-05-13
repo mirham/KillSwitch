@@ -53,6 +53,12 @@ final class WebRtcService: WebRtcServiceType {
         pollingTask = nil
         checkedApps.removeAll()
         previousRunningApps.removeAll()
+        
+        Task {
+            await updateStatusAsync { builder in
+                builder.withHasWebRtcLeakIp(false)
+            }
+        }
     }
     
     // MARK: Private functions
@@ -65,6 +71,8 @@ final class WebRtcService: WebRtcServiceType {
         checkedApps.subtract(old)
         
         if !new.isEmpty || !old.isEmpty  {
+            checkedApps.removeAll()
+            
             let hasLeak = await evaluateNewAppsAsync(current: current)
             
             await updateStatusAsync { builder in
@@ -316,7 +324,9 @@ final class WebRtcService: WebRtcServiceType {
     }
     
     private func log(app: String, message: String, type: LogEntryType) {
-        logger.write(message: String(format: message, app), type: type)
+        logger.write(
+            message: String(format: message, app),
+            type: type)
     }
     
     private func updateStatusAsync(_ configure: (NetworkStateUpdateBuilder) -> NetworkStateUpdateBuilder) async {

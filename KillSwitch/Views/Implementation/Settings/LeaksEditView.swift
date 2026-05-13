@@ -171,12 +171,10 @@ struct LeaksEditView: View {
             ))
             .withSettingToggleStyle()
             Spacer()
-            
             helpIcon(for: hint)
                 .onHover { isHovering in
                     hoveredSetting = (isHovering && controlActiveState == .key)
-                    ? settingType
-                    : nil
+                        ? settingType : nil
                 }
                 .popover(
                     isPresented: .constant(hoveredSetting == settingType),

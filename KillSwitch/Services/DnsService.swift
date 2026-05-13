@@ -56,6 +56,12 @@ final class DnsService: DnsServiceType, ShellAccessible {
         
         pollingTask?.cancel()
         pollingTask = nil
+        
+        Task {
+            await updateStatusAsync { builder in
+                builder.withHasDnsLeakIp(false)
+            }
+        }
     }
     
     @discardableResult

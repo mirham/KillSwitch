@@ -24,9 +24,15 @@ enum SecurityType : Int, CaseIterable, Codable {
     
     var fullDesctiption : String {
         switch self {
-            case .unknown: return String(format:Constants.securityDescriprion, description)
-            case .compete: return String(format:Constants.securityDescriprion, description)
-            case .some: return String(format:Constants.securityDescriprion, description)
+            case .unknown: return String(
+                format:Constants.securityDescriprion,
+                description)
+            case .compete: return String(
+                format:Constants.securityDescriprion,
+                description)
+            case .some: return String(
+                format:Constants.securityDescriprion,
+                description)
             case .notSecure: return description
         }
     }

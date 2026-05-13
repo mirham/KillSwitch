@@ -156,7 +156,8 @@ struct MissingAllowedIpDialogView: View {
         
         AppHelper.setUpView(
             viewName: Constants.windowIdEnableNetworkDialog,
-            onTop: true
+            onTop: true,
+            hideButtons: true
         )
         
         isDialogPresented = true

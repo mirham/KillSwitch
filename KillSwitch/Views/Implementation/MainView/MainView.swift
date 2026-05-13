@@ -9,13 +9,10 @@ import SwiftUI
 
 struct MainView: View {
     @EnvironmentObject var appState: AppState
-    
-    @Environment(\.controlActiveState) private var controlActiveState
-    
+
     var body: some View {
         NavigationSplitView {
             sidebarContent
-                .opacity(controlActiveState == .key ? 1 : 0.6)
                 .navigationSplitViewColumnWidth(220)
         } detail: {
             detailContent

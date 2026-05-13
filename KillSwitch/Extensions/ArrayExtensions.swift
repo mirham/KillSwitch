@@ -6,7 +6,9 @@
 //
 
 extension Array where Element: Hashable {
-    func syncWithDefaults(_ defaults: [Element], excluding excludedItems: [Element] = []) -> [Element] {
+    func syncWithDefaults(
+        _ defaults: [Element],
+        excluding excludedItems: [Element] = []) -> [Element] {
         let defaultSet = Set(defaults)
         let excludeSet = Set(excludedItems)
         

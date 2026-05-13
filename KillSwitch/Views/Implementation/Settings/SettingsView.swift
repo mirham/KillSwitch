@@ -43,7 +43,7 @@ struct SettingsView: View {
                 icon: Constants.iconGear
             ) {
                 GeneralSettingsEditView()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .fillMaxSize()
             }
             FixedSidebarTabView.TabItem(
                 title: Constants.settingsElementLeaks,
@@ -51,28 +51,28 @@ struct SettingsView: View {
             ) {
                 LeaksEditView()
                     .environmentObject(appState)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .fillMaxSize()
             }
             FixedSidebarTabView.TabItem(
                 title: Constants.settingsElementMenubar,
                 icon: Constants.iconMenubar
             ) {
                 MenuBarStatusEditView()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .fillMaxSize()
             }
             FixedSidebarTabView.TabItem(
                 title: Constants.settingsElementAllowedIpAddresses,
                 icon: Constants.iconNetwork
             ) {
                 AllowedIpsEditView()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .fillMaxSize()
             }
             FixedSidebarTabView.TabItem(
                 title: Constants.settingsElementClosingApps,
                 icon: Constants.iconClosingApps
             ) {
                 ClosingAppsEditView()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .fillMaxSize()
             }
             FixedSidebarTabView.TabItem(
                 title: Constants.settingsElementIpAddressApis,
@@ -80,7 +80,7 @@ struct SettingsView: View {
             ) {
                 IpApisEditView()
                     .environmentObject(appState)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .fillMaxSize()
             }
             FixedSidebarTabView.TabItem(
                 title: Constants.settingsElementIpInfoApi,
@@ -88,7 +88,7 @@ struct SettingsView: View {
             ) {
                 IpInfoApiEditView()
                     .environmentObject(appState)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .fillMaxSize()
             }
             FixedSidebarTabView.TabItem(
                 title: Constants.settingsElementPermissions,
@@ -96,7 +96,7 @@ struct SettingsView: View {
             ) {
                 PermissionsView()
                     .environmentObject(appState)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .fillMaxSize()
             }
         }
     }
@@ -107,7 +107,8 @@ struct SettingsView: View {
         appState.views.shownWindows.append(Constants.windowIdSettings)
         AppHelper.setUpView(
             viewName: Constants.windowIdSettings,
-            onTop: appState.userData.onTopOfAllWindows
+            onTop: appState.userData.onTopOfAllWindows,
+            hideButtons: true
         )
     }
     
@@ -120,6 +121,13 @@ struct SettingsView: View {
         controlActiveState == .key ? 1 : 0.6
     }
 }
+
+private extension View {
+    func fillMaxSize() -> some View {
+        self.frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+}
+
 #Preview {
     SettingsView().environmentObject(AppState())
 }

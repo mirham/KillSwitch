@@ -8,12 +8,19 @@
 import SwiftUI
 import CoreWLAN
 import CoreLocation
+import Factory
 
 struct PermissionsView: View {
     @EnvironmentObject var appState: AppState
     @Environment(\.controlActiveState) private var controlActiveState
     
+    @Injected(\.locationService) private var locationService
+    
     private let locationManager = CLLocationManager()
+    
+    private var areLocationServicesEnabled: Bool {
+        get { return locationService.areLocationServicesEnabled() }
+    }
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -65,8 +72,13 @@ struct PermissionsView: View {
                     Label(Constants.granted, systemImage: Constants.iconGranted)
                         .foregroundStyle(.green)
                 case .denied, .restricted:
-                    Label(Constants.denied, systemImage: Constants.iconDenied)
-                        .foregroundStyle(.red)
+                    Label(areLocationServicesEnabled
+                            ? Constants.denied
+                            : Constants.restricted,
+                          systemImage: Constants.iconDenied)
+                        .foregroundStyle(areLocationServicesEnabled
+                            ? .red
+                            : .orange)
                     Button(Constants.settingsElementOpenSettings) {
                         NSWorkspace.shared.open(
                             URL(string: Constants.sspLocationServices)!)

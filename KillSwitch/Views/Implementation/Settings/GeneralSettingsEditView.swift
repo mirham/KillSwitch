@@ -96,7 +96,9 @@ struct GeneralSettingsEditView: View {
             Alert(
                 title: Text(Constants.dialogHeaderLocationServicesToggled),
                 message: Text(Constants.dialogBodyLocationServicesToggled),
-                primaryButton: .default(Text(Constants.dialogButtonRebootNow), action: { computerService.reboot() }),
+                primaryButton: .default(
+                    Text(Constants.dialogButtonRebootNow),
+                    action: { computerService.reboot() }),
                 secondaryButton: .default(Text(Constants.later))
             )
         }

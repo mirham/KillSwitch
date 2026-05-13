@@ -16,9 +16,9 @@ enum NetworkStatusType : Int, CaseIterable {
     var description : String {
         switch self {
             case .unknown: return Constants.na
-            case .on: return "On"
-            case .off: return "Off"
-            case .wait: return "Wait"
+            case .on: return Constants.on
+            case .off: return Constants.off
+            case .wait: return Constants.wait
         }
     }
 }
