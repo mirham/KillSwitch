@@ -74,7 +74,7 @@ struct Constants{
     static let iconSomeSecurity = "exclamationmark.shield.fill"
     static let iconNotSecure = "xmark.shield.fill"
     static let iconWindow = "macwindow"
-    static let iconQuit = "xmark.circle"
+    static let iconQuit = "power"
     static let iconSettings = "gearshape.2"
     static let iconQuestionMark = "questionmark.circle.fill"
     static let iconCopyLog = "doc.on.doc"
@@ -111,8 +111,8 @@ struct Constants{
     static let iconPermissions = "hand.raised"
     
     // MARK: Colors
-    static let colorCompleteSecurityLightTheme = "#369300"
-    static let colorSomeSecurityLightTheme = "#A7A200"
+    static let colorGreenLightTheme = "#369300"
+    static let colorYellowLightTheme = "#A7A200"
     static let colorOn = "#34C759"
     static let colorOff = "#8E8E93"
     static let colorWait = "#FF9F0A"
