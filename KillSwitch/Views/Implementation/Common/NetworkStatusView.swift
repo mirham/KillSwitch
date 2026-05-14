@@ -10,12 +10,12 @@ import Factory
 
 struct NetworkStatusView: View {
     @EnvironmentObject var appState: AppState
-    @Environment(\.openWindow) private var openWindow
     @Environment(\.controlActiveState) private var controlActiveState
     @Environment(\.colorScheme) private var colorScheme
     
     @Injected(\.networkService) private var networkService
     @Injected(\.networkStatusService) private var networkStatusService
+    @Injected(\.windowManager) private var windowManager
     
     @State private var isHovering = false
     
@@ -114,13 +114,7 @@ struct NetworkStatusView: View {
     }
     
     private func showEnableNetworkDialog() {
-        let dialogAlreadyShown = appState.views.shownWindows
-            .contains(where: { $0 == Constants.windowIdEnableNetworkDialog })
-        
-        guard !dialogAlreadyShown
-        else { return }
-        
-        openWindow(id: Constants.windowIdEnableNetworkDialog)
+        windowManager.open(name: .dialogEnableNetwork, onTop: true)
     }
 }
 

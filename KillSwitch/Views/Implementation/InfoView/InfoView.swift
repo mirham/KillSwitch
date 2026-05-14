@@ -13,7 +13,8 @@ struct InfoView: View {
     @Environment(\.controlActiveState) var controlActiveState
     
     private var appVersion: String {
-        Bundle.main.object(forInfoDictionaryKey: Constants.aboutVersionKey) as? String ?? String()
+        Bundle.main.object(forInfoDictionaryKey: Constants.aboutVersionKey) as? String
+            ?? String()
     }
     
     private var supportMail: String {
@@ -22,19 +23,24 @@ struct InfoView: View {
     }
     
     var body: some View {
-        HStack(alignment: .top) {
-            aboutInfoSection
-        }
-        .background {
-            backgroundSection
-        }
-        .offset(y: -16)
-        .onAppear { openDialog() }
-        .onDisappear { closeDialog() }
-        .opacity(getViewOpacity(state: controlActiveState))
+        infoContent
+            .safeGlassEffect()
     }
     
     // MARK: View sections
+    
+    @ViewBuilder
+    private var infoContent: some View {
+        HStack(alignment: .top) {
+            aboutInfoSection
+        }
+        .frame(width: 380, height: 185)
+        .opacity(getViewOpacity(state: controlActiveState))
+        .background {
+            backgroundSection
+        }
+        .offset(y: -18)
+    }
     
     @ViewBuilder
     private var aboutInfoSection: some View {
@@ -60,21 +66,7 @@ struct InfoView: View {
     private var backgroundSection: some View {
         Image(nsImage: NSImage(named: Constants.aboutBackground) ?? NSImage())
             .resizable()
-            .frame(minWidth: 360, maxWidth: 360, minHeight: 220, maxHeight: 220)
-    }
-    
-    // MARK: Private functions
-    
-    private func openDialog() {
-        appState.views.shownWindows.append(Constants.windowIdInfo)
-        AppHelper.setUpView(
-            viewName: Constants.windowIdInfo,
-            onTop: true,
-            hideButtons: true)
-    }
-    
-    private func closeDialog() {
-        appState.views.shownWindows.removeAll(where: {$0 == Constants.windowIdInfo})
+            .frame(minWidth: 380, maxWidth: 380, minHeight: 220, maxHeight: 220)
     }
 }
 

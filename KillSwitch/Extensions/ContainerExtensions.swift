@@ -17,6 +17,24 @@ extension Container {
             .singleton
     }
     
+    // MARK: Windows management
+    
+    var windowManager: Factory<WindowManager> {
+        Factory(self) { WindowManager() }
+            .singleton
+    }
+    
+    var windowRegistry: Factory<WindowRegistry> {
+        Factory(self) {
+            MainActor.assumeIsolated {
+                WindowRegistry(
+                    manager: self.windowManager(),
+                    appState: self.appState()
+                )
+            }
+        }.singleton
+    }
+    
     // MARK: Services registrations
     
     var monitoringService: Factory<MonitoringServiceType> {

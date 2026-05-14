@@ -16,16 +16,15 @@ struct MainView: View {
                 .navigationSplitViewColumnWidth(220)
         } detail: {
             detailContent
-                .navigationSplitViewColumnWidth(min: 600, ideal: 600)
+                .navigationSplitViewColumnWidth(min: 650, ideal: 650)
         }
         .frame(minHeight: 600)
+        .safeGlassEffect()
         .toolbar {
             ToolbarView()
                 .padding(.trailing)
         }
         .safeToolbarGlassEffect()
-        .onAppear(perform: openView)
-        .onDisappear(perform: closeView)
     }
     
     // MARK: View sections
@@ -57,21 +56,6 @@ struct MainView: View {
             LogView()
                 .environmentObject(appState)
         }
-    }
-    
-    // MARK: Private functions
-    
-    private func openView() {
-        appState.views.shownWindows.append(Constants.windowIdMain)
-        AppHelper.setUpView(
-            viewName: Constants.windowIdMain,
-            onTop: appState.userData.onTopOfAllWindows
-        )
-    }
-    
-    private func closeView() {
-        appState.views.shownWindows
-            .removeAll { $0 == Constants.windowIdMain }
     }
 }
 

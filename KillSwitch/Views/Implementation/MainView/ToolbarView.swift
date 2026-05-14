@@ -11,10 +11,10 @@ import Factory
 struct ToolbarView: View {
     @EnvironmentObject var appState: AppState
     
-    @Environment(\.openWindow) private var openWindow
     @Environment(\.controlActiveState) private var controlActiveState
     
     @Injected(\.loggingService) private var loggingService
+    @Injected(\.windowManager) private var windowManager
     
     @State private var hoveredButton: ToolbarButtonType?
     
@@ -67,23 +67,15 @@ struct ToolbarView: View {
     // MARK: Private functions
     
     private func showSettingsWindow() {
-        openWindowIfNeeded(id: Constants.windowIdSettings)
-        AppHelper.activateView(viewId: Constants.windowIdSettings)
+        windowManager.open(
+            name: .settings,
+            onTop: appState.userData.onTopOfAllWindows)
     }
     
     private func showInfoWindow() {
-        openWindowIfNeeded(id: Constants.windowIdInfo)
-        AppHelper.activateView(viewId: Constants.windowIdInfo)
-    }
-    
-    private func openWindowIfNeeded(id: String) {
-        let windowAlreadyShown = appState.views.shownWindows
-            .contains(where: { $0 == id })
-        
-        guard !windowAlreadyShown
-        else { return }
-        
-        openWindow(id: id)
+        windowManager.open(
+            name: .info,
+            onTop: appState.userData.onTopOfAllWindows)
     }
     
     // MARK: Inner types

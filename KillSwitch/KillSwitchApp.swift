@@ -10,9 +10,10 @@ import Factory
 
 @main
 struct KillSwitchApp: App {
-    @Environment(\.openWindow) private var openWindow
     @StateObject private var appState = AppState.shared
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    
+    @Injected(\.windowManager) private var windowManager
     
     init() {
         _ = Container.shared.networkStatusService()
@@ -34,7 +35,6 @@ struct KillSwitchApp: App {
         MenuBarExtra {
             MenuBarView()
                 .environmentObject(appState)
-                .safeGlassEffect()
         } label: {
             MenuBarStatusView()
                 .environmentObject(appState)
@@ -46,31 +46,20 @@ struct KillSwitchApp: App {
     
     @SceneBuilder
     private var mainWindow: some Scene {
-        WindowGroup(id: Constants.windowIdMain) {
+        WindowGroup(id: WindowType.main.rawValue) {
             MainView()
                 .environmentObject(appState)
-                .safeGlassEffect()
-                .onAppear {
-                    NSApp.setActivationPolicy(.regular)
-                }
-                .onDisappear() {
-                    NSApp.setActivationPolicy(.accessory)
-                }
         }
         .windowToolbarStyle(UnifiedCompactWindowToolbarStyle())
         .commands {
             CommandGroup(replacing: .appInfo) {
                 Button(Constants.about) {
-                    openWindow.openSingle(
-                        id: Constants.windowIdInfo,
-                        title: Constants.info)
+                    windowManager.open(name: .info)
                 }
             }
             CommandGroup(replacing: .appSettings){
                 Button(Constants.settingsTitle) {
-                    openWindow.openSingle(
-                        id: Constants.windowIdSettings,
-                        title: Constants.settings)
+                    windowManager.open(name: .main)
                 }
                 .keyboardShortcut(",", modifiers: .command)
             }
@@ -80,54 +69,42 @@ struct KillSwitchApp: App {
     
     @SceneBuilder
     private var settingsWindow: some Scene {
-        WindowGroup(id: Constants.windowIdSettings) {
+        Settings {
             SettingsView()
-                .environmentObject(appState)
                 .navigationTitle(Constants.settings)
-                .safeGlassEffect()
-                .frame(minWidth: 650, maxWidth: 650, minHeight: 520, maxHeight: 520)
+                .environmentObject(appState)
         }
-        .windowResizability(.contentSize)
-        .windowStyle(.hiddenTitleBar)
     }
     
     @SceneBuilder
     private var infoWindow: some Scene {
-        WindowGroup(id: Constants.windowIdInfo) {
+        WindowGroup(id: WindowType.info.rawValue) {
             InfoView()
-                .environmentObject(appState)
                 .navigationTitle(Constants.info)
-                .safeGlassEffect()
-                .fixedSize(horizontal: true, vertical: true)
-                .frame(width: 360, height: 190)
+                .environmentObject(appState)
         }
-        .windowResizability(.contentSize)
-        .windowStyle(.hiddenTitleBar)
     }
     
     // MARK: Dialogs
     
     @SceneBuilder
     private var dialogsGroup: some Scene {
-        WindowGroup(id: Constants.windowIdKillProcessesConfirmationDialog) {
+        WindowGroup(id: WindowType.dialogKillProcesses.rawValue) {
             KillProcessesDialogView()
                 .environmentObject(appState)
                 .hidden()
         }
-        .windowResizability(.contentSize)
         
-        WindowGroup(id: Constants.windowIdEnableNetworkDialog) {
+        WindowGroup(id: WindowType.dialogEnableNetwork.rawValue) {
             EnableNetworkDialogView()
                 .environmentObject(appState)
                 .hidden()
         }
-        .windowResizability(.contentSize)
         
-        WindowGroup(id: Constants.windowIdNoOneAllowedIpDialog) {
+        WindowGroup(id: WindowType.dialogNoAllowedIp.rawValue) {
             MissingAllowedIpDialogView()
                 .environmentObject(appState)
                 .hidden()
         }
-        .windowResizability(.contentSize)
     }
 }

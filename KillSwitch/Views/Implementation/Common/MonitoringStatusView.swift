@@ -10,11 +10,11 @@ import Factory
 
 struct MonitoringStatusView: View {
     @EnvironmentObject var appState: AppState
-    @Environment(\.openWindow) private var openWindow
     @Environment(\.controlActiveState) private var controlActiveState
     @Environment(\.colorScheme) private var colorScheme
     
     @Injected(\.monitoringService) private var monitoringService
+    @Injected(\.windowManager) private var windowManager
     
     @State private var isHovering = false
     
@@ -67,7 +67,6 @@ struct MonitoringStatusView: View {
         .toggleStyle(.switch)
         .focusable(false)
         .labelsHidden()
-        .onTapGesture(perform: toggleMonitoring)
         .pointerOnHover()
         .onHover { hovering in
             isHovering = hovering && controlActiveState == .key
@@ -94,13 +93,7 @@ struct MonitoringStatusView: View {
     }
     
     private func showNoAllowedIpDialog() {
-        let dialogAlreadyShown = appState.views.shownWindows
-            .contains(where: { $0 == Constants.windowIdNoOneAllowedIpDialog })
-        
-        guard !dialogAlreadyShown
-        else { return }
-        
-        openWindow(id: Constants.windowIdNoOneAllowedIpDialog)
+        windowManager.open(name: .dialogNoAllowedIp, onTop: true)
     }
 }
 

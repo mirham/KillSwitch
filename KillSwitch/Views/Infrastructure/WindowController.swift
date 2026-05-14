@@ -7,13 +7,16 @@
 
 import AppKit
 
-class WindowController: NSWindowController {
+class WindowController: NSWindowController, NSWindowDelegate {
+    var onWindowClosed: (() -> Void)?
+    
     convenience init(
         viewName: String,
         contentView: NSView,
         size: CGSize? = nil,
         hideTitleBar: Bool = false,
-        resizable: Bool = true) {
+        resizable: Bool = true,
+        glassTitlebar: Bool = false) {
         var styleMask: NSWindow.StyleMask = [.titled, .closable, .miniaturizable]
         
         if resizable {
@@ -33,6 +36,11 @@ class WindowController: NSWindowController {
         
         window.identifier = NSUserInterfaceItemIdentifier(viewName)
         window.contentView = contentView
+            
+        if glassTitlebar {
+            window.titlebarAppearsTransparent = true
+            window.styleMask.insert(.fullSizeContentView)
+        }
         
         if hideTitleBar {
             window.titlebarAppearsTransparent = true
@@ -48,13 +56,15 @@ class WindowController: NSWindowController {
         
         window.center()
         self.init(window: window)
+        window.delegate = self
     }
     
-    func open(onTop: Bool = false, hideButtons: Bool = false) {
+    func open(onTop: Bool = false, hiddenButtons: [ButtonType] = []) {
         guard let window
         else { return }
         
-        configure(onTop: onTop, hideButtons: hideButtons)
+        configure(onTop: onTop, hiddenButtons: hiddenButtons)
+        
         NSApp.activate(ignoringOtherApps: true)
         window.makeKeyAndOrderFront(nil)
         
@@ -80,7 +90,18 @@ class WindowController: NSWindowController {
         }
     }
     
-    private func configure(onTop: Bool, hideButtons: Bool) {
+    func windowDidBecomeKey(_ notification: Notification) {
+        window?.contentView?.needsDisplay = true
+        window?.contentView?.needsLayout = true
+    }
+    
+    func windowWillClose(_ notification: Notification) {
+        onWindowClosed?()
+    }
+    
+    // MARK: Private functions
+    
+    private func configure(onTop: Bool, hiddenButtons: [ButtonType]) {
         guard let window
         else { return }
         
@@ -89,10 +110,8 @@ class WindowController: NSWindowController {
         ? [.canJoinAllSpaces, .fullScreenAuxiliary]
         : []
         
-        if hideButtons {
-            window.standardWindowButton(.zoomButton)?.isHidden = true
-            window.standardWindowButton(.miniaturizeButton)?.isHidden = true
-            window.standardWindowButton(.closeButton)?.isHidden = true
+        hiddenButtons.forEach {
+            window.standardWindowButton($0.button)?.isHidden = true
         }
     }
 }

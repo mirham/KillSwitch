@@ -117,15 +117,6 @@ struct Constants{
     static let colorOff = "#8E8E93"
     static let colorWait = "#FF9F0A"
     
-    // MARK: Window IDs
-    static let windowIdMain = "main-view"
-    static let windowIdMenuBar = "menubar-view"
-    static let windowIdSettings = "settings-view"
-    static let windowIdKillProcessesConfirmationDialog = "kill-processess-confirmation-dialog-view"
-    static let windowIdEnableNetworkDialog = "enable-network-dialog-view"
-    static let windowIdNoOneAllowedIpDialog = "no-one-allowed-ip-dialog-view"
-    static let windowIdInfo = "info-view"
-    
     // MARK: Elements names
     static let settings = "Settings"
     static let info = "Info"
