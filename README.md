@@ -15,17 +15,23 @@
 </p>
 
 ## Introduction
-MirHam KillSwich is a macOS menu bar application designed to provide additional control over your internet connection. It helps ensure your safety by disabling all physical network interfaces when your public IP address changes to an unsafe one. This allows you time to determine what happened to the connection and restore safe conditions before continuing your work. This application is especially useful for VPN users, particularly those using modern protocols such as VLESS, Trojan, SS, and more.
+MirHam KillSwich is a macOS menu bar app that gives you greater control over your internet connection and helps protect your privacy.
+
+When your public IP address changes to one that isn't on your allowed list, the app automatically disables all network interfaces — giving you time to assess the situation and restore a safe connection before resuming work.
+
+This is especially useful for VPN users, particularly those using modern protocols such as VLESS, Trojan, Shadowsocks, and others.
 
 ## Features
-- Easy to use
-- Adjustable and flexible
-- Customizable menu bar items and used APIs
-- Operates continuously, even after computer restarts
-- Periodic public IP checks at desired intervals
-- Automatically or manually close applications
-- Manage physical network connections
-- Preventing the computer from going to sleep (may not work without a power adapter connected on some Macs)
+- Simple and intuitive to use
+- Highly customizable: menu bar items, APIs, and security levels
+- Configurable allowed IP address list with security levels
+- Automatically disables network interfaces when an unsafe IP address is detected
+- Periodic public IP address checks at configurable intervals
+- DNS and WebRTC leak detection and monitoring (see limitations below)
+- Automatically or manually quit applications when a security risk is detected
+- Prevents the computer from sleeping while monitoring is active (may not work without a power adapter on some Macs)
+- Built-in log viewer, detailed logs
+- Launch agent support — runs automatically after system startup
 
 ## Compatibility
 
@@ -73,27 +79,51 @@ Download the DMG installer from the [releases](https://github.com/mirham/KillSwi
   <img src="https://github.com/mirham/KillSwitch/blob/main/Images/SettingsView8.png" width="600">
 </p>
 
+## DNS and WebRTC Leak Detection — Limitations
+Because I don't have an Apple Developer license ($99/year), I cannot create a Network Extension, which would be the ideal solution for both accurate leak detection (including STUN monitoring) and pausing network traffic without disabling interfaces entirely. I plan to build this in the future, but that version will likely not be free.
+
+In the meantime, this app uses methods that require fewer privileges. They are less precise, but can still catch most common leaks. Always verify your privacy using these tools:
+
+- DNS leaks: https://www.dnsleaktest.com
+- WebRTC leaks: https://browserleaks.com/webrtc
+
+For WebRTC leaks in particular, make sure to test every app you use for audio or video calls — browsers, Electron-based apps, and so on — not just one.
+
+If you're seeing unwanted leak warnings in the log, you can disable the checks or exclude specific apps to reduce noise. Note that Slack and Microsoft Teams cannot be excluded from WebRTC leak checks — these apps are among the highest-risk for WebRTC leaks, as corporate administrators may be able to detect your real IP address through them. For these apps, I recommend using their web versions instead, with a WebRTC-blocking browser extension or the appropriate browser settings configured.
+
 ## Troubleshooting
-### Where I can find public IP API?
-You can find free IP APIs that return plain text and require no API key by searching online for "Free IP API plain text no API key." While many are available, not all may work in your country. Alternatively, you can create and deploy your own public IP API, it's not very complicated. The main condition is that it must return only the IP address as plain text, without any additional data.
-### Where I can find public IP info API?
-This is more complex, but you can also search online for "Free IP geolocation API no API key." While many free services exist, most require registration and an API key in the request. However, you are welcome to use them if you wish.
+### Where can I find a public IP API?
+You can find free IP APIs that return plain text and require no API key by searching online for "free IP API plain text no API key." Many are available, though not all may work in your country. Alternatively, you can create and deploy your own — it's not complicated. The only requirement is that it returns the IP address as plain text, with no additional data.
 
-I can recommend two free services:
+### Where can I find a public IP info API?
+This is more complex. Search online for "free IP geolocation API no API key." Many free services exist, but most require registration and an API key. You are welcome to use those if you wish.
 
- - ```http://ip-api.com/json/%IP%``` – This one is used by default.
- - ```https://free.freeipapi.com/api/json/%IP%``` – This one is less accurate.
+Two free services that work without an API key:
+- `http://ip-api.com/json/%IP%` — used by default
+- `https://free.freeipapi.com/api/json/%IP%` — available but less accurate
 
-`%IP%` here - is your public IP. 
+`%IP%` is a placeholder for your public IP address.
 
-The mapping for the last service is as follows:
-  - Country code -> ```countryCode```
-  - Country name -> ```countryName```
-  - IP address -> ```ipAddress```
-### The app dispalys "Fetching IP..." for a long time
-This could happen if some public IP APIs are unreachable from your current connection location. The app skips these, but this process takes time. Furthermore, after updating the public IP, the app attempts to use them again. I recommend checking public IP APIs in your browser. If an API no more rapidly return an IP address as plain text, you should remove that API from the app. This will solve the problem. Additionally, you can find new free APIs online, if they work well, feel free to add them to the app.
-### The app dispalys "No active IP API"
-This means no IP API can be called at this moment, and the application cannot obtain your public IP address. For the app to function normally, at least one IP API must be available and working properly. But it is better to have a lot of them, **at least 10**, to prevent this message from appearing. You can check the status of each IP API under `Settings` -> `IP APIs`. The "No active IP API" message indicates a network problem, such as a connection or DNS issue. Try restarting the application to reactivate the IP APIs. If this doesn't resolve the problem, please find and add working IP APIs, as explained in the previous instructions, as more as possible.
+Field mapping for the second service:
+- Country code → `countryCode`
+- Country name → `countryName`
+- IP address → `ipAddress`
+
+### The app displays "Fetching IP..." for a long time
+This happens when some IP APIs are unreachable from your current location. The app skips unresponsive APIs, but this takes time. After updating the public IP, the app will attempt to use them again.
+
+To fix this, open each API URL in your browser. If an API no longer returns an IP address quickly as plain text, remove it from the app. You can also search for and add new working APIs — the more the better. Having **at least 10 active APIs** is recommended to ensure reliable performance.
+
+### The app displays "No active IP API"
+This means no IP API is currently reachable and the app cannot determine your public IP address. At least one working API is required for the app to function, but having **at least 10** is strongly recommended to avoid this issue.
+
+You can check the status of each API under `Settings` → `IP APIs`. This message typically indicates a network problem, such as a connectivity or DNS issue. Try restarting the app to reactivate the APIs. If the problem persists, add as many working APIs as possible, as described above.
+
+### I'm seeing frequent leak warnings in the log
+If DNS or WebRTC leak warnings appear frequently and you consider them false positives, you can disable the relevant checks entirely or exclude specific applications in Settings.
+
+### Why can't I exclude Slack or Microsoft Teams from WebRTC monitoring?
+Slack and Microsoft Teams use their own built-in WebRTC stack that cannot be inspected or controlled by this app. Because of this, they cannot be excluded from WebRTC leak checks. More importantly, these apps are among the highest-risk for WebRTC leaks — corporate administrators may be able to detect your real IP address through them. For these apps, it is strongly recommended to use their web versions instead, with a WebRTC-blocking browser extension or the appropriate browser settings configured.
 
 ## Improvement
 > [!TIP]
