@@ -8,50 +8,6 @@
 import SwiftUI
 
 class AppHelper {
-    static func setUpView(
-        viewName: String,
-        onTop: Bool,
-        hideButtons: Bool = false) {
-        for window in NSApplication.shared.windows {
-            let windowId = String(window.identifier?.rawValue ?? String())
-            
-            if windowId.starts(with: viewName) {
-                window.level = onTop ? .statusBar : .normal
-                
-                if hideButtons {
-                    window.standardWindowButton(.zoomButton)?.isHidden = true
-                    window.standardWindowButton(.miniaturizeButton)?.isHidden = true
-                }
-            }
-        }
-    }
-    
-    static func activateView(viewId: String, simple: Bool = true) {
-        for window in NSApplication.shared.windows {
-            let windowId = String(window.identifier?.rawValue ?? String())
-            
-            if windowId.starts(with: viewId) {
-                if simple {
-                    window.makeKeyAndOrderFront(window)
-                }
-                else {
-                    window.level = .statusBar
-                    NSApp.activate()
-                }
-            }
-        }
-    }
-    
-    static func closeView(viewName: String) {
-        for window in NSApplication.shared.windows {
-            let windowId = String(window.identifier?.rawValue ?? String())
-            
-            if windowId.starts(with: viewName) {
-                window.close()
-            }
-        }
-    }
-    
     static func copyTextToClipboard(text : String) {
         guard !text.isEmpty else { return }
         

@@ -12,17 +12,13 @@ struct KillProcessesDialogView: View {
     @EnvironmentObject var appState: AppState
     
     @Injected(\.processService) private var processService
+    @Injected(\.windowManager) private var windowManager
     
     @State private var isDialogPresented = false
     
     var body: some View {
-        EmptyView()
-            .frame(width: 0, height: 0)
-            .sheet(isPresented: $isDialogPresented) {
-                dialogContent
-            }
-            .onAppear(perform: openDialog)
-            .onDisappear(perform: closeDialog)
+        dialogContent
+            .safeGlassEffect()
     }
     
     // MARK: View sections
@@ -118,32 +114,8 @@ struct KillProcessesDialogView: View {
         closeDialog()
     }
     
-    private func openDialog() {
-        appState.views.shownWindows.append(Constants.windowIdKillProcessesConfirmationDialog)
-        
-        AppHelper.setUpView(
-            viewName: Constants.windowIdKillProcessesConfirmationDialog,
-            onTop: true,
-            hideButtons: true
-        )
-        
-        isDialogPresented = true
-    }
-    
     private func closeDialog() {
-        appState.views.shownWindows.removeAll {
-            $0 == Constants.windowIdKillProcessesConfirmationDialog
-        }
-        
-        isDialogPresented = false
-        
-        let mainWindowIsShown = appState.views.shownWindows.contains {
-            $0 == Constants.windowIdMain
-        }
-        
-        if mainWindowIsShown {
-            AppHelper.activateView(viewId: Constants.windowIdMain)
-        }
+        windowManager.close(name: .dialogKillProcesses)
     }
 }
 

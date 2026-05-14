@@ -13,18 +13,13 @@ struct MissingAllowedIpDialogView: View {
     
     @Injected(\.monitoringService) private var monitoringService
     @Injected(\.ipService) private var ipService
+    @Injected(\.windowManager) private var windowManager
     
     @State private var selectedSecurityType: SecurityType = .full
-    @State private var isDialogPresented = false
     
     var body: some View {
-        EmptyView()
-            .frame(width: 0, height: 0)
-            .sheet(isPresented: $isDialogPresented) {
-                dialogContent
-            }
-            .onAppear(perform: openDialog)
-            .onDisappear(perform: closeDialog)
+        dialogContent
+            .safeGlassEffect()
     }
     
     // MARK: View sections
@@ -151,22 +146,8 @@ struct MissingAllowedIpDialogView: View {
         closeDialog()
     }
     
-    private func openDialog() {
-        appState.views.shownWindows.append(Constants.windowIdNoOneAllowedIpDialog)
-        
-        AppHelper.setUpView(
-            viewName: Constants.windowIdEnableNetworkDialog,
-            onTop: true,
-            hideButtons: true
-        )
-        
-        isDialogPresented = true
-    }
-    
     private func closeDialog() {
-        appState.views.shownWindows.removeAll { $0 == Constants.windowIdNoOneAllowedIpDialog }
-        isDialogPresented = false
-        AppHelper.activateView(viewId: Constants.windowIdMain)
+        windowManager.close(name: .dialogNoAllowedIp)
     }
 }
 

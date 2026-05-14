@@ -10,11 +10,12 @@ import Factory
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
     @Injected(\.appState) private var appState
+    @Injected(\.windowRegistry) private var registry
     
     func orderFrontStandardAboutPanel(_ sender: Any?) {
         for window in NSApplication.shared.windows {
             if let identifier = window.identifier?.rawValue,
-               identifier.starts(with: Constants.windowIdInfo) {
+               identifier.starts(with: WindowType.info.rawValue) {
                 window.makeKeyAndOrderFront(nil)
                 NSApp.activate(ignoringOtherApps: true)
                 return
@@ -22,6 +23,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
         
         NSApplication.shared.orderFrontStandardAboutPanel(sender)
+    }
+    
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        NSApp.setActivationPolicy(.accessory) 
+        registry.registerAll()
     }
     
     func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {

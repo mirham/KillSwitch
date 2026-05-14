@@ -11,10 +11,10 @@ import Factory
 struct MenuBarView: View {
     @EnvironmentObject var appState: AppState
     
-    @Environment(\.openWindow) private var openWindow
     @Environment(\.dismiss) private var dismiss
     
     @Injected(\.launchAgentService) private var launchAgentService
+    @Injected(\.windowManager) private var windowManager
     
     @State private var isShowButtonHovering = false
     @State private var isQuitButtonHovering = false
@@ -63,29 +63,12 @@ struct MenuBarView: View {
         }
         .frame(width: 200)
         .padding(5)
-        .onAppear {
-            appState.views.shownWindows
-                .append(Constants.windowIdMenuBar)
-        }
-        .onDisappear {
-            appState.views.shownWindows
-                .removeAll { $0 == Constants.windowIdMenuBar }
-        }
     }
     
     // MARK: Private functions
     
     private func handleShowButtonClick() {
-        let mainWindowNotShown = !appState.views.shownWindows
-            .contains(where: { $0 == Constants.windowIdMain })
-        
-        if mainWindowNotShown {
-            openWindow(id: Constants.windowIdMain)
-        }
-        
-        AppHelper.activateView(
-            viewId: Constants.windowIdMain,
-            simple: false)
+        windowManager.open(name: .main, onTop: appState.userData.onTopOfAllWindows)
         
         dismiss()
     }

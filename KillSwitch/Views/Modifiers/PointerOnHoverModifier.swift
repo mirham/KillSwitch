@@ -11,12 +11,10 @@ struct PointerOnHoverModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .onHover { isHovering in
-                DispatchQueue.main.async {
-                    if isHovering {
-                        NSCursor.pointingHand.push()
-                    } else {
-                        NSCursor.pop()
-                    }
+                if isHovering {
+                    NSCursor.pointingHand.push()
+                } else {
+                    NSCursor.pop()
                 }
             }
     }

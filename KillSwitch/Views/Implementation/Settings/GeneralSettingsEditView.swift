@@ -15,6 +15,7 @@ struct GeneralSettingsEditView: View {
     @Injected(\.launchAgentService) private var launchAgentService
     @Injected(\.locationService) private var locationService
     @Injected(\.computerService) private var computerService
+    @Injected(\.windowManager) private var windowManager
     
     @State private var isKeepRunningOn = false
     @State private var isLocationServicesToggled = false
@@ -73,7 +74,10 @@ struct GeneralSettingsEditView: View {
             hint: Constants.hintOnTopOfAllWindows,
             isOn: $appState.userData.onTopOfAllWindows,
             settingType: .onTopOfAllWindows
-        )
+        ) { isOnTop in
+            windowManager.setTopmost(name: .main, onTop: isOnTop)
+            windowManager.setTopmost(name: .settings, onTop: isOnTop)
+        }
     }
     
     @ViewBuilder
@@ -189,11 +193,15 @@ struct GeneralSettingsEditView: View {
         title: String,
         hint: String,
         isOn: Binding<Bool>,
-        settingType: SettingType
+        settingType: SettingType,
+        onChange: ((Bool) -> Void)? = nil
     ) -> some View {
         HStack {
             Toggle(title, isOn: isOn)
                 .withSettingToggleStyle()
+                .onChange(of: isOn.wrappedValue) { _, value in
+                    onChange?(value)
+                }
             Spacer()
             
             helpIcon(for: hint, settingType: settingType)

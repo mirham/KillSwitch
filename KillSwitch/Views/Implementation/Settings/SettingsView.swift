@@ -12,13 +12,9 @@ struct SettingsView: View {
     @Environment(\.controlActiveState) private var controlActiveState
     
     var body: some View {
-        VStack {
-            headerView
-            settingsTabView
-        }
-        .onAppear(perform: openView)
-        .onDisappear(perform: closeView)
-        .opacity(opacityForControlState)
+        settingsTabView
+            .opacity(opacityForControlState)
+            .safeGlassEffect()
     }
     
     // MARK: View sections
@@ -102,20 +98,6 @@ struct SettingsView: View {
     }
     
     // MARK: Private functions
-    
-    private func openView() {
-        appState.views.shownWindows.append(Constants.windowIdSettings)
-        AppHelper.setUpView(
-            viewName: Constants.windowIdSettings,
-            onTop: appState.userData.onTopOfAllWindows,
-            hideButtons: true
-        )
-    }
-    
-    private func closeView() {
-        appState.views.shownWindows
-            .removeAll { $0 == Constants.windowIdSettings }
-    }
     
     private var opacityForControlState: Double {
         controlActiveState == .key ? 1 : 0.6

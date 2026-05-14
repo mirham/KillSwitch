@@ -10,10 +10,10 @@ import Factory
 
 struct ProcessesStatusView: View {
     @EnvironmentObject var appState: AppState
-    @Environment(\.openWindow) private var openWindow
     @Environment(\.controlActiveState) private var controlActiveState
     
     @Injected(\.processService) private var processService
+    @Injected(\.windowManager) private var windowManager
     
     @State private var isHovering = false
     
@@ -90,13 +90,7 @@ struct ProcessesStatusView: View {
     }
     
     private func showKillProcessesConfirmationDialog() {
-        let dialogAlreadyShown = appState.views.shownWindows
-            .contains(where: { $0 == Constants.windowIdKillProcessesConfirmationDialog })
-        
-        guard !dialogAlreadyShown
-        else { return }
-        
-        openWindow(id: Constants.windowIdKillProcessesConfirmationDialog)
+        windowManager.open(name: .dialogKillProcesses, onTop: true)
     }
     
     private func closeApplications() {

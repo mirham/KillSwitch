@@ -10,7 +10,9 @@ import Factory
 
 struct EnableNetworkDialogView: View {
     @EnvironmentObject var appState: AppState
+    
     @Injected(\.networkService) private var networkService
+    @Injected(\.windowManager) private var windowManager
     
     @State private var isDialogPresented = false
     @State private var selectedInterfaceName: String?
@@ -20,13 +22,8 @@ struct EnableNetworkDialogView: View {
     }
     
     var body: some View {
-        EmptyView()
-            .frame(width: 0, height: 0)
-            .sheet(isPresented: $isDialogPresented) {
-                dialogContent
-            }
-            .onAppear(perform: openDialog)
-            .onDisappear(perform: closeDialog)
+        dialogContent
+            .safeGlassEffect()
     }
     
     // MARK: View sections
@@ -132,27 +129,8 @@ struct EnableNetworkDialogView: View {
         closeDialog()
     }
     
-    private func openDialog() {
-        appState.views.shownWindows.append(Constants.windowIdEnableNetworkDialog)
-        selectedInterfaceName = appState.current.mainNetworkInterface
-        
-        AppHelper.setUpView(
-            viewName: Constants.windowIdEnableNetworkDialog,
-            onTop: true,
-            hideButtons: true
-        )
-        
-        isDialogPresented = true
-    }
-    
     private func closeDialog() {
-        appState.views.shownWindows.removeAll {
-            $0 == Constants.windowIdEnableNetworkDialog
-        }
-        
-        isDialogPresented = false
-        
-        AppHelper.activateView(viewId: Constants.windowIdMain)
+        windowManager.close(name: .dialogEnableNetwork)
     }
 }
 

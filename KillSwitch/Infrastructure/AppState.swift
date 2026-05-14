@@ -12,7 +12,6 @@ class AppState : ObservableObject, Equatable {
     @Published var log = [LogEntry]()
     
     @Published var current = Current()
-    @Published var views = Views(shownWindows: [String()])
     @Published var monitoring = Monitoring() { didSet { setCurrentState() } }
     @Published var system = System() { didSet { setCurrentState() } }
     @Published var network = Network() { didSet { setCurrentState() } }
@@ -120,12 +119,6 @@ extension AppState {
             
             return result
         }
-    }
-}
-
-extension AppState {
-    struct Views {
-        var shownWindows: [String]
     }
 }
 

@@ -66,9 +66,15 @@
 		357763E02FB21C8000B44A16 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 357763DF2FB21C7D00B44A16 /* AppDelegate.swift */; };
 		357763E22FB2495400B44A16 /* PermissionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 357763E12FB2495400B44A16 /* PermissionsView.swift */; };
 		357763E42FB2576B00B44A16 /* FlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 357763E32FB2576700B44A16 /* FlowLayout.swift */; };
-		357763E62FB36CB800B44A16 /* OpenWindowActionExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 357763E52FB36CB600B44A16 /* OpenWindowActionExtensions.swift */; };
 		357763E82FB3AA5A00B44A16 /* NetworkEnforcementServiceType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 357763E72FB3AA5600B44A16 /* NetworkEnforcementServiceType.swift */; };
 		357763EA2FB3AA9A00B44A16 /* NetworkEnforcementService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 357763E92FB3AA9300B44A16 /* NetworkEnforcementService.swift */; };
+		357CF4E82FB5FC8D00FF7859 /* WindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 357CF4E72FB5FC8A00FF7859 /* WindowController.swift */; };
+		357CF4EC2FB5FD0400FF7859 /* WindowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 357CF4EB2FB5FD0100FF7859 /* WindowManager.swift */; };
+		357CF4EE2FB5FD2F00FF7859 /* WindowRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 357CF4ED2FB5FD2D00FF7859 /* WindowRegistry.swift */; };
+		357CF4F02FB5FF2E00FF7859 /* WindowType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 357CF4EF2FB5FF2B00FF7859 /* WindowType.swift */; };
+		357CF4F52FB6327600FF7859 /* ButtonType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 357CF4F42FB6327200FF7859 /* ButtonType.swift */; };
+		357CF4F72FB679C200FF7859 /* SwitchToggleStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 357CF4F62FB679BF00FF7859 /* SwitchToggleStyle.swift */; };
+		357CF4F92FB67A2400FF7859 /* ToggleStyleExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 357CF4F82FB67A1E00FF7859 /* ToggleStyleExtensions.swift */; };
 		3582BF612C59073F004E0B80 /* IpAddressContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3582BF602C59073F004E0B80 /* IpAddressContainerView.swift */; };
 		3582BF632C59345E004E0B80 /* InfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3582BF622C59345E004E0B80 /* InfoView.swift */; };
 		3589AB282FA202A700D7F3A8 /* DnsServiceType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3589AB272FA2029E00D7F3A8 /* DnsServiceType.swift */; };
@@ -196,9 +202,15 @@
 		357763DF2FB21C7D00B44A16 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		357763E12FB2495400B44A16 /* PermissionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionsView.swift; sourceTree = "<group>"; };
 		357763E32FB2576700B44A16 /* FlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlowLayout.swift; sourceTree = "<group>"; };
-		357763E52FB36CB600B44A16 /* OpenWindowActionExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenWindowActionExtensions.swift; sourceTree = "<group>"; };
 		357763E72FB3AA5600B44A16 /* NetworkEnforcementServiceType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkEnforcementServiceType.swift; sourceTree = "<group>"; };
 		357763E92FB3AA9300B44A16 /* NetworkEnforcementService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkEnforcementService.swift; sourceTree = "<group>"; };
+		357CF4E72FB5FC8A00FF7859 /* WindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowController.swift; sourceTree = "<group>"; };
+		357CF4EB2FB5FD0100FF7859 /* WindowManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowManager.swift; sourceTree = "<group>"; };
+		357CF4ED2FB5FD2D00FF7859 /* WindowRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowRegistry.swift; sourceTree = "<group>"; };
+		357CF4EF2FB5FF2B00FF7859 /* WindowType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowType.swift; sourceTree = "<group>"; };
+		357CF4F42FB6327200FF7859 /* ButtonType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonType.swift; sourceTree = "<group>"; };
+		357CF4F62FB679BF00FF7859 /* SwitchToggleStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchToggleStyle.swift; sourceTree = "<group>"; };
+		357CF4F82FB67A1E00FF7859 /* ToggleStyleExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToggleStyleExtensions.swift; sourceTree = "<group>"; };
 		3582BF602C59073F004E0B80 /* IpAddressContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IpAddressContainerView.swift; sourceTree = "<group>"; };
 		3582BF622C59345E004E0B80 /* InfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoView.swift; sourceTree = "<group>"; };
 		3589AB272FA2029E00D7F3A8 /* DnsServiceType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DnsServiceType.swift; sourceTree = "<group>"; };
@@ -301,6 +313,7 @@
 		351E9CEC2C10B20900CEC15F /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				357CF4F32FB6323700FF7859 /* Infrastructure */,
 				35EE636F2C57980F00D45D66 /* Protocols */,
 				35449FC12C563F9A00369CBC /* Delegates */,
 				351E9CEE2C10B3A600CEC15F /* Controls */,
@@ -396,6 +409,7 @@
 		3540326D2C5E695A002624D2 /* Styles */ = {
 			isa = PBXGroup;
 			children = (
+				357CF4F62FB679BF00FF7859 /* SwitchToggleStyle.swift */,
 				35DD1C4D2C0FA9D2003AA3ED /* CheckToggleStyle.swift */,
 			);
 			path = Styles;
@@ -430,6 +444,18 @@
 			path = Protocols;
 			sourceTree = "<group>";
 		};
+		357CF4F32FB6323700FF7859 /* Infrastructure */ = {
+			isa = PBXGroup;
+			children = (
+				357CF4EF2FB5FF2B00FF7859 /* WindowType.swift */,
+				357CF4F42FB6327200FF7859 /* ButtonType.swift */,
+				357CF4E72FB5FC8A00FF7859 /* WindowController.swift */,
+				357CF4EB2FB5FD0100FF7859 /* WindowManager.swift */,
+				357CF4ED2FB5FD2D00FF7859 /* WindowRegistry.swift */,
+			);
+			path = Infrastructure;
+			sourceTree = "<group>";
+		};
 		3589AB332FA36EB400D7F3A8 /* Builders */ = {
 			isa = PBXGroup;
 			children = (
@@ -448,7 +474,7 @@
 				35C218AB2C6E21A600964A7B /* ColorExtensions.swift */,
 				356580D12FA3AE4300A6BBC5 /* TextExtensions.swift */,
 				353BA4992FAE42CE004BC97D /* TypeExtensions.swift */,
-				357763E52FB36CB600B44A16 /* OpenWindowActionExtensions.swift */,
+				357CF4F82FB67A1E00FF7859 /* ToggleStyleExtensions.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -717,8 +743,8 @@
 				3589AB2C2FA291B400D7F3A8 /* WebRtcServiceType.swift in Sources */,
 				35E7DD4F2C13420000CC68F7 /* NetworkStatusService.swift in Sources */,
 				35A6E43D2F995F6500731FF3 /* ComputerError.swift in Sources */,
-				357763E62FB36CB800B44A16 /* OpenWindowActionExtensions.swift in Sources */,
 				35DD1C4E2C0FA9D2003AA3ED /* CheckToggleStyle.swift in Sources */,
+				357CF4EC2FB5FD0400FF7859 /* WindowManager.swift in Sources */,
 				3589AB2E2FA291EC00D7F3A8 /* WebRtcService.swift in Sources */,
 				35BD39DC2DDCA5920021CF49 /* LoggingServiceType.swift in Sources */,
 				35C8A9212E04353300C574A5 /* IpApiService.swift in Sources */,
@@ -732,6 +758,7 @@
 				356580D22FA3AE4900A6BBC5 /* TextExtensions.swift in Sources */,
 				359E44EF2C11BFED00BF6093 /* MenuBarView.swift in Sources */,
 				3589AB282FA202A700D7F3A8 /* DnsServiceType.swift in Sources */,
+				357CF4F02FB5FF2E00FF7859 /* WindowType.swift in Sources */,
 				3570E4772C2317E800CB5D42 /* LogEntryType.swift in Sources */,
 				35BD39D82DDCA4750021CF49 /* ComputerServiceType.swift in Sources */,
 				35F12F3E2C15B4E100AFA738 /* NetworkInterface.swift in Sources */,
@@ -747,6 +774,7 @@
 				35A6E4202F9777CF00731FF3 /* ToolbarButton.swift in Sources */,
 				3570E4822C249FC300CB5D42 /* GeneralSettingsEditView.swift in Sources */,
 				35DD1C4C2C0F96E1003AA3ED /* NetworkStatusView.swift in Sources */,
+				357CF4F92FB67A2400FF7859 /* ToggleStyleExtensions.swift in Sources */,
 				353BA4982FACE4B7004BC97D /* StatusCard.swift in Sources */,
 				3540323A2C5E30A9002624D2 /* MissingAllowedIpDialogView.swift in Sources */,
 				357154FD2C17422600A41AA4 /* IpInfo.swift in Sources */,
@@ -785,12 +813,15 @@
 				357154F72C17339100A41AA4 /* SettingsView.swift in Sources */,
 				357266822C36FE710021978C /* AppHelper.swift in Sources */,
 				35BD39DA2DDCA52B0021CF49 /* ProcessServiceType.swift in Sources */,
+				357CF4EE2FB5FD2F00FF7859 /* WindowRegistry.swift in Sources */,
 				35BD39D62DDCA3F90021CF49 /* LocationServiceType.swift in Sources */,
 				35DA7E252C11E91800BFC680 /* LaunchAgentService.swift in Sources */,
 				356850602C2B46FF006E64B8 /* ProcessesStatusView.swift in Sources */,
 				354BEEB42DE8974100EFD1B2 /* NetworkStateUpdate.swift in Sources */,
 				353179312C29CD700030FDF1 /* ComputerService.swift in Sources */,
 				35F12F3B2C15B3BE00AFA738 /* NetworkInterfaceType.swift in Sources */,
+				357CF4F72FB679C200FF7859 /* SwitchToggleStyle.swift in Sources */,
+				357CF4E82FB5FC8D00FF7859 /* WindowController.swift in Sources */,
 				357763E82FB3AA5A00B44A16 /* NetworkEnforcementServiceType.swift in Sources */,
 				35A6E42E2F98F8B200731FF3 /* SecurityBadgeView.swift in Sources */,
 				354BEEBA2DE8B5DE00EFD1B2 /* ProcessesStateUpdate.swift in Sources */,
@@ -810,6 +841,7 @@
 				357183362C2C0199008B2D83 /* ProcessService.swift in Sources */,
 				356580CE2FA3A64300A6BBC5 /* WarningHint.swift in Sources */,
 				35C8A9272E04400600C574A5 /* IpInfoApiEditView.swift in Sources */,
+				357CF4F52FB6327600FF7859 /* ButtonType.swift in Sources */,
 				3568505A2C2B0ACF006E64B8 /* ProcessInfo.swift in Sources */,
 				3568505E2C2B2415006E64B8 /* AppInfo.swift in Sources */,
 				359EED4A2C52A9350094EFAF /* NWInterfaceExtensions.swift in Sources */,
@@ -980,7 +1012,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
-				MARKETING_VERSION = 4.0;
+				MARKETING_VERSION = 4.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.MirHam.KillSwitch;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1013,7 +1045,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
-				MARKETING_VERSION = 4.0;
+				MARKETING_VERSION = 4.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.MirHam.KillSwitch;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
