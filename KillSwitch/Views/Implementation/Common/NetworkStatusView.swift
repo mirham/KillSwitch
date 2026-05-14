@@ -33,6 +33,7 @@ struct NetworkStatusView: View {
     var body: some View {
         StatusCard(
             imageName: appState.network.firstPhysicalInterface?.type.icon
+                ?? appState.network.activeNetworkInterfaces.first(where: {$0.isPhysical})?.type.icon
                 ?? NetworkInterfaceType.unknown.icon,
             title: Constants.network,
             cardBackgroundColor: status.getBackgroundColor(for: colorScheme),
@@ -70,7 +71,7 @@ struct NetworkStatusView: View {
                 get: { userIntentOn },
                 set: { newValue in Task { await toggleNetworkAsync(enable: newValue) } }
             ))
-            .toggleStyle(.switch)
+            .toggleStyle(.nativeSwitch)
             .focusable(false)
             .labelsHidden()
             .disabled(isBusy)

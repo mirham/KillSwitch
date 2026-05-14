@@ -20,14 +20,14 @@ struct MonitoringStatusView: View {
     
     private var status: MonitoringStatusType {
         appState.monitoring.isEnabled
-        ? .on
-        : .off
+            ? .on
+            : .off
     }
     private var isEnabled: Bool { appState.monitoring.isEnabled }
     private var hintText: String {
         isEnabled
-        ? Constants.hintClickToDisableMonitoring
-        : Constants.hintClickToEnableMonitoring
+            ? Constants.hintClickToDisableMonitoring
+            : Constants.hintClickToEnableMonitoring
     }
     
     var body: some View {
@@ -64,7 +64,7 @@ struct MonitoringStatusView: View {
             get: { isEnabled },
             set: { _ in toggleMonitoring() }
         ))
-        .toggleStyle(.switch)
+        .toggleStyle(.nativeSwitch)
         .focusable(false)
         .labelsHidden()
         .pointerOnHover()

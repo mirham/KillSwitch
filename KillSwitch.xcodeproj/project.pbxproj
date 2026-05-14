@@ -73,6 +73,8 @@
 		357CF4EE2FB5FD2F00FF7859 /* WindowRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 357CF4ED2FB5FD2D00FF7859 /* WindowRegistry.swift */; };
 		357CF4F02FB5FF2E00FF7859 /* WindowType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 357CF4EF2FB5FF2B00FF7859 /* WindowType.swift */; };
 		357CF4F52FB6327600FF7859 /* ButtonType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 357CF4F42FB6327200FF7859 /* ButtonType.swift */; };
+		357CF4F72FB679C200FF7859 /* SwitchToggleStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 357CF4F62FB679BF00FF7859 /* SwitchToggleStyle.swift */; };
+		357CF4F92FB67A2400FF7859 /* ToggleStyleExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 357CF4F82FB67A1E00FF7859 /* ToggleStyleExtensions.swift */; };
 		3582BF612C59073F004E0B80 /* IpAddressContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3582BF602C59073F004E0B80 /* IpAddressContainerView.swift */; };
 		3582BF632C59345E004E0B80 /* InfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3582BF622C59345E004E0B80 /* InfoView.swift */; };
 		3589AB282FA202A700D7F3A8 /* DnsServiceType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3589AB272FA2029E00D7F3A8 /* DnsServiceType.swift */; };
@@ -207,6 +209,8 @@
 		357CF4ED2FB5FD2D00FF7859 /* WindowRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowRegistry.swift; sourceTree = "<group>"; };
 		357CF4EF2FB5FF2B00FF7859 /* WindowType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowType.swift; sourceTree = "<group>"; };
 		357CF4F42FB6327200FF7859 /* ButtonType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonType.swift; sourceTree = "<group>"; };
+		357CF4F62FB679BF00FF7859 /* SwitchToggleStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchToggleStyle.swift; sourceTree = "<group>"; };
+		357CF4F82FB67A1E00FF7859 /* ToggleStyleExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToggleStyleExtensions.swift; sourceTree = "<group>"; };
 		3582BF602C59073F004E0B80 /* IpAddressContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IpAddressContainerView.swift; sourceTree = "<group>"; };
 		3582BF622C59345E004E0B80 /* InfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoView.swift; sourceTree = "<group>"; };
 		3589AB272FA2029E00D7F3A8 /* DnsServiceType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DnsServiceType.swift; sourceTree = "<group>"; };
@@ -405,6 +409,7 @@
 		3540326D2C5E695A002624D2 /* Styles */ = {
 			isa = PBXGroup;
 			children = (
+				357CF4F62FB679BF00FF7859 /* SwitchToggleStyle.swift */,
 				35DD1C4D2C0FA9D2003AA3ED /* CheckToggleStyle.swift */,
 			);
 			path = Styles;
@@ -469,6 +474,7 @@
 				35C218AB2C6E21A600964A7B /* ColorExtensions.swift */,
 				356580D12FA3AE4300A6BBC5 /* TextExtensions.swift */,
 				353BA4992FAE42CE004BC97D /* TypeExtensions.swift */,
+				357CF4F82FB67A1E00FF7859 /* ToggleStyleExtensions.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -768,6 +774,7 @@
 				35A6E4202F9777CF00731FF3 /* ToolbarButton.swift in Sources */,
 				3570E4822C249FC300CB5D42 /* GeneralSettingsEditView.swift in Sources */,
 				35DD1C4C2C0F96E1003AA3ED /* NetworkStatusView.swift in Sources */,
+				357CF4F92FB67A2400FF7859 /* ToggleStyleExtensions.swift in Sources */,
 				353BA4982FACE4B7004BC97D /* StatusCard.swift in Sources */,
 				3540323A2C5E30A9002624D2 /* MissingAllowedIpDialogView.swift in Sources */,
 				357154FD2C17422600A41AA4 /* IpInfo.swift in Sources */,
@@ -813,6 +820,7 @@
 				354BEEB42DE8974100EFD1B2 /* NetworkStateUpdate.swift in Sources */,
 				353179312C29CD700030FDF1 /* ComputerService.swift in Sources */,
 				35F12F3B2C15B3BE00AFA738 /* NetworkInterfaceType.swift in Sources */,
+				357CF4F72FB679C200FF7859 /* SwitchToggleStyle.swift in Sources */,
 				357CF4E82FB5FC8D00FF7859 /* WindowController.swift in Sources */,
 				357763E82FB3AA5A00B44A16 /* NetworkEnforcementServiceType.swift in Sources */,
 				35A6E42E2F98F8B200731FF3 /* SecurityBadgeView.swift in Sources */,
