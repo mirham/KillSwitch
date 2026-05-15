@@ -21,7 +21,11 @@ final class MonitoringService: MonitoringServiceType {
     private var monitoringTask: Task<Void, Never>?
     
     init() {
-        if appState.monitoring.isEnabled {
+        let isMonitoringEnabled = MainActor.assumeIsolated {
+            appState.monitoring.isEnabled
+        }
+        
+        if isMonitoringEnabled {
             startMonitoring()
         }
     }
@@ -39,32 +43,25 @@ final class MonitoringService: MonitoringServiceType {
             
             await enableMonitoringAsync()
             
-            while shouldContinueMonitoring() {
+            while await shouldContinueMonitoringAsync() {
                 await handleMonitoringCycleAsync()
             }
         }
     }
     
-    func stopMonitoring() {
+    func stopMonitoringAsync() async {
         monitoringTask?.cancel()
         monitoringTask = nil
         
-        stopLeaksMonitoring()
+        await stopLeaksMonitoringAsync()
         computerService.stopSleepPreventing()
         
         loggingService.write(
             message: Constants.logMonitoringHasBeenDisabled,
             type: .success)
         
-        Task { @MainActor [weak self] in
-            guard let self
-            else { return }
-            
-            appState.applyMonitoringUpdate(
-                MonitoringStateUpdateBuilder()
-                    .withIsMonitoringEnabled(false)
-                    .build()
-            )
+        await updateStatusAsync {
+            $0.withIsMonitoringEnabled(false)
         }
     }
     
@@ -80,7 +77,10 @@ final class MonitoringService: MonitoringServiceType {
     }
     
     private func handleMonitoringCycleAsync() async {
-        updateLeaksMonitoring()
+        let networkStatus = await MainActor.run { appState.network.status }
+        let isVpnConnected = await MainActor.run { appState.network.isVpnConnected }
+        
+        await updateLeaksMonitoringAsync(isVpnConnected: isVpnConnected)
         
         try? await Task.sleep(nanoseconds: Constants.defaultMonitoringIntervalNanoseconds)
         
@@ -89,37 +89,41 @@ final class MonitoringService: MonitoringServiceType {
         
         monitoringTime = monitoringTime &+ Constants.defaultMonitoringInterval
         
-        guard appState.network.status == .on
+        guard networkStatus == .on
         else { return }
         
         await runPeriodicChecksAsync()
     }
     
-    private func updateLeaksMonitoring() {
-        if appState.network.isVpnConnected {
-            startLeaksMonitoring()
+    private func updateLeaksMonitoringAsync(isVpnConnected: Bool) async {
+        if isVpnConnected {
+            await startLeaksMonitoringAsync()
         } else {
-            stopLeaksMonitoring()
+            await stopLeaksMonitoringAsync()
         }
     }
     
-    private func startLeaksMonitoring() {
-        dnsService.startMonitoring()
-        webRtcService.startMonitoring()
+    private func startLeaksMonitoringAsync() async {
+        await dnsService.startMonitoringAsync()
+        await webRtcService.startMonitoringAsync()
     }
     
-    private func stopLeaksMonitoring() {
-        webRtcService.stopMonitoring()
-        dnsService.stopMonitoring()
+    private func stopLeaksMonitoringAsync() async {
+        await webRtcService.stopMonitoringAsync()
+        await dnsService.stopMonitoringAsync()
     }
     
-    private func shouldContinueMonitoring() -> Bool {
-        return !Task.isCancelled && appState.monitoring.isEnabled
+    private func shouldContinueMonitoringAsync() async -> Bool {
+        await MainActor.run {
+            !Task.isCancelled && appState.monitoring.isEnabled
+        }
     }
     
     private func runPeriodicChecksAsync() async {
-        let checkIp = appState.userData.periodicIpCheck &&
-        monitoringTime % appState.userData.intervalBetweenChecks == 0
+        let checkIp = await MainActor.run {
+            appState.userData.periodicIpCheck &&
+            monitoringTime % appState.userData.intervalBetweenChecks == 0
+        }
         
         if checkIp {
             let result = await ipService.getPublicIpAsync(
@@ -129,8 +133,8 @@ final class MonitoringService: MonitoringServiceType {
             await handleUpdatedPublicIpResultAsync(result)
         }
         
-        networkEnforcementService.enforceIpApiAvailability()
-        networkEnforcementService.enforceIpAllowlist()
+        await networkEnforcementService.enforceIpApiAvailabilityAsync()
+        await networkEnforcementService.enforceIpAllowlistAsync()
     }
         
     private func handleUpdatedPublicIpResultAsync(
@@ -138,7 +142,7 @@ final class MonitoringService: MonitoringServiceType {
         guard !Task.isCancelled
         else { return }
         
-        networkEnforcementService.enforce(for: result)
+        await networkEnforcementService.enforceAsync(for: result)
         
         guard let ipInfo = result.result
         else {
@@ -149,8 +153,12 @@ final class MonitoringService: MonitoringServiceType {
             
             return
         }
+            
+        let currentPublicIp = await MainActor.run {
+            appState.network.publicIp?.ipAddress
+        }
         
-        if ipInfo.ipAddress != appState.network.publicIp?.ipAddress {
+        if ipInfo.ipAddress != currentPublicIp {
             await updateStatusAsync { $0.withPublicIp(ipInfo) }
             
             loggingService.write(

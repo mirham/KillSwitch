@@ -22,16 +22,12 @@ struct MenuBarView: View {
     var body: some View {
         VStack(spacing: 3) {
             CurrentIpView()
-                .environmentObject(appState)
                 .scaleEffect(Constants.menuBarScaleCurrentIp)
             MonitoringStatusView()
-                .environmentObject(appState)
                 .scaleEffect(Constants.menuBarScaleCurrentIp)
             NetworkStatusView()
-                .environmentObject(appState)
                 .scaleEffect(Constants.menuBarScaleCurrentIp)
             ProcessesStatusView()
-                .environmentObject(appState)
                 .scaleEffect(Constants.menuBarScaleCurrentIp)
             Divider()
                 .padding(.top, 5)

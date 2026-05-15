@@ -7,6 +7,7 @@
 
 import AppKit
 
+@MainActor
 class WindowManager {
     private var builders: [WindowType: () -> NSView] = [:]
     private var controllers: [WindowType: WindowController] = [:]

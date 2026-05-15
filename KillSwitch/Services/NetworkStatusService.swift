@@ -51,13 +51,22 @@ final class NetworkStatusService: ApiCallable, NetworkStatusServiceType {
                 activeInterfaces: path.availableInterfaces
                     .map { $0.asNetworkInterface() }
             )
+            let activeInterfaces = path.availableInterfaces
+                .map { $0.asNetworkInterface() }
             
-            guard appState.network.isConnectionChanged(
-                status: quickStatus,
-                activeNetworkInterfaces: path.availableInterfaces
-                    .map { $0.asNetworkInterface() }
-            )
-            else { return }
+            Task { [weak self] in
+                guard let self else { return }
+                
+                let changed = await MainActor.run {
+                    self.appState.network.isConnectionChanged(
+                        status: quickStatus,
+                        activeNetworkInterfaces: activeInterfaces
+                    )
+                }
+                
+                guard changed else { return }
+                handleNetworkChange(path: path)
+            }
             
             handleNetworkChange(path: path)
         }
@@ -75,7 +84,7 @@ final class NetworkStatusService: ApiCallable, NetworkStatusServiceType {
                     nanoseconds: Constants.defaultCheckConnectionIntervalNanoseconds
                 )
                 
-                guard shouldFetchPublicIp()
+                guard await shouldFetchPublicIpAsync()
                 else { continue }
                 
                 await networkService.refreshPublicIpAsync()
@@ -87,7 +96,8 @@ final class NetworkStatusService: ApiCallable, NetworkStatusServiceType {
         ipUpdateTask?.cancel()
         
         ipUpdateTask = Task { [weak self] in
-            guard let self else { return }
+            guard let self
+            else { return }
             
             let activeInterfaces = await determineNetworkInterfacesAsync(path: path)
             let physicalInterfaces = networkService.getPhysicalInterfaces()
@@ -95,9 +105,14 @@ final class NetworkStatusService: ApiCallable, NetworkStatusServiceType {
                 path: path,
                 activeInterfaces: activeInterfaces)
             
-            guard shouldUpdateNetworkState(
-                status: status,
-                activeInterfaces: activeInterfaces)
+            let shouldUpdate = await MainActor.run {
+                self.appState.network.isConnectionChanged(
+                    status: status,
+                    activeNetworkInterfaces: activeInterfaces
+                )
+            }
+            
+            guard shouldUpdate
             else { return }
             
             await updateStatusAsync {
@@ -109,15 +124,6 @@ final class NetworkStatusService: ApiCallable, NetworkStatusServiceType {
             
             await refreshPublicIpIfNeededAsync(status: status)
         }
-    }
-    
-    private func shouldUpdateNetworkState(
-        status: NetworkStatusType,
-        activeInterfaces: [NetworkInterface]) -> Bool {
-        return appState.network.isConnectionChanged(
-            status: status,
-            activeNetworkInterfaces: activeInterfaces
-        )
     }
     
     private func determineNetworkStatus(
@@ -155,12 +161,14 @@ final class NetworkStatusService: ApiCallable, NetworkStatusServiceType {
         return result
     }
     
-    private func shouldFetchPublicIp() -> Bool {
-        guard appState.network.status == .on,
-              !appState.network.isFetchingIp
-        else { return false }
-        
-        return appState.network.publicIp?.hasLocation() != true
+    private func shouldFetchPublicIpAsync() async -> Bool {
+        await MainActor.run {
+            guard appState.network.status == .on,
+                  !appState.network.isFetchingIp
+            else { return false }
+            
+            return appState.network.publicIp?.hasLocation() != true
+        }
     }
     
     private func refreshPublicIpIfNeededAsync(status: NetworkStatusType) async {

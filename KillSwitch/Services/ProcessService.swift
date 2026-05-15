@@ -47,14 +47,12 @@ final class ProcessService: ShellAccessible, ProcessServiceType {
     
     private func startProcessesMonitoring() {
         monitoringTask = Task { [weak self] in
-            guard let self
-            else { return }
+            guard let self else { return }
             
             while !Task.isCancelled {
                 try? await Task.sleep(nanoseconds: Constants.defaultProcessesMonitoringIntervalNanoseconds)
                 
-                guard !Task.isCancelled
-                else { break }
+                guard !Task.isCancelled else { break }
                 
                 let snapshot = await MainActor.run {(
                     appsToClose: self.appState.userData.appsToClose,
@@ -67,8 +65,7 @@ final class ProcessService: ShellAccessible, ProcessServiceType {
                     hasWebRtcLeak: self.appState.network.hasWebRtcLeak
                 )}
                 
-                guard !snapshot.appsToClose.isEmpty
-                else { continue }
+                guard !snapshot.appsToClose.isEmpty else { continue }
                 
                 let activeProcesses = NSWorkspace.shared.runningApplications
                 let killingProcesses = buildProcessesToKill(
@@ -80,7 +77,7 @@ final class ProcessService: ShellAccessible, ProcessServiceType {
                 
                 await updateStatusAsync {
                     $0.withKilllingProcesses(killingProcesses)
-                    .withMonitoringProcesses(monitoringProcesses)
+                        .withMonitoringProcesses(monitoringProcesses)
                 }
                 
                 let hasNetworkLeaks = snapshot.hasDnsLeak || snapshot.hasWebRtcLeak
@@ -93,21 +90,17 @@ final class ProcessService: ShellAccessible, ProcessServiceType {
                     && snapshot.securityType == .notSecure
                     && (snapshot.autoCloseApps || isUnsafeForExtendedProtection)
                 
-                if shouldKillActiveProcesses {
-                    killProcesses(processes: appState.system.killingProcesses)
-                }
-                
                 let shouldKillMonitoringProcesses = !monitoringProcesses.isEmpty
                     && snapshot.isMonitoringEnabled
                     && snapshot.useExtendedProtection
                     && hasNetworkLeaks
                 
                 if shouldKillActiveProcesses {
-                    killProcesses(processes: appState.system.killingProcesses)
+                    killProcesses(processes: killingProcesses)
                 }
                 
                 if shouldKillMonitoringProcesses {
-                    killProcesses(processes: appState.system.monitoringProcesses)
+                    killProcesses(processes: monitoringProcesses)
                 }
             }
         }

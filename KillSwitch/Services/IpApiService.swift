@@ -11,8 +11,10 @@ import Factory
 final class IpApiService: ApiCallable, IpApiServiceType {
     @Injected(\.appState) private var appState
     
-    func getRandomActiveIpApi() -> IpApiInfo? {
-        appState.userData.ipApis.filter { $0.isActive() }.randomElement()
+    func getRandomActiveIpApiAsync() async -> IpApiInfo? {
+        await MainActor.run {
+            appState.userData.ipApis.filter { $0.isActive() }.randomElement()
+        }
     }
     
     func prepareIpInfoApiUrl(publicIp: String, ipInfoApiUrl: String) -> String? {

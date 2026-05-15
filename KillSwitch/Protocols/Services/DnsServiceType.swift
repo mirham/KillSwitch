@@ -8,6 +8,6 @@
 protocol DnsServiceType {
     @discardableResult
     func checkForLeakAsync() async -> Bool
-    func startMonitoring()
-    func stopMonitoring()
+    func startMonitoringAsync() async
+    func stopMonitoringAsync() async
 }

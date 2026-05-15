@@ -6,7 +6,7 @@
 //
 
 protocol NetworkEnforcementServiceType {
-    func enforce(for result: OperationResult<IpInfoBase>)
-    func enforceIpAllowlist()
-    func enforceIpApiAvailability()
+    func enforceAsync(for result: OperationResult<IpInfoBase>) async
+    func enforceIpAllowlistAsync() async
+    func enforceIpApiAvailabilityAsync() async
 }

@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct ProcessInfo {
+struct ProcessInfo: Equatable {
     var pid: pid_t
     var description: String
     var url: String

@@ -13,6 +13,8 @@ struct NetworkStatusView: View {
     @Environment(\.controlActiveState) private var controlActiveState
     @Environment(\.colorScheme) private var colorScheme
     
+    @State private var toggleTask: Task<Void, Never>?
+    
     @Injected(\.networkService) private var networkService
     @Injected(\.networkStatusService) private var networkStatusService
     @Injected(\.windowManager) private var windowManager
@@ -32,9 +34,7 @@ struct NetworkStatusView: View {
     
     var body: some View {
         StatusCard(
-            imageName: appState.network.firstPhysicalInterface?.type.icon
-                ?? appState.network.activeNetworkInterfaces.first(where: {$0.isPhysical})?.type.icon
-                ?? NetworkInterfaceType.unknown.icon,
+            imageName: appState.network.currentPhysicalInterfaceIcon,
             title: Constants.network,
             cardBackgroundColor: status.getBackgroundColor(for: colorScheme),
             cardBorderColor: status.getBorderColor(for: colorScheme)
@@ -69,7 +69,10 @@ struct NetworkStatusView: View {
             
             Toggle(String(), isOn: Binding(
                 get: { userIntentOn },
-                set: { newValue in Task { await toggleNetworkAsync(enable: newValue) } }
+                set: { newValue in
+                    toggleTask?.cancel()
+                    toggleTask = Task { await toggleNetworkAsync(enable: newValue) }
+                }
             ))
             .toggleStyle(.nativeSwitch)
             .focusable(false)

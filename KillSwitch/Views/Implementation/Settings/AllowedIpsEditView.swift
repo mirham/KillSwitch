@@ -220,8 +220,8 @@ struct AllowedIpsEditView: IpAddressContainerView {
             .removeAll { $0 == ipAddress }
     }
     
-    private func deleteAllowedIpAndStopMonitoring(_ ipAddress: IpInfo) {
-        monitoringService.stopMonitoring()
+    private func deleteAllowedIpAndStopMonitoringAsync(_ ipAddress: IpInfo) async {
+        await monitoringService.stopMonitoringAsync()
         deleteAllowedIp(ipAddress)
     }
     
@@ -247,7 +247,7 @@ struct AllowedIpsEditView: IpAddressContainerView {
                     title: Text(Constants.dialogHeaderLastAllowedIpDeleting),
                     message: Text(String(format: Constants.dialogBodyLastAllowedIpDeleting, ip.ipAddress)),
                     primaryButton: .destructive(Text(Constants.delete)) {
-                        deleteAllowedIpAndStopMonitoring(ip)
+                        Task { await deleteAllowedIpAndStopMonitoringAsync(ip) }
                         alertState = nil
                     },
                     secondaryButton: .cancel {

@@ -46,7 +46,6 @@ struct SettingsView: View {
                 icon: Constants.iconLeak
             ) {
                 LeaksEditView()
-                    .environmentObject(appState)
                     .fillMaxSize()
             }
             FixedSidebarTabView.TabItem(
@@ -75,7 +74,6 @@ struct SettingsView: View {
                 icon: Constants.iconBulletRectangle
             ) {
                 IpApisEditView()
-                    .environmentObject(appState)
                     .fillMaxSize()
             }
             FixedSidebarTabView.TabItem(
@@ -83,7 +81,6 @@ struct SettingsView: View {
                 icon: Constants.iconBulletRectangle
             ) {
                 IpInfoApiEditView()
-                    .environmentObject(appState)
                     .fillMaxSize()
             }
             FixedSidebarTabView.TabItem(
@@ -91,7 +88,6 @@ struct SettingsView: View {
                 icon: Constants.iconPermissions
             ) {
                 PermissionsView()
-                    .environmentObject(appState)
                     .fillMaxSize()
             }
         }

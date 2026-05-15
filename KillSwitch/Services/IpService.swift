@@ -22,8 +22,10 @@ final class IpService: ApiCallable, IpServiceType {
                 error: IpError.taskCancelled.localizedDescription)
         }
         
+        let randomApiUrl = await ipApiService.getRandomActiveIpApiAsync()?.url
+        
         let snapshot = await MainActor.run {(
-            apiUrl: ipApiUrl ?? ipApiService.getRandomActiveIpApi()?.url,
+            apiUrl: ipApiUrl ?? randomApiUrl,
             ipInfoUrl: appState.userData.ipInfoApiUrl,
             keyMapping: appState.userData.ipInfoApiKeyMapping
         )}
