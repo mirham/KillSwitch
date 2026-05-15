@@ -16,6 +16,7 @@ struct MonitoringStatusView: View {
     @Injected(\.monitoringService) private var monitoringService
     @Injected(\.windowManager) private var windowManager
     
+    @State private var toggleTask: Task<Void, Never>?
     @State private var isHovering = false
     
     private var status: MonitoringStatusType {
@@ -62,7 +63,10 @@ struct MonitoringStatusView: View {
     private var toggleView: some View {
         Toggle(String(), isOn: Binding(
             get: { isEnabled },
-            set: { _ in toggleMonitoring() }
+            set: { _ in
+                toggleTask?.cancel()
+                toggleTask = Task { await toggleMonitoringAsync() }
+            }
         ))
         .toggleStyle(.nativeSwitch)
         .focusable(false)
@@ -76,11 +80,11 @@ struct MonitoringStatusView: View {
     
     // MARK: Private functions
     
-    private func toggleMonitoring() {
+    private func toggleMonitoringAsync() async {
         isHovering = false
         
         if appState.monitoring.isEnabled {
-            monitoringService.stopMonitoring()
+            await monitoringService.stopMonitoringAsync()
         } else {
             guard !appState.userData.allowedIps.isEmpty
             else {
@@ -88,6 +92,7 @@ struct MonitoringStatusView: View {
                 
                 return
             }
+            
             monitoringService.startMonitoring()
         }
     }

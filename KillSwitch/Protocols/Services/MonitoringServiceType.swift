@@ -7,5 +7,5 @@
 
 protocol MonitoringServiceType {
     func startMonitoring()
-    func stopMonitoring()
+    func stopMonitoringAsync() async
 }

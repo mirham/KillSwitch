@@ -66,8 +66,8 @@ struct LeaksEditView: View {
             hint: Constants.hintPeriodicDnsLeakCheck,
             isOn: $appState.userData.dnsLeakCheck,
             settingType: .periodicDnsLeakCheck,
-            onEnabled: dnsService.startMonitoring,
-            onDisabled: dnsService.stopMonitoring
+            onEnabled: dnsService.startMonitoringAsync,
+            onDisabled: dnsService.stopMonitoringAsync
         )
     }
     
@@ -100,8 +100,8 @@ struct LeaksEditView: View {
             hint: Constants.hintPeriodicWebRtcLeakCheck,
             isOn: $appState.userData.webRtcLeakCheck,
             settingType: .periodicWebRtcLeakCheck,
-            onEnabled: webRtcService.startMonitoring,
-            onDisabled: webRtcService.stopMonitoring
+            onEnabled: webRtcService.startMonitoringAsync,
+            onDisabled: webRtcService.startMonitoringAsync
         )
         webRtcMonitoredAppsRow
             .isHidden(!appState.userData.webRtcLeakCheck)
@@ -154,8 +154,8 @@ struct LeaksEditView: View {
         hint: String,
         isOn: Binding<Bool>,
         settingType: SettingType,
-        onEnabled: (() -> Void)? = nil,
-        onDisabled: (() -> Void)? = nil
+        onEnabled: (() async -> Void)? = nil,
+        onDisabled: (() async -> Void)? = nil
     ) -> some View {
         HStack {
             Toggle(title, isOn: Binding<Bool>(
@@ -163,9 +163,9 @@ struct LeaksEditView: View {
                 set: { newValue in
                     isOn.wrappedValue = newValue
                     if newValue {
-                        onEnabled?()
+                        Task { await onEnabled?() }
                     } else {
-                        onDisabled?()
+                        Task { await onDisabled?() }
                     }
                 }
             ))

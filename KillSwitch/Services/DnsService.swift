@@ -18,36 +18,42 @@ final class DnsService: DnsServiceType, ShellAccessible {
         pollingTask?.cancel()
     }
     
-    func startMonitoring() {
-        guard pollingTask == nil, appState.current.isDnsLeakCheckEnabled
+    func startMonitoringAsync() async {
+        let snapshot = await MainActor.run {(
+            isDnsLeakCheckEnabled: appState.current.isDnsLeakCheckEnabled,
+            dnsLeakCheckInterval: appState.userData.dnsLeakCheckInterval
+        )}
+        
+        guard pollingTask == nil, snapshot.isDnsLeakCheckEnabled
         else { return }
         
         logger.write(
             message: String(
                 format: Constants.logDnsMonitoringEnabled,
-                Int(self.appState.userData.dnsLeakCheckInterval)),
+                Int(snapshot.dnsLeakCheckInterval)),
             type: .success)
         
         pollingTask = Task { [weak self] in
-            guard let self
-            else { return }
+            guard let self else { return }
             
             while !Task.isCancelled {
-                if appState.current.isDnsLeakCheckEnabled {
-                    let hasLeak = await self.checkForLeakAsync()
+                let isEnabled = await MainActor.run {  self.appState.current.isDnsLeakCheckEnabled }
+                let interval = await MainActor.run { self.appState.userData.dnsLeakCheckInterval }
+                
+                if isEnabled {
+                    let hasLeak = await checkForLeakAsync()
                     
-                    await self.updateStatusAsync { builder in
+                    await updateStatusAsync { builder in
                         builder.withHasDnsLeakIp(hasLeak)
                     }
                 }
                 
-                try? await Task.sleep(
-                    for: .seconds(appState.userData.dnsLeakCheckInterval))
+                try? await Task.sleep(for: .seconds(interval))
             }
         }
     }
     
-    func stopMonitoring() {
+    func stopMonitoringAsync() async {
         if pollingTask != nil {
             logger.write(
                 message: Constants.logDnsMonitoringDisabled,
@@ -57,10 +63,8 @@ final class DnsService: DnsServiceType, ShellAccessible {
         pollingTask?.cancel()
         pollingTask = nil
         
-        Task {
-            await updateStatusAsync { builder in
-                builder.withHasDnsLeakIp(false)
-            }
+        await updateStatusAsync { builder in
+            builder.withHasDnsLeakIp(false)
         }
     }
     

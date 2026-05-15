@@ -32,6 +32,8 @@ struct NetworkInterface: Hashable, Equatable {
     
     static func == (lhs: NetworkInterface, rhs: NetworkInterface) -> Bool {
         return lhs.name == rhs.name
+         && lhs.type == rhs.type
+         && lhs.friendlyName == rhs.friendlyName
     }
     
     func hash(into hasher: inout Hasher) {

@@ -20,29 +20,42 @@ final class WebRtcService: WebRtcServiceType {
         pollingTask?.cancel()
     }
     
-    func startMonitoring() {
-        guard pollingTask == nil, appState.current.isWebRtcLeakCheckEnabled
+    func startMonitoringAsync() async {
+        let snapshot = await MainActor.run {(
+            isWebRtcLeakCheckEnabled: appState.current.isWebRtcLeakCheckEnabled,
+            webRtcLeakCheckInterval: appState.userData.webRtcLeakCheckInterval
+        )}
+        
+        guard pollingTask == nil, snapshot.isWebRtcLeakCheckEnabled
         else { return }
         
         logger.write(
-            message: String(format: Constants.logWebRtcMonitoringEnabled, Int(appState.userData.webRtcLeakCheckInterval)),
+            message: String(format: Constants.logWebRtcMonitoringEnabled, Int(snapshot.webRtcLeakCheckInterval)),
             type: .success
         )
         
         pollingTask = Task { [weak self] in
-            guard let self
-            else { return }
+            guard let self else { return }
             
             while !Task.isCancelled {
-                if appState.current.isWebRtcLeakCheckEnabled {
+                let isEnabled = await MainActor.run {
+                    self.appState.current.isWebRtcLeakCheckEnabled
+                }
+                
+                let interval = await MainActor.run {
+                    self.appState.userData.webRtcLeakCheckInterval
+                }
+                
+                if isEnabled {
                     await checkForLeakAsync()
                 }
-                try? await Task.sleep(for: .seconds(appState.userData.webRtcLeakCheckInterval))
+                
+                try? await Task.sleep(for: .seconds(interval))
             }
         }
     }
     
-    func stopMonitoring() {
+    func stopMonitoringAsync() async {
         if pollingTask != nil {
             logger.write(
                 message: Constants.logWebRtcMonitoringDisabled,
@@ -54,17 +67,15 @@ final class WebRtcService: WebRtcServiceType {
         checkedApps.removeAll()
         previousRunningApps.removeAll()
         
-        Task {
-            await updateStatusAsync { builder in
-                builder.withHasWebRtcLeakIp(false)
-            }
+        await updateStatusAsync { builder in
+            builder.withHasWebRtcLeakIp(false)
         }
     }
     
     // MARK: Private functions
     
     private func checkForLeakAsync() async {
-        let current = currentRunningApps()
+        let current = await currentRunningAppsAsync()
         let new = current.subtracting(previousRunningApps)
         let old = previousRunningApps.subtracting(current)
         
@@ -84,10 +95,11 @@ final class WebRtcService: WebRtcServiceType {
     }
     
     private func evaluateNewAppsAsync(current apps: Set<String>) async -> Bool {
-        let newApps = appState.userData.webRtcMonitoredApps.filter { app in
-            let name = app.name.lowercased()
-            
-            return apps.contains(name) && !checkedApps.contains(name)
+        let newApps = await MainActor.run {
+            appState.userData.webRtcMonitoredApps.filter { app in
+                let name = app.name.lowercased()
+                return apps.contains(name) && !checkedApps.contains(name)
+            }
         }
         
         guard !newApps.isEmpty else {
@@ -313,14 +325,16 @@ final class WebRtcService: WebRtcServiceType {
         return !isProtected
     }
     
-    private func currentRunningApps() -> Set<String> {
-        let enabledApps = Set(appState.userData.webRtcMonitoredApps
-            .filter { $0.enabled }
-            .map { $0.name.lowercased() })
-        
-        return Set(appState.system.monitoringProcesses
-            .map { $0.name.lowercased() }
-            .filter { enabledApps.contains($0) })
+    private func currentRunningAppsAsync() async -> Set<String> {
+        await MainActor.run {
+            let enabledApps = Set(appState.userData.webRtcMonitoredApps
+                .filter { $0.enabled }
+                .map { $0.name.lowercased() })
+            
+            return Set(appState.system.monitoringProcesses
+                .map { $0.name.lowercased() }
+                .filter { enabledApps.contains($0) })
+        }
     }
     
     private func log(app: String, message: String, type: LogEntryType) {

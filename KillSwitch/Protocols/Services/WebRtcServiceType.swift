@@ -6,6 +6,6 @@
 //
 
 protocol WebRtcServiceType {
-    func startMonitoring()
-    func stopMonitoring()
+    func startMonitoringAsync() async
+    func stopMonitoringAsync() async
 }

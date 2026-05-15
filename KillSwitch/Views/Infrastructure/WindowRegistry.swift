@@ -7,19 +7,21 @@
 
 import AppKit
 import SwiftUI
+import Factory
 
 @MainActor
 class WindowRegistry {
-
-    private var appState: AppState
     private let manager: WindowManager
+    private let appState: AppState = Container.shared.appState()
     
-    init(manager: WindowManager, appState: AppState) {
+    init(manager: WindowManager) {
         self.manager = manager
-        self.appState = appState
+        registerAll()
     }
     
-    func registerAll() {
+    // MARK: Private functions
+    
+    private func registerAll() {
         manager.register(name: .main) {
             NSHostingView(rootView: MainView()
                 .environmentObject(self.appState))
@@ -37,7 +39,7 @@ class WindowRegistry {
                 .environmentObject(self.appState))
         }
         manager.register(name: .dialogNoAllowedIp) {
-            NSHostingView(rootView:MissingAllowedIpDialogView()
+            NSHostingView(rootView: MissingAllowedIpDialogView()
                 .environmentObject(self.appState))
         }
         manager.register(name: .dialogKillProcesses) {

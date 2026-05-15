@@ -33,20 +33,15 @@ struct MainView: View {
     private var sidebarContent: some View {
         VStack {
             CurrentIpView(showDetailedIssues: true)
-                .environmentObject(appState)
                 .padding(.top)
             Spacer()
                 .frame(height: 15)
             MonitoringStatusView()
-                .environmentObject(appState)
             NetworkStatusView()
-                .environmentObject(appState)
             ProcessesStatusView()
-                .environmentObject(appState)
             Spacer()
                 .frame(minHeight: 20)
             ActiveConnectionsView()
-                .environmentObject(appState)
         }
     }
     
@@ -54,7 +49,6 @@ struct MainView: View {
     private var detailContent: some View {
         VStack {
             LogView()
-                .environmentObject(appState)
         }
     }
 }

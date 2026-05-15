@@ -7,6 +7,7 @@
 
 import AppKit
 
+@MainActor
 class WindowController: NSWindowController, NSWindowDelegate {
     var onWindowClosed: (() -> Void)?
     
@@ -69,10 +70,8 @@ class WindowController: NSWindowController, NSWindowDelegate {
         window.makeKeyAndOrderFront(nil)
         
         if onTop {
-            DispatchQueue.main.async {
-                window.level = .floating
-                window.orderFrontRegardless()
-            }
+            window.level = .floating
+            window.orderFrontRegardless()
         }
     }
     

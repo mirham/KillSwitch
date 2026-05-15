@@ -8,26 +8,17 @@
 import SwiftUI
 import Factory
 
+@MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
     @Injected(\.appState) private var appState
-    @Injected(\.windowRegistry) private var registry
+    @Injected(\.windowManager) private var windowManager
     
     func orderFrontStandardAboutPanel(_ sender: Any?) {
-        for window in NSApplication.shared.windows {
-            if let identifier = window.identifier?.rawValue,
-               identifier.starts(with: WindowType.info.rawValue) {
-                window.makeKeyAndOrderFront(nil)
-                NSApp.activate(ignoringOtherApps: true)
-                return
-            }
-        }
-        
-        NSApplication.shared.orderFrontStandardAboutPanel(sender)
+        windowManager.open(name: .info)
     }
     
     func applicationDidFinishLaunching(_ notification: Notification) {
-        NSApp.setActivationPolicy(.accessory) 
-        registry.registerAll()
+        NSApp.setActivationPolicy(.accessory)
     }
     
     func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
