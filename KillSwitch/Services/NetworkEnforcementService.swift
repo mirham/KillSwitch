@@ -26,7 +26,7 @@ final class NetworkEnforcementService: NetworkEnforcementServiceType {
             isFetchingIp: appState.network.isFetchingIp,
             publicIp: appState.network.publicIp,
             autoCloseApps: appState.userData.autoCloseApps,
-            killingProcesses: appState.system.killingProcesses
+            killingProcesses: appState.system.closingProcesses
         )}
         
         guard

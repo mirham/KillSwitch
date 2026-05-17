@@ -70,7 +70,7 @@ struct KillProcessesDialogView: View {
     @ViewBuilder
     private var processesList: some View {
         VStack(alignment: .leading) {
-            ForEach(appState.system.killingProcesses, id: \.pid) { processInfo in
+            ForEach(appState.system.closingProcesses, id: \.pid) { processInfo in
                 HStack {
                     Image(nsImage: NSWorkspace.shared.icon(forFile: processInfo.url))
                         .frame(width: 32, height: 32)
@@ -106,7 +106,7 @@ struct KillProcessesDialogView: View {
     
     private func handleYesButtonClick() {
         processService.killProcesses(
-            processes: appState.system.killingProcesses)
+            processes: appState.system.closingProcesses)
         closeDialog()
     }
     

@@ -9,14 +9,14 @@ final class ProcessesStateUpdateBuilder {
     private var update = ProcessesStateUpdate()
     
     @discardableResult
-    func withKilllingProcesses (_ killingProcesses: [ProcessInfo]?) -> Self {
-        update.killingProcesses = killingProcesses
+    func withClosingProcesses (_ closingProcesses: [ProcessInfo]?) -> Self {
+        update.closingProcesses = closingProcesses
         
         return self
     }
     
-    func withMonitoringProcesses(_ monitoringProcesses: [ProcessInfo]?) -> Self {
-        update.monitoringProcesses = monitoringProcesses
+    func withWebRtcMonitoredProcesses(_ webRtcMonitoredProcesses: [ProcessInfo]?) -> Self {
+        update.webRtcMonitoredProcesses = webRtcMonitoredProcesses
         
         return self
     }
