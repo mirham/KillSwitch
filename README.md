@@ -93,6 +93,9 @@ If you're seeing unwanted leak warnings in the log, you can disable the checks o
 
 ## Troubleshooting
 ### The app doesn't start after installation
+> [!TIP]
+> The app lives in the menu bar by default. If you use a menu bar manager like Bartender or Ice, it may have hidden the app menubar item — check there first before troubleshooting further.
+
 This happens because macOS quarantines apps that aren't downloaded from the App Store or signed by a verified developer. On the first launch, macOS may silently block the app even after you click "Open Anyway" in Security & Privacy settings.
 
 **Fix:**
