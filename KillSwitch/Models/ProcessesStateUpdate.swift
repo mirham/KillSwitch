@@ -6,6 +6,6 @@
 //
 
 struct ProcessesStateUpdate {
-    var killingProcesses: [ProcessInfo]?
-    var monitoringProcesses: [ProcessInfo]?
+    var closingProcesses: [ProcessInfo]?
+    var webRtcMonitoredProcesses: [ProcessInfo]?
 }

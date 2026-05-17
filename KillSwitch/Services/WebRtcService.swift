@@ -331,7 +331,7 @@ final class WebRtcService: WebRtcServiceType {
                 .filter { $0.enabled }
                 .map { $0.name.lowercased() })
             
-            return Set(appState.system.monitoringProcesses
+            return Set(appState.system.webRtcMonitoredProcesses
                 .map { $0.name.lowercased() }
                 .filter { enabledApps.contains($0) })
         }

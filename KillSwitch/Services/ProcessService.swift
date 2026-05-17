@@ -52,66 +52,96 @@ final class ProcessService: ShellAccessible, ProcessServiceType {
             while !Task.isCancelled {
                 try? await Task.sleep(nanoseconds: Constants.defaultProcessesMonitoringIntervalNanoseconds)
                 
-                guard !Task.isCancelled else { break }
+                guard !Task.isCancelled
+                else { break }
                 
-                let snapshot = await MainActor.run {(
-                    appsToClose: self.appState.userData.appsToClose,
-                    isMonitoringEnabled: self.appState.monitoring.isEnabled,
-                    autoCloseApps: self.appState.userData.autoCloseApps,
-                    securityType: self.appState.current.securityType,
-                    useExtendedProtection: self.appState.userData.useExtendedProtection,
-                    publicIp: self.appState.network.publicIp,
-                    hasDnsLeak: self.appState.network.hasDnsLeak,
-                    hasWebRtcLeak: self.appState.network.hasWebRtcLeak
-                )}
+                let snapshot = await captureSnapshot()
+                let (closingApps, webRtcMonitoredApps) = await buildAndUpdateProcessesAsync(
+                    snapshot: snapshot)
                 
-                guard !snapshot.appsToClose.isEmpty else { continue }
-                
-                let activeProcesses = NSWorkspace.shared.runningApplications
-                let killingProcesses = buildProcessesToKill(
-                    appsToClose: snapshot.appsToClose,
-                    activeProcesses: activeProcesses
-                )
-                let monitoringProcesses = buildProcessesToMonitor(
-                    activeProcesses: activeProcesses)
-                
-                await updateStatusAsync {
-                    $0.withKilllingProcesses(killingProcesses)
-                        .withMonitoringProcesses(monitoringProcesses)
+                if shouldKillClosingApps(
+                    closingApps,
+                    snapshot: snapshot) {
+                    killProcesses(processes: closingApps)
                 }
                 
-                let hasNetworkLeaks = snapshot.hasDnsLeak || snapshot.hasWebRtcLeak
-                
-                let isUnsafeForExtendedProtection = snapshot.useExtendedProtection
-                    && (snapshot.publicIp?.hasLocation() == false || hasNetworkLeaks)
-                
-                let shouldKillActiveProcesses = !killingProcesses.isEmpty
-                    && snapshot.isMonitoringEnabled
-                    && snapshot.securityType == .notSecure
-                    && (snapshot.autoCloseApps || isUnsafeForExtendedProtection)
-                
-                let shouldKillMonitoringProcesses = !monitoringProcesses.isEmpty
-                    && snapshot.isMonitoringEnabled
-                    && snapshot.useExtendedProtection
-                    && hasNetworkLeaks
-                
-                if shouldKillActiveProcesses {
-                    killProcesses(processes: killingProcesses)
-                }
-                
-                if shouldKillMonitoringProcesses {
-                    killProcesses(processes: monitoringProcesses)
+                if shouldKillWebRtcMonitoredApps(
+                    webRtcMonitoredApps,
+                    snapshot: snapshot) {
+                    killProcesses(processes: webRtcMonitoredApps)
                 }
             }
         }
     }
     
+    private func captureSnapshot() async -> MonitoringSnapshot {
+        await MainActor.run {
+            MonitoringSnapshot(
+                closingApps: appState.userData.closingApps,
+                isMonitoringEnabled: appState.monitoring.isEnabled,
+                autoCloseApps: appState.userData.autoCloseApps,
+                securityType: appState.current.securityType,
+                useExtendedProtection: appState.userData.useExtendedProtection,
+                publicIp: appState.network.publicIp,
+                hasDnsLeak: appState.network.hasDnsLeak,
+                hasWebRtcLeak: appState.network.hasWebRtcLeak
+            )
+        }
+    }
+    
+    private func buildAndUpdateProcessesAsync(
+        snapshot: MonitoringSnapshot
+    ) async -> (killing: [ProcessInfo], monitoring: [ProcessInfo]) {
+        let activeProcesses = NSWorkspace.shared.runningApplications
+        
+        let closingApps = snapshot.closingApps.isEmpty
+            ? []
+            : buildProcessesToKill(
+                closingApps: snapshot.closingApps,
+                activeProcesses: activeProcesses)
+        
+        let webRtcMonitoredApps = buildProcessesToMonitor(
+            activeProcesses: activeProcesses)
+        
+        await updateStatusAsync {
+            $0.withClosingProcesses(closingApps)
+                .withWebRtcMonitoredProcesses(webRtcMonitoredApps)
+        }
+        
+        return (closingApps, webRtcMonitoredApps)
+    }
+    
+    private func shouldKillClosingApps(
+        _ processes: [ProcessInfo],
+        snapshot: MonitoringSnapshot) -> Bool {
+        let hasNetworkLeaks = snapshot.hasDnsLeak || snapshot.hasWebRtcLeak
+        let isUnsafeForExtendedProtection = snapshot.useExtendedProtection
+            && (snapshot.publicIp?.hasLocation() == false || hasNetworkLeaks)
+        
+        return !processes.isEmpty
+            && snapshot.isMonitoringEnabled
+            && snapshot.securityType == .notSecure
+            && (snapshot.autoCloseApps || isUnsafeForExtendedProtection)
+    }
+    
+    private func shouldKillWebRtcMonitoredApps(
+        _ processes: [ProcessInfo],
+        snapshot: MonitoringSnapshot) -> Bool {
+        let hasNetworkLeaks = snapshot.hasDnsLeak || snapshot.hasWebRtcLeak
+        
+        return !processes.isEmpty
+            && snapshot.isMonitoringEnabled
+            && snapshot.useExtendedProtection
+            && hasNetworkLeaks
+    }
+
+    
     private func buildProcessesToKill(
-        appsToClose: [AppInfo],
+        closingApps: [AppInfo],
         activeProcesses: [NSRunningApplication]
     ) -> [ProcessInfo] {
-        appsToClose.compactMap { appToClose in
-            let escaped = appToClose.bundleId
+        closingApps.compactMap { closingApp in
+            let escaped = closingApp.bundleId
                 .replacingOccurrences(of: ".", with: "\\.")
                 .replacingOccurrences(of: "(", with: "\\(")
                 .replacingOccurrences(of: ")", with: "\\)")
@@ -119,7 +149,7 @@ final class ProcessService: ShellAccessible, ProcessServiceType {
             guard let regex = try? Regex(#".\#(escaped) - "#).ignoresCase()
             else {
                 loggingService.write(
-                    message: ProcessError.invalidRegex(bundleId: appToClose.bundleId).errorDescription ?? String(),
+                    message: ProcessError.invalidRegex(bundleId: closingApp.bundleId).errorDescription ?? String(),
                     type: .error)
                 
                 return nil
@@ -131,8 +161,8 @@ final class ProcessService: ShellAccessible, ProcessServiceType {
             return ProcessInfo(
                 pid: found.processIdentifier,
                 description: found.description,
-                url: appToClose.url,
-                name: appToClose.name
+                url: closingApp.url,
+                name: closingApp.name
             )
         }
     }
@@ -164,5 +194,18 @@ final class ProcessService: ShellAccessible, ProcessServiceType {
         await MainActor.run {
             appState.applyProcessesStateUpdate(update)
         }
+    }
+    
+    // MARK: Inner types
+    
+    private struct MonitoringSnapshot {
+        let closingApps: [AppInfo]
+        let isMonitoringEnabled: Bool
+        let autoCloseApps: Bool
+        let securityType: SecurityType
+        let useExtendedProtection: Bool
+        let publicIp: IpInfoBase?
+        let hasDnsLeak: Bool
+        let hasWebRtcLeak: Bool
     }
 }

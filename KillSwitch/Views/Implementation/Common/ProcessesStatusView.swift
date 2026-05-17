@@ -17,7 +17,7 @@ struct ProcessesStatusView: View {
     
     @State private var isHovering = false
     
-    private var processCount: Int { appState.system.killingProcesses.count }
+    private var processCount: Int { appState.system.closingProcesses.count }
 
     var body: some View {
         StatusCard(
@@ -63,7 +63,7 @@ struct ProcessesStatusView: View {
             Text(Constants.clickToClose)
             
             VStack(alignment: .leading) {
-                ForEach(appState.system.killingProcesses, id: \.pid) { processInfo in
+                ForEach(appState.system.closingProcesses, id: \.pid) { processInfo in
                     HStack {
                         Image(nsImage: NSWorkspace.shared.icon(forFile: processInfo.url))
                         Text(processInfo.name)
@@ -94,7 +94,7 @@ struct ProcessesStatusView: View {
     }
     
     private func closeApplications() {
-        processService.killProcesses(processes: appState.system.killingProcesses)
+        processService.killProcesses(processes: appState.system.closingProcesses)
         isHovering = false
     }
 }

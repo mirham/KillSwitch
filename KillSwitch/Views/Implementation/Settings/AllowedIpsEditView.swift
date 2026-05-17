@@ -162,10 +162,10 @@ struct AllowedIpsEditView: IpAddressContainerView {
             fetchedFromApi: nil
         )
         
-        let isInvalidInPickyMode = appState.userData.pickyMode
+        let noExtendedIpAddressInfo = appState.userData.useExtendedIpAddressInfo
             && ipInfoResult.error != nil
         
-        guard !isInvalidInPickyMode else {
+        guard !noExtendedIpAddressInfo else {
             alertState = .newIpInvalid
             
             return

@@ -83,12 +83,12 @@ class AppState: ObservableObject {
     func applyProcessesStateUpdate(_ update: ProcessesStateUpdate) {
         var updatedSystem = system
         
-        updatedSystem.killingProcesses = update.killingProcesses ?? []
-        updatedSystem.monitoringProcesses = update.monitoringProcesses ?? []
+        updatedSystem.closingProcesses = update.closingProcesses ?? []
+        updatedSystem.webRtcMonitoredProcesses = update.webRtcMonitoredProcesses ?? []
         
 
-        if system.killingProcesses != updatedSystem.killingProcesses
-            || system.monitoringProcesses != updatedSystem.monitoringProcesses {
+        if system.closingProcesses != updatedSystem.closingProcesses
+            || system.webRtcMonitoredProcesses != updatedSystem.webRtcMonitoredProcesses {
             system = updatedSystem
         }
     }
@@ -158,12 +158,12 @@ extension AppState {
         var locationServicesEnabled: Bool {
             CLLocationManager.locationServicesEnabled()
         }
-        var killingProcesses: [ProcessInfo] = []
-        var monitoringProcesses: [ProcessInfo] = []
+        var closingProcesses: [ProcessInfo] = []
+        var webRtcMonitoredProcesses: [ProcessInfo] = []
         
         static func == (lhs: System, rhs: System) -> Bool {
-            lhs.killingProcesses == rhs.killingProcesses
-            && lhs.monitoringProcesses == rhs.monitoringProcesses
+            lhs.closingProcesses == rhs.closingProcesses
+            && lhs.webRtcMonitoredProcesses == rhs.webRtcMonitoredProcesses
         }
     }
 }
@@ -258,11 +258,11 @@ extension AppState {
             }
         }
         
-        var appsToClose = [AppInfo]() {
+        var closingApps = [AppInfo]() {
             didSet {
                 writeSettingsArray(
-                    newValues: appsToClose,
-                    key: Constants.settingsKeyAppsToClose
+                    newValues: closingApps,
+                    key: Constants.settingsKeyClosingApps
                 )
             }
         }
@@ -285,11 +285,11 @@ extension AppState {
             }
         }
         
-        var pickyMode: Bool = true {
+        var useExtendedIpAddressInfo: Bool = true {
             didSet {
                 writeSetting(
-                    newValue: pickyMode,
-                    key: Constants.settingsKeyUsePickyMode
+                    newValue: useExtendedIpAddressInfo,
+                    key: Constants.settingsKeyuseExtendedIpAddressInfo
                 )
             }
         }
@@ -435,7 +435,7 @@ extension AppState {
         init() {
             useExtendedProtection = readSetting(key: Constants.settingsKeyExtendedProtection) ?? false
             intervalBetweenChecks = readSetting(key: Constants.settingsKeyIntervalBetweenChecks) ?? Constants.defaultIntervalBetweenChecksInSeconds
-            pickyMode = readSetting(key: Constants.settingsKeyUsePickyMode) ?? true
+            useExtendedIpAddressInfo = readSetting(key: Constants.settingsKeyuseExtendedIpAddressInfo) ?? true
             periodicIpCheck = readSetting(key: Constants.settingsKeyPeriodicIpCheck) ?? true
             autoCloseApps = readSetting(key: Constants.settingsKeyAutoCloseApps) ?? false
             appsCloseConfirmation = readSetting(key: Constants.settingsKeyConfirmationApplicationsClose) ?? true
@@ -470,8 +470,8 @@ extension AppState {
             }
             
             if let savedAppsToClose:[AppInfo] = readSettingsArray(
-                key: Constants.settingsKeyAppsToClose) {
-                appsToClose = savedAppsToClose
+                key: Constants.settingsKeyClosingApps) {
+                closingApps = savedAppsToClose
             }
             
             if let savedWebRtcMonitoredApps:[MonitoredAppInfo] = readSettingsArray(

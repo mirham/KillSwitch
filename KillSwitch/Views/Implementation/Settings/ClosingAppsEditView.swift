@@ -27,6 +27,7 @@ struct ClosingAppsEditView: View {
             handleFileImporterResult(result)
             isFileImporterPresented = false
         }
+        .fileDialogDefaultDirectory(.applicationDirectory)
         .alert(item: $alertState) { state in
             Alert(
                 title: Text(state.title),
@@ -59,7 +60,7 @@ struct ClosingAppsEditView: View {
                 .multilineTextAlignment(.center)
             NavigationStack {
                 List {
-                    ForEach(appState.userData.appsToClose, id: \.id) { appInfo in
+                    ForEach(appState.userData.closingApps, id: \.id) { appInfo in
                         appRow(for: appInfo)
                             .contextMenu {
                                 Button(
@@ -115,11 +116,11 @@ struct ClosingAppsEditView: View {
             bundleId: bundleId
         )
         
-        appState.userData.appsToClose.append(appInfo)
+        appState.userData.closingApps.append(appInfo)
     }
     
     private func deleteApp(_ appInfo: AppInfo) {
-        appState.userData.appsToClose
+        appState.userData.closingApps
             .removeAll { $0.id == appInfo.id }
     }
     

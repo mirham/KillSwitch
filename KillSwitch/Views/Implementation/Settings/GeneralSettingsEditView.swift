@@ -31,7 +31,7 @@ struct GeneralSettingsEditView: View {
             higherProtectionRow
             autoCloseAppsRow
             confirmationToCloseAppsRow
-            pickyModeRow
+            extendedIpAddressInfoRow
             periodicIpCheckRow
             periodicIpCheckIntervalRow
                 .isHidden(!appState.userData.periodicIpCheck)
@@ -149,12 +149,12 @@ struct GeneralSettingsEditView: View {
     }
     
     @ViewBuilder
-    private var pickyModeRow: some View {
+    private var extendedIpAddressInfoRow: some View {
         settingRow(
-            title: Constants.settingsElementPickyMode,
-            hint: Constants.hintPickyMode,
-            isOn: $appState.userData.pickyMode,
-            settingType: .pickyMode
+            title: Constants.settingsElementExtendedIpAddressInfo,
+            hint: Constants.hintExtendedIpAddressInfo,
+            isOn: $appState.userData.useExtendedIpAddressInfo,
+            settingType: .extendedIpAddressInfo
         )
     }
     
@@ -249,7 +249,7 @@ struct GeneralSettingsEditView: View {
         case higherProtection
         case autoCloseApps
         case confirmationToCloseApps
-        case pickyMode
+        case extendedIpAddressInfo
         case periodicIpCheck
     }
 }
