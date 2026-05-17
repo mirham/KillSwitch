@@ -92,6 +92,27 @@ For WebRTC leaks in particular, make sure to test every app you use for audio or
 If you're seeing unwanted leak warnings in the log, you can disable the checks or exclude specific apps to reduce noise. Note that Slack and Microsoft Teams cannot be excluded from WebRTC leak checks — these apps are among the highest-risk for WebRTC leaks, as corporate administrators may be able to detect your real IP address through them. For these apps, I recommend using their web versions instead, with a WebRTC-blocking browser extension or the appropriate browser settings configured.
 
 ## Troubleshooting
+### The app doesn't start after installation
+This happens because macOS quarantines apps that aren't downloaded from the App Store or signed by a verified developer. On the first launch, macOS may silently block the app even after you click "Open Anyway" in Security & Privacy settings.
+
+**Fix:**
+
+Open Terminal and run:
+
+```bash
+xattr -rd com.apple.quarantine /Applications/KillSwitch.app
+```
+
+Or drag the app onto the Terminal window after typing `xattr -rd com.apple.quarantine ` (note the space at the end), then press Enter.
+
+After that, the app will launch normally on every subsequent run.
+
+**Step by step:**
+1. Copy the app to your Applications folder
+2. Try to open it — if blocked, go to **System Settings → Privacy & Security** and click **Open Anyway**
+3. If the app still doesn't start, open Terminal and run the command above
+4. Launch the app again
+
 ### Where can I find a public IP API?
 You can find free IP APIs that return plain text and require no API key by searching online for "free IP API plain text no API key." Many are available, though not all may work in your country. Alternatively, you can create and deploy your own — it's not complicated. The only requirement is that it returns the IP address as plain text, with no additional data.
 
